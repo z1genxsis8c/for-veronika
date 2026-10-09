@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Наша история в цифрах ❤️</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffe5ec, #ffc2d1, #fba3b7);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* Дождь из сердечек */
+    #hearts-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      top: -30px;
+      font-size: 20px;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 640px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ff4d6d;
+      font-size: 26px;
+      margin: 0 0 8px;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .subtitle {
+      color: #c71585;
+      font-size: 14px;
+      margin-bottom: 28px;
+      opacity: 0.9;
+    }
+
+    /* Главная большая цифра — дней */
+    .big-days {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 28px;
+      padding: 28px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 40px rgba(255, 77, 109, 0.3);
+      border: 3px solid #fff;
+      backdrop-filter: blur(10px);
+    }
+
+    .big-days-num {
+      font-size: 72px;
+      font-weight: 900;
+      color: #ff4d6d;
+      line-height: 1;
+      margin-bottom: 6px;
+      text-shadow: 0 4px 20px rgba(255, 77, 109, 0.4);
+      animation: pulseNum 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseNum {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .big-days-label {
+      color: #c71585;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Карточки со временем */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 18px 10px;
+      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.2);
+      border: 2px solid #fff;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card-num {
+      font-size: 32px;
+      font-weight: 800;
+      color: #ff4d6d;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .card-label {
+      color: #c71585;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Дата начала */
+    .start-date {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 50px;
+      padding: 12px 22px;
+      display: inline-block;
+      color: #c71585;
+      font-size: 14px;
+      font-weight: 600;
+      border: 2px solid #fff;
+      box-shadow: 0 6px 20px rgba(255, 77, 109, 0.2);
+    }
+
+    .start-date b {
+      color: #ff4d6d;
+    }
+
+    /* Кнопка назад */
+    .back-btn {
+      display: inline-block;
+      margin-top: 28px;
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      color: white;
+      padding: 14px 32px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 15px;
+      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.4);
+      transition: all 0.25s;
+    }
+
+    .back-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 32px rgba(255, 77, 109, 0.6);
+    }
+
+    /* Дополнительный блок */
+    .extra-fact {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+      padding: 16px 20px;
+      margin-top: 18px;
+      color: #c71585;
+      font-size: 14px;
+      border: 2px dashed #ffc2d1;
+    }
+
+    .extra-fact b {
+      color: #ff4d6d;
+    }
+
+    @media (max-width: 480px) {
+      .big-days-num { font-size: 56px; }
+      h1 { font-size: 22px; }
+      .card-num { font-size: 26px; }
+      .grid { gap: 8px; }
+      .card { padding: 14px 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="hearts-container"></div>
+
+  <div class="container">
+    <h1>❤️ Наша история в цифрах</h1>
+    <p class="subtitle">Каждое мгновение с тобой — бесценно 💕</p>
+
+    <div class="big-days">
+      <div class="big-days-num" id="days">0</div>
+      <div class="big-days-label">дней вместе</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-num" id="hours">0</div>
+        <div class="card-label">часов</div>
+      </div>
+      <div class="card">
+        <div class="card-num" id="minutes">0</div>
+        <div class="card-label">минут</div>
+      </div>
+      <div class="card">
+        <div class="card-num" id="seconds">0</div>
+        <div class="card-label">секунд</div>
+      </div>
+    </div>
+
+    <div class="start-date">
+      💖 Мы вместе с <b id="startDate">4 октября 2025</b>
+    </div>
+
+    <div class="extra-fact" id="extraFact">
+      За это время мы пережили миллион моментов ✨
+    </div>
+
+    <a href="index.html" class="back-btn">← Назад к приглашению</a>
+  </div>
+
+  <script>
+    // ============================================================
+    // ⚠️ ДАТА НАЧАЛА ВАШИХ ОТНОШЕНИЙ — должна совпадать с index.html
+    // Формат: год, месяц-1 (0=январь, 9=октябрь), день
+    // ============================================================
+    const LOVE_START = new Date(2025, 9, 4); // 4 октября 2025
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = now - LOVE_START;
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = hours;
+      document.getElementById('minutes').textContent = minutes;
+      document.getElementById('seconds').textContent = seconds;
+
+      // Дополнительные интересные факты
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const totalHours = Math.floor(totalSeconds / 3600);
+      const weeks = Math.floor(days / 7);
+      const months = Math.floor(days / 30.44);
+      const kisses = Math.floor(days * 10); // шуточно :)
+      const smiles = Math.floor(totalMinutes * 3);
+
+      const facts = [
+        `За это время мы провели вместе <b>${totalHours}</b> часов 💕`,
+        `Это <b>${weeks}</b> недель тепла и улыбок ✨`,
+        `Целых <b>${months}</b> месяцев счастья 🌸`,
+        `Плюс-минус <b>${kisses}</b> поцелуев 😘`,
+        `И примерно <b>${smiles}</b> улыбок друг другу 🥰`,
+        `А это <b>${totalMinutes.toLocaleString('ru-RU')}</b> минут воспоминаний 💖`
+      ];
+      const randomFact = facts[Math.floor(Math.random() * facts.length)];
+      document.getElementById('extraFact').innerHTML = randomFact;
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+
+    // Дата начала в читаемом виде
+    document.getElementById('startDate').textContent =
+      LOVE_START.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // ---------- Дождь из сердечек ----------
+    const container = document.getElementById('hearts-container');
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸'];
+      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = Math.random() * 3 + 2 + "s";
+      heart.style.fontSize = Math.random() * 15 + 15 + "px";
+      heart.style.color = '#ffb3c1';
+      container.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 5000);
+    }
+    setInterval(createHeart, 300);
+  </script>
+</body>
+</html>

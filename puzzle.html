@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Собери моё сердце ❤️</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffe5ec, #ffc2d1, #fba3b7);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      padding-bottom: 40px;
+      box-sizing: border-box;
+      position: relative;
+      touch-action: manipulation;
+    }
+
+    #hearts-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      top: -30px;
+      color: #ffb3c1;
+      font-size: 20px;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ff4d6d;
+      font-size: 22px;
+      margin: 0 0 6px;
+      font-weight: 800;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
+    }
+
+    .subtitle {
+      color: #c71585;
+      font-size: 13px;
+      margin: 0 0 16px;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .stat-chip {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #ffc2d1;
+      border-radius: 50px;
+      padding: 8px 16px;
+      color: #c71585;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.15);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-chip b {
+      color: #ff4d6d;
+      font-size: 15px;
+    }
+
+    .puzzle-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .board {
+      position: relative;
+      background: rgba(255, 255, 255, 0.5);
+      border: 3px dashed #ffc2d1;
+      border-radius: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 0;
+      padding: 0;
+      box-sizing: content-box;
+      box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2);
+      transition: all 0.3s;
+      overflow: hidden;
+    }
+
+    .slot {
+      position: relative;
+      background: rgba(255, 229, 236, 0.6);
+      transition: all 0.2s;
+      border: 1px solid rgba(255, 194, 209, 0.4);
+      box-sizing: border-box;
+    }
+
+    .slot.over {
+      background: rgba(255, 143, 163, 0.6);
+      box-shadow: inset 0 0 0 3px #ff4d6d;
+    }
+
+    .slot.correct {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .piece {
+      position: relative;
+      background-repeat: no-repeat;
+      cursor: grab;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.15s, box-shadow 0.15s;
+      touch-action: none;
+      z-index: 20;
+      border: 2px solid #fff;
+      box-sizing: border-box;
+      flex-shrink: 0;
+      border-radius: 10px;
+    }
+
+    .piece:hover {
+      transform: scale(1.06);
+      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
+      z-index: 30;
+    }
+
+    .piece.dragging {
+      cursor: grabbing;
+      opacity: 0.9;
+      transform: scale(1.1) rotate(3deg);
+      box-shadow: 0 12px 28px rgba(255, 77, 109, 0.6);
+      z-index: 100;
+    }
+
+    /* Кусочек, поставленный в слот — сохраняет свою часть картинки */
+    .slot .piece {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 100% !important;
+      /* background-size и background-position задаются inline через JS */
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+      pointer-events: none;
+      cursor: default;
+      transition: none;
+    }
+
+    .tray {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      min-height: 130px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 3px dashed #ffc2d1;
+      border-radius: 20px;
+      padding: 12px;
+      box-sizing: border-box;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(255, 77, 109, 0.15);
+    }
+
+    .tray-empty {
+      color: #c71585;
+      font-size: 14px;
+      font-weight: 700;
+      opacity: 0.7;
+      padding: 20px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.95);
+      color: #c71585;
+      border: 2px solid #ffc2d1;
+      font-size: 14px;
+      padding: 12px 22px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
+      transition: all 0.25s;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background: #ff4d6d;
+      color: white;
+      border-color: #ff4d6d;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(255, 77, 109, 0.5);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: white;
+      border-color: #ff4d6d;
+    }
+
+    .btn.primary:hover {
+      background: linear-gradient(135deg, #ff758f, #ff4d6d);
+    }
+
+    .victory-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(43, 10, 31, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 5000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s;
+    }
+
+    .victory-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .victory-card {
+      background: #fff;
+      border-radius: 28px;
+      padding: 32px 26px 26px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(255, 77, 109, 0.4);
+      border: 3px solid #ffc2d1;
+      transform: scale(0.7) translateY(50px);
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-height: 90vh;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    .victory-overlay.show .victory-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .victory-emoji {
+      font-size: 64px;
+      display: block;
+      margin-bottom: 8px;
+      animation: heartBeat 1.4s ease-in-out infinite;
+    }
+
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.2); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.15); }
+      60% { transform: scale(1); }
+    }
+
+    .victory-title {
+      color: #ff4d6d;
+      font-size: 24px;
+      font-weight: 800;
+      margin: 0 0 14px;
+      line-height: 1.3;
+    }
+
+    .victory-text {
+      color: #4a2a3a;
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 0 0 22px;
+      font-style: italic;
+    }
+
+    .victory-photo {
+      width: 200px;
+      height: 200px;
+      border-radius: 20px;
+      object-fit: cover;
+      border: 4px solid #fff;
+      box-shadow: 0 10px 30px rgba(255, 77, 109, 0.4);
+      margin: 0 auto 20px;
+      display: block;
+      animation: photoGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes photoGlow {
+      0%, 100% { box-shadow: 0 10px 30px rgba(255, 77, 109, 0.4); }
+      50% { box-shadow: 0 10px 40px rgba(255, 77, 109, 0.8); }
+    }
+
+    .victory-signature {
+      color: #c71585;
+      font-size: 15px;
+      font-style: italic;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .victory-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .confetti {
+      position: fixed;
+      font-size: 20px;
+      pointer-events: none;
+      z-index: 4000;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 18px; }
+      .victory-card { padding: 26px 20px 20px; }
+      .victory-title { font-size: 20px; }
+      .victory-text { font-size: 14px; }
+      .victory-photo { width: 160px; height: 160px; }
+      .btn { font-size: 13px; padding: 10px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="hearts-container"></div>
+
+  <div class="container">
+    <h1>💖 Собери моё сердце</h1>
+    <p class="subtitle">Перетащи все кусочки на свои места</p>
+
+    <div class="stats">
+      <div class="stat-chip">🧩 Собрано: <b><span id="score">0</span>/9</b></div>
+      <div class="stat-chip">⏱️ Время: <b><span id="timer">0:00</span></b></div>
+    </div>
+
+    <div class="puzzle-area">
+      <div class="board" id="board"></div>
+      <div class="tray" id="tray"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" onclick="restartGame()">🔄 Заново</button>
+      <a href="index.html" class="btn primary">← На главную</a>
+    </div>
+  </div>
+
+  <div class="victory-overlay" id="victoryOverlay">
+    <div class="victory-card">
+      <span class="victory-emoji">💖</span>
+      <h2 class="victory-title">Ты собрала моё сердце!</h2>
+
+      <img class="victory-photo" src="photos/puzzle.jpeg" alt="Мы"
+           onerror="this.style.display='none'">
+
+      <p class="victory-text">
+        Как ты собрала этот пазл — так ты собрала и меня.
+        По кусочку, по кусочку — и вот я целый.
+        <br><br>
+        Ты — моя самая красивая половинка. 💕
+      </p>
+
+      <div class="victory-signature">— твой навсегда ❤️</div>
+
+      <div class="victory-buttons">
+        <button class="btn" onclick="restartGame()">🔄 Ещё раз</button>
+        <a href="index.html" class="btn primary">На главную →</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // ⚠️ НАСТРОЙКА — путь к фото для пазла
+    // ============================================================
+    const PUZZLE_IMAGE = 'photos/puzzle.jpeg';
+    // ============================================================
+
+    const board = document.getElementById('board');
+    const tray = document.getElementById('tray');
+    const scoreEl = document.getElementById('score');
+    const timerEl = document.getElementById('timer');
+    const victoryOverlay = document.getElementById('victoryOverlay');
+
+    const SIZE = 3;
+    let placedCount = 0;
+    let startTime = null;
+    let timerInterval = null;
+    let gameFinished = false;
+
+    // Размер ячейки в зависимости от ширины экрана
+    function getCellSize() {
+      const w = window.innerWidth;
+      if (w <= 360) return 80;
+      if (w <= 480) return 90;
+      return 100;
+    }
+
+    // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+    function initGame() {
+      board.innerHTML = '';
+      tray.innerHTML = '';
+      placedCount = 0;
+      gameFinished = false;
+      scoreEl.textContent = '0';
+      timerEl.textContent = '0:00';
+      if (timerInterval) clearInterval(timerInterval);
+      startTime = null;
+
+      const cellSize = getCellSize();
+      const boardSize = cellSize * SIZE;
+
+      board.style.width = boardSize + 'px';
+      board.style.height = boardSize + 'px';
+
+      // 9 слотов
+      for (let i = 0; i < SIZE * SIZE; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.dataset.index = i;
+        slot.dataset.filled = 'false';
+        board.appendChild(slot);
+      }
+
+      // Перемешиваем порядок кусочков для лотка
+      const pieceIndices = [];
+      for (let i = 0; i < SIZE * SIZE; i++) pieceIndices.push(i);
+      shuffleArray(pieceIndices);
+
+      // Создаём 9 кусочков в перемешанном порядке
+      pieceIndices.forEach((pieceIndex) => {
+        const piece = createPiece(pieceIndex, cellSize);
+        tray.appendChild(piece);
+      });
+
+      updateTrayEmpty();
+    }
+
+    // Перемешивание Фишера-Йетса
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // ---------- СОЗДАНИЕ КУСОЧКА ----------
+    // index = правильная позиция кусочка в оригинале (0..8)
+    function createPiece(index, cellSize) {
+      const piece = document.createElement('div');
+      piece.className = 'piece';
+      piece.dataset.correct = index;
+
+      const row = Math.floor(index / SIZE);
+      const col = index % SIZE;
+      const bgSize = cellSize * SIZE;
+
+      // Размер для лотка
+      piece.style.width = cellSize + 'px';
+      piece.style.height = cellSize + 'px';
+      piece.style.backgroundImage = `url('${PUZZLE_IMAGE}')`;
+      piece.style.backgroundSize = `${bgSize}px ${bgSize}px`;
+      piece.style.backgroundPosition = `-${col * cellSize}px -${row * cellSize}px`;
+
+      // Drag & Drop для мыши
+      piece.draggable = true;
+      piece.addEventListener('dragstart', handleDragStart);
+      piece.addEventListener('dragend', handleDragEnd);
+
+      // Touch
+      piece.addEventListener('touchstart', handleTouchStart, { passive: false });
+      piece.addEventListener('touchmove', handleTouchMove, { passive: false });
+      piece.addEventListener('touchend', handleTouchEnd);
+
+      return piece;
+    }
+
+    // ---------- DRAG & DROP (мышь) ----------
+    let draggedPiece = null;
+
+    function handleDragStart(e) {
+      if (gameFinished) { e.preventDefault(); return; }
+      draggedPiece = e.currentTarget;
+      e.currentTarget.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      startTimerIfNeeded();
+    }
+
+    function handleDragEnd(e) {
+      e.currentTarget.classList.remove('dragging');
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('over'));
+    }
+
+    board.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const slot = e.target.closest('.slot');
+      if (!slot || slot.dataset.filled === 'true') return;
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('over'));
+      slot.classList.add('over');
+    });
+
+    board.addEventListener('dragleave', (e) => {
+      const slot = e.target.closest('.slot');
+      if (slot) slot.classList.remove('over');
+    });
+
+    board.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const slot = e.target.closest('.slot');
+      if (!slot) return;
+      slot.classList.remove('over');
+      if (!draggedPiece) return;
+      if (slot.dataset.filled === 'true') return;
+      tryPlacePiece(draggedPiece, slot);
+      draggedPiece = null;
+    });
+
+    // ---------- TOUCH ----------
+    let touchPiece = null;
+    let touchOffsetX = 0;
+    let touchOffsetY = 0;
+    let touchClone = null;
+
+    function handleTouchStart(e) {
+      if (gameFinished) return;
+      const piece = e.currentTarget;
+      if (piece.classList.contains('placed')) return;
+
+      e.preventDefault();
+      touchPiece = piece;
+
+      const rect = piece.getBoundingClientRect();
+      const touch = e.touches[0];
+      touchOffsetX = touch.clientX - rect.left;
+      touchOffsetY = touch.clientY - rect.top;
+
+      touchClone = piece.cloneNode(true);
+      touchClone.style.position = 'fixed';
+      touchClone.style.pointerEvents = 'none';
+      touchClone.style.zIndex = '9999';
+      touchClone.style.width = rect.width + 'px';
+      touchClone.style.height = rect.height + 'px';
+      touchClone.style.left = rect.left + 'px';
+      touchClone.style.top = rect.top + 'px';
+      touchClone.style.opacity = '0.9';
+      touchClone.style.transform = 'scale(1.1)';
+      touchClone.style.boxShadow = '0 12px 28px rgba(255, 77, 109, 0.6)';
+      document.body.appendChild(touchClone);
+
+      piece.style.opacity = '0.3';
+      startTimerIfNeeded();
+    }
+
+    function handleTouchMove(e) {
+      if (!touchPiece || !touchClone) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+      touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+
+      touchClone.style.display = 'none';
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      touchClone.style.display = '';
+      const slot = el ? el.closest('.slot') : null;
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('over'));
+      if (slot && slot.dataset.filled !== 'true') {
+        slot.classList.add('over');
+      }
+    }
+
+    function handleTouchEnd(e) {
+      if (!touchPiece || !touchClone) return;
+
+      const touch = e.changedTouches[0];
+      touchClone.style.display = 'none';
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      touchClone.style.display = '';
+      const slot = el ? el.closest('.slot') : null;
+
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('over'));
+
+      touchClone.remove();
+      touchClone = null;
+
+      const piece = touchPiece;
+      piece.style.opacity = '';
+      touchPiece = null;
+
+      if (slot && slot.dataset.filled !== 'true') {
+        tryPlacePiece(piece, slot);
+      }
+    }
+
+    // ---------- ПОПЫТКА ПОСТАВИТЬ КУСОЧЕК ----------
+    function tryPlacePiece(piece, slot) {
+      if (gameFinished) return;
+      if (slot.dataset.filled === 'true') return;
+
+      const correctIndex = parseInt(piece.dataset.correct);
+      const slotIndex = parseInt(slot.dataset.index);
+
+      if (correctIndex === slotIndex) {
+        placePiece(piece, slot);
+        placedCount++;
+        scoreEl.textContent = placedCount;
+        slot.dataset.filled = 'true';
+        slot.classList.add('correct');
+
+        if (placedCount === SIZE * SIZE) {
+          setTimeout(winGame, 500);
+        }
+      } else {
+        piece.style.animation = 'shake 0.4s';
+        setTimeout(() => { piece.style.animation = ''; }, 400);
+      }
+    }
+
+    const shakeStyle = document.createElement('style');
+    shakeStyle.textContent = `
+      @keyframes shake {
+        0%, 100% { transform: translateX(0) rotate(0); }
+        20% { transform: translateX(-6px) rotate(-3deg); }
+        40% { transform: translateX(6px) rotate(3deg); }
+        60% { transform: translateX(-4px) rotate(-2deg); }
+        80% { transform: translateX(4px) rotate(2deg); }
+      }
+    `;
+    document.head.appendChild(shakeStyle);
+
+    // ---------- УСТАНОВКА КУСОЧКА В СЛОТ ----------
+    // ГЛАВНОЕ: используем проценты, чтобы кусочек показывал свою часть картинки
+    function placePiece(piece, slot) {
+      // Получаем координаты кусочка в оригинале
+      const index = parseInt(piece.dataset.correct);
+      const row = Math.floor(index / SIZE);
+      const col = index % SIZE;
+
+      // Убираем из лотка
+      if (piece.parentNode) piece.parentNode.removeChild(piece);
+
+      // Сначала обнуляем inline-размеры
+      piece.style.width = '';
+      piece.style.height = '';
+      piece.style.transform = '';
+      piece.style.animation = '';
+
+      // Затем задаём проценты — теперь кусочек покажет СВОЮ часть картинки
+      // при любом размере ячейки
+      piece.style.backgroundSize = `${SIZE * 100}% ${SIZE * 100}%`;
+      piece.style.backgroundPosition = `${(col / (SIZE - 1)) * 100}% ${(row / (SIZE - 1)) * 100}%`;
+
+      piece.draggable = false;
+      piece.classList.add('placed');
+      piece.classList.remove('dragging');
+
+      piece.removeEventListener('dragstart', handleDragStart);
+      piece.removeEventListener('touchstart', handleTouchStart);
+      piece.removeEventListener('touchmove', handleTouchMove);
+      piece.removeEventListener('touchend', handleTouchEnd);
+
+      slot.appendChild(piece);
+      slot.style.background = 'transparent';
+
+      updateTrayEmpty();
+    }
+
+    // ---------- ТАЙМЕР ----------
+    function startTimerIfNeeded() {
+      if (startTime || gameFinished) return;
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const m = Math.floor(elapsed / 60);
+        const s = elapsed % 60;
+        timerEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      }, 1000);
+    }
+
+    // ---------- ПОБЕДА ----------
+    function winGame() {
+      if (gameFinished) return;
+      gameFinished = true;
+      if (timerInterval) clearInterval(timerInterval);
+
+      for (let i = 0; i < 60; i++) {
+        setTimeout(() => spawnConfetti(), i * 30);
+      }
+
+      const rect = board.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => spawnHeartAt(cx, cy), i * 30);
+      }
+
+      setTimeout(() => {
+        victoryOverlay.classList.add('show');
+      }, 700);
+    }
+
+    function spawnConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.textContent = ['💖', '❤️', '✨', '💕', '🎉', '💗', '🌸'][Math.floor(Math.random() * 7)];
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+      confetti.style.fontSize = (18 + Math.random() * 18) + 'px';
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 4500);
+    }
+
+    function spawnHeartAt(x, y) {
+      const heart = document.createElement('div');
+      heart.textContent = ['❤️', '💖', '💗', '💕', '✨'][Math.floor(Math.random() * 5)];
+      heart.style.cssText = `
+        position: fixed; left: ${x}px; top: ${y}px;
+        font-size: ${20 + Math.random() * 20}px;
+        pointer-events: none; z-index: 2000;
+        transition: all ${0.9 + Math.random() * 0.6}s cubic-bezier(0.34, 1.56, 0.64, 1);
+      `;
+      document.body.appendChild(heart);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 150 + Math.random() * 250;
+      requestAnimationFrame(() => {
+        heart.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${Math.random() * 360}deg) scale(0.3)`;
+        heart.style.opacity = '0';
+      });
+      setTimeout(() => heart.remove(), 1500);
+    }
+
+    function updateTrayEmpty() {
+      const pieces = tray.querySelectorAll('.piece');
+      const existing = tray.querySelector('.tray-empty');
+      if (pieces.length === 0 && !existing) {
+        const div = document.createElement('div');
+        div.className = 'tray-empty';
+        div.textContent = '✨ Все кусочки на месте ✨';
+        tray.appendChild(div);
+      } else if (pieces.length > 0 && existing) {
+        existing.remove();
+      }
+    }
+
+    function restartGame() {
+      victoryOverlay.classList.remove('show');
+      initGame();
+    }
+
+    victoryOverlay.addEventListener('click', (e) => {
+      if (e.target === victoryOverlay) {
+        victoryOverlay.classList.remove('show');
+      }
+    });
+
+    const container = document.getElementById('hearts-container');
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸'];
+      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+      heart.style.fontSize = Math.random() * 15 + 15 + "px";
+      container.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 6000);
+    }
+    setInterval(createHeart, 500);
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (!gameFinished && placedCount === 0) {
+          initGame();
+        }
+      }, 300);
+    });
+
+    initGame();
+  </script>
+</body>
+</html>

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Созвездие Вероники ✨</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(ellipse at center, #1a0a2e 0%, #0a0415 40%, #000000 100%);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+      color: #fff;
+    }
+
+    /* ---------- ЗВЁЗДНОЕ НЕБО (CANVAS) ---------- */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    /* ---------- ТУМАННОСТИ (размытые пятна) ---------- */
+    .nebula {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 2;
+      animation: nebulaDrift 20s ease-in-out infinite;
+    }
+
+    .nebula-1 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #c71585 0%, transparent 70%);
+      top: -150px;
+      left: -100px;
+    }
+
+    .nebula-2 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #4a1a6b 0%, transparent 70%);
+      bottom: -100px;
+      right: -80px;
+      animation-delay: -10s;
+    }
+
+    .nebula-3 {
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, #8b0f5c 0%, transparent 70%);
+      top: 40%;
+      right: 15%;
+      animation-delay: -5s;
+      opacity: 0.25;
+    }
+
+    @keyframes nebulaDrift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -20px) scale(1.1); }
+    }
+
+    /* ---------- МЛЕЧНЫЙ ПУТЬ ---------- */
+    .milky-way {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg,
+        transparent 0%,
+        rgba(199, 21, 133, 0.05) 30%,
+        rgba(255, 179, 193, 0.15) 50%,
+        rgba(199, 21, 133, 0.05) 70%,
+        transparent 100%);
+      z-index: 2;
+      pointer-events: none;
+      transform: rotate(-25deg) scale(1.5);
+      filter: blur(40px);
+    }
+
+    /* ---------- КОНТЕЙНЕР ---------- */
+    .container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .header {
+      margin-bottom: 20px;
+      animation: fadeInDown 1.5s ease;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header h1 {
+      font-size: 26px;
+      margin: 0 0 8px;
+      background: linear-gradient(135deg, #fff, #ffb3c1, #c71585);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-shadow: 0 0 30px rgba(255, 179, 193, 0.5);
+    }
+
+    .header p {
+      color: #ffb3c1;
+      font-size: 14px;
+      margin: 0;
+      font-style: italic;
+      opacity: 0.85;
+      letter-spacing: 0.5px;
+    }
+
+    /* ---------- СЦЕНА С СОЗВЕЗДИЕМ ---------- */
+    .constellation-stage {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 480px;
+      margin-bottom: 20px;
+      animation: fadeIn 2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* SVG созвездия */
+    .constellation-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    /* Линии созвездия */
+    .const-line {
+      stroke: rgba(255, 179, 193, 0.5);
+      stroke-width: 1.5;
+      stroke-dasharray: 4 4;
+      fill: none;
+      filter: drop-shadow(0 0 6px rgba(255, 143, 163, 0.8));
+      animation: lineGlow 4s ease-in-out infinite;
+    }
+
+    @keyframes lineGlow {
+      0%, 100% { stroke: rgba(255, 179, 193, 0.4); }
+      50% { stroke: rgba(255, 179, 193, 0.9); }
+    }
+
+    /* Звёзды в созвездии */
+    .star-node {
+      cursor: pointer;
+      transition: all 0.3s;
+      filter: drop-shadow(0 0 12px rgba(255, 179, 193, 1));
+    }
+
+    .star-node:hover {
+      filter: drop-shadow(0 0 20px rgba(255, 77, 109, 1));
+      transform-origin: center;
+    }
+
+    .star-core {
+      fill: #fff;
+      animation: starPulse 3s ease-in-out infinite;
+    }
+
+    .star-halo {
+      fill: #ffb3c1;
+      opacity: 0.4;
+      animation: haloPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes starPulse {
+      0%, 100% { r: 3; fill: #fff; }
+      50% { r: 4; fill: #ffb3c1; }
+    }
+
+    @keyframes haloPulse {
+      0%, 100% { opacity: 0.3; r: 8; }
+      50% { opacity: 0.6; r: 12; }
+    }
+
+    /* Центральная звезда (сердце созвездия) */
+    .heart-star .star-core {
+      fill: #ff4d6d;
+      animation: heartStarPulse 2s ease-in-out infinite;
+    }
+
+    .heart-star .star-halo {
+      fill: #ff4d6d;
+      opacity: 0.6;
+      animation: heartHaloPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes heartStarPulse {
+      0%, 100% { r: 4; fill: #ff4d6d; }
+      50% { r: 6; fill: #ff8fa3; }
+    }
+
+    @keyframes heartHaloPulse {
+      0%, 100% { opacity: 0.5; r: 10; }
+      50% { opacity: 0.9; r: 16; }
+    }
+
+    /* Название созвездия */
+    .constellation-label {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .constellation-label .name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #ffb3c1;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-shadow: 0 0 20px rgba(255, 143, 163, 0.8);
+      animation: labelGlow 3s ease-in-out infinite;
+    }
+
+    .constellation-label .subtitle {
+      font-size: 11px;
+      color: rgba(255, 179, 193, 0.7);
+      letter-spacing: 2px;
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    @keyframes labelGlow {
+      0%, 100% { text-shadow: 0 0 20px rgba(255, 143, 163, 0.8); }
+      50% { text-shadow: 0 0 40px rgba(255, 143, 163, 1), 0 0 60px rgba(255, 77, 109, 0.6); }
+    }
+
+    /* Тултип при клике на звезду */
+    .star-tooltip {
+      position: fixed;
+      background: rgba(20, 10, 30, 0.95);
+      border: 2px solid #c71585;
+      border-radius: 16px;
+      padding: 16px 22px;
+      color: #fff;
+      font-size: 14px;
+      max-width: 280px;
+      z-index: 9999;
+      box-shadow: 0 20px 50px rgba(199, 21, 133, 0.6), 0 0 40px rgba(199, 21, 133, 0.4);
+      opacity: 0;
+      transform: translateY(10px) scale(0.95);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      text-align: left;
+      line-height: 1.5;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .star-tooltip.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .star-tooltip .tt-title {
+      color: #ffb3c1;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .star-tooltip .tt-text {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 13px;
+      font-style: italic;
+    }
+
+    /* ---------- КНОПКА ВНИЗУ ---------- */
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffb3c1;
+      border: 2px solid rgba(255, 179, 193, 0.4);
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-btn:hover {
+      background: #ff4d6d;
+      color: #fff;
+      border-color: #ff4d6d;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(255, 77, 109, 0.6);
+    }
+
+    /* ---------- ПАДАЮЩИЕ ЗВЁЗДЫ ---------- */
+        .shooting-star {
+      position: fixed;
+      width: 3px;
+      height: 3px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 8px 3px rgba(255, 255, 255, 0.9), 0 0 24px 6px rgba(255, 179, 193, 0.6);
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* ХВОСТ СЗАДИ — растёт ВВЕРХ-ВПРАВО от головы */
+    .shooting-star::before {
+      content: '';
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(to right,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 179, 193, 0.5) 40%,
+        transparent 100%);
+      transform-origin: left center;
+      transform: rotate(-45deg); /* хвост под углом — совпадает с траекторией */
+      border-radius: 2px;
+      filter: blur(0.5px);
+    }
+
+    /* Мягкое свечение вокруг головы */
+    .shooting-star::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 0%, rgba(255, 179, 193, 0.6) 40%, transparent 70%);
+      transform: translate(-50%, -50%);
+      filter: blur(1px);
+    }
+
+    .shooting-star.fly {
+      animation: shoot var(--duration, 1.5s) linear forwards;
+    }
+
+    /* Летит влево-вниз — хвост тянется вверх-вправо (сзади) */
+    @keyframes shoot {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0);
+      }
+      8% {
+        opacity: 1;
+      }
+      85% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-600px, 600px);
+      }
+    }
+
+    /* ---------- ПОДСКАЗКА ---------- */
+    .hint {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20, 10, 30, 0.9);
+      border: 2px solid #c71585;
+      color: #ffb3c1;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.5s;
+      pointer-events: none;
+      box-shadow: 0 10px 30px rgba(199, 21, 133, 0.5);
+    }
+
+    .hint.show {
+      opacity: 1;
+    }
+
+    /* ---------- АДАПТИВ ---------- */
+    @media (max-width: 480px) {
+      .header h1 { font-size: 20px; }
+      .header p { font-size: 12px; }
+      .constellation-stage {
+        max-width: 340px;
+        height: 340px;
+      }
+      .constellation-label .name { font-size: 15px; letter-spacing: 2px; }
+      .constellation-label .subtitle { font-size: 10px; }
+      .star-tooltip {
+        max-width: 240px;
+        padding: 12px 16px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Звёздное небо -->
+  <canvas id="starfield"></canvas>
+
+  <!-- Туманности -->
+  <div class="nebula nebula-1"></div>
+  <div class="nebula nebula-2"></div>
+  <div class="nebula nebula-3"></div>
+
+  <!-- Млечный путь -->
+  <div class="milky-way"></div>
+
+  <!-- Основной контент -->
+  <div class="container">
+
+    <div class="header">
+      <h1>✨ Созвездие Вероники</h1>
+      <p>Оно светит только для тебя</p>
+    </div>
+
+    <!-- Сцена с созвездием -->
+    <div class="constellation-stage">
+      <svg class="constellation-svg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+
+        <!-- Линии созвездия (соединяют звёзды в форме буквы V + сердечко) -->
+        <line class="const-line" x1="80" y1="120" x2="140" y2="180" />
+        <line class="const-line" x1="140" y1="180" x2="200" y2="240" />
+        <line class="const-line" x1="200" y1="240" x2="260" y2="180" />
+        <line class="const-line" x1="260" y1="180" x2="320" y2="120" />
+
+        <!-- Верхние звёзды -->
+        <line class="const-line" x1="140" y1="180" x2="200" y2="110" />
+        <line class="const-line" x1="200" y1="110" x2="260" y2="180" />
+
+        <!-- Внутренний ромб (сердечко) -->
+        <line class="const-line" x1="200" y1="110" x2="200" y2="200" />
+        <line class="const-line" x1="200" y1="200" x2="170" y2="240" />
+        <line class="const-line" x1="200" y1="200" x2="230" y2="240" />
+        <line class="const-line" x1="170" y1="240" x2="200" y2="270" />
+        <line class="const-line" x1="230" y1="240" x2="200" y2="270" />
+
+        <!-- Луч вниз -->
+        <line class="const-line" x1="200" y1="270" x2="200" y2="330" />
+
+        <!-- ============ ЗВЁЗДЫ ============ -->
+        <!-- Верхние кончики (левая) -->
+        <g class="star-node" data-star="alpha" data-title="⭐ Вероника" data-text="Главная звезда созвездия. Названа в честь самой красивой девушки на свете — тебя.">
+          <circle class="star-halo" cx="80" cy="120" r="8" />
+          <circle class="star-core" cx="80" cy="120" r="3" />
+        </g>
+
+        <!-- Левое плечо -->
+        <g class="star-node" data-star="beta" data-title="💫 Звезда Улыбки" data-text="Здесь живёт твоя улыбка. Каждый раз, когда ты улыбаешься, эта звезда становится ярче.">
+          <circle class="star-halo" cx="140" cy="180" r="8" />
+          <circle class="star-core" cx="140" cy="180" r="3" />
+        </g>
+
+        <!-- Верх сердца -->
+        <g class="star-node" data-star="gamma" data-title="✨ Звезда Добра" data-text="Эта звезда светит в память о всём хорошем, что ты делаешь для меня и для мира.">
+          <circle class="star-halo" cx="200" cy="110" r="8" />
+          <circle class="star-core" cx="200" cy="110" r="3" />
+        </g>
+
+        <!-- Правое плечо -->
+        <g class="star-node" data-star="delta" data-title="🌟 Звезда Смеха" data-text="Твой смех звучит в этой точке космоса. Он — моя любимая мелодия.">
+          <circle class="star-halo" cx="260" cy="180" r="8" />
+          <circle class="star-core" cx="260" cy="180" r="3" />
+        </g>
+
+        <!-- Правый кончик -->
+        <g class="star-node" data-star="epsilon" data-title="⭐ Звезда Красоты" data-text="Ты красивее всех звёзд на небе. Эта звезда — доказательство.">
+          <circle class="star-halo" cx="320" cy="120" r="8" />
+          <circle class="star-core" cx="320" cy="120" r="3" />
+        </g>
+
+        <!-- Центр сердца (главная) -->
+        <g class="star-node heart-star" data-star="heart" data-title="💖 Сердце созвездия" data-text="Здесь бьётся моё сердце. И оно принадлежит только тебе, Вероника.">
+          <circle class="star-halo" cx="200" cy="200" r="14" />
+          <circle class="star-core" cx="200" cy="200" r="5" />
+        </g>
+
+        <!-- Левый нижний угол -->
+        <g class="star-node" data-star="zeta" data-title="💕 Звезда Нежности" data-text="Твоя нежность — как свет этой звезды. Тихая, тёплая, бесконечная.">
+          <circle class="star-halo" cx="170" cy="240" r="8" />
+          <circle class="star-core" cx="170" cy="240" r="3" />
+        </g>
+
+        <!-- Правый нижний угол -->
+        <g class="star-node" data-star="eta" data-title="🌟 Звезда Верности" data-text="Она горит уже миллионы лет и будет гореть всегда — как моя любовь к тебе.">
+          <circle class="star-halo" cx="230" cy="240" r="8" />
+          <circle class="star-core" cx="230" cy="240" r="3" />
+        </g>
+
+        <!-- Нижняя точка сердца -->
+        <g class="star-node" data-star="theta" data-title="✨ Звезда Мечты" data-text="Все мои мечты о будущем — с тобой. Эта звезда исполнит их все.">
+          <circle class="star-halo" cx="200" cy="270" r="8" />
+          <circle class="star-core" cx="200" cy="270" r="3" />
+        </g>
+
+      </svg>
+
+      <!-- Название -->
+      <div class="constellation-label">
+        <div class="name">Veronica</div>
+        <div class="subtitle">Созвездие для тебя 💫</div>
+      </div>
+    </div>
+
+    <!-- Кнопки -->
+    <div class="nav-buttons">
+      <a href="index.html" class="nav-btn">← На главную</a>
+      <a href="map.html" class="nav-btn">🗺️ Карта наших мест</a>
+    </div>
+
+  </div>
+
+  <!-- Тултип для звёзд -->
+  <div class="star-tooltip" id="starTooltip">
+    <div class="tt-title" id="ttTitle"></div>
+    <div class="tt-text" id="ttText"></div>
+  </div>
+
+  <!-- Подсказка -->
+  <div class="hint" id="hint">✨ Нажми на любую звезду — и узнаешь её историю</div>
+
+  <script>
+    // ============================================================
+    // ЗВЁЗДНОЕ НЕБО (CANVAS)
+    // ============================================================
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+
+    let stars = [];
+    let canvasWidth = 0;
+    let canvasHeight = 0;
+
+    function resizeCanvas() {
+      canvasWidth = window.innerWidth;
+      canvasHeight = window.innerHeight;
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      createStars();
+    }
+
+    function createStars() {
+      stars = [];
+      const count = Math.floor((canvasWidth * canvasHeight) / 4000); // адаптивно
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * canvasWidth,
+          y: Math.random() * canvasHeight,
+          radius: Math.random() * 1.4 + 0.3,
+          opacity: Math.random() * 0.7 + 0.3,
+          twinkleSpeed: Math.random() * 0.02 + 0.005,
+          twinkleDir: Math.random() > 0.5 ? 1 : -1,
+          color: Math.random() > 0.85 ? '#ffb3c1' : (Math.random() > 0.5 ? '#ffffff' : '#ffebf0')
+        });
+      }
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      for (let s of stars) {
+        // Мерцание
+        s.opacity += s.twinkleSpeed * s.twinkleDir;
+        if (s.opacity >= 1 || s.opacity <= 0.2) {
+          s.twinkleDir *= -1;
+        }
+
+        ctx.globalAlpha = s.opacity;
+        ctx.fillStyle = s.color;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Ореол вокруг ярких звёзд
+        if (s.radius > 1) {
+          ctx.globalAlpha = s.opacity * 0.2;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.radius * 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(drawStars);
+    }
+
+    // ---------- ПАДАЮЩИЕ ЗВЁЗДЫ ----------
+    function createShootingStar() {
+      const star = document.createElement('div');
+      star.className = 'shooting-star';
+      star.style.left = (60 + Math.random() * 40) + 'vw';
+      star.style.top = (Math.random() * 40) + 'vh';
+      document.body.appendChild(star);
+
+      setTimeout(() => star.classList.add('fly'), 50);
+      setTimeout(() => star.remove(), 2200);
+    }
+
+    // Запускаем падающие звёзды со случайным интервалом
+    function scheduleShootingStar() {
+      const delay = 3000 + Math.random() * 8000; // от 3 до 11 секунд
+      setTimeout(() => {
+        createShootingStar();
+        scheduleShootingStar();
+      }, delay);
+    }
+
+    // ---------- ТУЛТИП ПРИ КЛИКЕ НА ЗВЕЗДУ ----------
+    const tooltip = document.getElementById('starTooltip');
+    const ttTitle = document.getElementById('ttTitle');
+    const ttText = document.getElementById('ttText');
+
+    document.querySelectorAll('.star-node').forEach(star => {
+      star.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const title = star.dataset.title;
+        const text = star.dataset.text;
+
+        ttTitle.textContent = title;
+        ttText.textContent = text;
+
+        // Позиционируем тултип рядом со звездой
+        const rect = star.getBoundingClientRect();
+        const tooltipWidth = 280;
+        const tooltipHeight = 120;
+
+        let left = rect.left + rect.width / 2 - tooltipWidth / 2;
+        let top = rect.top - tooltipHeight - 15;
+
+        // Корректировка, чтобы не уехало за экран
+        if (left < 10) left = 10;
+        if (left + tooltipWidth > window.innerWidth - 10) {
+          left = window.innerWidth - tooltipWidth - 10;
+        }
+        if (top < 10) {
+          top = rect.bottom + 15;
+        }
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+        tooltip.classList.add('show');
+
+        // Салют из сердечек вокруг звезды
+        for (let i = 0; i < 6; i++) {
+          setTimeout(() => spawnSparkle(rect.left + rect.width / 2, rect.top + rect.height / 2), i * 60);
+        }
+      });
+    });
+
+    // Закрытие тултипа при клике в любом другом месте
+    document.addEventListener('click', () => {
+      tooltip.classList.remove('show');
+    });
+
+    // ---------- ИСКРЫ ПРИ КЛИКЕ ----------
+    function spawnSparkle(x, y) {
+      const sparkle = document.createElement('div');
+      sparkle.textContent = ['✨', '⭐', '💫', '🌟'][Math.floor(Math.random() * 4)];
+      sparkle.style.cssText = `
+        position: fixed; left: ${x}px; top: ${y}px;
+        font-size: ${14 + Math.random() * 10}px;
+        pointer-events: none; z-index: 9998;
+        transition: all ${0.8 + Math.random() * 0.6}s cubic-bezier(0.34, 1.56, 0.64, 1);
+      `;
+      document.body.appendChild(sparkle);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 40 + Math.random() * 80;
+      requestAnimationFrame(() => {
+        sparkle.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(0.3)`;
+        sparkle.style.opacity = '0';
+      });
+      setTimeout(() => sparkle.remove(), 1500);
+    }
+
+    // ---------- ПОДСКАЗКА ----------
+    const hint = document.getElementById('hint');
+    setTimeout(() => {
+      hint.classList.add('show');
+      setTimeout(() => hint.classList.remove('show'), 4500);
+    }, 1500);
+
+    // ---------- СТАРТ ----------
+    resizeCanvas();
+    drawStars();
+    scheduleShootingStar();
+
+    window.addEventListener('resize', resizeCanvas);
+  </script>
+</body>
+</html>

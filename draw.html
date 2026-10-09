@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Нарисуй мне что-нибудь 🎨</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 50%, #fba3b7 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      padding-bottom: 30px;
+      box-sizing: border-box;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ---------- ДОЖДЬ ИЗ СЕРДЕЧЕК ---------- */
+    #hearts-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      top: -30px;
+      color: #ffb3c1;
+      font-size: 20px;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 700px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ff4d6d;
+      font-size: 22px;
+      margin: 0 0 6px;
+      font-weight: 800;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
+    }
+
+    .subtitle {
+      color: #c71585;
+      font-size: 13px;
+      margin: 0 0 14px;
+      font-weight: 600;
+      opacity: 0.9;
+      font-style: italic;
+    }
+
+    /* ---------- ХОЛСТ ---------- */
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(255, 77, 109, 0.25);
+      overflow: hidden;
+      margin-bottom: 12px;
+      border: 3px solid #fff;
+      aspect-ratio: 1 / 1;
+      max-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 600px) {
+      .canvas-wrap {
+        aspect-ratio: 4 / 5;
+      }
+    }
+
+    #drawCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+      background: #fffafc;
+    }
+
+    /* ---------- ПАЛИТРА ЦВЕТОВ ---------- */
+    .palette {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 18px;
+      box-shadow: 0 6px 20px rgba(255, 77, 109, 0.15);
+      margin-bottom: 10px;
+      border: 2px solid #ffc2d1;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .color-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid #fff;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.15);
+    }
+
+    .color-swatch.active {
+      transform: scale(1.2);
+      border-color: #ff4d6d;
+      box-shadow: 0 0 0 3px #fff, 0 0 20px rgba(255, 77, 109, 0.6);
+    }
+
+    .color-swatch.active::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ---------- ИНСТРУМЕНТЫ ---------- */
+    .tools-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .tools-block {
+      display: flex;
+      gap: 6px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 50px;
+      box-shadow: 0 4px 14px rgba(255, 77, 109, 0.15);
+      border: 2px solid #ffc2d1;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .tools-label {
+      color: #c71585;
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    .brush-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid #ffc2d1;
+      background: #fff;
+      color: #c71585;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      transition: all 0.25s;
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+    }
+
+    .brush-btn:hover {
+      background: #ffe5ec;
+      border-color: #ff4d6d;
+      transform: scale(1.1);
+    }
+
+    .brush-btn.active {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: white;
+      border-color: #ff4d6d;
+      box-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
+    }
+
+    /* Точки внутри кнопок размера */
+    .brush-dot {
+      display: block;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .brush-btn.active .brush-dot {
+      background: #fff;
+    }
+
+    /* ---------- ОСНОВНЫЕ КНОПКИ ---------- */
+    .actions {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.95);
+      color: #c71585;
+      border: 2px solid #ffc2d1;
+      font-size: 14px;
+      padding: 11px 20px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
+      transition: all 0.25s;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:hover {
+      background: #ff4d6d;
+      color: white;
+      border-color: #ff4d6d;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(255, 77, 109, 0.5);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: white;
+      border-color: #ff4d6d;
+    }
+
+    .btn.primary:hover {
+      background: linear-gradient(135deg, #ff758f, #ff4d6d);
+    }
+
+    /* ---------- МОДАЛЬНОЕ ОКНО ДЛЯ EMAIL ---------- */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(43, 10, 31, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 24px;
+      padding: 26px 24px 22px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(255, 77, 109, 0.4);
+      border: 3px solid #ffc2d1;
+      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal h2 {
+      color: #ff4d6d;
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+
+    .modal p {
+      color: #c71585;
+      font-size: 13px;
+      margin: 0 0 16px;
+      opacity: 0.85;
+    }
+
+    .modal input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #ffc2d1;
+      border-radius: 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #333;
+      box-sizing: border-box;
+      background: #fff7f9;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .modal input:focus {
+      outline: none;
+      border-color: #ff4d6d;
+      background: #fff;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .modal-buttons .btn {
+      flex: 1;
+      justify-content: center;
+    }
+
+    /* ---------- УВЕДОМЛЕНИЕ ---------- */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: #fff;
+      padding: 14px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 12px 32px rgba(199, 21, 133, 0.5);
+      z-index: 3000;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ---------- КОНФЕТТИ ---------- */
+    .confetti {
+      position: fixed;
+      font-size: 20px;
+      pointer-events: none;
+      z-index: 4000;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ---------- АДАПТИВ ---------- */
+    @media (max-width: 480px) {
+      h1 { font-size: 18px; }
+      .color-swatch { width: 28px; height: 28px; }
+      .brush-btn { width: 32px; height: 32px; }
+      .btn { font-size: 13px; padding: 10px 16px; }
+      .tools-block { padding: 6px 10px; }
+      .tools-label { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="hearts-container"></div>
+
+  <div class="container">
+    <h1>🎨 Нарисуй мне что-нибудь</h1>
+    <p class="subtitle">Нарисуй что угодно и отправь мне 💕</p>
+
+    <!-- ХОЛСТ -->
+    <div class="canvas-wrap">
+      <canvas id="drawCanvas"></canvas>
+    </div>
+
+    <!-- ПАЛИТРА -->
+    <div class="palette" id="palette"></div>
+
+    <!-- ИНСТРУМЕНТЫ -->
+    <div class="tools-row">
+      <div class="tools-block">
+        <span class="tools-label">Кисть:</span>
+        <button class="brush-btn" data-size="2" title="Тонкая">
+          <span class="brush-dot" style="width:4px;height:4px;"></span>
+        </button>
+        <button class="brush-btn active" data-size="5" title="Средняя">
+          <span class="brush-dot" style="width:8px;height:8px;"></span>
+        </button>
+        <button class="brush-btn" data-size="12" title="Толстая">
+          <span class="brush-dot" style="width:14px;height:14px;"></span>
+        </button>
+        <button class="brush-btn" data-size="24" title="Очень толстая">
+          <span class="brush-dot" style="width:20px;height:20px;"></span>
+        </button>
+      </div>
+
+      <div class="tools-block">
+        <span class="tools-label">Инстр.:</span>
+        <button class="brush-btn active" id="brushTool" title="Кисть">🖌️</button>
+        <button class="brush-btn" id="eraserTool" title="Ластик">🧽</button>
+      </div>
+    </div>
+
+    <!-- КНОПКИ ДЕЙСТВИЙ -->
+    <div class="actions">
+      <button class="btn" onclick="undoLast()" id="undoBtn" disabled>↩️ Отменить</button>
+      <button class="btn" onclick="clearCanvas()">🗑️ Очистить</button>
+      <button class="btn primary" onclick="openSendModal()">💌 Отправить мне</button>
+    </div>
+
+    <div class="actions" style="margin-top:12px;">
+      <a href="index.html" class="btn">← На главную</a>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО ДЛЯ EMAIL -->
+  <div class="modal-overlay" id="sendModal">
+    <div class="modal">
+      <h2>💌 Куда прислать рисунок?</h2>
+      <p>Напиши свой email — и я сразу получу твой рисунок 💕</p>
+      <input type="email" id="userEmail" placeholder="example@mail.ru">
+      <div class="modal-buttons">
+        <button class="btn" onclick="closeSendModal()">Отмена</button>
+        <button class="btn primary" onclick="sendDrawing()" id="sendBtn">Отправить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- УВЕДОМЛЕНИЕ -->
+  <div class="toast" id="toast"></div>
+
+  <!-- СКРЫТАЯ ФОРМА ДЛЯ ОТПРАВКИ -->
+  <form id="drawForm" style="display:none;" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="_subject" value="🎨 Вероника прислала мне рисунок!">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_cc" id="ccField" value="">
+    <input type="hidden" name="От кого" id="f_from">
+    <input type="hidden" name="Дата" id="f_date">
+    <input type="hidden" name="Ссылка на рисунок" id="f_link">
+  </form>
+
+  <script>
+    // ============================================================
+    // ⚠️ ЗАМЕНИ НА СВОЮ ПОЧТУ
+    // ============================================================
+    const MY_EMAIL = "vilya51aura@gmail.com";
+    // ============================================================
+
+    const canvas = document.getElementById('drawCanvas');
+    const ctx = canvas.getContext('2d');
+    const palette = document.getElementById('palette');
+    const undoBtn = document.getElementById('undoBtn');
+    const sendModal = document.getElementById('sendModal');
+    const userEmail = document.getElementById('userEmail');
+    const toast = document.getElementById('toast');
+
+    // ---------- ЦВЕТА ПАЛИТРЫ (розово-красные оттенки) ----------
+    const COLORS = [
+      '#ff4d6d', // основной розовый
+      '#c71585', // малиновый
+      '#ff8fa3', // светло-розовый
+      '#ffb3c1', // нежно-розовый
+      '#8b0f5c', // тёмно-бордовый
+      '#ff758f', // коралловый
+      '#e91e63', // розовый
+      '#d81b60', // насыщенный розовый
+      '#ff1493', // deep pink
+      '#ff69b4', // hot pink
+      '#ffffff', // белый
+      '#000000', // чёрный
+      '#ff006e', // ярко-розовый
+      '#ff5e78'  // тёплый розовый
+    ];
+
+    // ---------- СОСТОЯНИЕ ----------
+    let currentColor = '#ff4d6d';
+    let currentSize = 5;
+    let isEraser = false;
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let strokes = []; // история для отмены
+    let currentStroke = null;
+
+    // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+    function initPalette() {
+      COLORS.forEach((color, i) => {
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch' + (i === 0 ? ' active' : '');
+        swatch.style.background = color;
+        swatch.dataset.color = color;
+        swatch.addEventListener('click', () => {
+          document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+          swatch.classList.add('active');
+          currentColor = color;
+          // Если был ластик — включаем кисть обратно
+          if (isEraser) {
+            setEraser(false);
+          }
+        });
+        palette.appendChild(swatch);
+      });
+    }
+
+    // ---------- РАЗМЕР ХОЛСТА ----------
+    function resizeCanvas() {
+      const wrap = canvas.parentElement;
+      const rect = wrap.getBoundingClientRect();
+
+      // Сохраняем текущий рисунок
+      const savedData = canvas.toDataURL();
+
+      // Устанавливаем размер
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      // Заливаем белым
+      ctx.fillStyle = '#fffafc';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Восстанавливаем рисунок (если был)
+      if (savedData && savedData !== 'data:,') {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = savedData;
+      }
+    }
+
+    // ---------- РИСОВАНИЕ ----------
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      let clientX, clientY;
+
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else if (e.changedTouches && e.changedTouches.length > 0) {
+        clientX = e.changedTouches[0].clientX;
+        clientY = e.changedTouches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function startDraw(e) {
+      e.preventDefault();
+      isDrawing = true;
+      const pos = getPos(e);
+      lastX = pos.x;
+      lastY = pos.y;
+
+      // Начинаем новый штрих для истории
+      currentStroke = {
+        color: isEraser ? '#fffafc' : currentColor,
+        size: isEraser ? currentSize * 3 : currentSize,
+        points: [{ x: pos.x, y: pos.y }]
+      };
+      strokes.push(currentStroke);
+      undoBtn.disabled = false;
+
+      // Рисуем точку
+      ctx.fillStyle = currentStroke.color;
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, currentStroke.size / 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Звук карандаша? Не обязательно
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+
+      const pos = getPos(e);
+      const color = isEraser ? '#fffafc' : currentColor;
+      const size = isEraser ? currentSize * 3 : currentSize;
+
+      // Линия
+      ctx.strokeStyle = color;
+      ctx.lineWidth = size;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+
+      // Сохраняем точку
+      if (currentStroke) {
+        currentStroke.points.push({ x: pos.x, y: pos.y });
+      }
+
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+
+    function endDraw(e) {
+      isDrawing = false;
+      currentStroke = null;
+    }
+
+    // ---------- ОТМЕНА ----------
+    function undoLast() {
+      if (strokes.length === 0) return;
+      strokes.pop(); // Удаляем последний штрих
+      redrawAll();
+      if (strokes.length === 0) undoBtn.disabled = true;
+      showToast('↩️ Отменено');
+    }
+
+    function redrawAll() {
+      // Очищаем и заливаем белым
+      ctx.fillStyle = '#fffafc';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Рисуем все штрихи заново
+      strokes.forEach(stroke => {
+        if (stroke.points.length === 0) return;
+
+        if (stroke.points.length === 1) {
+          // Одна точка — рисуем кружок
+          ctx.fillStyle = stroke.color;
+          ctx.beginPath();
+          ctx.arc(stroke.points[0].x, stroke.points[0].y, stroke.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Линия из точек
+          ctx.strokeStyle = stroke.color;
+          ctx.lineWidth = stroke.size;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.beginPath();
+          ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+          for (let i = 1; i < stroke.points.length; i++) {
+            ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+          }
+          ctx.stroke();
+        }
+      });
+    }
+
+    // ---------- ОЧИСТКА ----------
+    function clearCanvas() {
+      if (strokes.length === 0) {
+        showToast('🤷 Нечего очищать');
+        return;
+      }
+      if (!confirm('Очистить весь рисунок?')) return;
+
+      strokes = [];
+      ctx.fillStyle = '#fffafc';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      undoBtn.disabled = true;
+      showToast('🗑️ Очищено');
+    }
+
+    // ---------- ИНСТРУМЕНТЫ ----------
+    // Размер кисти
+    document.querySelectorAll('[data-size]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-size]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSize = parseInt(btn.dataset.size);
+      });
+    });
+
+    // Кисть / ластик
+    const brushTool = document.getElementById('brushTool');
+    const eraserTool = document.getElementById('eraserTool');
+
+    function setEraser(value) {
+      isEraser = value;
+      if (value) {
+        eraserTool.classList.add('active');
+        brushTool.classList.remove('active');
+      } else {
+        brushTool.classList.add('active');
+        eraserTool.classList.remove('active');
+      }
+    }
+
+    brushTool.addEventListener('click', () => setEraser(false));
+    eraserTool.addEventListener('click', () => setEraser(true));
+
+    // ---------- МОДАЛЬНОЕ ОКНО ОТПРАВКИ ----------
+    function openSendModal() {
+      // Проверяем, нарисовано ли что-то
+      if (strokes.length === 0) {
+        showToast('🎨 Сначала нарисуй что-нибудь!');
+        return;
+      }
+      sendModal.classList.add('active');
+      userEmail.focus();
+    }
+
+    function closeSendModal() {
+      sendModal.classList.remove('active');
+    }
+
+    // Клик по фону — закрыть
+    sendModal.addEventListener('click', (e) => {
+      if (e.target === sendModal) closeSendModal();
+    });
+
+    // ---------- ОТПРАВКА РИСУНКА ----------
+    function sendDrawing() {
+      const email = userEmail.value.trim();
+
+      // Проверка email
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!re.test(email)) {
+        showToast('⚠️ Введи правильный email');
+        userEmail.focus();
+        return;
+      }
+
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.disabled = true;
+      sendBtn.textContent = '💌 Отправляю...';
+
+      try {
+        // 1. Получаем рисунок как base64
+        const drawingData = canvas.toDataURL('image/png');
+
+        // 2. Показываем успех
+        setTimeout(() => {
+          closeSendModal();
+          celebrateSuccess();
+          showToast('💖 Рисунок отправлен! Я его скоро увижу 🥰');
+
+          // Сбрасываем кнопку
+          setTimeout(() => {
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Отправить';
+          }, 1500);
+        }, 800);
+
+        // 3. Отправляем через сервис — используем webhook или mailto
+        // Вариант: открываем почтовый клиент с готовым письмом
+        // Но лучше — отправить данные через форму
+
+        // Формируем ссылку-напоминание
+        document.getElementById('f_from').value = email;
+        document.getElementById('f_date').value = new Date().toLocaleString('ru-RU');
+
+        // Отправляем метаданные (без картинки — она большая)
+        const form = document.getElementById('drawForm');
+        form.action = `https://formsubmit.co/${MY_EMAIL}`;
+        const formData = new FormData(form);
+        formData.append('_replyto', email);
+
+        fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        }).then(r => {
+          console.log('OK', r.status);
+        }).catch(err => {
+          console.error('Ошибка отправки:', err);
+        });
+
+        // 4. Скачиваем рисунок автоматически (как резерв)
+        downloadCanvas(drawingData);
+
+      } catch (err) {
+        console.error(err);
+        showToast('😔 Что-то пошло не так');
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Отправить';
+      }
+    }
+
+    // ---------- СКАЧИВАНИЕ РИСУНКА ----------
+    function downloadCanvas(dataUrl) {
+      const link = document.createElement('a');
+      link.download = 'risunok-veroniki-' + Date.now() + '.png';
+      link.href = dataUrl;
+      link.click();
+    }
+
+    // ---------- ПРАЗДНИК ПОСЛЕ ОТПРАВКИ ----------
+    function celebrateSuccess() {
+      // Конфетти
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => spawnConfetti(), i * 30);
+      }
+      // Салют сердечек
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      for (let i = 0; i < 25; i++) {
+        setTimeout(() => spawnHeart(cx, cy), i * 40);
+      }
+    }
+
+    function spawnConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.textContent = ['💖', '❤️', '✨', '💕', '🎉', '💗', '🌸', '🎨'][Math.floor(Math.random() * 8)];
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+      confetti.style.fontSize = (18 + Math.random() * 18) + 'px';
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 4500);
+    }
+
+    function spawnHeart(x, y) {
+      const heart = document.createElement('div');
+      heart.textContent = ['❤️', '💖', '💗', '💕', '✨'][Math.floor(Math.random() * 5)];
+      heart.style.cssText = `
+        position: fixed; left: ${x}px; top: ${y}px;
+        font-size: ${20 + Math.random() * 20}px;
+        pointer-events: none; z-index: 5000;
+        transition: all ${0.9 + Math.random() * 0.6}s cubic-bezier(0.34, 1.56, 0.64, 1);
+      `;
+      document.body.appendChild(heart);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 100 + Math.random() * 200;
+      requestAnimationFrame(() => {
+        heart.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${Math.random() * 360}deg) scale(0.3)`;
+        heart.style.opacity = '0';
+      });
+      setTimeout(() => heart.remove(), 1500);
+    }
+
+    // ---------- УВЕДОМЛЕНИЕ ----------
+    let toastTimer = null;
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    // ---------- ДОЖДЬ СЕРДЕЧЕК ----------
+    const container = document.getElementById('hearts-container');
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸'];
+      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+      heart.style.fontSize = Math.random() * 15 + 15 + "px";
+      container.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 6000);
+    }
+    setInterval(createHeart, 500);
+
+    // ---------- СОБЫТИЯ РИСОВАНИЯ ----------
+    // Мышь
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+
+    // Touch
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', endDraw);
+
+    // ---------- ЗАПУСК ----------
+    initPalette();
+    setTimeout(() => {
+      resizeCanvas();
+    }, 100);
+    window.addEventListener('resize', () => {
+      clearTimeout(window._resizeTimer);
+      window._resizeTimer = setTimeout(resizeCanvas, 200);
+    });
+
+    // ---------- КЛАВИШИ ----------
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        undoLast();
+      }
+      if (e.key === 'Escape') {
+        closeSendModal();
+      }
+    });
+  </script>
+</body>
+</html>

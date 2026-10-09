@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Открой меня 💌</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: 'Georgia', 'Segoe UI', serif;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #4a1030 0%, #2b0a1f 60%, #1a0413 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ---------- ЗВЁЗДЫ НА ФОНЕ ---------- */
+    .stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #fff;
+      opacity: 0.6;
+      animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* ---------- ПЛАВАЮЩИЕ СЕРДЕЧКИ ---------- */
+    #hearts-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      top: -30px;
+      font-size: 20px;
+      pointer-events: none;
+      animation: fall linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ---------- ЗАГОЛОВОК ---------- */
+    .header {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      margin-bottom: 30px;
+      animation: fadeInDown 1s ease;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header h1 {
+      color: #ffc2d1;
+      font-size: 24px;
+      margin: 0 0 8px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-shadow: 0 4px 20px rgba(255, 77, 109, 0.5);
+    }
+
+    .header p {
+      color: #ffb3c1;
+      font-size: 14px;
+      margin: 0;
+      opacity: 0.8;
+      font-style: italic;
+    }
+
+    /* ---------- КОНВЕРТ ---------- */
+    .envelope-stage {
+      position: relative;
+      z-index: 10;
+      width: 340px;
+      height: 240px;
+      cursor: pointer;
+      perspective: 1000px;
+      transition: transform 0.4s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .envelope-stage:hover {
+      transform: scale(1.03);
+    }
+
+    .envelope-stage.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s, transform 0.6s;
+      transform: scale(0.5) translateY(-100px);
+    }
+
+    /* Конверт */
+    .envelope {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
+    }
+
+    /* Основа конверта */
+    .envelope-back {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #c71585 0%, #8b0f5c 100%);
+      border-radius: 8px;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Боковые клапаны */
+    .envelope-body {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #d92690 0%, #a01368 100%);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .envelope-body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 0;
+      height: 0;
+      border-top: 120px solid #b8177a;
+      border-right: 170px solid transparent;
+      border-left: 170px solid transparent;
+      transform: translateY(-1px);
+    }
+
+    .envelope-body::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 0;
+      height: 0;
+      border-bottom: 130px solid #991363;
+      border-left: 170px solid transparent;
+      border-right: 170px solid transparent;
+      top: auto;
+      bottom: 0;
+    }
+
+    /* Верхний клапан (открывающийся) */
+    .envelope-flap {
+      position: absolute;
+      top: 0; left: 0;
+      width: 0;
+      height: 0;
+      border-top: 130px solid #ff4d6d;
+      border-right: 170px solid transparent;
+      border-left: 170px solid transparent;
+      transform-origin: top;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 5;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+
+    .envelope.open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    /* Сердечко на клапане */
+    .envelope-heart {
+      position: absolute;
+      top: 55px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 32px;
+      z-index: 6;
+      transition: all 0.5s;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+      animation: heartPulse 2s infinite;
+    }
+
+    .envelope.open .envelope-heart {
+      opacity: 0;
+      transform: translateX(-50%) scale(0);
+    }
+
+    @keyframes heartPulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.15); }
+    }
+
+    /* Печать */
+    .envelope-seal {
+      position: absolute;
+      top: 55px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ff8fa3 0%, #c71585 70%);
+      border: 3px solid #fff;
+      z-index: 7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: all 0.5s;
+      animation: sealGlow 3s infinite;
+    }
+
+    @keyframes sealGlow {
+      0%, 100% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 rgba(255, 143, 163, 0.7); }
+      50% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 143, 163, 1); }
+    }
+
+    .envelope-seal::before {
+      content: '❤';
+      color: #fff;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .envelope.open .envelope-seal {
+      opacity: 0;
+      transform: translateX(-50%) scale(0.5) rotate(180deg);
+    }
+
+    /* Подпись «Для Вероники» */
+    .envelope-label {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-family: 'Georgia', serif;
+      font-size: 15px;
+      font-weight: 700;
+      font-style: italic;
+      z-index: 6;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    /* Подсказка «Кликни» */
+    .click-hint {
+      position: absolute;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffb3c1;
+      font-size: 14px;
+      font-weight: 600;
+      animation: hintPulse 2s infinite;
+      white-space: nowrap;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    @keyframes hintPulse {
+      0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+    }
+
+    .envelope-stage.open .click-hint {
+      opacity: 0;
+    }
+
+    /* ---------- ПИСЬМО ---------- */
+    .letter-stage {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s;
+      overflow-y: auto;
+    }
+
+    .letter-stage.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .letter {
+      background: #fffaf4;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 28px,
+          rgba(255, 179, 193, 0.15) 28px,
+          rgba(255, 179, 193, 0.15) 29px
+        );
+      max-width: 540px;
+      width: 100%;
+      border-radius: 16px;
+      padding: 40px 34px 34px;
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.6),
+        inset 0 0 60px rgba(255, 179, 193, 0.15);
+      border: 2px solid #ffc2d1;
+      position: relative;
+      box-sizing: border-box;
+      transform: translateY(60px) scale(0.9) rotate(-2deg);
+      opacity: 0;
+      transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .letter-stage.active .letter {
+      transform: translateY(0) scale(1) rotate(0deg);
+      opacity: 1;
+      transition-delay: 0.2s;
+    }
+
+    /* Декоративные уголки */
+    .letter::before,
+    .letter::after {
+      content: '💕';
+      position: absolute;
+      font-size: 24px;
+      opacity: 0.5;
+    }
+
+    .letter::before {
+      top: 14px;
+      left: 18px;
+    }
+
+    .letter::after {
+      bottom: 14px;
+      right: 18px;
+    }
+
+    .letter-header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 2px dashed #ffc2d1;
+    }
+
+    .letter-emoji {
+      font-size: 42px;
+      display: block;
+      margin-bottom: 8px;
+      animation: heartPulse 2s infinite;
+    }
+
+    .letter-title {
+      color: #c71585;
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+      font-family: 'Georgia', serif;
+      letter-spacing: 0.5px;
+    }
+
+    .letter-text {
+      color: #4a2a3a;
+      font-size: 16px;
+      line-height: 1.8;
+      margin: 0 0 18px;
+      font-family: 'Georgia', serif;
+      text-align: left;
+      text-indent: 20px;
+    }
+
+    .letter-text:last-of-type {
+      margin-bottom: 24px;
+    }
+
+    .letter-text b {
+      color: #c71585;
+    }
+
+    .letter-signature {
+      text-align: right;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px dashed #ffc2d1;
+      color: #c71585;
+      font-family: 'Georgia', serif;
+      font-size: 17px;
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .letter-signature .from {
+      display: block;
+      font-size: 14px;
+      color: #8b0f5c;
+      opacity: 0.8;
+      margin-bottom: 4px;
+      font-weight: 600;
+      font-style: normal;
+      letter-spacing: 1px;
+    }
+
+    .letter-signature .name {
+      font-size: 24px;
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      transform: rotate(-2deg);
+    }
+
+    /* ---------- ФОТО В ПИСЬМЕ ---------- */
+    .letter-photos {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 20px 0 24px;
+      flex-wrap: wrap;
+    }
+
+    .letter-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 4px solid #fff;
+      box-shadow: 0 8px 20px rgba(199, 21, 133, 0.3);
+      transform: rotate(-3deg);
+      transition: transform 0.3s;
+    }
+
+    .letter-photo:nth-child(2) {
+      transform: rotate(3deg);
+    }
+
+    .letter-photo:nth-child(3) {
+      transform: rotate(-2deg);
+    }
+
+    .letter-photo:hover {
+      transform: rotate(0deg) scale(1.08);
+      z-index: 5;
+    }
+
+    /* ---------- КНОПКА ВНИЗУ ПИСЬМА ---------- */
+    .letter-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .letter-btn {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: white;
+      border: none;
+      padding: 12px 26px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Segoe UI', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(199, 21, 133, 0.4);
+      transition: all 0.25s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .letter-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 12px 32px rgba(199, 21, 133, 0.6);
+    }
+
+    .letter-btn.secondary {
+      background: #fff;
+      color: #c71585;
+      border: 2px solid #ffc2d1;
+      box-shadow: 0 6px 16px rgba(199, 21, 133, 0.15);
+    }
+
+    .letter-btn.secondary:hover {
+      background: #fff5f8;
+      box-shadow: 0 8px 20px rgba(199, 21, 133, 0.25);
+    }
+
+    /* ---------- АНИМАЦИЯ ПИСЬМА ПРИ ОТКРЫТИИ ---------- */
+    .letter-flying {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.2) rotate(-10deg);
+      background: #fffaf4;
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      width: 300px;
+      height: 200px;
+      transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .letter-flying.active {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.1) rotate(2deg);
+      transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ---------- АДАПТИВ ---------- */
+    @media (max-width: 480px) {
+      .header h1 { font-size: 20px; }
+      .header p { font-size: 12px; }
+      .envelope-stage {
+        width: 280px;
+        height: 200px;
+      }
+      .envelope-flap {
+        border-top-width: 108px;
+        border-right-width: 140px;
+        border-left-width: 140px;
+      }
+      .envelope-body::before {
+        border-top-width: 100px;
+        border-right-width: 140px;
+        border-left-width: 140px;
+      }
+      .envelope-body::after {
+        border-bottom-width: 108px;
+        border-left-width: 140px;
+        border-right-width: 140px;
+      }
+      .envelope-heart { font-size: 26px; top: 46px; }
+      .envelope-seal { width: 48px; height: 48px; top: 46px; }
+      .envelope-seal::before { font-size: 22px; }
+      .envelope-label { font-size: 13px; bottom: 14px; }
+      .letter {
+        padding: 30px 22px 24px;
+        border-radius: 12px;
+      }
+      .letter-title { font-size: 18px; }
+      .letter-text { font-size: 15px; line-height: 1.7; }
+      .letter-emoji { font-size: 36px; }
+      .letter-photo {
+        width: 90px;
+        height: 90px;
+      }
+      .letter-signature .name { font-size: 20px; }
+    }
+
+    /* Плавное появление body */
+    body {
+      animation: bodyFadeIn 1.2s ease;
+    }
+
+    @keyframes bodyFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ЗВЁЗДЫ -->
+  <div class="stars" id="starsContainer"></div>
+
+  <!-- СЕРДЕЧКИ -->
+  <div id="hearts-container"></div>
+
+  <!-- ЗАГОЛОВОК -->
+  <div class="header">
+    <h1>💌 Для тебя кое-что есть</h1>
+    <p>Нажми на конверт, чтобы открыть</p>
+  </div>
+
+  <!-- КОНВЕРТ -->
+  <div class="envelope-stage" id="envelopeStage" onclick="openEnvelope()">
+    <div class="envelope" id="envelope">
+      <div class="envelope-back"></div>
+      <div class="envelope-body"></div>
+      <div class="envelope-flap"></div>
+      <div class="envelope-heart">💖</div>
+      <div class="envelope-seal"></div>
+      <div class="envelope-label">Для Вероники ❤️</div>
+    </div>
+    <div class="click-hint">👆 Нажми, чтобы открыть</div>
+  </div>
+
+  <!-- ПИСЬМО -->
+  <div class="letter-stage" id="letterStage">
+    <div class="letter">
+
+      <div class="letter-header">
+        <span class="letter-emoji">💖</span>
+        <h2 class="letter-title">Моей любимой Веронике</h2>
+      </div>
+
+      <!-- ⚠️ ЗАМЕНИ ТЕКСТ НИЖЕ НА СВОЁ ПРИЗНАНИЕ -->
+      <p class="letter-text">
+        <b>Вероничка</b>, я долго думал, как передать то, что чувствую, и понял —
+        словами это сложно. Но я попробую.
+      </p>
+
+      <p class="letter-text">
+        Ты — самое лучшее, что случилось со мной. Каждый день с тобой — как маленький праздник,
+        даже если мы просто молчим рядом. Ты умеешь делать обычное волшебным:
+        одним взглядом, одной улыбкой, одним «привет».
+      </p>
+
+      <p class="letter-text">
+        Я люблю тебя за твою нежность, за твой характер, за твоё сердце.
+        За то, что рядом с тобой я становлюсь лучше. За то, что ты есть.
+      </p>
+
+      <p class="letter-text">
+        Спасибо, что ты выбрала меня. Я постараюсь быть тем, кто тебя никогда не подведёт. 💕
+      </p>
+
+      <!-- ⚠️ ЗАМЕНИ ФОТО НА СВОИ -->
+      <div class="letter-photos">
+        <img class="letter-photo" src="photos/photo1.jpg" alt="Мы">
+        <img class="letter-photo" src="photos/photo2.jpg" alt="Мы">
+        <img class="letter-photo" src="photos/photo3.jpg" alt="Мы">
+      </div>
+
+      <div class="letter-signature">
+        <span class="from">С любовью,</span>
+        <!-- ⚠️ ЗАМЕНИ НА СВОЁ ИМЯ -->
+        <span class="name">твой Толянчик ❤️</span>
+      </div>
+
+      <div class="letter-actions">
+        <a href="index.html" class="letter-btn">← К приглашению</a>
+        <button class="letter-btn secondary" onclick="closeLetter()">Закрыть письмо</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // ⚠️ Настройки
+    // ============================================================
+
+    const envelopeStage = document.getElementById('envelopeStage');
+    const envelope = document.getElementById('envelope');
+    const letterStage = document.getElementById('letterStage');
+
+    let isOpen = false;
+
+    // ---------- ОТКРЫТИЕ КОНВЕРТА ----------
+    function openEnvelope() {
+      if (isOpen) return;
+      isOpen = true;
+
+      // Открываем клапан
+      envelope.classList.add('open');
+      envelopeStage.classList.add('open');
+
+      // Салют из сердечек
+      const rect = envelopeStage.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      for (let i = 0; i < 25; i++) {
+        setTimeout(() => spawnHeartAt(cx, cy), i * 40);
+      }
+
+      // Через секунду — скрываем конверт и показываем письмо
+      setTimeout(() => {
+        envelopeStage.classList.add('hidden');
+        letterStage.classList.add('active');
+      }, 1200);
+    }
+
+    // ---------- ЗАКРЫТИЕ ПИСЬМА ----------
+    function closeLetter() {
+      letterStage.classList.remove('active');
+      isOpen = false;
+      setTimeout(() => {
+        envelopeStage.classList.remove('hidden', 'open');
+        envelope.classList.remove('open');
+      }, 400);
+    }
+
+    // ---------- САЛЮТ ИЗ СЕРДЕЧЕК ----------
+    function spawnHeartAt(x, y) {
+      const heart = document.createElement('div');
+      heart.textContent = ['❤️', '💖', '💗', '💕', '✨', '💝', '🌸'][Math.floor(Math.random() * 7)];
+      heart.style.cssText = `
+        position: fixed; left: ${x}px; top: ${y}px;
+        font-size: ${20 + Math.random() * 24}px;
+        pointer-events: none; z-index: 2000;
+        transition: all ${0.9 + Math.random() * 0.7}s cubic-bezier(0.34, 1.56, 0.64, 1);
+      `;
+      document.body.appendChild(heart);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 150 + Math.random() * 250;
+      requestAnimationFrame(() => {
+        heart.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${Math.random() * 360}deg) scale(0.3)`;
+        heart.style.opacity = '0';
+      });
+      setTimeout(() => heart.remove(), 1800);
+    }
+
+    // ---------- ДОЖДЬ ИЗ СЕРДЕЧЕК НА ФОНЕ ----------
+    const container = document.getElementById('hearts-container');
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸', '✨'];
+      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = Math.random() * 4 + 3 + "s";
+      heart.style.fontSize = Math.random() * 15 + 14 + "px";
+      container.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 7000);
+    }
+    setInterval(createHeart, 500);
+
+    // ---------- ЗВЁЗДЫ НА ФОНЕ ----------
+    const starsContainer = document.getElementById('starsContainer');
+    function createStars() {
+      for (let i = 0; i < 60; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        star.style.left = Math.random() * 100 + 'vw';
+        star.style.top = Math.random() * 100 + 'vh';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        star.style.width = star.style.height = (Math.random() * 2 + 1.5) + 'px';
+        starsContainer.appendChild(star);
+      }
+    }
+    createStars();
+
+    // ---------- ESC ЗАКРЫВАЕТ ПИСЬМО ----------
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) closeLetter();
+    });
+
+    // ---------- КЛИК ПО ФОНУ ПИСЬМА ЗАКРЫВАЕТ ----------
+    letterStage.addEventListener('click', (e) => {
+      if (e.target === letterStage) closeLetter();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Домик котика 🏠🐱</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; width: 100%; min-height: 100%;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none; -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 1.5s ease;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 50%, #fba3b7 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 16px 16px 30px;
+      box-sizing: border-box;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body.night {
+      background: linear-gradient(135deg, #1a0a2e 0%, #2b0a1f 50%, #0d0518 100%);
+    }
+
+    body.night h1 { color: #ffb3c1; text-shadow: 0 0 20px rgba(255, 179, 193, 0.6); }
+    body.night .subtitle { color: #ff8fa3; }
+    body.night .stat-card { background: rgba(43, 10, 31, 0.85); border-color: #8b0f5c; }
+    body.night .stat-label { color: #ffb3c1; }
+    body.night .stat-value { color: #ff8fa3; }
+    body.night .stat-bar { background: rgba(255, 179, 193, 0.2); }
+    body.night .action-btn { background: rgba(43, 10, 31, 0.85); border-color: #8b0f5c; color: #ffb3c1; }
+    body.night .action-btn:hover { background: rgba(139, 15, 92, 0.6); border-color: #ff4d6d; }
+    body.night .btn { background: rgba(43, 10, 31, 0.85); color: #ffb3c1; border-color: #8b0f5c; }
+    body.night .btn:hover { background: #c71585; color: #fff; border-color: #c71585; }
+    body.night .pet-bubble { background: #2b0a1f; color: #ffb3c1; border-color: #8b0f5c; }
+    body.night .toast { background: linear-gradient(135deg, #8b0f5c, #2b0a1f); }
+    body.night .shop-item { background: rgba(43, 10, 31, 0.85); border-color: #8b0f5c; }
+    body.night .shop-item .shop-name { color: #ffb3c1; }
+
+    #hearts-container {
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none; z-index: 1; overflow: hidden;
+    }
+
+    .heart {
+      position: absolute; top: -30px;
+      color: #ffb3c1; font-size: 20px;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .container {
+      position: relative; z-index: 10;
+      width: 100%; max-width: 520px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ff4d6d; font-size: 22px; margin: 0 0 6px;
+      font-weight: 800;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
+      transition: all 0.6s;
+    }
+
+    .subtitle {
+      color: #c71585; font-size: 13px; margin: 0 0 14px;
+      font-weight: 600; opacity: 0.9; font-style: italic;
+      transition: all 0.6s;
+    }
+
+    .top-panel {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px; margin-bottom: 12px;
+    }
+
+    .coins-box {
+      background: linear-gradient(135deg, #ffd700, #ffa500);
+      color: #fff; padding: 8px 16px; border-radius: 50px;
+      font-size: 14px; font-weight: 800;
+      box-shadow: 0 6px 18px rgba(255, 165, 0, 0.5);
+      display: flex; align-items: center; gap: 6px;
+      border: 2px solid #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .achievements-btn {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #ffc2d1; color: #c71585;
+      padding: 8px 16px; border-radius: 50px;
+      font-size: 13px; font-weight: 800;
+      cursor: pointer; transition: all 0.25s;
+      font-family: inherit;
+      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    .achievements-btn:hover { transform: translateY(-2px); background: #ff4d6d; color: #fff; border-color: #ff4d6d; }
+    body.night .achievements-btn { background: rgba(43, 10, 31, 0.85); color: #ffb3c1; border-color: #8b0f5c; }
+
+    .room {
+      position: relative; width: 100%; aspect-ratio: 5 / 4;
+      background: linear-gradient(180deg, #fff5f8 0%, #ffe5ec 100%);
+      border-radius: 24px; overflow: hidden;
+      box-shadow: 0 12px 40px rgba(255, 77, 109, 0.3);
+      border: 3px solid #fff;
+      margin-bottom: 16px;
+      transition: all 1.5s ease;
+    }
+
+    body.night .room {
+      background: linear-gradient(180deg, #1a0a2e 0%, #0d0518 100%);
+      box-shadow: 0 12px 40px rgba(139, 15, 92, 0.6);
+      border-color: #4a1030;
+    }
+
+    .room::before {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 100%; height: 35%;
+      background: linear-gradient(180deg, #e8b48c 0%, #c68e60 100%);
+      transition: background 1.5s;
+    }
+
+    body.night .room::before { background: linear-gradient(180deg, #4a1030 0%, #2b0a1f 100%); }
+
+    .room::after {
+      content: ''; position: absolute; bottom: 35%; left: 0;
+      width: 100%; height: 6px; background: #a87752;
+      transition: background 1.5s;
+    }
+
+    body.night .room::after { background: #4a1030; }
+
+    .wallpaper {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 65%;
+      background-image:
+        radial-gradient(circle, #ffc2d1 1.5px, transparent 1.5px),
+        radial-gradient(circle, #ffb3c1 1px, transparent 1px);
+      background-size: 30px 30px, 45px 45px;
+      background-position: 0 0, 15px 15px;
+      opacity: 0.4;
+      transition: opacity 1.5s;
+    }
+
+    body.night .wallpaper { opacity: 0.1; }
+
+    .window {
+      position: absolute; top: 12%; left: 8%;
+      width: 26%; aspect-ratio: 3 / 4;
+      background: linear-gradient(180deg, #b3e5fc 0%, #e1f5fe 100%);
+      border: 6px solid #fff; border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      transition: background 1.5s, border-color 1.5s;
+    }
+
+    body.night .window {
+      background: linear-gradient(180deg, #0d0518 0%, #1a0a2e 100%);
+      border-color: #4a1030;
+    }
+
+    .window::before, .window::after {
+      content: ''; position: absolute;
+      background: #fff;
+      transition: background 1.5s;
+    }
+
+    body.night .window::before, body.night .window::after { background: #4a1030; }
+
+    .window::before {
+      top: 50%; left: 0; width: 100%; height: 4px;
+      transform: translateY(-50%);
+    }
+
+    .window::after {
+      top: 0; left: 50%; width: 4px; height: 100%;
+      transform: translateX(-50%);
+    }
+
+    .sun {
+      position: absolute; top: 20%; right: 15%;
+      width: 40%; aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff59d 0%, #ffeb3b 70%);
+      animation: sunGlow 3s ease-in-out infinite;
+      transition: all 1.5s;
+    }
+
+    body.night .sun {
+      background: radial-gradient(circle, #f5f5dc 0%, #fff 70%);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+
+    @keyframes sunGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 235, 59, 0.6); }
+      50% { box-shadow: 0 0 30px rgba(255, 235, 59, 1); }
+    }
+
+    .window-stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.5s; pointer-events: none; }
+    body.night .window-stars { opacity: 1; }
+    .window-star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; animation: twinkle 2s infinite; }
+
+    @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    .picture {
+      position: absolute; top: 14%; right: 12%;
+      width: 20%; aspect-ratio: 4 / 5;
+      background: linear-gradient(135deg, #ffb3c1, #ff8fa3);
+      border: 4px solid #8b5a2b; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: #fff;
+      transition: all 1.5s;
+    }
+
+    body.night .picture { background: linear-gradient(135deg, #4a1030, #2b0a1f); border-color: #1a0a2e; }
+
+    .rug {
+      position: absolute; bottom: 8%; left: 50%;
+      transform: translateX(-50%);
+      width: 45%; height: 12%;
+      background: radial-gradient(ellipse, #ff8fa3 0%, #c71585 100%);
+      border-radius: 50%; opacity: 0.6;
+      transition: all 1.5s;
+    }
+
+    body.night .rug { background: radial-gradient(ellipse, #4a1030 0%, #1a0a2e 100%); }
+
+    .cat-pet {
+      position: absolute; bottom: 18%; left: 50%;
+      transform: translateX(-50%);
+      font-size: 90px; cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 5; line-height: 1;
+      animation: catIdle 3s ease-in-out infinite;
+      filter: drop-shadow(0 6px 14px rgba(199, 21, 133, 0.3));
+    }
+
+    body.night .cat-pet { filter: drop-shadow(0 6px 20px rgba(255, 179, 193, 0.5)); }
+    .cat-pet:hover { transform: translateX(-50%) scale(1.08); }
+    .cat-pet.sleeping { animation: catSleep 3s ease-in-out infinite; font-size: 80px; }
+
+    @keyframes catIdle {
+      0%, 100% { transform: translateX(-50%) translateY(0) rotate(-2deg); }
+      50% { transform: translateX(-50%) translateY(-6px) rotate(2deg); }
+    }
+
+    @keyframes catSleep {
+      0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
+      50% { transform: translateX(-50%) translateY(-3px) scale(1.02); }
+    }
+
+    .zzz {
+      position: absolute; bottom: 65%; left: 55%;
+      font-size: 22px; color: #fff; opacity: 0;
+      pointer-events: none; font-weight: 800;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    .zzz.active { animation: zzzFloat 2.5s ease-out infinite; }
+
+    @keyframes zzzFloat {
+      0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translate(30px, -80px) scale(1.2); opacity: 0; }
+    }
+
+    .pet-bubble {
+      position: absolute; bottom: 62%; left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: #fff; color: #c71585;
+      font-size: 13px; font-weight: 700;
+      padding: 10px 16px;
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: 0 6px 20px rgba(255, 77, 109, 0.3);
+      border: 2px solid #ffc2d1;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none; max-width: 80%; z-index: 6;
+      white-space: normal; text-align: center; line-height: 1.3;
+    }
+
+    .pet-bubble.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* СТАТУСЫ */
+    .stats-row { display: flex; gap: 8px; margin-bottom: 12px; }
+
+    .stat-card {
+      flex: 1; background: rgba(255, 255, 255, 0.92);
+      border: 2px solid #ffc2d1; border-radius: 16px;
+      padding: 10px 8px;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.15);
+      transition: all 0.6s;
+    }
+
+    .stat-label {
+      font-size: 10px; font-weight: 800; color: #c71585;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 5px; transition: all 0.6s;
+    }
+
+    .stat-emoji { font-size: 20px; margin-bottom: 4px; display: block; }
+
+    .stat-bar {
+      width: 100%; height: 6px; background: #ffe5ec;
+      border-radius: 4px; overflow: hidden; margin-top: 4px;
+      transition: background 0.6s;
+    }
+
+    .stat-fill { height: 100%; width: 50%; border-radius: 4px; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .stat-fill.hunger { background: linear-gradient(90deg, #ff8fa3, #ff4d6d); }
+    .stat-fill.mood { background: linear-gradient(90deg, #ffd1dc, #ff8fa3); }
+    .stat-fill.affection { background: linear-gradient(90deg, #ffb3c1, #c71585); }
+
+    .stat-value { font-size: 11px; font-weight: 700; color: #ff4d6d; margin-top: 3px; transition: all 0.6s; }
+
+    /* ДЕЙСТВИЯ */
+    .actions-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      gap: 6px; margin-bottom: 16px;
+    }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #ffc2d1; border-radius: 14px;
+      padding: 10px 3px 8px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-family: inherit; color: #c71585;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.15);
+    }
+
+    .action-btn:hover { transform: translateY(-3px); border-color: #ff4d6d; }
+    .action-btn:active { transform: scale(0.95); }
+    .action-btn .icon { font-size: 22px; line-height: 1; }
+    .action-btn .label { font-size: 9px; font-weight: 800; text-transform: uppercase; }
+
+    /* МОДАЛКИ */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(43, 10, 31, 0.85);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      z-index: 1000; display: none;
+      align-items: center; justify-content: center;
+      padding: 20px; box-sizing: border-box;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-inner {
+      background: #fff; border-radius: 24px;
+      padding: 24px 20px 20px;
+      max-width: 420px; width: 100%;
+      max-height: 85vh; overflow-y: auto;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      border: 3px solid #ffc2d1;
+      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    body.night .modal-inner { background: #2b0a1f; border-color: #8b0f5c; }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-inner h3 {
+      color: #ff4d6d; font-size: 18px; font-weight: 800;
+      margin: 0 0 16px;
+    }
+
+    body.night .modal-inner h3 { color: #ffb3c1; }
+
+    /* ВКЛАДКИ МАГАЗИНА */
+    .shop-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+      justify-content: center;
+    }
+
+    .shop-tab {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 50px;
+      border: 2px solid #ffc2d1;
+      background: #fff7f9;
+      color: #c71585;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .shop-tab.active {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: #fff;
+      border-color: #ff4d6d;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.4);
+    }
+
+    body.night .shop-tab { background: #1a0a2e; color: #ffb3c1; border-color: #4a1030; }
+    body.night .shop-tab.active { background: linear-gradient(135deg, #ff4d6d, #c71585); color: #fff; }
+
+    /* СЕТКИ (ЕДА И МАГАЗИН) */
+    .food-grid, .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+
+    .food-item, .shop-item {
+      background: #fff7f9; border: 2px solid #ffc2d1;
+      border-radius: 16px; padding: 12px 8px;
+      cursor: pointer; transition: all 0.3s;
+      font-family: inherit;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      position: relative;
+    }
+
+    .food-item:hover, .shop-item:hover {
+      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
+      border-color: #ff4d6d; transform: translateY(-3px);
+    }
+
+    .shop-item.owned { background: linear-gradient(135deg, #d4f4d4, #a8e6a8); border-color: #4caf50; }
+    .shop-item.locked { opacity: 0.6; cursor: not-allowed; }
+    .shop-item.locked:hover { transform: none; background: #fff7f9; }
+
+    body.night .food-item, body.night .shop-item { background: #1a0a2e; border-color: #4a1030; }
+    body.night .food-item:hover, body.night .shop-item:hover { background: rgba(139, 15, 92, 0.4); }
+    body.night .shop-item.owned { background: rgba(76, 175, 80, 0.3); }
+
+    .food-emoji, .shop-emoji { font-size: 36px; }
+    .food-name, .shop-name { font-size: 11px; font-weight: 700; color: #c71585; }
+    body.night .food-name, body.night .shop-name { color: #ffb3c1; }
+    .food-bonus {
+      font-size: 10px; font-weight: 700; color: #ff4d6d;
+    }
+    body.night .food-bonus { color: #ff8fa3; }
+
+    .shop-price {
+      font-size: 11px; font-weight: 800; color: #ffa500;
+      background: rgba(255, 215, 0, 0.15);
+      padding: 3px 10px; border-radius: 20px;
+    }
+
+    .shop-count {
+      font-size: 11px; font-weight: 800; color: #4caf50;
+      background: rgba(76, 175, 80, 0.15);
+      padding: 3px 10px; border-radius: 20px;
+    }
+
+    /* ДОСТИЖЕНИЯ */
+    .achievement-row {
+      display: flex; align-items: center; gap: 10px;
+      background: #fff7f9; border: 2px solid #ffc2d1;
+      border-radius: 14px; padding: 10px 14px;
+      margin-bottom: 8px; text-align: left;
+      transition: all 0.3s;
+    }
+
+    .achievement-row.unlocked { background: linear-gradient(135deg, #ffe5ec, #ffd1dc); border-color: #ff4d6d; }
+    body.night .achievement-row { background: #1a0a2e; border-color: #4a1030; }
+    body.night .achievement-row.unlocked { background: rgba(139, 15, 92, 0.4); border-color: #ff4d6d; }
+    .ach-icon { font-size: 28px; flex-shrink: 0; }
+    .ach-info { flex: 1; }
+    .ach-title { font-size: 13px; font-weight: 800; color: #c71585; margin-bottom: 2px; }
+    .ach-desc { font-size: 11px; font-weight: 600; color: #ff8fa3; }
+    body.night .ach-title { color: #ffb3c1; }
+    .ach-status { font-size: 18px; }
+    .achievement-row.unlocked .ach-status { animation: heartbeat 1.5s infinite; }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.2); }
+      30% { transform: scale(1); }
+    }
+
+    /* КНОПКИ */
+    .bottom-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.95);
+      color: #c71585; border: 2px solid #ffc2d1;
+      font-size: 14px; padding: 12px 22px;
+      text-decoration: none; border-radius: 50px;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
+      transition: all 0.25s; cursor: pointer; font-family: inherit;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+
+    .btn:hover { background: #ff4d6d; color: white; border-color: #ff4d6d; transform: translateY(-2px); }
+    .btn.primary { background: linear-gradient(135deg, #ff4d6d, #c71585); color: white; border-color: #ff4d6d; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-buy {
+      margin-top: 4px;
+      padding: 6px 14px;
+      font-size: 11px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #ffd700, #ffa500);
+      color: white; border: none;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 3px 10px rgba(255, 165, 0, 0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-buy:hover { transform: scale(1.05); }
+    .btn-buy:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-equip {
+      background: linear-gradient(135deg, #c71585, #ff4d6d) !important;
+    }
+
+    .btn-equipped {
+      background: #4caf50 !important;
+    }
+
+    /* УВЕДОМЛЕНИЕ */
+    .toast {
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: #fff; padding: 12px 22px;
+      border-radius: 50px; font-size: 14px; font-weight: 700;
+      box-shadow: 0 12px 32px rgba(199, 21, 133, 0.5);
+      z-index: 3000; opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none; max-width: 90vw; text-align: center;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* СЕРДЕЧКИ */
+    .float-heart {
+      position: fixed; font-size: 20px;
+      pointer-events: none; z-index: 5000;
+      animation: floatUp 1.5s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.5); opacity: 1; }
+      100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+    }
+
+    /* ═══ ИГРА ═══ */
+    .game-overlay {
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: linear-gradient(135deg, #ffe5ec, #ffc2d1);
+      z-index: 2000; display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      padding: 16px; box-sizing: border-box;
+    }
+
+    .game-overlay.active { display: flex; }
+
+    .game-container { width: 100%; max-width: 620px; text-align: center; }
+
+    .game-title {
+      color: #ff4d6d; font-size: 22px; font-weight: 800;
+      margin: 0 0 4px;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
+    }
+
+    .game-subtitle { color: #c71585; font-size: 13px; font-weight: 600; margin: 0 0 12px; font-style: italic; }
+
+    .game-score-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+
+    .game-score-chip {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #ffc2d1; border-radius: 50px;
+      padding: 6px 14px; font-size: 12px; font-weight: 700;
+      color: #c71585;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.2);
+    }
+
+    .game-score-chip b { color: #ff4d6d; }
+
+    .game-canvas-wrap {
+      position: relative; width: 100%;
+      background: linear-gradient(180deg, #fff5f8 0%, #ffe5ec 100%);
+      border-radius: 20px; border: 3px solid #fff;
+      box-shadow: 0 10px 40px rgba(255, 77, 109, 0.3);
+      overflow: hidden; margin-bottom: 12px;
+      aspect-ratio: 16 / 9; max-height: 45vh;
+    }
+
+    #gameCanvas { display: block; width: 100%; height: 100%; touch-action: none; }
+
+    .game-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    .game-hint { color: #c71585; font-size: 12px; font-weight: 700; margin-top: 8px; opacity: 0.8; }
+
+    .game-pause-box {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 5; padding: 20px; box-sizing: border-box;
+      border-radius: 17px;
+    }
+
+    .game-pause-box.show { display: flex; }
+
+    .game-pause-box h3 { color: #ff4d6d; font-size: 20px; margin: 0 0 12px; }
+
+    .pause-emoji { font-size: 50px; margin-bottom: 8px; animation: heartbeat 1.5s infinite; }
+
+    .powerup-indicator {
+      position: absolute; top: 12px; right: 12px;
+      background: linear-gradient(135deg, #ffd700, #ffa500);
+      color: #fff;
+      padding: 6px 14px; border-radius: 50px;
+      font-size: 13px; font-weight: 800;
+      box-shadow: 0 4px 15px rgba(255, 165, 0, 0.6);
+      display: none;
+      align-items: center; gap: 4px;
+      animation: pulsePowerup 0.7s ease-in-out infinite;
+      z-index: 10;
+    }
+
+    .powerup-indicator.active { display: flex; }
+
+    @keyframes pulsePowerup {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* Кнопка админа */
+    .admin-btn {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      border: 2px solid rgba(255, 179, 193, 0.6);
+      color: #c71585;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 9999;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      opacity: 0.55;
+      box-shadow: 0 4px 12px rgba(199, 21, 133, 0.15);
+    }
+
+    .admin-btn:hover {
+      opacity: 1;
+      background: rgba(255, 77, 109, 0.2);
+      border-color: #ff4d6d;
+      color: #ff4d6d;
+      transform: rotate(90deg) scale(1.15);
+    }
+
+    .admin-btn.active {
+      opacity: 1;
+      background: linear-gradient(135deg, #ffd700, #ffa500);
+      color: #fff;
+      border-color: #fff;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+      transform: rotate(180deg);
+      animation: adminPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes adminPulse {
+      0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
+      50% { box-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 215, 0, 0.5); }
+    }
+
+    .admin-indicator {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: linear-gradient(135deg, #ffd700, #ffa500);
+      color: #fff;
+      padding: 6px 18px;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 20px rgba(255, 165, 0, 0.6);
+      z-index: 1000;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      border: 2px solid #fff;
+    }
+
+    .admin-indicator.show { transform: translateX(-50%) translateY(0); }
+
+    /* Безопасная золотая рамка */
+    body.admin-mode::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 998;
+      border: 6px solid #ffd700;
+      animation: adminBorderPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes adminBorderPulse {
+      0%, 100% { 
+        border-color: #ffd700;
+        box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.4);
+      }
+      50% { 
+        border-color: #ffa500;
+        box-shadow: inset 0 0 40px rgba(255, 215, 0, 0.7);
+      }
+    }
+
+    body.admin-mode .coins-box {
+      background: linear-gradient(135deg, #ffd700, #ffa500, #ffd700);
+      background-size: 200% 200%;
+      animation: coinShine 3s ease infinite;
+      box-shadow: 0 6px 25px rgba(255, 215, 0, 0.8);
+    }
+
+    @keyframes coinShine {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .admin-confetti {
+      position: fixed;
+      font-size: 24px;
+      pointer-events: none;
+      z-index: 4000;
+      animation: adminConfettiFall linear forwards;
+    }
+
+    @keyframes adminConfettiFall {
+      0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* Адаптив */
+    @media (max-width: 480px) {
+      h1 { font-size: 18px; }
+      .cat-pet { font-size: 72px; }
+      .cat-pet.sleeping { font-size: 64px; }
+      .room { aspect-ratio: 1; }
+      .action-btn .icon { font-size: 18px; }
+      .action-btn .label { font-size: 8px; }
+      .btn { font-size: 13px; padding: 10px 16px; }
+      .game-title { font-size: 18px; }
+      .game-score-chip { font-size: 11px; padding: 5px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="hearts-container"></div>
+
+  <div class="container">
+    <div class="top-panel">
+      <div class="coins-box">
+        🪙 <span id="coinsCount">0</span>
+      </div>
+      <button class="achievements-btn" onclick="openAchievements()">
+        🏆 Достижения
+      </button>
+    </div>
+
+    <h1 id="mainTitle">🏠 Домик котика</h1>
+    <p class="subtitle" id="mainSubtitle">Заботься о нём — и он будет счастлив 💕</p>
+
+    <div class="room">
+      <div class="wallpaper"></div>
+      <div class="window">
+        <div class="sun"></div>
+        <div class="window-stars" id="windowStars"></div>
+      </div>
+      <div class="picture">🐟</div>
+      <div class="rug"></div>
+
+      <div class="cat-pet" id="catPet">🐱</div>
+      <div class="zzz" id="zzz1">💤</div>
+      <div class="pet-bubble" id="petBubble">Мяу!</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Сытость</div>
+        <span class="stat-emoji" id="hungerEmoji">😺</span>
+        <div class="stat-bar"><div class="stat-fill hunger" id="hungerFill"></div></div>
+        <div class="stat-value" id="hungerVal">50%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Настроение</div>
+        <span class="stat-emoji" id="moodEmoji">😺</span>
+        <div class="stat-bar"><div class="stat-fill mood" id="moodFill"></div></div>
+        <div class="stat-value" id="moodVal">50%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ласка</div>
+        <span class="stat-emoji" id="affectionEmoji">💗</span>
+        <div class="stat-bar"><div class="stat-fill affection" id="affectionFill"></div></div>
+        <div class="stat-value" id="affectionVal">50%</div>
+      </div>
+    </div>
+
+    <div class="actions-grid">
+      <button class="action-btn" onclick="openFoodMenu()">
+        <span class="icon">🍖</span><span class="label">Корм</span>
+      </button>
+      <button class="action-btn" onclick="petCat()">
+        <span class="icon">💗</span><span class="label">Погладить</span>
+      </button>
+      <button class="action-btn" onclick="playWithCat()">
+        <span class="icon">🎾</span><span class="label">Играть</span>
+      </button>
+      <button class="action-btn" onclick="sleepCat()">
+        <span class="icon" id="sleepIcon">😴</span><span class="label" id="sleepLabel">Спать</span>
+      </button>
+      <button class="action-btn" onclick="openShop()">
+        <span class="icon">👗</span><span class="label">Магазин</span>
+      </button>
+    </div>
+
+    <div class="bottom-buttons">
+      <a href="index.html" class="btn">← На главную</a>
+      <button class="btn primary" onclick="openGame()">🎮 Мини-игра</button>
+    </div>
+  </div>
+
+  <!-- МЕНЮ ЕДЫ -->
+  <div class="modal-overlay" id="foodMenu">
+    <div class="modal-inner">
+      <h3>🍽️ Что будем кушать?</h3>
+      <div class="food-grid" id="foodGrid"></div>
+      <button class="btn" onclick="closeModal('foodMenu')">Отмена</button>
+    </div>
+  </div>
+
+  <!-- МАГАЗИН -->
+  <div class="modal-overlay" id="shopMenu">
+    <div class="modal-inner">
+      <h3>🛍️ Магазин котика</h3>
+      <p style="color: #c71585; font-size: 12px; margin: -8px 0 14px;">
+        У тебя: <b style="color: #ffa500;">🪙 <span id="shopCoins">0</span></b>
+      </p>
+
+      <!-- Вкладки -->
+      <div class="shop-tabs">
+        <button class="shop-tab active" id="tabHats" onclick="switchShopTab('hats')">🎩 Шапки</button>
+        <button class="shop-tab" id="tabFood" onclick="switchShopTab('food')">🍽️ Еда</button>
+      </div>
+
+      <div class="shop-grid" id="shopGrid"></div>
+      <button class="btn" onclick="closeModal('shopMenu')">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- ДОСТИЖЕНИЯ -->
+  <div class="modal-overlay" id="achievementsMenu">
+    <div class="modal-inner">
+      <h3>🏆 Достижения</h3>
+      <div id="achievementsList"></div>
+      <button class="btn" onclick="closeModal('achievementsMenu')">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- ИГРА -->
+  <div class="game-overlay" id="gameOverlay">
+    <div class="game-container">
+      <h2 class="game-title">🎮 Котик-прыгун</h2>
+      <p class="game-subtitle" id="gameSubtitle">Прыгай через препятствия и собирай рыбки! 🐟</p>
+
+      <div class="game-score-row">
+        <div class="game-score-chip">Очки: <b id="gameScore">0</b></div>
+        <div class="game-score-chip">Рекорд: <b id="gameRecord">0</b></div>
+        <div class="game-score-chip">🪙 +<b id="gameCoins">0</b></div>
+        <div class="game-score-chip">🐟 +<b id="gameFishes">0</b></div>
+      </div>
+
+      <div class="game-canvas-wrap">
+        <div class="powerup-indicator" id="powerupIndicator">
+          ⚡ ×2 ×<span id="powerupTimer">10</span>с
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="game-pause-box" id="gameOverBox">
+          <div class="pause-emoji" id="goEmoji">😿</div>
+          <h3 id="goTitle">Ой, котик упал!</h3>
+          <p style="color: #c71585; font-size: 14px; font-weight: 700; margin: 4px 0;">Результат:</p>
+          <div style="font-size: 32px; font-weight: 900; color: #ff4d6d; margin: 4px 0 12px;" id="goScore">0</div>
+          <div style="color: #c71585; font-size: 12px; font-weight: 700; margin-bottom: 14px;" id="goRecord">Рекорд: 0</div>
+          <div style="color: #ffa500; font-size: 13px; font-weight: 800; margin-bottom: 6px;" id="goCoins">+0 монеток</div>
+          <div style="color: #4caf50; font-size: 13px; font-weight: 800; margin-bottom: 14px;" id="goFish">+0 🐟</div>
+          <button class="btn primary" onclick="restartGame()">🔄 Играть снова</button>
+        </div>
+      </div>
+
+      <div class="game-controls">
+        <button class="btn primary" onclick="startGame()" id="startBtn">▶ Начать</button>
+        <button class="btn" onclick="closeGame()">✖ Закрыть</button>
+      </div>
+
+      <div class="game-hint" id="gameHint">
+        💡 ПРОБЕЛ или тапни, чтобы прыгнуть • Собирай 🐟 • Лови ⚡ ×2
+      </div>
+    </div>
+  </div>
+
+  <!-- КНОПКА АДМИНА -->
+  <button class="admin-btn" id="adminBtn" onclick="toggleAdmin()" title="секрет">⚙️</button>
+
+  <!-- ИНДИКАТОР АДМИНА -->
+  <div class="admin-indicator" id="adminIndicator">
+    👑 АДМИН-РЕЖИМ АКТИВЕН
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ═══════════════════════════════════════════
+    // ЗВУКИ
+    // ═══════════════════════════════════════════
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
+      }
+    }
+
+    function playTone(frequency, duration, type = 'sine', volume = 0.15) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = frequency;
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch {}
+    }
+
+    const Sound = {
+      jump: () => { playTone(440, 0.1, 'square', 0.1); setTimeout(() => playTone(660, 0.1, 'square', 0.08), 50); },
+      fish: () => { playTone(880, 0.12, 'sine', 0.15); setTimeout(() => playTone(1320, 0.15, 'sine', 0.12), 60); },
+      hurt: () => { playTone(220, 0.3, 'sawtooth', 0.15); setTimeout(() => playTone(140, 0.4, 'sawtooth', 0.12), 100); },
+      powerup: () => { playTone(660, 0.1, 'sine', 0.15); setTimeout(() => playTone(880, 0.1, 'sine', 0.15), 80); setTimeout(() => playTone(1320, 0.2, 'sine', 0.15), 160); },
+      coin: () => { playTone(1200, 0.08, 'sine', 0.12); setTimeout(() => playTone(1600, 0.12, 'sine', 0.1), 50); },
+      ach: () => { playTone(660, 0.15, 'sine', 0.15); setTimeout(() => playTone(880, 0.15, 'sine', 0.15), 100); setTimeout(() => playTone(1100, 0.25, 'sine', 0.15), 200); }
+    };
+
+    // ═══════════════════════════════════════════
+    // СОСТОЯНИЕ
+    // ═══════════════════════════════════════════
+    const DEFAULT_STATE = {
+      hunger: 50, mood: 60, affection: 50,
+      sleeping: false,
+      coins: 0,
+      ownedHats: [],       // id купленных шапок
+      ownedFood: {},        // { food_id: количество }
+      fishCollected: 0,     // сколько рыбок поймал в игре
+      equippedHat: null,    // ТОЛЬКО одна шапка
+      achievements: [],
+      totalFishCollected: 0,
+      lastUpdate: Date.now()
+    };
+
+    let catState = loadState();
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem('catState');
+        if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        const raw = JSON.parse(saved);
+        const state = { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), ...raw };
+        
+        // Миграция со старого формата
+        if (raw.ownedItems && !raw.ownedHats) {
+          state.ownedHats = raw.ownedItems.filter(id => id.startsWith('hat_'));
+          // Еду из старого формата переносим как запас
+          state.ownedFood = state.ownedFood || {};
+        }
+        if (raw.equipped && raw.equipped.hat && !raw.equippedHat) {
+          state.equippedHat = raw.equipped.hat;
+        }
+
+        // Убедимся, что поля правильных типов
+        state.ownedHats = Array.isArray(state.ownedHats) ? state.ownedHats : [];
+        state.ownedFood = typeof state.ownedFood === 'object' && state.ownedFood ? state.ownedFood : {};
+        if (state.equippedHat && !state.ownedHats.includes(state.equippedHat)) {
+          state.equippedHat = null;
+        }
+
+        const now = Date.now();
+        const elapsed = Math.floor((now - state.lastUpdate) / 1000 / 30);
+        state.hunger = Math.max(0, state.hunger - elapsed * 2);
+        state.mood = Math.max(0, state.mood - elapsed * 1);
+        state.lastUpdate = now;
+        return state;
+      } catch {
+        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+    }
+
+    function saveState() {
+      catState.lastUpdate = Date.now();
+      try { localStorage.setItem('catState', JSON.stringify(catState)); } catch {}
+    }
+
+    // ═══════════════════════════════════════════
+    // ДОСТИЖЕНИЯ
+    // ═══════════════════════════════════════════
+    const ACHIEVEMENTS = [
+      { id: 'first_record', icon: '🥇', title: 'Первый рекорд', desc: 'Поставь свой первый рекорд в игре' },
+      { id: 'hundred', icon: '💯', title: '100 очков', desc: 'Набери 100 очков в мини-игре' },
+      { id: 'ten_fish', icon: '🐟', title: 'Собрал 10 рыбок', desc: 'Поймай 10 рыбок за всё время' },
+      { id: 'first_buy', icon: '🛍️', title: 'Первая покупка', desc: 'Купи что-нибудь в магазине' },
+      { id: 'max_hunger', icon: '🍖', title: 'Сыт по горло', desc: 'Покорми котика до 100% сытости' },
+      { id: 'level_master', icon: '🌈', title: 'Путешественник', desc: 'Пройди через 3 разных уровня' }
+    ];
+
+    function unlockAchievement(id) {
+      if (catState.achievements.includes(id)) return;
+      catState.achievements.push(id);
+      saveState();
+      const ach = ACHIEVEMENTS.find(a => a.id === id);
+      if (ach) {
+        showToast(`🏆 Достижение: ${ach.title}!`);
+        Sound.ach();
+        spawnHearts(10);
+      }
+    }
+
+    function openAchievements() {
+      const list = document.getElementById('achievementsList');
+      list.innerHTML = '';
+      ACHIEVEMENTS.forEach(ach => {
+        const unlocked = catState.achievements.includes(ach.id);
+        const row = document.createElement('div');
+        row.className = 'achievement-row' + (unlocked ? ' unlocked' : '');
+        row.innerHTML = `
+          <div class="ach-icon">${unlocked ? ach.icon : '🔒'}</div>
+          <div class="ach-info">
+            <div class="ach-title">${ach.title}</div>
+            <div class="ach-desc">${ach.desc}</div>
+          </div>
+          <div class="ach-status">${unlocked ? '✅' : ''}</div>
+        `;
+        list.appendChild(row);
+      });
+      document.getElementById('achievementsMenu').classList.add('active');
+    }
+
+    // ═══════════════════════════════════════════
+    // МАГАЗИН
+    // ═══════════════════════════════════════════
+    const HATS = [
+      { id: 'hat_pink', emoji: '🎀', name: 'Розовый бантик', price: 5 },
+      { id: 'hat_crown', emoji: '👑', name: 'Корона', price: 10 },
+      { id: 'hat_wizard', emoji: '🎩', name: 'Волшебная шляпа', price: 8 },
+      { id: 'hat_cap', emoji: '🧢', name: 'Кепка', price: 4 },
+      { id: 'hat_grad', emoji: '🎓', name: 'Выпускная шапочка', price: 12 },
+      { id: 'hat_flower', emoji: '🌸', name: 'Цветок', price: 6 }
+    ];
+
+    const FOOD_SHOP = [
+      { id: 'milk', emoji: '🥛', name: 'Молоко', price: 3, bonus: 20, mood: 10 },
+      { id: 'meat', emoji: '🍖', name: 'Мясо', price: 6, bonus: 50, mood: 15 },
+      { id: 'cookie', emoji: '🍪', name: 'Печенье', price: 4, bonus: 15, mood: 20 },
+      { id: 'cake', emoji: '🍰', name: 'Тортик', price: 8, bonus: 30, mood: 25 }
+    ];
+
+    let currentTab = 'hats';
+
+    function openShop() {
+      renderShop();
+      document.getElementById('shopCoins').textContent = catState.coins;
+      document.getElementById('shopMenu').classList.add('active');
+    }
+
+    function switchShopTab(tab) {
+      currentTab = tab;
+      document.getElementById('tabHats').classList.toggle('active', tab === 'hats');
+      document.getElementById('tabFood').classList.toggle('active', tab === 'food');
+      renderShop();
+    }
+
+    function renderShop() {
+      const grid = document.getElementById('shopGrid');
+      grid.innerHTML = '';
+
+      if (currentTab === 'hats') {
+        HATS.forEach(item => {
+          const owned = catState.ownedHats.includes(item.id);
+          const equipped = catState.equippedHat === item.id;
+          const canAfford = catState.coins >= item.price;
+
+          const el = document.createElement('div');
+          el.className = 'shop-item' + (owned ? ' owned' : '') + (!canAfford && !owned ? ' locked' : '');
+
+          if (owned) {
+            el.innerHTML = `
+              <div class="shop-emoji">${item.emoji}</div>
+              <div class="shop-name">${item.name}</div>
+              <button class="btn-buy ${equipped ? 'btn-equipped' : 'btn-equip'}" onclick="equipHat('${item.id}')">
+                ${equipped ? '✓ Надето' : 'Надеть'}
+              </button>
+            `;
+          } else {
+            el.innerHTML = `
+              <div class="shop-emoji">${item.emoji}</div>
+              <div class="shop-name">${item.name}</div>
+              <div class="shop-price">🪙 ${item.price}</div>
+              <button class="btn-buy" onclick="buyHat('${item.id}')" ${!canAfford ? 'disabled' : ''}>Купить</button>
+            `;
+          }
+          grid.appendChild(el);
+        });
+      } else {
+        // ЕДА
+        FOOD_SHOP.forEach(item => {
+          const count = catState.ownedFood[item.id] || 0;
+          const canAfford = catState.coins >= item.price;
+
+          const el = document.createElement('div');
+          el.className = 'shop-item' + (!canAfford ? ' locked' : '');
+
+          el.innerHTML = `
+            <div class="shop-emoji">${item.emoji}</div>
+            <div class="shop-name">${item.name} ${count > 0 ? `×${count}` : ''}</div>
+            <div class="shop-price">🪙 ${item.price}</div>
+            <button class="btn-buy" onclick="buyFood('${item.id}')" ${!canAfford ? 'disabled' : ''}>Купить</button>
+          `;
+          grid.appendChild(el);
+        });
+      }
+    }
+
+    function buyHat(id) {
+      const item = HATS.find(i => i.id === id);
+      if (!item) return;
+      if (catState.ownedHats.includes(id)) return;
+      if (catState.coins < item.price) { showToast('😔 Не хватает монеток'); return; }
+
+      catState.coins -= item.price;
+      catState.ownedHats.push(id);
+
+      // Автоматически надеваем новую шапку (старая снимается автоматически, т.к. одно поле)
+      catState.equippedHat = id;
+      showToast(`👗 ${item.name} куплен и надет!`);
+      spawnHearts(8);
+      Sound.fish();
+
+      saveState();
+      unlockAchievement('first_buy');
+      updateUI();
+      document.getElementById('shopCoins').textContent = catState.coins;
+      renderShop();
+    }
+
+    // Надеть / снять шапку — ТОЛЬКО ОДНА шапка
+    function equipHat(id) {
+      if (catState.equippedHat === id) {
+        catState.equippedHat = null;
+        showToast('👕 Шапка снята');
+      } else {
+        catState.equippedHat = id;
+        const item = HATS.find(i => i.id === id);
+        showToast(`👗 Надето: ${item.name}`);
+      }
+      saveState();
+      updateUI();
+      renderShop();
+    }
+
+    function buyFood(id) {
+      const item = FOOD_SHOP.find(i => i.id === id);
+      if (!item) return;
+      if (catState.coins < item.price) { showToast('😔 Не хватает монеток'); return; }
+
+      catState.coins -= item.price;
+      catState.ownedFood[id] = (catState.ownedFood[id] || 0) + 1;
+
+      showToast(`🍽️ Куплено: ${item.name}`);
+      Sound.coin();
+
+      saveState();
+      unlockAchievement('first_buy');
+      updateUI();
+      document.getElementById('shopCoins').textContent = catState.coins;
+      renderShop();
+    }
+
+    // ═══════════════════════════════════════════
+    // КОТИК — действия
+    // ═══════════════════════════════════════════
+    const PHRASES = {
+      hungry: ['Мяу... я проголодался 🥺', 'Хозяюшка, покушать? 😿', 'Мой животик урчит... 🐾'],
+      happy: ['Муррр! 🥰', 'Я тебя обожаю 💕', 'Ты лучшая! 💗', 'Мур-мур-мур~ 😽'],
+      playing: ['Ловлю бантик! 🎾', 'Ещё! Ещё! 🎉', 'Как же круто! 😸'],
+      sleeping: ['Мррр... 💤', 'Сплю... не буди 😴'],
+      normal: ['Мяу!', 'Мур... 🐱', 'Привет! 💕', 'Как дела? 😺']
+    };
+
+    function pickPhrase(cat) {
+      const arr = PHRASES[cat] || PHRASES.normal;
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    const petBubble = document.getElementById('petBubble');
+    let bubbleTimer = null;
+    function catSay(text, ms = 2500) {
+      petBubble.textContent = text;
+      petBubble.classList.add('show');
+      clearTimeout(bubbleTimer);
+      bubbleTimer = setTimeout(() => petBubble.classList.remove('show'), ms);
+    }
+
+    function applyNightMode(isNight) {
+      document.body.classList.toggle('night', isNight);
+      document.getElementById('mainTitle').textContent = isNight ? '🌙 Домик котика — ночь' : '🏠 Домик котика';
+      document.getElementById('mainSubtitle').textContent = isNight
+        ? 'Сладких снов, котик спит 💤'
+        : 'Заботься о нём — и он будет счастлив 💕';
+      document.getElementById('sleepIcon').textContent = isNight ? '☀️' : '😴';
+      document.getElementById('sleepLabel').textContent = isNight ? 'Разбудить' : 'Спать';
+      if (isNight) generateWindowStars();
+    }
+
+    function generateWindowStars() {
+      const cont = document.getElementById('windowStars');
+      if (cont.children.length > 0) return;
+      for (let i = 0; i < 8; i++) {
+        const s = document.createElement('div');
+        s.className = 'window-star';
+        s.style.left = (5 + Math.random() * 90) + '%';
+        s.style.top = (5 + Math.random() * 90) + '%';
+        s.style.animationDelay = (Math.random() * 2) + 's';
+        cont.appendChild(s);
+      }
+    }
+
+    function updateUI() {
+      const { hunger, mood, affection, sleeping, coins, equippedHat } = catState;
+
+      document.getElementById('coinsCount').textContent = coins;
+
+      document.getElementById('hungerFill').style.width = hunger + '%';
+      document.getElementById('hungerVal').textContent = Math.round(hunger) + '%';
+      document.getElementById('hungerEmoji').textContent = hunger > 70 ? '😻' : hunger > 40 ? '😺' : '😿';
+
+      document.getElementById('moodFill').style.width = mood + '%';
+      document.getElementById('moodVal').textContent = Math.round(mood) + '%';
+      document.getElementById('moodEmoji').textContent = mood > 70 ? '😻' : mood > 40 ? '😺' : mood > 20 ? '😐' : '😾';
+
+      document.getElementById('affectionFill').style.width = affection + '%';
+      document.getElementById('affectionVal').textContent = Math.round(affection) + '%';
+      document.getElementById('affectionEmoji').textContent = affection > 70 ? '💖' : affection > 40 ? '💗' : '💕';
+
+      const catEl = document.getElementById('catPet');
+      const zzz = document.getElementById('zzz1');
+
+      let catEmoji = '🐱';
+      if (sleeping) {
+        catEmoji = '😴';
+        catEl.classList.add('sleeping');
+        zzz.classList.add('active');
+      } else {
+        catEl.classList.remove('sleeping');
+        zzz.classList.remove('active');
+        if (hunger < 30) catEmoji = '🙀';
+        else if (mood > 80 && hunger > 70) catEmoji = '😻';
+        else if (mood > 50) catEmoji = '😺';
+        else if (mood < 30) catEmoji = '😿';
+      }
+
+      // ЕДИНАЯ шапка (одна, не накладывается)
+      let hatEmoji = '';
+      if (equippedHat) {
+        const item = HATS.find(i => i.id === equippedHat);
+        if (item) hatEmoji = item.emoji;
+      }
+
+      catEl.innerHTML = hatEmoji
+        ? `<span style="display:inline-block; position:relative;">
+             <span style="position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:32px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));">${hatEmoji}</span>
+             ${catEmoji}
+           </span>`
+        : catEmoji;
+
+      applyNightMode(sleeping);
+    }
+
+    function changeStat(key, amount) {
+      catState[key] = Math.max(0, Math.min(100, catState[key] + amount));
+      saveState();
+      updateUI();
+      if (catState.hunger >= 100) unlockAchievement('max_hunger');
+    }
+
+    function petCat() {
+      if (catState.sleeping) { catSay('Мррр... не буди 😴', 2000); return; }
+      changeStat('affection', +10);
+      changeStat('mood', +5);
+      catSay(pickPhrase('happy'), 2000);
+      spawnHearts(5);
+      Sound.fish();
+      const cat = document.getElementById('catPet');
+      cat.style.transform = 'translateX(-50%) scale(1.15)';
+      setTimeout(() => cat.style.transform = '', 300);
+      showToast('💗 Мур-мур! Котик доволен');
+    }
+
+    // ═══ МЕНЮ ЕДЫ — только то, что ЕСТЬ в инвентаре ═══
+    function openFoodMenu() {
+      if (catState.sleeping) { catSay('Я сплю... 💤', 2000); return; }
+      if (catState.hunger > 90) { catSay('Я наелся! 😽', 2000); return; }
+
+      // Собираем то, что есть
+      const available = [];
+
+      // Рыбки — из игры (не покупаются!)
+      if (catState.fishCollected > 0) {
+        available.push({
+          id: 'fish',
+          emoji: '🐟',
+          name: 'Рыбка',
+          bonus: 30,
+          mood: 5,
+          count: catState.fishCollected,
+          fromGame: true
+        });
+      }
+
+      // Еда из магазина
+      Object.keys(catState.ownedFood).forEach(id => {
+        const count = catState.ownedFood[id];
+        if (count > 0) {
+          const item = FOOD_SHOP.find(f => f.id === id);
+          if (item) {
+            available.push({
+              id: item.id,
+              emoji: item.emoji,
+              name: item.name,
+              bonus: item.bonus,
+              mood: item.mood,
+              count: count,
+              fromGame: false
+            });
+          }
+        }
+      });
+
+      if (available.length === 0) {
+        catSay('У нас нет еды... 🥺', 2500);
+        showToast('🍽️ Нет еды! Купи в магазине или поймай рыбок в игре');
+        return;
+      }
+
+      // Рендерим
+      const grid = document.getElementById('foodGrid');
+      grid.innerHTML = '';
+
+      available.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'food-item';
+        btn.onclick = () => feedCat(item.id, item.fromGame);
+        btn.innerHTML = `
+          <span class="food-emoji">${item.emoji}</span>
+          <span class="food-name">${item.name}</span>
+          <span class="food-bonus">+${item.bonus} 🍖 ×${item.count}</span>
+        `;
+        grid.appendChild(btn);
+      });
+
+      document.getElementById('foodMenu').classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function feedCat(foodId, fromGame) {
+      closeModal('foodMenu');
+
+      let item = null;
+
+      if (foodId === 'fish') {
+        if (catState.fishCollected <= 0) {
+          showToast('🐟 Рыбки закончились!');
+          return;
+        }
+        item = { emoji: '🐟', name: 'Рыбка', bonus: 30, mood: 5 };
+        catState.fishCollected--;
+      } else {
+        if (!catState.ownedFood[foodId] || catState.ownedFood[foodId] <= 0) {
+          showToast('🍽️ Этой еды нет!');
+          return;
+        }
+        const shopItem = FOOD_SHOP.find(f => f.id === foodId);
+        if (!shopItem) return;
+        item = { emoji: shopItem.emoji, name: shopItem.name, bonus: shopItem.bonus, mood: shopItem.mood };
+        catState.ownedFood[foodId]--;
+        if (catState.ownedFood[foodId] <= 0) delete catState.ownedFood[foodId];
+      }
+
+      changeStat('hunger', +item.bonus);
+      changeStat('mood', +item.mood);
+      changeStat('affection', +3);
+
+      catSay(`${item.emoji} ${item.name}! Спасибо!`, 2500);
+      showToast(`🍽️ Покормила: ${item.emoji} +${item.bonus} сытости`);
+      Sound.fish();
+      saveState();
+
+      const cat = document.getElementById('catPet');
+      let i = 0;
+      const jump = setInterval(() => {
+        cat.style.transform = `translateX(-50%) translateY(${i % 2 === 0 ? -15 : 0}px)`;
+        i++;
+        if (i > 5) { clearInterval(jump); cat.style.transform = ''; }
+      }, 100);
+      spawnHearts(8);
+    }
+
+    function playWithCat() {
+      if (catState.sleeping) { catSay('Сплю! 😾', 2000); return; }
+      if (catState.hunger < 30) {
+        catSay('Сначала покорми! 🥺', 2500);
+        showToast('🍖 Котик слишком голоден');
+        return;
+      }
+      changeStat('mood', +15);
+      changeStat('affection', +10);
+      changeStat('hunger', -10);
+      catSay(pickPhrase('playing'), 2500);
+      showToast('🎾 Котик набегался!');
+      spawnHearts(6);
+      Sound.powerup();
+      const cat = document.getElementById('catPet');
+      let i = 0;
+      const jump = setInterval(() => {
+        cat.style.transform = `translateX(${-50 + (Math.random() * 20 - 10)}%) translateY(${Math.random() * -20}px) rotate(${Math.random() * 20 - 10}deg)`;
+        i++;
+        if (i > 8) { clearInterval(jump); cat.style.transform = 'translateX(-50%)'; }
+      }, 100);
+    }
+
+    function sleepCat() {
+      if (catState.sleeping) {
+        catState.sleeping = false;
+        saveState(); updateUI();
+        catSay('Проснулся! ☀️', 2000);
+        showToast('☀️ Доброе утро!');
+        return;
+      }
+      catState.sleeping = true;
+      changeStat('mood', +10);
+      catSay('Сладких снов... 💤', 2500);
+      showToast('🌙 Ночь наступила');
+
+      setTimeout(() => {
+        if (catState.sleeping) {
+          catState.sleeping = false;
+          saveState(); updateUI();
+          catSay('Выспался! ☀️', 2000);
+          showToast('☀️ Котик проснулся');
+        }
+      }, 20000);
+    }
+
+    function spawnHearts(count) {
+      const cat = document.getElementById('catPet');
+      const rect = cat.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.className = 'float-heart';
+          heart.textContent = ['💗', '💖', '❤️', '💕', '✨'][Math.floor(Math.random() * 5)];
+          heart.style.left = (cx + (Math.random() * 60 - 30)) + 'px';
+          heart.style.top = cy + 'px';
+          heart.style.fontSize = (16 + Math.random() * 12) + 'px';
+          document.body.appendChild(heart);
+          setTimeout(() => heart.remove(), 1500);
+        }, i * 80);
+      }
+    }
+
+    let toastTimer = null;
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    document.getElementById('catPet').addEventListener('click', () => {
+      if (catState.sleeping) catSay(pickPhrase('sleeping'), 2000);
+      else if (catState.hunger < 30) catSay(pickPhrase('hungry'), 2500);
+      else if (catState.mood > 70) catSay(pickPhrase('happy'), 2000);
+      else catSay(pickPhrase('normal'), 2000);
+      spawnHearts(3);
+    });
+
+    const container = document.getElementById('hearts-container');
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      const types = ['❤️', '💖', '💗', '💕', '🌸'];
+      heart.innerText = types[Math.floor(Math.random() * types.length)];
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+      heart.style.fontSize = Math.random() * 15 + 15 + "px";
+      container.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 6000);
+    }
+    setInterval(createHeart, 700);
+
+    setInterval(() => {
+      if (!catState.sleeping) {
+        catState.hunger = Math.max(0, catState.hunger - 1);
+        catState.mood = Math.max(0, catState.mood - 0.5);
+        saveState(); updateUI();
+      }
+    }, 30000);
+
+    setTimeout(() => {
+      if (catState.sleeping) catSay('Тсс... сплю 💤', 3000);
+      else if (catState.hunger < 30) catSay('Мяу! Покорми 🥺', 3500);
+      else catSay('Привет! Как хорошо, что ты зашла! 🐱', 3500);
+    }, 800);
+
+    // ═══════════════════════════════════════════
+    // МИНИ-ИГРА
+    // ═══════════════════════════════════════════
+    const gameOverlay = document.getElementById('gameOverlay');
+    const gameCanvas = document.getElementById('gameCanvas');
+    const gctx = gameCanvas.getContext('2d');
+    const gameScoreEl = document.getElementById('gameScore');
+    const gameRecordEl = document.getElementById('gameRecord');
+    const gameCoinsEl = document.getElementById('gameCoins');
+    const gameFishesEl = document.getElementById('gameFishes');
+    const gameOverBox = document.getElementById('gameOverBox');
+    const goScoreEl = document.getElementById('goScore');
+    const goRecordEl = document.getElementById('goRecord');
+    const goCoinsEl = document.getElementById('goCoins');
+    const goFishEl = document.getElementById('goFish');
+    const goTitleEl = document.getElementById('goTitle');
+    const goEmojiEl = document.getElementById('goEmoji');
+    const startBtn = document.getElementById('startBtn');
+    const powerupIndicator = document.getElementById('powerupIndicator');
+    const powerupTimerEl = document.getElementById('powerupTimer');
+    const gameSubtitle = document.getElementById('gameSubtitle');
+
+    const LEVELS = [
+      { name: '🌳 Лес', sky: ['#e8f5e9', '#c8e6c9'], ground: '#8bc34a', obstacle: ['🌵', '🌳', '🌲', '🍄'], cloud: true, stars: false },
+      { name: '🌃 Ночной город', sky: ['#1a1a3e', '#2a1a5e'], ground: '#4a4a6a', obstacle: ['🏢', '🚗', '🚦', '🛢️'], cloud: false, stars: true },
+      { name: '🏖️ Пляж', sky: ['#fff9c4', '#ffe082'], ground: '#f4d58d', obstacle: ['🐚', '🌴', '⛱️', '🦀'], cloud: true, stars: false }
+    ];
+
+    let currentLevel = 0;
+    function getLevelIndexByScore(score) { return Math.min(LEVELS.length - 1, Math.floor(score / 200)); }
+
+    let game = {
+      running: false, finished: false,
+      score: 0,
+      record: parseInt(localStorage.getItem('catGameRecord') || '0'),
+      speed: 4, gravity: 0.7, jumpPower: -13,
+      groundY: 0,
+      cat: null,
+      obstacles: [], fishes: [], powerups: [], clouds: [], stars: [],
+      lastObstacleTime: 0, lastFishTime: 0, lastPowerupTime: 0,
+      frame: 0,
+      doubleScore: false,
+      doubleScoreEndTime: 0,
+      coinsThisRun: 0,
+      fishThisRun: 0,
+      nextCoinScore: 50,
+      levelsSeen: new Set()
+    };
+
+    gameRecordEl.textContent = game.record;
+
+    function resizeGameCanvas() {
+      const wrap = gameCanvas.parentElement;
+      const rect = wrap.getBoundingClientRect();
+      gameCanvas.width = rect.width;
+      gameCanvas.height = rect.height;
+      game.groundY = rect.height - 40;
+    }
+
+    function initGameObjects() {
+      const W = gameCanvas.width;
+      game.cat = { x: 60, y: game.groundY - 40, width: 44, height: 44, vy: 0, onGround: true };
+      game.obstacles = [];
+      game.fishes = [];
+      game.powerups = [];
+      game.clouds = [];
+      game.stars = [];
+
+      for (let i = 0; i < 4; i++) {
+        game.clouds.push({ x: Math.random() * W, y: 20 + Math.random() * 60, speed: 0.3 + Math.random() * 0.4, size: 30 + Math.random() * 20 });
+      }
+      for (let i = 0; i < 30; i++) {
+        game.stars.push({ x: Math.random() * W, y: Math.random() * (game.groundY - 20), size: Math.random() * 1.5 + 0.5 });
+      }
+
+      game.lastObstacleTime = Date.now();
+      game.lastFishTime = Date.now();
+      game.lastPowerupTime = Date.now();
+      game.frame = 0;
+      game.doubleScore = false;
+      powerupIndicator.classList.remove('active');
+      game.nextCoinScore = 10;
+      game.levelsSeen = new Set([0]);
+      currentLevel = 0;
+    }
+
+    function jump() {
+      if (!game.running) return;
+      if (game.cat.onGround) {
+        game.cat.vy = game.jumpPower;
+        game.cat.onGround = false;
+        Sound.jump();
+      }
+    }
+
+    function updateGame() {
+      if (!game.running) return;
+      const W = gameCanvas.width;
+
+      game.cat.vy += game.gravity;
+      game.cat.y += game.cat.vy;
+      if (game.cat.y >= game.groundY - game.cat.height) {
+        game.cat.y = game.groundY - game.cat.height;
+        game.cat.vy = 0;
+        game.cat.onGround = true;
+      }
+
+      game.clouds.forEach(c => {
+        c.x -= c.speed;
+        if (c.x + c.size < 0) { c.x = W + c.size; c.y = 20 + Math.random() * 60; }
+      });
+
+      if (game.doubleScore && Date.now() > game.doubleScoreEndTime) {
+        game.doubleScore = false;
+        powerupIndicator.classList.remove('active');
+      }
+      if (game.doubleScore) {
+        const left = Math.max(0, Math.ceil((game.doubleScoreEndTime - Date.now()) / 1000));
+        powerupTimerEl.textContent = left;
+      }
+
+            const now = Date.now();
+      
+      const obstacleDelay = Math.max(1300, 1800 - game.score * 6);
+      if (now - game.lastObstacleTime > obstacleDelay) {
+        game.lastObstacleTime = now;
+        const level = LEVELS[currentLevel];
+        const type = level.obstacle[Math.floor(Math.random() * level.obstacle.length)];
+        const h = 30 + Math.random() * 20;
+        
+        const lastObs = game.obstacles[game.obstacles.length - 1];
+        if (lastObs && (W + 20 - lastObs.x) < 250) {
+          // Слишком близко — не спавним это препятствие
+        } else {
+          const obsX = W + 20;
+          game.obstacles.push({ x: obsX, y: game.groundY - h, width: 30, height: h, emoji: type });
+
+          // 🐟 Рыбка НАД препятствием (шанс 60%)
+          if (Math.random() < 0.6) {
+            game.fishes.push({
+              x: obsX + 10,                           // чуть правее препятствия
+              y: game.groundY - h - 60,               // НАД препятствием
+              size: 26,
+              collected: false,
+              bobPhase: Math.random() * Math.PI * 2
+            });
+          }
+        }
+      }
+
+      if (now - game.lastPowerupTime > 15000 + Math.random() * 15000) {
+        game.lastPowerupTime = now;
+        game.powerups.push({ x: W + 20, y: game.groundY - 80 - Math.random() * 30, size: 30, collected: false, bobPhase: 0 });
+      }
+
+      game.obstacles.forEach(o => o.x -= game.speed);
+      game.obstacles = game.obstacles.filter(o => o.x + o.width > -20);
+
+      game.fishes.forEach(f => { f.x -= game.speed; f.bobPhase += 0.15; });
+      game.fishes = game.fishes.filter(f => f.x + f.size > -20);
+
+      game.powerups.forEach(p => { p.x -= game.speed; p.bobPhase += 0.2; });
+      game.powerups = game.powerups.filter(p => p.x + p.size > -20);
+
+      const catBox = { x: game.cat.x + 6, y: game.cat.y + 6, w: game.cat.width - 12, h: game.cat.height - 8 };
+      for (const o of game.obstacles) {
+        if (catBox.x < o.x + o.width && catBox.x + catBox.w > o.x && catBox.y < o.y + o.height && catBox.y + catBox.h > o.y) {
+          endGame(); return;
+        }
+      }
+
+      for (const f of game.fishes) {
+        if (!f.collected) {
+          const dx = (game.cat.x + game.cat.width / 2) - (f.x + f.size / 2);
+          const dy = (game.cat.y + game.cat.height / 2) - (f.y + f.size / 2);
+        if (Math.sqrt(dx * dx + dy * dy) < 38) {
+            f.collected = true;
+            const points = game.doubleScore ? 10 : 5;
+            game.score += points;
+            game.fishThisRun++;
+            gameScoreEl.textContent = game.score;
+            gameFishesEl.textContent = game.fishThisRun;
+            catState.totalFishCollected++;
+            showFloatingScore(f.x, f.y, `+${points}`, '#ff4d6d');
+            Sound.fish();
+            if (catState.totalFishCollected >= 10) unlockAchievement('ten_fish');
+          }
+        }
+      }
+      game.fishes = game.fishes.filter(f => !f.collected);
+
+      for (const p of game.powerups) {
+        if (!p.collected) {
+          const dx = (game.cat.x + game.cat.width / 2) - (p.x + p.size / 2);
+          const dy = (game.cat.y + game.cat.height / 2) - (p.y + p.size / 2);
+        if (Math.sqrt(dx * dx + dy * dy) < 38) {
+            p.collected = true;
+            game.doubleScore = true;
+            game.doubleScoreEndTime = Date.now() + 10000;
+            powerupIndicator.classList.add('active');
+            powerupTimerEl.textContent = '10';
+            showFloatingScore(p.x, p.y, '⚡ ×2!', '#ffa500');
+            Sound.powerup();
+            spawnHearts(8);
+          }
+        }
+      }
+      game.powerups = game.powerups.filter(p => !p.collected);
+
+            game.frame++;
+      if (game.frame % 6 === 0) {
+        const points = game.doubleScore ? 2 : 1;
+        game.score += points;
+        gameScoreEl.textContent = game.score;
+
+        // 🪙 Монетка за каждые 10 очков (в 5 раз быстрее чем было 50)
+        if (game.score >= game.nextCoinScore) {
+          game.nextCoinScore += 10;
+          game.coinsThisRun++;
+          gameCoinsEl.textContent = game.coinsThisRun;
+          Sound.coin();
+          showFloatingScore(gameCanvas.width - 80, 40, '🪙 +1', '#ffa500');
+        }
+      }
+
+      const newLevel = getLevelIndexByScore(game.score);
+      if (newLevel !== currentLevel) {
+        currentLevel = newLevel;
+        game.levelsSeen.add(newLevel);
+        gameSubtitle.textContent = `Достигнут уровень: ${LEVELS[currentLevel].name}`;
+        showToast(`🌈 Новый уровень: ${LEVELS[currentLevel].name}`);
+        setTimeout(() => { gameSubtitle.textContent = 'Прыгай через препятствия и собирай рыбки! 🐟'; }, 3000);
+        if (game.levelsSeen.size >= 3) unlockAchievement('level_master');
+      }
+
+      game.speed = 4 + Math.min(6, game.score * 0.03);
+    }
+
+    function showFloatingScore(x, y, text, color) {
+      const el = document.createElement('div');
+      el.textContent = text;
+      el.style.cssText = `position:absolute;left:${x}px;top:${y}px;color:${color};font-weight:800;font-size:18px;pointer-events:none;z-index:100;animation:floatUpScore 0.9s ease-out forwards;`;
+      document.querySelector('.game-canvas-wrap').appendChild(el);
+      setTimeout(() => el.remove(), 900);
+    }
+
+    const floatStyle = document.createElement('style');
+    floatStyle.textContent = `@keyframes floatUpScore { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-40px) scale(1.3); opacity: 0; } }`;
+    document.head.appendChild(floatStyle);
+
+    function drawGame() {
+      const W = gameCanvas.width;
+      const H = gameCanvas.height;
+      const level = LEVELS[currentLevel];
+
+      const grad = gctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, level.sky[0]);
+      grad.addColorStop(1, level.sky[1]);
+      gctx.fillStyle = grad;
+      gctx.fillRect(0, 0, W, H);
+
+      if (currentLevel === 1) {
+        gctx.fillStyle = '#fff';
+        gctx.beginPath(); gctx.arc(W - 60, 50, 22, 0, Math.PI * 2); gctx.fill();
+        gctx.fillStyle = level.sky[0];
+        gctx.beginPath(); gctx.arc(W - 68, 45, 20, 0, Math.PI * 2); gctx.fill();
+      } else {
+        gctx.fillStyle = '#ffeb3b';
+        gctx.beginPath(); gctx.arc(W - 60, 50, 22, 0, Math.PI * 2); gctx.fill();
+      }
+
+      if (level.stars) {
+        gctx.fillStyle = '#fff';
+        game.stars.forEach(s => {
+          gctx.globalAlpha = 0.5 + Math.sin(game.frame * 0.05 + s.x) * 0.5;
+          gctx.beginPath(); gctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); gctx.fill();
+        });
+        gctx.globalAlpha = 1;
+      }
+
+      if (level.cloud) {
+        gctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        game.clouds.forEach(c => {
+          gctx.beginPath();
+          gctx.arc(c.x, c.y, c.size * 0.6, 0, Math.PI * 2);
+          gctx.arc(c.x + c.size * 0.5, c.y - c.size * 0.2, c.size * 0.5, 0, Math.PI * 2);
+          gctx.arc(c.x + c.size, c.y, c.size * 0.55, 0, Math.PI * 2);
+          gctx.fill();
+        });
+      }
+
+      gctx.fillStyle = level.ground;
+      gctx.fillRect(0, game.groundY, W, H - game.groundY);
+
+      gctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+      gctx.lineWidth = 2;
+      gctx.beginPath(); gctx.moveTo(0, game.groundY); gctx.lineTo(W, game.groundY); gctx.stroke();
+
+      gctx.font = '30px serif';
+      gctx.textAlign = 'center';
+      gctx.textBaseline = 'bottom';
+      game.obstacles.forEach(o => { gctx.fillText(o.emoji, o.x + o.width / 2, o.y + o.height); });
+
+      gctx.font = '26px serif';
+      game.fishes.forEach(f => {
+        const bob = Math.sin(f.bobPhase) * 4;
+        gctx.fillText('🐟', f.x + f.size / 2, f.y + f.size + bob);
+      });
+
+      gctx.font = '28px serif';
+      game.powerups.forEach(p => {
+        const bob = Math.sin(p.bobPhase) * 5;
+        gctx.fillText('⚡', p.x + p.size / 2, p.y + p.size + bob);
+      });
+
+            const cat = game.cat;
+      
+      // Тень под котиком
+      gctx.save();
+      gctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+      gctx.beginPath();
+      gctx.ellipse(cat.x + cat.width / 2, game.groundY + 3, cat.width / 2.5, 5, 0, 0, Math.PI * 2);
+      gctx.fill();
+      gctx.restore();
+
+      // САМ КОТИК — сбрасываем fillStyle на непрозрачный
+      gctx.save();
+      gctx.globalAlpha = 1;
+      gctx.fillStyle = '#000000';
+      gctx.font = '44px serif';
+      gctx.textAlign = 'left';
+      gctx.textBaseline = 'top';
+      gctx.fillText(cat.onGround ? '🐱' : '😸', cat.x, cat.y);
+      gctx.restore();
+    }
+
+    function gameLoop() {
+      if (!game.running && !game.finished) return;
+      updateGame();
+      drawGame();
+      if (game.running) requestAnimationFrame(gameLoop);
+    }
+
+    function openGame() {
+      initAudio();
+      gameOverlay.classList.add('active');
+      setTimeout(() => { resizeGameCanvas(); initGameObjects(); drawGame(); }, 100);
+    }
+
+    function closeGame() {
+      gameOverlay.classList.remove('active');
+      game.running = false;
+      game.finished = false;
+    }
+
+    function startGame() {
+      initAudio();
+      resizeGameCanvas();
+      initGameObjects();
+      game.running = true;
+      game.finished = false;
+      game.score = 0;
+      game.speed = 4;
+      game.coinsThisRun = 0;
+      game.fishThisRun = 0;
+      game.nextCoinScore = 10;
+      gameScoreEl.textContent = '0';
+      gameCoinsEl.textContent = '0';
+      gameFishesEl.textContent = '0';
+      gameOverBox.classList.remove('show');
+      startBtn.disabled = true;
+      startBtn.textContent = '🎮 Играем...';
+      gameLoop();
+    }
+
+    function endGame() {
+      game.running = false;
+      game.finished = true;
+      Sound.hurt();
+
+      // Начисляем монетки
+      catState.coins += game.coinsThisRun;
+
+      // Начисляем рыбок — в инвентарь
+      catState.fishCollected += game.fishThisRun;
+
+      saveState();
+      document.getElementById('coinsCount').textContent = catState.coins;
+
+      let isNewRecord = false;
+      if (game.score > game.record) {
+        game.record = game.score;
+        localStorage.setItem('catGameRecord', game.record);
+        gameRecordEl.textContent = game.record;
+        isNewRecord = true;
+      }
+
+      if (game.score > 0) unlockAchievement('first_record');
+      if (game.score >= 100) unlockAchievement('hundred');
+
+      goScoreEl.textContent = game.score;
+      goRecordEl.textContent = 'Рекорд: ' + game.record;
+      goCoinsEl.textContent = `+${game.coinsThisRun} 🪙 заработано`;
+      goFishEl.textContent = `+${game.fishThisRun} 🐟 поймано (всего ${catState.fishCollected})`;
+
+      if (isNewRecord) {
+        goEmojiEl.textContent = '🏆';
+        goTitleEl.textContent = 'Новый рекорд!';
+      } else {
+        goEmojiEl.textContent = '😿';
+        goTitleEl.textContent = 'Ой, котик упал!';
+      }
+
+      gameOverBox.classList.add('show');
+      startBtn.disabled = false;
+      startBtn.textContent = '▶ Начать';
+
+      if (isNewRecord && game.score > 0) spawnHearts(20);
+    }
+
+    function restartGame() {
+      gameOverBox.classList.remove('show');
+      startGame();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (!gameOverlay.classList.contains('active')) return;
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        if (game.running) jump();
+        else if (!game.finished) startGame();
+      }
+    });
+
+    gameCanvas.addEventListener('click', () => { if (game.running) jump(); });
+    gameCanvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (game.running) jump();
+    }, { passive: false });
+
+    window.addEventListener('resize', () => {
+      if (gameOverlay.classList.contains('active')) {
+        resizeGameCanvas();
+        if (game.cat) game.groundY = gameCanvas.height - 40;
+      }
+    });
+
+    // ═══════════════════════════════════════════
+    // АДМИН
+    // ═══════════════════════════════════════════
+    const ADMIN_COINS = 666;
+
+    function isAdminMode() { return localStorage.getItem('adminMode') === 'on'; }
+
+    function toggleAdmin() {
+      const btn = document.getElementById('adminBtn');
+      const indicator = document.getElementById('adminIndicator');
+
+      if (isAdminMode()) {
+        // ═══════════════════════════════════════
+        // ВЫКЛЮЧАЕМ — восстанавливаем снимок
+        // ═══════════════════════════════════════
+        const confirmed = confirm(
+          '👑 Выключить админ-режим?\n\n' +
+          '↩️ Всё вернётся к состоянию ДО включения админа:\n' +
+          '• 666 монет заберутся\n' +
+          '• Всё, что куплено НА админские монеты — пропадёт\n' +
+          '• То, что было до админа — останется\n\n' +
+          'Продолжить?'
+        );
+        if (!confirmed) return;
+
+        // Восстанавливаем снимок
+        try {
+          const snapshotRaw = localStorage.getItem('adminSnapshot');
+          if (snapshotRaw) {
+            const snapshot = JSON.parse(snapshotRaw);
+            
+            // Возвращаем всё, что было до админа
+            catState.coins = snapshot.coins;
+            catState.ownedHats = snapshot.ownedHats || [];
+            catState.ownedFood = snapshot.ownedFood || {};
+            catState.equippedHat = snapshot.equippedHat || null;
+            catState.achievements = snapshot.achievements || [];
+            catState.fishCollected = snapshot.fishCollected || 0;
+            catState.totalFishCollected = snapshot.totalFishCollected || 0;
+            // Уровни котика не трогаем — они честно шли
+          } else {
+            // На всякий случай — если снимок пропал, просто убираем 666 монет
+            catState.coins = Math.max(0, catState.coins - ADMIN_COINS);
+          }
+          localStorage.removeItem('adminSnapshot');
+        } catch (e) {
+          console.error('Ошибка восстановления снимка:', e);
+          catState.coins = Math.max(0, catState.coins - ADMIN_COINS);
+        }
+
+        saveState();
+        localStorage.removeItem('adminMode');
+        document.body.classList.remove('admin-mode');
+        btn.classList.remove('active');
+        indicator.classList.remove('show');
+
+        updateUI();
+        renderShopIfOpen();
+
+        showToast('⚙️ Админ-режим выключен. Прогресс восстановлен');
+        Sound.hurt();
+        catSay('Мои вещи вернулись! 🥰', 3000);
+
+      } else {
+        // ═══════════════════════════════════════
+        // ВКЛЮЧАЕМ — сохраняем снимок
+        // ═══════════════════════════════════════
+        const confirmed = confirm(
+          '👑 Включить админ-режим?\n\n' +
+          '• Ты получишь 666 монет\n' +
+          '• Прогресс до этого будет сохранён\n' +
+          '• Когда выключишь — всё вернётся, кроме купленного на эти 666\n\n' +
+          'Продолжить?'
+        );
+        if (!confirmed) return;
+
+        // 💾 Сохраняем снимок текущего прогресса
+        const snapshot = {
+          coins: catState.coins,
+          ownedHats: [...catState.ownedHats],
+          ownedFood: { ...catState.ownedFood },
+          equippedHat: catState.equippedHat,
+          achievements: [...catState.achievements],
+          fishCollected: catState.fishCollected,
+          totalFishCollected: catState.totalFishCollected
+        };
+        localStorage.setItem('adminSnapshot', JSON.stringify(snapshot));
+
+        // 💰 Даём 666 монет
+        catState.coins += ADMIN_COINS;
+        saveState();
+
+        localStorage.setItem('adminMode', 'on');
+        document.body.classList.add('admin-mode');
+        btn.classList.add('active');
+        indicator.classList.add('show');
+        setTimeout(() => indicator.classList.remove('show'), 4000);
+
+        updateUI();
+        renderShopIfOpen();
+
+        Sound.ach();
+        setTimeout(() => Sound.coin(), 200);
+        setTimeout(() => Sound.powerup(), 400);
+
+        for (let i = 0; i < 60; i++) setTimeout(() => spawnAdminConfetti(), i * 25);
+
+        showToast(`👑 Админ-режим активен! +${ADMIN_COINS} монет`);
+        catSay('ВАУ! 👑 Я теперь королевский котик!', 3000);
+      }
+    }
+
+    function renderShopIfOpen() {
+      const shopMenu = document.getElementById('shopMenu');
+      if (shopMenu && shopMenu.classList.contains('active')) {
+        document.getElementById('shopCoins').textContent = catState.coins;
+        renderShop();
+      }
+    }
+
+    function spawnAdminConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'admin-confetti';
+      confetti.textContent = ['👑', '🪙', '💰', '✨', '💎', '⭐'][Math.floor(Math.random() * 6)];
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+      confetti.style.fontSize = (20 + Math.random() * 20) + 'px';
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 4500);
+    }
+
+    function restoreAdminMode() {
+      if (isAdminMode()) {
+        document.body.classList.add('admin-mode');
+        document.getElementById('adminBtn').classList.add('active');
+        setTimeout(() => {
+          const indicator = document.getElementById('adminIndicator');
+          indicator.classList.add('show');
+          setTimeout(() => indicator.classList.remove('show'), 4000);
+        }, 500);
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    // СТАРТ
+    // ═══════════════════════════════════════════
+    updateUI();
+    restoreAdminMode();
+  </script>
+</body>
+</html>

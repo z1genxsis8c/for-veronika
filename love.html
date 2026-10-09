@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Что я в тебе люблю ❤️</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 50%, #fba3b7 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      padding-bottom: 40px;
+      box-sizing: border-box;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ---------- ДОЖДЬ ИЗ СЕРДЕЧЕК ---------- */
+    #hearts-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      top: -30px;
+      color: #ffb3c1;
+      font-size: 20px;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ---------- КОНТЕЙНЕР ---------- */
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 620px;
+      text-align: center;
+    }
+
+    /* ---------- ЗАГОЛОВОК ---------- */
+    .header {
+      margin-bottom: 24px;
+      animation: fadeInDown 1s ease;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      color: #ff4d6d;
+      font-size: 24px;
+      margin: 0 0 8px;
+      font-weight: 800;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      color: #c71585;
+      font-size: 13px;
+      margin: 0;
+      font-weight: 600;
+      opacity: 0.9;
+      font-style: italic;
+    }
+
+    /* ---------- СЧЁТЧИК ОТКРЫТЫХ ---------- */
+    .progress-box {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #ffc2d1;
+      border-radius: 50px;
+      padding: 10px 22px;
+      display: inline-block;
+      margin-bottom: 22px;
+      box-shadow: 0 6px 20px rgba(255, 77, 109, 0.2);
+      font-size: 13px;
+      font-weight: 700;
+      color: #c71585;
+      transition: all 0.3s;
+    }
+
+    .progress-box b {
+      color: #ff4d6d;
+      font-size: 15px;
+    }
+
+    .progress-box.all-opened {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: #fff;
+      border-color: #ff4d6d;
+      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.5);
+      animation: celebrateProgress 1s ease-in-out;
+    }
+
+    .progress-box.all-opened b {
+      color: #fff;
+    }
+
+    @keyframes celebrateProgress {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    /* ---------- СПИСОК ПРИЧИН ---------- */
+    .reasons-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    /* Карточка одной причины */
+    .reason-item {
+      background: rgba(255, 255, 255, 0.92);
+      border: 2px solid #ffc2d1;
+      border-radius: 18px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(255, 77, 109, 0.12);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: itemAppear 0.5s ease forwards;
+    }
+
+    @keyframes itemAppear {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .reason-item:hover {
+      border-color: #ff4d6d;
+      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .reason-item.opened {
+      background: linear-gradient(135deg, #fff, #ffe5ec);
+      border-color: #ff4d6d;
+      box-shadow: 0 10px 28px rgba(255, 77, 109, 0.35);
+    }
+
+    /* Кнопка-заголовок причины (кликабельная) */
+    .reason-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.25s;
+    }
+
+    .reason-header:hover {
+      background: rgba(255, 229, 236, 0.5);
+    }
+
+    /* Сердечко-кнопка */
+    .heart-btn {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffb3c1, #ff8fa3);
+      border: 2px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.3);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .heart-btn::before {
+      content: '❤️';
+      transition: all 0.4s;
+    }
+
+    .reason-item.opened .heart-btn {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      transform: scale(1.1) rotate(0deg);
+      animation: heartPop 0.6s ease;
+    }
+
+    .reason-item.opened .heart-btn::before {
+      content: '💖';
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+    }
+
+    @keyframes heartPop {
+      0% { transform: scale(1) rotate(0deg); }
+      30% { transform: scale(1.3) rotate(-15deg); }
+      60% { transform: scale(0.9) rotate(15deg); }
+      100% { transform: scale(1.1) rotate(0deg); }
+    }
+
+    /* Номер причины */
+    .reason-number {
+      color: #c71585;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      width: 30px;
+      opacity: 0.7;
+    }
+
+    /* Короткая фраза (то, что видно до клика) */
+    .reason-short {
+      flex: 1;
+      color: #4a2a3a;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .reason-item.opened .reason-short {
+      color: #c71585;
+    }
+
+    /* Стрелочка-индикатор */
+    .reason-arrow {
+      flex-shrink: 0;
+      color: #ff8fa3;
+      font-size: 18px;
+      transition: transform 0.4s;
+      font-weight: bold;
+    }
+
+    .reason-item.opened .reason-arrow {
+      transform: rotate(180deg);
+      color: #ff4d6d;
+    }
+
+    /* Тело причины (раскрывающийся текст) */
+    .reason-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  padding 0.4s ease,
+                  opacity 0.4s ease;
+      opacity: 0;
+      padding: 0 18px;
+    }
+
+    .reason-item.opened .reason-body {
+      max-height: 300px;
+      opacity: 1;
+      padding: 0 18px 18px 18px;
+    }
+
+    .reason-body-inner {
+      background: rgba(255, 255, 255, 0.7);
+      border-left: 4px solid #ff4d6d;
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #4a2a3a;
+      font-size: 14px;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* ---------- ФИНАЛЬНАЯ НАДПИСЬ ---------- */
+    .final-message {
+      background: linear-gradient(135deg, #fff, #ffe5ec);
+      border: 3px dashed #ff4d6d;
+      border-radius: 20px;
+      padding: 24px 22px;
+      margin-top: 20px;
+      text-align: center;
+      font-size: 17px;
+      font-weight: 700;
+      color: #c71585;
+      line-height: 1.5;
+      box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2);
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    .final-message.show {
+      opacity: 1;
+      transform: scale(1);
+      animation: finalGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes finalGlow {
+      0%, 100% { box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2); }
+      50% { box-shadow: 0 10px 50px rgba(255, 77, 109, 0.6); }
+    }
+
+    .final-message .big {
+      display: block;
+      font-size: 32px;
+      margin-bottom: 8px;
+      animation: heartBeat 1.5s ease-in-out infinite;
+    }
+
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.2); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.15); }
+      60% { transform: scale(1); }
+    }
+
+    /* ---------- НИЖНЯЯ ПАНЕЛЬ С КНОПКАМИ ---------- */
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.95);
+      color: #c71585;
+      border: 2px solid #ffc2d1;
+      font-size: 14px;
+      padding: 12px 22px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
+      transition: all 0.25s;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background: #ff4d6d;
+      color: white;
+      border-color: #ff4d6d;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(255, 77, 109, 0.5);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: white;
+      border-color: #ff4d6d;
+    }
+
+    .btn.primary:hover {
+      background: linear-gradient(135deg, #ff758f, #ff4d6d);
+    }
+
+    /* ---------- ФЕЙЕРВЕРК ПРИ ОТКРЫТИИ ВСЕХ ---------- */
+    .confetti {
+      position: fixed;
+      font-size: 20px;
+      pointer-events: none;
+      z-index: 4000;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ---------- АДАПТИВ ---------- */
+    @media (max-width: 480px) {
+      h1 { font-size: 19px; }
+      .subtitle { font-size: 12px; }
+      .reason-header {
+        gap: 10px;
+        padding: 12px 14px;
+      }
+      .heart-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+      }
+      .reason-short { font-size: 13.5px; }
+      .reason-number { font-size: 12px; width: 24px; }
+      .reason-body-inner { font-size: 13px; padding: 12px 14px; }
+      .final-message { font-size: 15px; padding: 20px 18px; }
+      .final-message .big { font-size: 28px; }
+      .btn { font-size: 13px; padding: 10px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="hearts-container"></div>
+
+  <div class="container">
+
+    <!-- Заголовок -->
+    <div class="header">
+      <h1>💖 Что я в тебе люблю</h1>
+      <p class="subtitle">Нажми на сердечко, чтобы узнать причину</p>
+    </div>
+
+    <!-- Счётчик -->
+    <div class="progress-box" id="progressBox">
+      Открыто: <b><span id="openedCount">0</span></b> из <b><span id="totalCount">25</span></b> 💕
+    </div>
+
+    <!-- Список причин -->
+    <div class="reasons-list" id="reasonsList">
+      <!-- Причины будут сгенерированы JS -->
+    </div>
+
+    <!-- Финальная надпись -->
+    <div class="final-message" id="finalMessage">
+      <span class="big">💝</span>
+      ...и ещё бесконечно много причин,<br>
+      которые я скажу тебе лично 💕
+    </div>
+
+    <!-- Кнопки -->
+    <div class="controls">
+      <a href="index.html" class="btn primary">← На главную</a>
+      <button class="btn" onclick="resetAll()">🔄 Сбросить все</button>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // ⚠️ СПИСОК ПРИЧИН — ЗАМЕНИ НА СВОИ
+    // ============================================================
+    // short — короткая фраза, которая видна до клика (2-4 слова)
+    // full  — полная причина, раскрывается при клике
+    // ============================================================
+
+    const REASONS = [
+      {
+        short: "Твоя улыбка",
+        full: "Твоя улыбка — моё любимое зрелище на свете. Когда ты улыбаешься, весь мир становится ярче, и я не могу не улыбнуться в ответ."
+      },
+      {
+        short: "Твои глаза",
+        full: "В твоих глазах я вижу своё будущее. Они такие глубокие и тёплые, что я готов в них утонуть навсегда."
+      },
+      {
+        short: "Твой смех",
+        full: "Твой смех — лучшая мелодия в мире. Я готов делать всё, чтобы слышать его как можно чаще."
+      },
+      {
+        short: "Как ты слушаешь",
+        full: "Ты слушаешь так, как никто другой. Внимательно, с интересом, будто я — самый важный человек в мире. Спасибо за это."
+      },
+      {
+        short: "Твоя нежность",
+        full: "Твоя нежность обезоруживает. Одно твоё прикосновение — и все проблемы куда-то исчезают."
+      },
+      {
+        short: "Твой характер",
+        full: "Ты сильная, но при этом мягкая. Упорная, но умеешь уступать. Твой характер — это симбиоз всего, что я искал."
+      },
+      {
+        short: "Как ты заботишься",
+        full: "Ты заботишься обо мне так, как никто никогда не заботился. Ты замечаешь мелочи, которые для других неважны."
+      },
+      {
+        short: "Твоя честность",
+        full: "Ты всегда говоришь правду, даже когда она неудобная. Я ценю это больше всего — с тобой я знаю, что всё по-настоящему."
+      },
+      {
+        short: "Твоя красота",
+        full: "Ты красива. Не только снаружи, но и внутри. И эта внутренняя красота делает тебя ещё прекраснее."
+      },
+      {
+        short: "Как ты смеёшься над моими шутками",
+        full: "Даже когда мои шутки глупые, ты смеёшься так искренне, что я верю — я самый смешной человек на земле."
+      },
+      {
+        short: "Твоя забота о других",
+        full: "Ты всегда готова помочь другим. Это говорит о твоём огромном сердце, которое я очень люблю."
+      },
+      {
+        short: "Твоя любовь к жизни",
+        full: "Ты умеешь радоваться мелочам. Вместе с тобой я научился видеть красоту в самых обычных вещах."
+      },
+      {
+        short: "Как ты меня понимаешь",
+        full: "Ты понимаешь меня без слов. Иногда мне кажется, что ты читаешь мои мысли — и это одновременно пугает и восхищает."
+      },
+      {
+        short: "Твоя поддержка",
+        full: "Когда у меня что-то не получается, ты всегда рядом. Твоя поддержка помогает мне двигаться вперёд."
+      },
+      {
+        short: "Твоя интуиция",
+        full: "Ты всегда чувствуешь, когда что-то не так. Твоя интуиция спасала нас не раз."
+      },
+      {
+        short: "Как ты готовишь",
+        full: "Даже если это просто яичница — вкуснее её я не ел нигде. Потому что ты вкладываешь в это душу."
+      },
+      {
+        short: "Твои объятия",
+        full: "Твои объятия — лучшее место на планете. Там тепло, спокойно и безопасно."
+      },
+      {
+        short: "Твой голос",
+        full: "Твой голос успокаивает меня. Даже когда я злой или расстроенный, стоит тебе заговорить — и всё проходит."
+      },
+      {
+        short: "Твои поцелуи",
+        full: "Твои поцелуи — это маленькие искры счастья. Каждый раз — как будто в первый раз."
+      },
+      {
+        short: "Как ты смотришь на меня",
+        full: "Иногда ты просто смотришь на меня — и в этот момент я чувствую себя самым счастливым человеком на свете."
+      },
+      {
+        short: "Твоя мудрость",
+        full: "Ты умнее, чем кажешься. Твои советы часто помогают мне в сложных ситуациях."
+      },
+      {
+        short: "Твоё чувство юмора",
+        full: "Ты умеешь шутить и над собой, и над ситуацией. С тобой никогда не бывает скучно."
+      },
+      {
+        short: "Как ты вдохновляешь",
+        full: "Ты вдохновляешь меня становиться лучше. Ради тебя я хочу быть сильнее и добрее."
+      },
+      {
+        short: "Твоя верность",
+        full: "Ты верна мне, и я это чувствую. Это то, что делает наши отношения настоящими."
+      },
+      {
+        short: "Просто то, что ты есть",
+        full: "Иногда я не могу назвать конкретную причину. Просто ты есть — и от одного этого моё сердце поёт. Спасибо, что ты есть в моей жизни, Вероника."
+      }
+    ];
+
+    // ============================================================
+
+    const reasonsList = document.getElementById('reasonsList');
+    const openedCountEl = document.getElementById('openedCount');
+    const totalCountEl = document.getElementById('totalCount');
+    const progressBox = document.getElementById('progressBox');
+    const finalMessage = document.getElementById('finalMessage');
+
+    let openedSet = new Set();
+    let allOpenedCelebrated = false;
+
+    // ---------- СОЗДАНИЕ СПИСКА ----------
+    function buildReasons() {
+      totalCountEl.textContent = REASONS.length;
+      reasonsList.innerHTML = '';
+
+      REASONS.forEach((reason, index) => {
+        const item = document.createElement('div');
+        item.className = 'reason-item';
+        item.style.animationDelay = (index * 0.05) + 's';
+        item.dataset.index = index;
+
+        item.innerHTML = `
+          <div class="reason-header">
+            <div class="heart-btn"></div>
+            <div class="reason-number">№${index + 1}</div>
+            <div class="reason-short">${reason.short}</div>
+            <div class="reason-arrow">▾</div>
+          </div>
+          <div class="reason-body">
+            <div class="reason-body-inner">${reason.full}</div>
+          </div>
+        `;
+
+        const header = item.querySelector('.reason-header');
+        header.addEventListener('click', () => toggleReason(item, index));
+
+        reasonsList.appendChild(item);
+      });
+    }
+
+    // ---------- ОТКРЫТИЕ/ЗАКРЫТИЕ ----------
+    function toggleReason(item, index) {
+      const wasOpened = item.classList.contains('opened');
+
+      if (wasOpened) {
+        item.classList.remove('opened');
+        openedSet.delete(index);
+      } else {
+        item.classList.add('opened');
+        openedSet.add(index);
+
+        // Сердечки-салют из кнопки
+        const heartBtn = item.querySelector('.heart-btn');
+        const rect = heartBtn.getBoundingClientRect();
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => spawnHeart(rect.left + rect.width / 2, rect.top + rect.height / 2), i * 60);
+        }
+      }
+
+      updateProgress();
+    }
+
+    // ---------- ОБНОВЛЕНИЕ СЧЁТЧИКА ----------
+    function updateProgress() {
+      openedCountEl.textContent = openedSet.size;
+
+      if (openedSet.size === REASONS.length && !allOpenedCelebrated) {
+        allOpenedCelebrated = true;
+        progressBox.classList.add('all-opened');
+        celebrateAll();
+      }
+    }
+
+    // ---------- ПРАЗДНИК, КОГДА ОТКРЫТЫ ВСЕ ----------
+    function celebrateAll() {
+      // Показываем финальное сообщение
+      setTimeout(() => {
+        finalMessage.classList.add('show');
+        finalMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 400);
+
+      // Фейерверк из конфетти и сердечек
+      for (let i = 0; i < 80; i++) {
+        setTimeout(() => spawnConfetti(), i * 25);
+      }
+
+      // Большой салют сердечек из центра экрана
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      for (let i = 0; i < 40; i++) {
+        setTimeout(() => spawnHeart(cx, cy), i * 25);
+      }
+    }
+
+    // ---------- СЕРДЕЧКО-САЛЮТ ----------
+    function spawnHeart(x, y) {
+      const heart = document.createElement('div');
+      heart.textContent = ['❤️', '💖', '💗', '💕', '✨', '💝'][Math.floor(Math.random() * 6)];
+      heart.style.cssText = `
+        position: fixed; left: ${x}px; top: ${y}px;
+        font-size: ${16 + Math.random() * 18}px;
+        pointer-events: none; z-index: 5000;
+        transition: all ${0.9 + Math.random() * 0.7}s cubic-bezier(0.34, 1.56, 0.64, 1);
+      `;
+      document.body.appendChild(heart);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 80 + Math.random() * 200;
+      requestAnimationFrame(() => {
+        heart.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${Math.random() * 360}deg) scale(0.3)`;
+        heart.style.opacity = '0';
+      });
+      setTimeout(() => heart.remove(), 1800);
+    }
+
+    // ---------- КОНФЕТТИ ----------
+    function spawnConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.textContent = ['💖', '❤️', '✨', '💕', '🎉', '💗', '🌸', '💝'][Math.floor(Math.random() * 8)];
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+      confetti.style.fontSize = (18 + Math.random() * 18) + 'px';
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 4500);
+    }
+
+    // ---------- СБРОС ----------
+    function resetAll() {
+      openedSet.clear();
+      allOpenedCelebrated = false;
+      progressBox.classList.remove('all-opened');
+      finalMessage.classList.remove('show');
+      document.querySelectorAll('.reason-item').forEach(item => {
+        item.classList.remove('opened');
+      });
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---------- ДОЖДЬ СЕРДЕЧЕК НА ФОНЕ ----------
+    const container = document.getElementById('hearts-container');
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸'];
+      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+      heart.style.fontSize = Math.random() * 15 + 15 + "px";
+      container.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 6000);
+    }
+    setInterval(createHeart, 500);
+
+    // ---------- СТАРТ ----------
+    buildReasons();
+  </script>
+</body>
+</html>

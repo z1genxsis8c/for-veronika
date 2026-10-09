@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Для Вероники ❤️</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ffe5ec, #ffc2d1, #fba3b7);
+      position: relative;
+      min-height: 100vh;
+      padding: 20px;
+      padding-bottom: 120px;
+      box-sizing: border-box;
+    }
+
+    #hearts-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .game-zone {
+      position: relative;
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      gap: 16px;
+    }
+
+    /* ---------- ДОЖДЬ ИЗ СЕРДЕЧЕК ---------- */
+    .heart {
+      position: absolute;
+      top: -30px;
+      color: #ffb3c1;
+      font-size: 20px;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ---------- ФОТО-СЛАЙДЕР ---------- */
+    .photo-slider {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      margin-bottom: 4px;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+
+    .photo-slider img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #fff;
+      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.4);
+      opacity: 0;
+      animation: photoSlide 9s infinite;
+    }
+
+    .photo-slider img:nth-child(1) { animation-delay: 0s; }
+    .photo-slider img:nth-child(2) { animation-delay: 3s; }
+    .photo-slider img:nth-child(3) { animation-delay: 6s; }
+
+    @keyframes photoSlide {
+      0% { opacity: 0; transform: scale(0.9); }
+      10% { opacity: 1; transform: scale(1); }
+      33% { opacity: 1; transform: scale(1); }
+      43% { opacity: 0; transform: scale(1.05); }
+      100% { opacity: 0; transform: scale(0.9); }
+    }
+
+    /* ---------- КАРТОЧКА ---------- */
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 34px 34px;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(251, 163, 183, 0.5);
+      text-align: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 2px solid #ffffff;
+      width: 100%;
+      box-sizing: border-box;
+      z-index: 10;
+      position: relative;
+    }
+
+    h1 {
+      color: #ff4d6d;
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      color: #c71585;
+      font-size: 13px;
+      margin-bottom: 22px;
+      opacity: 0.85;
+    }
+
+    .btn-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      height: 54px;
+      position: relative;
+    }
+
+    button {
+      padding: 12px 30px;
+      font-size: 17px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      font-family: inherit;
+    }
+
+    .btn-yes {
+      background-color: #ff4d6d;
+      color: white;
+      box-shadow: 0 5px 20px rgba(255, 77, 109, 0.5);
+      transition: all 0.25s ease;
+      animation: pulseGlow 2s infinite;
+    }
+
+    .btn-yes:hover {
+      background-color: #ff758f;
+      transform: scale(1.08);
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 5px 20px rgba(255, 77, 109, 0.5); }
+      50% { box-shadow: 0 5px 30px rgba(255, 77, 109, 0.9); }
+    }
+
+    .btn-no {
+      background-color: #fff0f3;
+      color: #ff4d6d;
+      border: 2px solid #ff4d6d;
+      z-index: 100;
+      transition: left 0.1s ease, top 0.1s ease;
+    }
+
+        /* ---------- КОТИК И ДОМИК ---------- */
+    .cat-zone {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 50;
+    }
+
+    .cat {
+      font-size: 44px;
+      cursor: pointer;
+      animation: catBob 2s ease-in-out infinite;
+      filter: drop-shadow(0 4px 10px rgba(255, 77, 109, 0.4));
+      user-select: none;
+      transition: transform 0.3s;
+    }
+
+    .cat:hover {
+      transform: scale(1.2);
+    }
+
+    @keyframes catBob {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-8px) rotate(3deg); }
+    }
+
+    .cat-bubble {
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      margin-bottom: 8px;
+      max-width: 220px;
+      background: #fff;
+      color: #c71585;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 14px;
+      border-radius: 18px 18px 4px 18px;
+      box-shadow: 0 6px 20px rgba(255, 77, 109, 0.25);
+      border: 2px solid #ffc2d1;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
+      white-space: normal;
+      text-align: center;
+    }
+
+    .cat-bubble.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Кнопка "Домик котика" */
+    .cat-house-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.5);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      animation: houseBtnPulse 2.5s ease-in-out infinite;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .cat-house-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 14px 28px rgba(255, 77, 109, 0.7);
+      background: linear-gradient(135deg, #ff758f, #ff4d6d);
+    }
+
+    .cat-house-btn:active {
+      transform: scale(0.98);
+    }
+
+    .cat-house-icon {
+      font-size: 16px;
+      animation: catBob 2s ease-in-out infinite;
+      display: inline-block;
+    }
+
+    @keyframes houseBtnPulse {
+      0%, 100% { box-shadow: 0 8px 20px rgba(255, 77, 109, 0.5); }
+      50% { box-shadow: 0 8px 28px rgba(255, 77, 109, 0.9); }
+    }
+
+    /* На телефоне */
+    @media (max-width: 480px) {
+      .cat-zone {
+        bottom: 80px;
+        right: 14px;
+        gap: 6px;
+      }
+      .cat {
+        font-size: 36px;
+      }
+      .cat-bubble {
+        max-width: 180px;
+        font-size: 12px;
+        padding: 8px 12px;
+      }
+      .cat-house-btn {
+        font-size: 11px;
+        padding: 8px 14px;
+      }
+      .cat-house-text {
+        display: none; /* На маленьких экранах только иконка */
+      }
+      .cat-house-btn {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+      }
+      .cat-house-icon {
+        font-size: 20px;
+      }
+    }
+
+    /* ---------- МОДАЛЬНОЕ ОКНО ---------- */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(255, 200, 210, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      position: relative;
+      background: #fff;
+      border-radius: 28px;
+      padding: 26px 24px 22px;
+      max-width: 560px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(255, 77, 109, 0.4);
+      border: 3px solid #ffc2d1;
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-sizing: border-box;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fff0f3;
+      color: #ff4d6d;
+      border: 2px solid #ffc2d1;
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      z-index: 20;
+      transition: all 0.2s;
+      font-weight: bold;
+    }
+
+    .modal-close:hover {
+      background: #ff4d6d;
+      color: white;
+      transform: rotate(90deg);
+    }
+
+    /* ---------- ПРОГРЕСС-БАР ---------- */
+    .progress-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 20px;
+      padding: 0 8px;
+    }
+
+    .progress-step {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #ffe5ec;
+      color: #ffb3c1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: bold;
+      border: 2px solid #ffc2d1;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .progress-step.active {
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      color: #fff;
+      border-color: #ff4d6d;
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.5);
+    }
+
+    .progress-step.done {
+      background: #ffc2d1;
+      color: #fff;
+      border-color: #ffc2d1;
+    }
+
+    .progress-line {
+      flex: 1;
+      max-width: 24px;
+      height: 3px;
+      background: #ffc2d1;
+      border-radius: 3px;
+    }
+
+    /* ---------- ШАГИ ---------- */
+    .step {
+      display: none;
+      animation: slideIn 0.35s ease;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .step-title {
+      text-align: center;
+      color: #ff4d6d;
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+
+    .step-subtitle {
+      text-align: center;
+      color: #c71585;
+      font-size: 13px;
+      margin: 0 0 18px;
+      opacity: 0.85;
+    }
+
+    /* ---------- КАРТОЧКИ-ВАРИАНТЫ ---------- */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .option-card {
+      background: #fff7f9;
+      border: 2px solid #ffc2d1;
+      border-radius: 18px;
+      padding: 14px 6px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-card:hover {
+      transform: translateY(-4px) scale(1.03);
+      border-color: #ff4d6d;
+      box-shadow: 0 0 20px rgba(255, 77, 109, 0.55), 0 8px 20px rgba(255, 77, 109, 0.25);
+      background: #fff;
+      animation: cardPulse 1.5s infinite;
+    }
+
+    @keyframes cardPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 77, 109, 0.55), 0 8px 20px rgba(255, 77, 109, 0.25); }
+      50% { box-shadow: 0 0 32px rgba(255, 77, 109, 0.9), 0 8px 24px rgba(255, 77, 109, 0.35); }
+    }
+
+    .option-card.selected {
+      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
+      border-color: #ff4d6d;
+      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.4);
+      transform: translateY(-3px) scale(1.04);
+    }
+
+    .option-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 22px;
+      height: 22px;
+      background: #ff4d6d;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: popIn 0.3s ease;
+    }
+
+    .option-emoji {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 4px;
+      line-height: 1;
+      transition: transform 0.3s;
+    }
+
+    .option-card:hover .option-emoji {
+      transform: scale(1.2) rotate(-5deg);
+    }
+
+    .option-label {
+      font-size: 12px;
+      color: #c71585;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    /* ---------- ДАТА/ВРЕМЯ/EMAIL ---------- */
+    .date-time-box {
+      background: #fff7f9;
+      border: 2px dashed #ffc2d1;
+      border-radius: 18px;
+      padding: 16px 16px 12px;
+      margin-bottom: 14px;
+    }
+
+    .date-time-box label {
+      display: block;
+      color: #c71585;
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 6px;
+      margin-top: 8px;
+    }
+
+    .date-time-box label:first-child { margin-top: 0; }
+
+    .date-time-box input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 2px solid #ffc2d1;
+      border-radius: 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #333;
+      box-sizing: border-box;
+      background: #fff;
+      transition: border 0.2s;
+    }
+
+    .date-time-box input:focus {
+      outline: none;
+      border-color: #ff4d6d;
+      box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.15);
+    }
+
+    /* ---------- СВОЙ ВАРИАНТ ---------- */
+    .custom-input {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .custom-input.visible {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    .custom-input input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 2px solid #ffc2d1;
+      border-radius: 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #333;
+      box-sizing: border-box;
+      background: #fff7f9;
+    }
+
+    .custom-input input:focus {
+      outline: none;
+      border-color: #ff4d6d;
+      background: #fff;
+    }
+
+    /* ---------- КНОПКИ ---------- */
+    .step-nav {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn-back, .btn-next, .btn-submit, .btn-surprise {
+      padding: 12px 18px;
+      font-size: 15px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.25s;
+      font-family: inherit;
+    }
+
+    .btn-back {
+      background: #fff0f3;
+      color: #ff4d6d;
+      border: 2px solid #ffc2d1;
+      flex: 0 0 auto;
+      padding: 12px 20px;
+    }
+
+    .btn-back:hover {
+      background: #ffe5ec;
+      transform: scale(1.03);
+    }
+
+    .btn-next, .btn-submit {
+      flex: 1;
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      color: white;
+      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.4);
+    }
+
+    .btn-next:hover, .btn-submit:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 22px rgba(255, 77, 109, 0.55);
+    }
+
+    .btn-next:disabled, .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-surprise {
+      width: 100%;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffb3c1, #ff8fa3);
+      color: #fff;
+      font-size: 14px;
+      box-shadow: 0 4px 14px rgba(255, 143, 163, 0.4);
+    }
+
+    .btn-surprise:hover {
+      transform: scale(1.02);
+      background: linear-gradient(135deg, #ff8fa3, #ff4d6d);
+    }
+
+    /* ---------- РЕЗУЛЬТАТ ---------- */
+    .result-box {
+      text-align: center;
+      padding: 6px 0;
+    }
+
+    .result-emoji {
+      font-size: 60px;
+      margin-bottom: 4px;
+      animation: heartbeat 1.4s ease infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.1); }
+      60% { transform: scale(1); }
+    }
+
+    .result-box h3 {
+      color: #ff4d6d;
+      font-size: 21px;
+      margin: 4px 0 14px;
+    }
+
+    .result-list {
+      background: #fff7f9;
+      border: 2px solid #ffc2d1;
+      border-radius: 18px;
+      padding: 14px 18px;
+      text-align: left;
+      margin-bottom: 14px;
+    }
+
+    .result-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px dashed #ffd1dc;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .result-item:last-child { border-bottom: none; }
+
+    .result-item .r-emoji { font-size: 20px; flex-shrink: 0; }
+
+    .result-item .r-label {
+      color: #c71585;
+      font-weight: 600;
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+
+    .result-item .r-value {
+      color: #333;
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    /* ---------- ОБРАТНЫЙ ОТСЧЁТ ---------- */
+    .countdown {
+      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
+      border: 2px solid #ffc2d1;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .countdown-title {
+      color: #c71585;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .countdown-timer {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .countdown-block {
+      background: #fff;
+      border-radius: 12px;
+      padding: 8px 12px;
+      min-width: 54px;
+      box-shadow: 0 3px 10px rgba(255, 77, 109, 0.15);
+    }
+
+    .countdown-num {
+      color: #ff4d6d;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .countdown-lbl {
+      color: #c71585;
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ---------- ПАСХАЛКА С КУБИКАМИ ---------- */
+    .cubes-game {
+      text-align: center;
+      padding: 6px 0;
+    }
+
+    .cubes-title {
+      color: #ff4d6d;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .cubes-subtitle {
+      color: #c71585;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .cubes-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .cube {
+      width: 62px;
+      height: 62px;
+      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
+      border: 2px solid #ffc2d1;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.15);
+    }
+
+    .cube:hover {
+      transform: translateY(-4px) scale(1.08);
+      box-shadow: 0 0 20px rgba(255, 77, 109, 0.6);
+    }
+
+    .cube.opened {
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      color: #fff;
+      animation: popIn 0.4s ease;
+    }
+
+    .cube.wrong {
+      background: #e0e0e0;
+      color: #999;
+      border-color: #ccc;
+    }
+
+    .cube-prize {
+      display: none;
+      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
+      border: 3px dashed #ff4d6d;
+      border-radius: 20px;
+      padding: 18px;
+      margin-top: 8px;
+      animation: popIn 0.4s ease;
+    }
+
+    .cube-prize.show { display: block; }
+
+    .cube-prize-emoji {
+      font-size: 44px;
+      margin-bottom: 8px;
+      animation: heartbeat 1.4s infinite;
+    }
+
+    .cube-prize-text {
+      color: #c71585;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    /* ---------- КНОПКИ НАПОМИНАНИЯ И КАЛЕНДАРЯ ---------- */
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .btn-action {
+      padding: 12px 18px;
+      border-radius: 50px;
+      border: 2px solid #ffc2d1;
+      background: #fff;
+      color: #c71585;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.25s;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.12);
+    }
+
+    .btn-action:hover {
+      background: #ff4d6d;
+      color: white;
+      border-color: #ff4d6d;
+      transform: translateY(-2px);
+    }
+
+    .loading-text {
+      text-align: center;
+      color: #c71585;
+      font-size: 13px;
+      margin-top: 8px;
+      min-height: 18px;
+    }
+
+    /* ---------- КНОПКИ ПЕРЕХОДА ВНИЗУ ---------- */
+    .nav-buttons-bottom {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 100;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0 10px;
+      max-width: calc(100% - 20px);
+      box-sizing: border-box;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.95);
+      color: #c71585;
+      border: 2px solid #ffc2d1;
+      font-size: 14px;
+      padding: 12px 22px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      font-family: inherit;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.25);
+      transition: all 0.3s;
+    }
+
+    .nav-btn:hover {
+      background: #ff4d6d;
+      color: white;
+      border-color: #ff4d6d;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(255, 77, 109, 0.5);
+    }
+
+    /* ---------- АДАПТИВ ---------- */
+    @media (max-width: 480px) {
+      body { padding: 20px 16px 140px 16px; }
+      .card { padding: 24px 20px; }
+      h1 { font-size: 19px; }
+      .options-grid { grid-template-columns: repeat(2, 1fr); }
+      .option-emoji { font-size: 28px; }
+      .photo-slider { width: 110px; height: 110px; }
+      .photo-slider img { width: 110px; height: 110px; }
+      .cat { font-size: 36px; bottom: 90px; right: 14px; }
+      .cat-bubble { bottom: 140px; right: 14px; max-width: 180px; font-size: 12px; }
+      .cube { width: 52px; height: 52px; font-size: 22px; }
+      .nav-buttons-bottom {
+        bottom: 12px;
+        flex-direction: column;
+        width: calc(100% - 24px);
+        align-items: center;
+        gap: 6px;
+      }
+      .nav-btn {
+        font-size: 12px;
+        padding: 10px 16px;
+        text-align: center;
+        width: 100%;
+        max-width: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="hearts-container"></div>
+
+  <!-- КНОПКИ ПЕРЕХОДА ВНИЗУ -->
+  <div class="nav-buttons-bottom">
+    <a href="timer.html" class="nav-btn">❤️ Наша история в цифрах</a>
+    <a href="song.html" class="nav-btn">🎵 Наша песня</a>
+    <a href="reasons.html" class="nav-btn">💕 100 причин</a>
+    <a href="surprise.html" class="nav-btn">💌 Открой меня</a>
+    <a href="map.html" class="nav-btn">🗺️ Карта наших мест</a>
+    <a href="puzzle.html" class="nav-btn">🧩 Собери моё сердце</a>
+    <a href="stars.html" class="nav-btn">✨ Созвездие Вероники</a>
+    <a href="love.html" class="nav-btn">💗 Что я в тебе люблю</a>
+    <a href="draw.html" class="nav-btn">🎨 Нарисуй мне</a>
+  </div>
+
+  <div class="game-zone">
+
+    <!-- ФОТО-СЛАЙДЕР -->
+    <div class="photo-slider">
+      <!-- Замени src на свои фото! -->
+      <img src="photos/photo1.jpg" alt="Мы">
+      <img src="photos/photo2.jpg" alt="Мы">
+      <img src="photos/photo3.jpg" alt="Мы">
+    </div>
+
+    <!-- КАРТОЧКА -->
+    <div class="card">
+      <h1 id="mainTitle">Вероничка, пойдешь со мной на свидание? ✨</h1>
+      <p class="subtitle" id="mainSubtitle">Нажми «Да», и мы всё спланируем 💖</p>
+      <div class="btn-container">
+        <button class="btn-yes" onclick="agree(event)">ДА!</button>
+        <button class="btn-no" id="noBtn" onmouseenter="moveButton()" onmouseover="moveButton()" ontouchstart="moveButton()">Нет</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- СКРЫТАЯ ФОРМА -->
+  <form id="dateForm" style="display:none;" method="POST">
+    <input type="hidden" name="_subject" value="💖 Вероника согласилась на свидание!">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_cc" id="ccField" value="">
+    <input type="hidden" name="Дата" id="f_date">
+    <input type="hidden" name="Время" id="f_time">
+    <input type="hidden" name="Мероприятие" id="f_event">
+    <input type="hidden" name="Еда" id="f_food">
+    <input type="hidden" name="Дополнительно" id="f_extra">
+    <input type="hidden" name="Её почта" id="f_email">
+    <input type="hidden" name="Время на шагах" id="f_timing">
+  </form>
+
+  <!-- КОТИК + КНОПКА ДОМИКА -->
+  <div class="cat-zone" id="catZone">
+    <div class="cat" id="cat" onclick="catMeow()">🐱</div>
+    <div class="cat-bubble" id="catBubble">Привет! Я помогу выбрать 😺</div>
+    <a href="cat.html" class="cat-house-btn" title="Зайти в домик котика">
+      <span class="cat-house-icon">🏠</span>
+      <span class="cat-house-text">Домик котика</span>
+    </a>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()" title="Закрыть">✕</button>
+
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-step active" data-step="0">1</div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="1">2</div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="2">3</div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="3">4</div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="4">5</div>
+      </div>
+
+      <!-- ШАГ 1 -->
+      <div class="step active" id="step0">
+        <h3 class="step-title">📅 Когда встретимся?</h3>
+        <p class="step-subtitle">Выбери удобный день и время</p>
+        <div class="date-time-box">
+          <label for="dateInput">День 📆</label>
+          <input type="date" id="dateInput" onchange="validateStep0()">
+          <label for="timeInput">Время ⏰</label>
+          <input type="time" id="timeInput" onchange="validateStep0()">
+        </div>
+        <div class="step-nav">
+          <button class="btn-next" id="next0" disabled onclick="goToStep(1)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- ШАГ 2 -->
+      <div class="step" id="step1">
+        <h3 class="step-title">🎬 Чем займёмся?</h3>
+        <p class="step-subtitle">Или нажми «Удиви меня» 🎲</p>
+        <button class="btn-surprise" onclick="surpriseMe('event')">🎲 Удиви меня!</button>
+        <div class="options-grid" id="eventOptions">
+          <div class="option-card" data-value="Кино" onclick="selectOption(this, 'event')">
+            <span class="option-emoji">🎥</span><span class="option-label">Кино</span>
+          </div>
+          <div class="option-card" data-value="Ресторан" onclick="selectOption(this, 'event')">
+            <span class="option-emoji">🍽️</span><span class="option-label">Ресторан</span>
+          </div>
+          <div class="option-card" data-value="Дома" onclick="selectOption(this, 'event')">
+            <span class="option-emoji">🏠</span><span class="option-label">Дома</span>
+          </div>
+          <div class="option-card" data-value="Прогулка" onclick="selectOption(this, 'event')">
+            <span class="option-emoji">🌳</span><span class="option-label">Прогулка</span>
+          </div>
+          <div class="option-card" data-value="Боулинг" onclick="selectOption(this, 'event')">
+            <span class="option-emoji">🎳</span><span class="option-label">Боулинг</span>
+          </div>
+          <div class="option-card" data-value="Свой вариант" onclick="selectOption(this, 'event')">
+            <span class="option-emoji">✨</span><span class="option-label">Свой вариант</span>
+          </div>
+        </div>
+        <div class="custom-input" id="eventCustomWrap">
+          <input type="text" id="eventCustom" placeholder="Напиши свой вариант..." oninput="validateStep(1)">
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="goToStep(0)">←</button>
+          <button class="btn-next" id="next1" disabled onclick="goToStep(2)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- ШАГ 3 -->
+      <div class="step" id="step2">
+        <h3 class="step-title">🍕 Что будем кушать?</h3>
+        <p class="step-subtitle">Или нажми «Удиви меня» 🎲</p>
+        <button class="btn-surprise" onclick="surpriseMe('food')">🎲 Удиви меня!</button>
+        <div class="options-grid" id="foodOptions">
+          <div class="option-card" data-value="Пицца" onclick="selectOption(this, 'food')">
+            <span class="option-emoji">🍕</span><span class="option-label">Пицца</span>
+          </div>
+          <div class="option-card" data-value="Бургеры" onclick="selectOption(this, 'food')">
+            <span class="option-emoji">🍔</span><span class="option-label">Бургеры</span>
+          </div>
+          <div class="option-card" data-value="Суши" onclick="selectOption(this, 'food')">
+            <span class="option-emoji">🍣</span><span class="option-label">Суши</span>
+          </div>
+          <div class="option-card" data-value="Шаурма" onclick="selectOption(this, 'food')">
+            <span class="option-emoji">🌯</span><span class="option-label">Шаурма</span>
+          </div>
+          <div class="option-card" data-value="Мороженое" onclick="selectOption(this, 'food')">
+            <span class="option-emoji">🍦</span><span class="option-label">Мороженое</span>
+          </div>
+          <div class="option-card" data-value="Свой вариант" onclick="selectOption(this, 'food')">
+            <span class="option-emoji">✨</span><span class="option-label">Свой вариант</span>
+          </div>
+        </div>
+        <div class="custom-input" id="foodCustomWrap">
+          <input type="text" id="foodCustom" placeholder="Напиши свой вариант..." oninput="validateStep(2)">
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="goToStep(1)">←</button>
+          <button class="btn-next" id="next2" disabled onclick="goToStep(3)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- ШАГ 4 -->
+      <div class="step" id="step3">
+        <h3 class="step-title">🎁 Что ещё?</h3>
+        <p class="step-subtitle">Добавим немного магии ✨</p>
+        <div class="options-grid" id="extraOptions">
+          <div class="option-card" data-value="Цветы" onclick="selectOption(this, 'extra')">
+            <span class="option-emoji">💐</span><span class="option-label">Цветы</span>
+          </div>
+          <div class="option-card" data-value="Сюрприз" onclick="selectOption(this, 'extra')">
+            <span class="option-emoji">🎁</span><span class="option-label">Сюрприз</span>
+          </div>
+          <div class="option-card" data-value="Плед и фильм" onclick="selectOption(this, 'extra')">
+            <span class="option-emoji">🛋️</span><span class="option-label">Плед и фильм</span>
+          </div>
+          <div class="option-card" data-value="Танцы" onclick="selectOption(this, 'extra')">
+            <span class="option-emoji">💃</span><span class="option-label">Танцы</span>
+          </div>
+          <div class="option-card" data-value="Свечи" onclick="selectOption(this, 'extra')">
+            <span class="option-emoji">🕯️</span><span class="option-label">Свечи</span>
+          </div>
+          <div class="option-card" data-value="Свой вариант" onclick="selectOption(this, 'extra')">
+            <span class="option-emoji">✨</span><span class="option-label">Свой вариант</span>
+          </div>
+        </div>
+        <div class="custom-input" id="extraCustomWrap">
+          <input type="text" id="extraCustom" placeholder="Напиши свой вариант..." oninput="validateStep(3)">
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="goToStep(2)">←</button>
+          <button class="btn-next" id="next3" disabled onclick="goToStep(4)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- ШАГ 5 -->
+      <div class="step" id="step4">
+        <h3 class="step-title">💌 Куда прислать подтверждение?</h3>
+        <p class="step-subtitle">Укажи свою почту — я отправлю тебе наши планы</p>
+        <div class="date-time-box">
+          <label for="emailInput">Твоя почта 📧</label>
+          <input type="email" id="emailInput" placeholder="example@mail.ru" oninput="validateStep4()">
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="goToStep(3)">←</button>
+          <button class="btn-submit" id="next4" disabled onclick="showResult()">Отправить! 💖</button>
+        </div>
+        <div class="loading-text" id="loadingText"></div>
+      </div>
+
+      <!-- РЕЗУЛЬТАТ -->
+      <div class="step" id="stepResult">
+        <div class="result-box">
+          <div class="result-emoji">🥰</div>
+          <h3>Договорились!</h3>
+          <div class="result-list" id="resultList"></div>
+          <p style="font-size:13px;color:#c71585;margin-bottom:14px;" id="emailConfirmText"></p>
+
+          <!-- ОБРАТНЫЙ ОТСЧЁТ -->
+          <div class="countdown" id="countdownBox" style="display:none;">
+            <div class="countdown-title">⏳ До нашей встречи осталось:</div>
+            <div class="countdown-timer" id="countdownTimer">
+              <div class="countdown-block"><div class="countdown-num" id="cd_d">0</div><div class="countdown-lbl">дней</div></div>
+              <div class="countdown-block"><div class="countdown-num" id="cd_h">0</div><div class="countdown-lbl">часов</div></div>
+              <div class="countdown-block"><div class="countdown-num" id="cd_m">0</div><div class="countdown-lbl">минут</div></div>
+              <div class="countdown-block"><div class="countdown-num" id="cd_s">0</div><div class="countdown-lbl">секунд</div></div>
+            </div>
+          </div>
+
+          <!-- ДЕЙСТВИЯ -->
+          <div class="action-buttons">
+            <button class="btn-action" onclick="addToCalendar()">📅 Сохранить в календарь</button>
+            <button class="btn-action" onclick="remindMe()">⏰ Напомни за день</button>
+            <button class="btn-action" onclick="startCubesGame()">🎁 Открыть пасхалку</button>
+          </div>
+
+          <button class="btn-submit" onclick="closeModal()">Закрыть</button>
+        </div>
+      </div>
+
+      <!-- ПАСХАЛКА С КУБИКАМИ -->
+      <div class="step" id="stepCubes">
+        <div class="cubes-game">
+          <div class="cubes-title">🎁 Найди сердечко!</div>
+          <div class="cubes-subtitle">Под одним из 5 кубиков — сюрприз 💝</div>
+          <div class="cubes-row" id="cubesRow">
+            <div class="cube" data-i="0" onclick="pickCube(this)">🎁</div>
+            <div class="cube" data-i="1" onclick="pickCube(this)">🎁</div>
+            <div class="cube" data-i="2" onclick="pickCube(this)">🎁</div>
+            <div class="cube" data-i="3" onclick="pickCube(this)">🎁</div>
+            <div class="cube" data-i="4" onclick="pickCube(this)">🎁</div>
+          </div>
+          <div class="cube-prize" id="cubePrize">
+            <div class="cube-prize-emoji">💋</div>
+            <div class="cube-prize-text">Поцелуй в щёку при встрече 😘<br><br>
+              <span style="font-size:12px;opacity:0.8;">(это записка, покажи её мне 😉)</span>
+            </div>
+          </div>
+          <div class="step-nav" style="margin-top:16px;">
+            <button class="btn-back" onclick="showStep(5)">← Назад</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // ⚠️ ЗАМЕНИ НА СВОЮ ПОЧТУ
+    // ============================================================
+    const MY_EMAIL = "vilya51aura@gmail.com";
+
+    const noBtn = document.getElementById('noBtn');
+    const zone = document.querySelector('.card');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const catBubble = document.getElementById('catBubble');
+
+    const state = { event: null, food: null, extra: null };
+
+    // ---------- Время на шагах (аналитика) ----------
+    const stepTimes = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 };
+    let stepStartTime = Date.now();
+    let currentStep = 0;
+
+    // ---------- Персонализация по времени суток ----------
+    (function personalizeByTime() {
+      const hour = new Date().getHours();
+      const title = document.getElementById('mainTitle');
+      const sub = document.getElementById('mainSubtitle');
+      if (hour >= 5 && hour < 12) {
+        title.textContent = 'Вероничка, доброе утро! Пойдёшь со мной на свидание? ☀️';
+        sub.textContent = 'Начни день с чего-то волшебного 💕';
+      } else if (hour >= 12 && hour < 18) {
+        title.textContent = 'Вероничка, пойдёшь со мной на свидание? ✨';
+        sub.textContent = 'Давай устроим что-то классное 💖';
+      } else if (hour >= 18 && hour < 23) {
+        title.textContent = 'Вероничка, добрый вечер! Готова к приключению? 🌙';
+        sub.textContent = 'Вечер — лучшее время для магии ✨';
+      } else {
+        title.textContent = 'Вероничка, не спишь? Пойдёшь со мной на свидание? 🌙';
+        sub.textContent = 'Даже ночью я думаю о тебе 💕';
+      }
+    })();
+
+    // ---------- Котик ----------
+    const catPhrases = {
+      start: ['Привет! Я помогу выбрать 😺', 'Мяу! Ты не пожалеешь 💕', 'Я тут за главного котика 😸'],
+      event: {
+        'Кино': 'Попкорн беру на себя! 🍿',
+        'Ресторан': 'Ммм, вкусно! Не забудь про десерт 😋',
+        'Дома': 'Уютненько! Я приду погреться 🐱',
+        'Прогулка': 'Возьми меня! Я люблю гулять 🌳',
+        'Боулинг': 'Страйк! Только не в меня 😹'
+      },
+      food: {
+        'Пицца': 'Мням, с сыром! 🍕',
+        'Бургеры': 'Большой и сочный, ммм 🍔',
+        'Суши': 'Плюс роллы, да? 🍣',
+        'Шаурма': 'Классика! 🌯',
+        'Мороженое': 'Только не на меня капни 🍦'
+      },
+      extra: {
+        'Цветы': 'Красиво! А мне? 🌸',
+        'Сюрприз': 'Обожаю сюрпризы! 🎁',
+        'Плед и фильм': 'Мяу, я тоже под плед 🛋️',
+        'Танцы': 'Танцуй-танцуй! 💃',
+        'Свечи': 'Романтика 🕯️'
+      }
+    };
+
+    function catSay(text, ms = 2500) {
+      catBubble.textContent = text;
+      catBubble.classList.add('show');
+      clearTimeout(catSay._t);
+      catSay._t = setTimeout(() => catBubble.classList.remove('show'), ms);
+    }
+
+    function catMeow() {
+      const phrases = ['Мяу 🐱', 'Мур-мур 💕', 'Я тебя люблю 😻', 'Гладь меня! 🐾'];
+      catSay(phrases[Math.floor(Math.random() * phrases.length)], 1500);
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => spawnHeartAt(window.innerWidth - 60, window.innerHeight - 150), i * 100);
+      }
+    }
+
+    setTimeout(() => {
+      const phrases = catPhrases.start;
+      catSay(phrases[Math.floor(Math.random() * phrases.length)], 3500);
+    }, 1200);
+
+    // ---------- Кнопка "Нет" ----------
+    function moveButton() {
+      if (noBtn.style.position !== 'absolute') {
+        noBtn.style.position = 'absolute';
+      }
+      const rect = zone.getBoundingClientRect();
+      const maxX = rect.width - noBtn.offsetWidth;
+      const maxY = rect.height - noBtn.offsetHeight;
+      noBtn.style.left = Math.floor(Math.random() * maxX) + 'px';
+      noBtn.style.top = Math.floor(Math.random() * maxY) + 'px';
+      const phrases = ['Не-не-не, так не пойдёт 😹', 'Кнопка «Нет» — против меня!', 'Не поймаешь! 🐱', 'Мяу! Нажимай «ДА» 💕'];
+      catSay(phrases[Math.floor(Math.random() * phrases.length)], 1500);
+    }
+
+    // ---------- Салют из сердечек ----------
+    function spawnHeartAt(x, y) {
+      const heart = document.createElement('div');
+      heart.textContent = ['❤️', '💖', '💗', '💕', '✨'][Math.floor(Math.random() * 5)];
+      heart.style.cssText = `
+        position: fixed; left: ${x}px; top: ${y}px;
+        font-size: ${20 + Math.random() * 20}px;
+        pointer-events: none; z-index: 2000;
+        transition: all ${0.8 + Math.random() * 0.6}s cubic-bezier(0.34, 1.56, 0.64, 1);
+      `;
+      document.body.appendChild(heart);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 150 + Math.random() * 250;
+      requestAnimationFrame(() => {
+        heart.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${Math.random() * 360}deg) scale(0.3)`;
+        heart.style.opacity = '0';
+      });
+      setTimeout(() => heart.remove(), 1500);
+    }
+
+    function heartExplosion() {
+      const rect = zone.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => spawnHeartAt(cx, cy), i * 30);
+      }
+    }
+
+    // ---------- Открытие/закрытие ----------
+    function agree(e) {
+      heartExplosion();
+      setTimeout(() => {
+        modalOverlay.classList.add('active');
+        resetWizard();
+        startStepTimer(0);
+      }, 300);
+      catSay('Ура! Готовься к магии ✨', 2000);
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+    }
+
+    function resetWizard() {
+      document.getElementById('dateInput').value = '';
+      document.getElementById('timeInput').value = '';
+      document.getElementById('emailInput').value = '';
+      document.getElementById('loadingText').textContent = '';
+      state.event = null; state.food = null; state.extra = null;
+      stepTimes[0] = stepTimes[1] = stepTimes[2] = stepTimes[3] = stepTimes[4] = 0;
+      document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.custom-input').forEach(c => c.classList.remove('visible'));
+      document.querySelectorAll('.custom-input input').forEach(i => i.value = '');
+      document.getElementById('next0').disabled = true;
+      document.getElementById('next1').disabled = true;
+      document.getElementById('next2').disabled = true;
+      document.getElementById('next3').disabled = true;
+      document.getElementById('next4').disabled = true;
+      document.getElementById('countdownBox').style.display = 'none';
+      document.getElementById('cubePrize').classList.remove('show');
+      document.querySelectorAll('.cube').forEach(c => {
+        c.classList.remove('opened', 'wrong');
+        c.textContent = '🎁';
+      });
+      showStep(0);
+    }
+
+    function showStep(index) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      const steps = ['step0', 'step1', 'step2', 'step3', 'step4', 'stepResult', 'stepCubes'];
+      document.getElementById(steps[index]).classList.add('active');
+      const progressSteps = document.querySelectorAll('.progress-step');
+      progressSteps.forEach((el, i) => {
+        el.classList.remove('active', 'done');
+        if (i < index) el.classList.add('done');
+        if (i === index && index < 5) el.classList.add('active');
+      });
+      document.getElementById('progressBar').style.display = (index >= 5) ? 'none' : 'flex';
+      currentStep = index;
+      startStepTimer(index);
+    }
+
+    function startStepTimer(index) {
+      stepStartTime = Date.now();
+    }
+
+    function saveStepTime(stepIndex) {
+      if (stepTimes[stepIndex] !== undefined) {
+        stepTimes[stepIndex] += Math.round((Date.now() - stepStartTime) / 1000);
+      }
+    }
+
+    function goToStep(index) {
+      saveStepTime(currentStep);
+      showStep(index);
+    }
+
+    function validateStep0() {
+      const date = document.getElementById('dateInput').value;
+      const time = document.getElementById('timeInput').value;
+      document.getElementById('next0').disabled = !(date && time);
+    }
+
+    function validateStep4() {
+      const email = document.getElementById('emailInput').value.trim();
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      document.getElementById('next4').disabled = !re.test(email);
+    }
+
+    function validateStep(stepIndex) {
+      const btn = document.getElementById('next' + stepIndex);
+      if (!btn) return;
+      let valid = false;
+      if (stepIndex === 1) {
+        valid = state.event !== null && (state.event !== 'Свой вариант' || document.getElementById('eventCustom').value.trim() !== '');
+      } else if (stepIndex === 2) {
+        valid = state.food !== null && (state.food !== 'Свой вариант' || document.getElementById('foodCustom').value.trim() !== '');
+      } else if (stepIndex === 3) {
+        valid = state.extra !== null && (state.extra !== 'Свой вариант' || document.getElementById('extraCustom').value.trim() !== '');
+      }
+      btn.disabled = !valid;
+    }
+
+    function selectOption(card, type) {
+      const parent = card.parentElement;
+      parent.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      const value = card.dataset.value;
+      state[type] = value;
+      const wrap = document.getElementById(type + 'CustomWrap');
+      if (value === 'Свой вариант') {
+        wrap.classList.add('visible');
+        setTimeout(() => document.getElementById(type + 'Custom').focus(), 100);
+      } else {
+        wrap.classList.remove('visible');
+        document.getElementById(type + 'Custom').value = '';
+      }
+      const stepMap = { event: 1, food: 2, extra: 3 };
+      validateStep(stepMap[type]);
+      const phrase = catPhrases[type]?.[value];
+      if (phrase) catSay(phrase, 2200);
+    }
+
+    // ---------- Удиви меня ----------
+    function surpriseMe(type) {
+      const options = document.querySelectorAll(`#${type}Options .option-card`);
+      const filtered = Array.from(options).filter(o => o.dataset.value !== 'Свой вариант');
+      options.forEach(o => o.classList.remove('selected'));
+      const random = filtered[Math.floor(Math.random() * filtered.length)];
+      random.classList.add('selected');
+      const value = random.dataset.value;
+      state[type] = value;
+      document.getElementById(type + 'CustomWrap').classList.remove('visible');
+      const stepMap = { event: 1, food: 2, extra: 3 };
+      validateStep(stepMap[type]);
+      catSay(`Я выбрал: ${value}! 🎲`, 2500);
+      random.style.transition = 'transform 0.4s';
+      random.style.transform = 'scale(1.15) rotate(5deg)';
+      setTimeout(() => random.style.transform = '', 400);
+    }
+
+    function getValue(type) {
+      if (state[type] === 'Свой вариант') {
+        return document.getElementById(type + 'Custom').value.trim() || 'Свой вариант';
+      }
+      return state[type];
+    }
+
+    // ---------- Показ результата ----------
+    function showResult() {
+      saveStepTime(currentStep);
+      const date = document.getElementById('dateInput').value;
+      const time = document.getElementById('timeInput').value;
+      const event = getValue('event');
+      const food = getValue('food');
+      const extra = getValue('extra');
+      const email = document.getElementById('emailInput').value.trim();
+
+      const d = new Date(date);
+      const dateStr = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      const eventEmoji = document.querySelector('#eventOptions .option-card.selected .option-emoji')?.innerText || '🎬';
+      const foodEmoji = document.querySelector('#foodOptions .option-card.selected .option-emoji')?.innerText || '🍽️';
+      const extraEmoji = document.querySelector('#extraOptions .option-card.selected .option-emoji')?.innerText || '🎁';
+
+      const timingStr = `Дата/время: ${stepTimes[0] || 0}с | Мероприятие: ${stepTimes[1] || 0}с | Еда: ${stepTimes[2] || 0}с | Доп: ${stepTimes[3] || 0}с | Почта: ${stepTimes[4] || 0}с`;
+
+      document.getElementById('f_date').value = dateStr;
+      document.getElementById('f_time').value = time;
+      document.getElementById('f_event').value = event;
+      document.getElementById('f_food').value = food;
+      document.getElementById('f_extra').value = extra;
+      document.getElementById('f_email').value = email;
+      document.getElementById('f_timing').value = timingStr;
+      document.getElementById('ccField').value = email;
+
+      const loadingText = document.getElementById('loadingText');
+      loadingText.textContent = '💌 Отправляю...';
+      document.getElementById('next4').disabled = true;
+
+      const form = document.getElementById('dateForm');
+      form.action = `https://formsubmit.co/${MY_EMAIL}`;
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(res => {
+        console.log('OK', res.status);
+        loadingText.textContent = '';
+        renderResult(dateStr, time, event, food, extra, email, eventEmoji, foodEmoji, extraEmoji);
+      })
+      .catch(err => {
+        console.error('Ошибка:', err);
+        loadingText.textContent = '😔 Не получилось отправить, но всё сохранено!';
+        renderResult(dateStr, time, event, food, extra, email, eventEmoji, foodEmoji, extraEmoji);
+      });
+    }
+
+    function renderResult(dateStr, time, event, food, extra, email, ee, fe, ex) {
+      document.getElementById('resultList').innerHTML = `
+        <div class="result-item"><span class="r-emoji">📅</span><span class="r-label">Когда:</span><span class="r-value">${dateStr} в ${time}</span></div>
+        <div class="result-item"><span class="r-emoji">${ee}</span><span class="r-label">Занятие:</span><span class="r-value">${event}</span></div>
+        <div class="result-item"><span class="r-emoji">${fe}</span><span class="r-label">Еда:</span><span class="r-value">${food}</span></div>
+        <div class="result-item"><span class="r-emoji">${ex}</span><span class="r-label">Ещё:</span><span class="r-value">${extra}</span></div>
+      `;
+      document.getElementById('emailConfirmText').textContent = `✉️ Копия отправлена на ${email}`;
+      window._dateStr = dateStr;
+      window._timeStr = time;
+      document.getElementById('countdownBox').style.display = 'block';
+      startCountdown(dateStr, time);
+      showStep(5);
+      catSay('Всё готово! Скоро встреча 💕', 3000);
+    }
+
+    // ---------- Обратный отсчёт ----------
+    let countdownInterval = null;
+    function startCountdown(dateStr, timeStr) {
+      if (countdownInterval) clearInterval(countdownInterval);
+      const d = new Date(document.getElementById('dateInput').value);
+      const [h, m] = timeStr.split(':');
+      d.setHours(parseInt(h), parseInt(m), 0, 0);
+      const target = d.getTime();
+
+      function tick() {
+        const now = Date.now();
+        const diff = target - now;
+        if (diff <= 0) {
+          document.getElementById('cd_d').textContent = '0';
+          document.getElementById('cd_h').textContent = '0';
+          document.getElementById('cd_m').textContent = '0';
+          document.getElementById('cd_s').textContent = '0';
+          return;
+        }
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff / 3600000) % 24);
+        const mins = Math.floor((diff / 60000) % 60);
+        const secs = Math.floor((diff / 1000) % 60);
+        document.getElementById('cd_d').textContent = days;
+        document.getElementById('cd_h').textContent = hours;
+        document.getElementById('cd_m').textContent = mins;
+        document.getElementById('cd_s').textContent = secs;
+      }
+      tick();
+      countdownInterval = setInterval(tick, 1000);
+    }
+
+    // ---------- Календарь (.ics) ----------
+    function addToCalendar() {
+      const dateVal = document.getElementById('dateInput').value;
+      const timeVal = document.getElementById('timeInput').value;
+      if (!dateVal || !timeVal) return;
+      const [y, mo, d] = dateVal.split('-');
+      const [h, mi] = timeVal.split(':');
+      const start = new Date(y, mo - 1, d, h, mi);
+      const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+
+      function fmt(dt) {
+        return dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      }
+
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Love//Date//RU',
+        'BEGIN:VEVENT',
+        `UID:${Date.now()}@love`,
+        `DTSTAMP:${fmt(new Date())}`,
+        `DTSTART:${fmt(start)}`,
+        `DTEND:${fmt(end)}`,
+        'SUMMARY:💕 Свидание с любимым',
+        `DESCRIPTION:${getValue('event')} / ${getValue('food')} / ${getValue('extra')}`,
+        'BEGIN:VALARM',
+        'TRIGGER:-PT24H',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:Напоминание о свидании',
+        'END:VALARM',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'svidanie.ics';
+      a.click();
+      URL.revokeObjectURL(url);
+      catSay('Открой файл — и в календарь! 📅', 2500);
+    }
+
+    // ---------- Напомни за день (mailto) ----------
+    function remindMe() {
+      const dateStr = window._dateStr || '';
+      const timeStr = window._timeStr || '';
+      const subject = encodeURIComponent('⏰ Напоминание: завтра наше свидание!');
+      const body = encodeURIComponent(
+        `Привет, любимая!\n\nНапоминаю, что завтра наше свидание 💕\n\n` +
+        `📅 Когда: ${dateStr} в ${timeStr}\n` +
+        `🎬 Занятие: ${getValue('event')}\n` +
+        `🍽️ Еда: ${getValue('food')}\n` +
+        `🎁 Ещё: ${getValue('extra')}\n\n` +
+        `Не забудь про сюрприз 😘\n\nДо встречи! ❤️`
+      );
+      window.location.href = `mailto:${document.getElementById('emailInput').value.trim()}?subject=${subject}&body=${body}`;
+    }
+
+    // ---------- Пасхалка с кубиками ----------
+    let prizeIndex = 0;
+    function startCubesGame() {
+      prizeIndex = Math.floor(Math.random() * 5);
+      document.querySelectorAll('.cube').forEach(c => {
+        c.classList.remove('opened', 'wrong');
+        c.textContent = '🎁';
+      });
+      document.getElementById('cubePrize').classList.remove('show');
+      showStep(6);
+    }
+
+    function pickCube(el) {
+      if (el.classList.contains('opened') || el.classList.contains('wrong')) return;
+      const i = parseInt(el.dataset.i);
+      if (i === prizeIndex) {
+        el.classList.add('opened');
+        el.textContent = '💖';
+        document.getElementById('cubePrize').classList.add('show');
+        const rect = el.getBoundingClientRect();
+        for (let k = 0; k < 20; k++) {
+          setTimeout(() => spawnHeartAt(rect.left + rect.width / 2, rect.top + rect.height / 2), k * 40);
+        }
+        catSay('Сюрприз! 😽', 3000);
+      } else {
+        el.classList.add('wrong');
+        el.textContent = '😿';
+        catSay('Ой, пусто! Попробуй ещё 🐱', 1800);
+      }
+    }
+
+    // ---------- Модальное окно: закрытие ----------
+    modalOverlay.addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
+    });
+
+    // ---------- Дождь из сердечек (фон) ----------
+    const container = document.getElementById('hearts-container');
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸'];
+      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = Math.random() * 3 + 2 + "s";
+      heart.style.fontSize = Math.random() * 15 + 15 + "px";
+      container.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 5000);
+    }
+    setInterval(createHeart, 300);
+  </script>
+</body>
+</html>

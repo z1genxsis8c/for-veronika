@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Карта наших мест ❤️</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffe5ec, #ffc2d1, #fba3b7);
+      position: relative;
+    }
+
+    /* ---------- КАРТА ---------- */
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: #ffe5ec;
+    }
+
+    /* ---------- ВЕРХНЯЯ ПАНЕЛЬ ---------- */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 14px 20px;
+      background: linear-gradient(to bottom, rgba(255, 229, 236, 0.95) 0%, rgba(255, 229, 236, 0.7) 70%, rgba(255, 229, 236, 0) 100%);
+      text-align: center;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+
+    .top-bar h1 {
+      color: #ff4d6d;
+      font-size: 20px;
+      margin: 0 0 4px;
+      font-weight: 800;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
+      letter-spacing: 0.3px;
+    }
+
+    .top-bar p {
+      color: #c71585;
+      font-size: 13px;
+      margin: 0;
+      font-weight: 600;
+      opacity: 0.9;
+      text-shadow: 0 1px 4px rgba(255, 255, 255, 0.9);
+    }
+
+    /* ---------- НИЖНЯЯ ПАНЕЛЬ (КНОПКИ МЕСТ) ---------- */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 14px 12px;
+      background: linear-gradient(to top, rgba(255, 229, 236, 0.95) 0%, rgba(255, 229, 236, 0.7) 70%, rgba(255, 229, 236, 0) 100%);
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      box-sizing: border-box;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .bottom-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .place-chip {
+      background: rgba(255, 255, 255, 0.95);
+      color: #c71585;
+      border: 2px solid #ffc2d1;
+      padding: 9px 16px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
+      transition: all 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .place-chip:hover, .place-chip.active {
+      background: #ff4d6d;
+      color: white;
+      border-color: #ff4d6d;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(255, 77, 109, 0.5);
+    }
+
+    /* ---------- КНОПКА НАЗАД ---------- */
+    .back-btn {
+      position: fixed;
+      top: 70px;
+      left: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #c71585;
+      border: 2px solid #ffc2d1;
+      font-size: 13px;
+      padding: 9px 16px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      z-index: 1000;
+      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.25);
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: inherit;
+    }
+
+    .back-btn:hover {
+      background: #ff4d6d;
+      color: white;
+      border-color: #ff4d6d;
+      transform: translateY(-2px);
+    }
+
+    /* ---------- КАСТОМНЫЕ МАРКЕРЫ ---------- */
+    .custom-marker {
+      background: transparent;
+      border: none;
+    }
+
+    .marker-pin {
+      width: 44px;
+      height: 44px;
+      border-radius: 50% 50% 50% 0;
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      border: 3px solid #fff;
+      box-shadow: 0 6px 16px rgba(199, 21, 133, 0.5);
+      transform: rotate(-45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      position: relative;
+      animation: markerBob 3s ease-in-out infinite;
+    }
+
+    .marker-pin::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: inherit;
+      opacity: 0;
+      animation: pinPulse 2.5s infinite;
+    }
+
+    @keyframes pinPulse {
+      0% { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+
+    @keyframes markerBob {
+      0%, 100% { transform: rotate(-45deg) translateY(0); }
+      50% { transform: rotate(-45deg) translateY(-5px); }
+    }
+
+    .marker-pin .emoji {
+      transform: rotate(45deg);
+      font-size: 22px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .marker-pin:hover {
+      transform: rotate(-45deg) scale(1.15);
+    }
+
+    /* ---------- КАСТОМНЫЕ ПОПАПЫ ---------- */
+    .leaflet-popup-content-wrapper {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(199, 21, 133, 0.3);
+      border: 3px solid #ffc2d1;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .leaflet-popup-content {
+      margin: 0;
+      width: 290px !important;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.5;
+    }
+
+    .leaflet-popup-tip {
+      background: #ffc2d1;
+      border: 3px solid #ffc2d1;
+      box-shadow: none;
+    }
+
+    .leaflet-popup-close-button {
+      top: 10px !important;
+      right: 10px !important;
+      width: 28px !important;
+      height: 28px !important;
+      font-size: 20px !important;
+      color: #fff !important;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 50%;
+      line-height: 26px !important;
+      text-align: center;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .leaflet-popup-close-button:hover {
+      background: #ff4d6d;
+      color: #fff !important;
+      transform: rotate(90deg);
+    }
+
+    /* Внутренности попапа */
+    .popup-inner {
+      overflow: hidden;
+      border-radius: 17px 17px 0 0;
+    }
+
+    .popup-photo {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      background: #ffe5ec;
+    }
+
+    .popup-body {
+      padding: 16px 18px 18px;
+    }
+
+    .popup-emoji {
+      font-size: 28px;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    .popup-title {
+      color: #c71585;
+      font-size: 16px;
+      font-weight: 800;
+      margin: 0 0 6px;
+      line-height: 1.2;
+    }
+
+    .popup-date {
+      display: inline-block;
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 50px;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.3);
+    }
+
+    .popup-text {
+      color: #4a2a3a;
+      font-size: 13.5px;
+      line-height: 1.6;
+      margin: 0;
+      font-style: italic;
+    }
+
+    /* ---------- КАСТОМНЫЙ ЗУМ ---------- */
+    .leaflet-control-zoom {
+      border: none !important;
+      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.25) !important;
+      border-radius: 12px !important;
+      overflow: hidden;
+      margin-top: 120px !important;
+    }
+
+    .leaflet-control-zoom a {
+      background: #fff !important;
+      color: #c71585 !important;
+      border: none !important;
+      width: 38px !important;
+      height: 38px !important;
+      line-height: 38px !important;
+      font-size: 20px !important;
+      font-weight: 700 !important;
+      transition: all 0.2s;
+    }
+
+    .leaflet-control-zoom a:hover {
+      background: #ff4d6d !important;
+      color: #fff !important;
+    }
+
+    .leaflet-control-zoom-in {
+      border-bottom: 2px solid #ffc2d1 !important;
+      border-radius: 12px 12px 0 0 !important;
+    }
+
+    .leaflet-control-zoom-out {
+      border-radius: 0 0 12px 12px !important;
+    }
+
+    /* Аттрибуция Leaflet */
+    .leaflet-control-attribution {
+      background: rgba(255, 255, 255, 0.9) !important;
+      color: #c71585 !important;
+      font-size: 10px !important;
+      border-radius: 10px 0 0 0;
+    }
+
+    .leaflet-control-attribution a {
+      color: #ff4d6d !important;
+    }
+
+    /* ---------- ПОДСКАЗКА СНАЧАЛА ---------- */
+    .intro-hint {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(255, 255, 255, 0.97);
+      color: #c71585;
+      padding: 20px 26px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      z-index: 1500;
+      box-shadow: 0 20px 50px rgba(199, 21, 133, 0.4);
+      border: 3px solid #ffc2d1;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.5s;
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    .intro-hint.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .intro-hint .big-emoji {
+      display: block;
+      font-size: 40px;
+      margin-bottom: 10px;
+      animation: markerBob 2s infinite;
+    }
+
+    /* ---------- АДАПТИВ ---------- */
+    @media (max-width: 480px) {
+      .top-bar { padding: 12px 16px; }
+      .top-bar h1 { font-size: 17px; }
+      .top-bar p { font-size: 11px; }
+      .back-btn {
+        top: 60px;
+        font-size: 11px;
+        padding: 8px 14px;
+      }
+      .bottom-bar {
+        padding: 12px 8px;
+        gap: 6px;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+      }
+      .place-chip {
+        font-size: 12px;
+        padding: 8px 14px;
+        flex-shrink: 0;
+      }
+      .leaflet-control-zoom {
+        margin-top: 110px !important;
+      }
+      .leaflet-popup-content {
+        width: 260px !important;
+      }
+      .popup-photo { height: 150px; }
+      .popup-title { font-size: 15px; }
+      .popup-text { font-size: 12.5px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- КАРТА -->
+  <div id="map"></div>
+
+  <!-- ЗАГОЛОВОК СВЕРХУ -->
+  <div class="top-bar">
+    <h1>🗺️ Карта наших мест</h1>
+    <p>Места, где мы были счастливы 💕</p>
+  </div>
+
+  <!-- КНОПКА НАЗАД -->
+  <a href="index.html" class="back-btn">← Назад</a>
+
+  <!-- КНОПКИ-ЧИПЫ СНИЗУ -->
+  <div class="bottom-bar" id="bottomBar">
+    <!-- Кнопки будут сгенерированы JS -->
+  </div>
+
+  <!-- ПОДСКАЗКА -->
+  <div class="intro-hint" id="introHint">
+    <span class="big-emoji">📍</span>
+    Нажми на любую точку — и увидишь нашу историю 💕
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+
+  <script>
+    // ============================================================
+    // ⚠️ НАСТРОЙКИ — ЗАМЕНИ НА СВОИ МЕСТА
+    // ============================================================
+    // Как узнать координаты?
+    // 1. Открой Google Maps
+    // 2. Найди место
+    // 3. Правый клик по точке → «Что здесь?»
+    // 4. Скопируй координаты: 51.822655, 107.646394 (широта, долгота)
+    // ============================================================
+
+    const PLACES = [
+      {
+        lat: 51.822655, lng: 107.646394,
+        emoji: "💘",
+        title: "Где познакомились",
+        date: "9 сентября 2025",
+        text: "Здесь всё началось. Я помню этот день, как будто он был вчера. Ты улыбнулась — и моё сердце остановилось.",
+        photo: "photos/place1.jpg"
+      },
+      {
+        lat: 51.861235, lng: 107.725499,
+        emoji: "🌹",
+        title: "Первое свидание",
+        date: "27 сентября 2025",
+        text: "Я так волновался. И я не мог отвести глаз. Мы гуляли до самого вечера и не заметили, как пролетело время.",
+        photo: "photos/place2.jpg"
+      },
+      {
+        lat: 51.860439, lng: 107.725965,
+        emoji: "💋",
+        title: "Первый поцелуй",
+        date: "25 сентября 2025",
+        text: "Мы были у меня, и в этот момент я понял — это навсегда. Ты была самой красивой на свете.",
+        photo: "photos/place3.jpg"
+      },
+      {
+        lat: 51.830640, lng: 107.583728,
+        emoji: "🍽️",
+        title: "Наш любимый ресторан",
+        date: "24 октября 2025",
+        text: "Наш уютный уголок. Здесь мы заказываем одно и то же и никогда не устаём. Просто так или по праздникам.",
+        photo: "photos/place4.jpg"
+      },
+      {
+        lat: 51.869779, lng: 107.729454,
+        emoji: "🌳",
+        title: "Наш парк",
+        date: "Каждая прогулка",
+        text: "Где мы гуляли, держались за руки и говорили обо всём на свете. Наша скамейка — наше всё.",
+        photo: "photos/place5.jpg"
+      }
+    ];
+
+    // Центр карты и зум — стартовые, потом подгонятся автоматически
+    const MAP_CENTER = [51.829198, 107.657113];
+    const MAP_ZOOM = 13;
+
+    // ============================================================
+
+    // ---------- ИНИЦИАЛИЗАЦИЯ КАРТЫ ----------
+    const map = L.map('map', {
+      center: MAP_CENTER,
+      zoom: MAP_ZOOM,
+      zoomControl: true,
+      scrollWheelZoom: true,
+      attributionControl: true
+    });
+
+    // ✅ ПОДЛОЖКА — OpenStreetMap без ключей, работает всегда
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19
+    }).addTo(map);
+
+    // ---------- КАСТОМНЫЕ ИКОНКИ МАРКЕРОВ ----------
+    function createMarkerIcon(emoji) {
+      return L.divIcon({
+        html: `<div class="marker-pin"><span class="emoji">${emoji}</span></div>`,
+        className: 'custom-marker',
+        iconSize: [44, 44],
+        iconAnchor: [22, 44],
+        popupAnchor: [0, -48]
+      });
+    }
+
+    // ---------- СОЗДАНИЕ МАРКЕРОВ ----------
+    const markers = [];
+    const bottomBar = document.getElementById('bottomBar');
+
+    PLACES.forEach((place, index) => {
+      const marker = L.marker([place.lat, place.lng], {
+        icon: createMarkerIcon(place.emoji)
+      }).addTo(map);
+
+      // Попап
+      const popupHTML = `
+        <div class="popup-inner">
+          <img class="popup-photo" src="${place.photo}" alt="${place.title}"
+               onerror="this.style.display='none'">
+          <div class="popup-body">
+            <span class="popup-emoji">${place.emoji}</span>
+            <h3 class="popup-title">${place.title}</h3>
+            <span class="popup-date">📅 ${place.date}</span>
+            <p class="popup-text">${place.text}</p>
+          </div>
+        </div>
+      `;
+
+      marker.bindPopup(popupHTML, {
+        maxWidth: 320,
+        minWidth: 260,
+        closeButton: true,
+        autoPan: true,
+        autoPanPadding: [50, 100]
+      });
+
+      markers.push(marker);
+
+      // ---------- ЧИП ВНИЗУ ----------
+      const chip = document.createElement('button');
+      chip.className = 'place-chip';
+      chip.innerHTML = `<span>${place.emoji}</span> ${place.title}`;
+      chip.addEventListener('click', () => {
+        map.flyTo([place.lat, place.lng], 16, {
+          duration: 1.2,
+          easeLinearity: 0.25
+        });
+        setTimeout(() => marker.openPopup(), 700);
+        document.querySelectorAll('.place-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        setTimeout(() => chip.classList.remove('active'), 3000);
+      });
+      bottomBar.appendChild(chip);
+    });
+
+    // ---------- АВТО-ПОДГОНКА ПОД ВСЕ ТОЧКИ ----------
+    if (markers.length > 0) {
+      const group = new L.featureGroup(markers);
+      map.fitBounds(group.getBounds().pad(0.15), {
+        animate: true,
+        duration: 1
+      });
+    }
+
+    // ---------- ПОДСКАЗКА ПРИ ПЕРВОМ ЗАХОДЕ ----------
+    const introHint = document.getElementById('introHint');
+    setTimeout(() => {
+      introHint.classList.add('show');
+      setTimeout(() => introHint.classList.remove('show'), 3500);
+    }, 700);
+
+    // ---------- СЕРДЕЧКИ ПАДАЮТ ТОЛЬКО 5 СЕКУНД ----------
+    function sprinkleHearts() {
+      const heart = document.createElement('div');
+      heart.textContent = ['❤️', '💖', '💕', '🌸'][Math.floor(Math.random() * 4)];
+      heart.style.cssText = `
+        position: fixed;
+        top: -30px;
+        left: ${Math.random() * 100}vw;
+        font-size: ${15 + Math.random() * 15}px;
+        pointer-events: none;
+        z-index: 5;
+        opacity: 0.5;
+        animation: heartFall ${3 + Math.random() * 2}s linear forwards;
+      `;
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 6000);
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes heartFall {
+        0% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+        100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    const heartInterval = setInterval(sprinkleHearts, 500);
+    setTimeout(() => clearInterval(heartInterval), 5000);
+
+    // ---------- ОБРАБОТКА ОШИБОК ФОТО ----------
+    document.addEventListener('error', (e) => {
+      if (e.target.tagName === 'IMG' && e.target.classList.contains('popup-photo')) {
+        e.target.style.display = 'none';
+      }
+    }, true);
+  </script>
+</body>
+</html>
