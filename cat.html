@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Домик котика 🏠🐱</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff4d6d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Вероника">
+  <link rel="apple-touch-icon" href="photos/icon-192.png">
   <style>
     html, body {
       margin: 0; padding: 0; width: 100%; min-height: 100%;
@@ -293,7 +299,6 @@
 
     .pet-bubble.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* СТАТУСЫ */
     .stats-row { display: flex; gap: 8px; margin-bottom: 12px; }
 
     .stat-card {
@@ -325,7 +330,6 @@
 
     .stat-value { font-size: 11px; font-weight: 700; color: #ff4d6d; margin-top: 3px; transition: all 0.6s; }
 
-    /* ДЕЙСТВИЯ */
     .actions-grid {
       display: grid; grid-template-columns: repeat(5, 1fr);
       gap: 6px; margin-bottom: 16px;
@@ -347,7 +351,6 @@
     .action-btn .icon { font-size: 22px; line-height: 1; }
     .action-btn .label { font-size: 9px; font-weight: 800; text-transform: uppercase; }
 
-    /* МОДАЛКИ */
     .modal-overlay {
       position: fixed; top: 0; left: 0;
       width: 100vw; height: 100vh;
@@ -386,7 +389,6 @@
 
     body.night .modal-inner h3 { color: #ffb3c1; }
 
-    /* ВКЛАДКИ МАГАЗИНА */
     .shop-tabs {
       display: flex;
       gap: 6px;
@@ -418,7 +420,6 @@
     body.night .shop-tab { background: #1a0a2e; color: #ffb3c1; border-color: #4a1030; }
     body.night .shop-tab.active { background: linear-gradient(135deg, #ff4d6d, #c71585); color: #fff; }
 
-    /* СЕТКИ (ЕДА И МАГАЗИН) */
     .food-grid, .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
 
     .food-item, .shop-item {
@@ -463,7 +464,6 @@
       padding: 3px 10px; border-radius: 20px;
     }
 
-    /* ДОСТИЖЕНИЯ */
     .achievement-row {
       display: flex; align-items: center; gap: 10px;
       background: #fff7f9; border: 2px solid #ffc2d1;
@@ -489,7 +489,6 @@
       30% { transform: scale(1); }
     }
 
-    /* КНОПКИ */
     .bottom-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
 
     .btn {
@@ -505,6 +504,8 @@
 
     .btn:hover { background: #ff4d6d; color: white; border-color: #ff4d6d; transform: translateY(-2px); }
     .btn.primary { background: linear-gradient(135deg, #ff4d6d, #c71585); color: white; border-color: #ff4d6d; }
+    .btn.doodle { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; border-color: #9b59b6; }
+    .btn.doodle:hover { background: linear-gradient(135deg, #a86cc4, #9b59b6); border-color: #a86cc4; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
     .btn-buy {
@@ -532,7 +533,6 @@
       background: #4caf50 !important;
     }
 
-    /* УВЕДОМЛЕНИЕ */
     .toast {
       position: fixed; bottom: 30px; left: 50%;
       transform: translateX(-50%) translateY(100px);
@@ -547,7 +547,6 @@
 
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* СЕРДЕЧКИ */
     .float-heart {
       position: fixed; font-size: 20px;
       pointer-events: none; z-index: 5000;
@@ -559,92 +558,6 @@
       100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
     }
 
-    /* ═══ ИГРА ═══ */
-    .game-overlay {
-      position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: linear-gradient(135deg, #ffe5ec, #ffc2d1);
-      z-index: 2000; display: none;
-      flex-direction: column; align-items: center; justify-content: center;
-      padding: 16px; box-sizing: border-box;
-    }
-
-    .game-overlay.active { display: flex; }
-
-    .game-container { width: 100%; max-width: 620px; text-align: center; }
-
-    .game-title {
-      color: #ff4d6d; font-size: 22px; font-weight: 800;
-      margin: 0 0 4px;
-      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
-    }
-
-    .game-subtitle { color: #c71585; font-size: 13px; font-weight: 600; margin: 0 0 12px; font-style: italic; }
-
-    .game-score-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-
-    .game-score-chip {
-      background: rgba(255, 255, 255, 0.95);
-      border: 2px solid #ffc2d1; border-radius: 50px;
-      padding: 6px 14px; font-size: 12px; font-weight: 700;
-      color: #c71585;
-      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.2);
-    }
-
-    .game-score-chip b { color: #ff4d6d; }
-
-    .game-canvas-wrap {
-      position: relative; width: 100%;
-      background: linear-gradient(180deg, #fff5f8 0%, #ffe5ec 100%);
-      border-radius: 20px; border: 3px solid #fff;
-      box-shadow: 0 10px 40px rgba(255, 77, 109, 0.3);
-      overflow: hidden; margin-bottom: 12px;
-      aspect-ratio: 16 / 9; max-height: 45vh;
-    }
-
-    #gameCanvas { display: block; width: 100%; height: 100%; touch-action: none; }
-
-    .game-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-
-    .game-hint { color: #c71585; font-size: 12px; font-weight: 700; margin-top: 8px; opacity: 0.8; }
-
-    .game-pause-box {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.95);
-      display: none; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 5; padding: 20px; box-sizing: border-box;
-      border-radius: 17px;
-    }
-
-    .game-pause-box.show { display: flex; }
-
-    .game-pause-box h3 { color: #ff4d6d; font-size: 20px; margin: 0 0 12px; }
-
-    .pause-emoji { font-size: 50px; margin-bottom: 8px; animation: heartbeat 1.5s infinite; }
-
-    .powerup-indicator {
-      position: absolute; top: 12px; right: 12px;
-      background: linear-gradient(135deg, #ffd700, #ffa500);
-      color: #fff;
-      padding: 6px 14px; border-radius: 50px;
-      font-size: 13px; font-weight: 800;
-      box-shadow: 0 4px 15px rgba(255, 165, 0, 0.6);
-      display: none;
-      align-items: center; gap: 4px;
-      animation: pulsePowerup 0.7s ease-in-out infinite;
-      z-index: 10;
-    }
-
-    .powerup-indicator.active { display: flex; }
-
-    @keyframes pulsePowerup {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-    }
-
-    /* Кнопка админа */
     .admin-btn {
       position: fixed;
       bottom: 16px;
@@ -711,7 +624,6 @@
 
     .admin-indicator.show { transform: translateX(-50%) translateY(0); }
 
-    /* Безопасная золотая рамка */
     body.admin-mode::after {
       content: '';
       position: fixed;
@@ -723,11 +635,11 @@
     }
 
     @keyframes adminBorderPulse {
-      0%, 100% { 
+      0%, 100% {
         border-color: #ffd700;
         box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.4);
       }
-      50% { 
+      50% {
         border-color: #ffa500;
         box-shadow: inset 0 0 40px rgba(255, 215, 0, 0.7);
       }
@@ -758,7 +670,6 @@
       100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
     }
 
-    /* Адаптив */
     @media (max-width: 480px) {
       h1 { font-size: 18px; }
       .cat-pet { font-size: 72px; }
@@ -767,11 +678,18 @@
       .action-btn .icon { font-size: 18px; }
       .action-btn .label { font-size: 8px; }
       .btn { font-size: 13px; padding: 10px 16px; }
-      .game-title { font-size: 18px; }
-      .game-score-chip { font-size: 11px; padding: 5px 10px; }
     }
   </style>
 </head>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then((reg) => console.log('✅ Service Worker зарегистрирован'))
+          .catch((err) => console.log('❌ Ошибка SW:', err));
+      });
+    }
+  </script>
 <body>
 
   <div id="hearts-container"></div>
@@ -843,10 +761,14 @@
     </div>
 
     <div class="bottom-buttons">
-      <a href="index.html" class="btn">← На главную</a>
-      <button class="btn primary" onclick="openGame()">🎮 Мини-игра</button>
-    </div>
+  <a href="index.html" class="btn">← На главную</a>
+  <a href="game-jump.html" class="btn primary">🎮 Котик-прыгун</a>
+  <a href="game-doodle.html" class="btn doodle">🎨 Doodle-кот</a>
+  <a href="game-lock.html" class="btn" style="background: linear-gradient(135deg, #ff4d6d, #c71585); color: #fff; border-color: #ff4d6d;">🔐 Взлом замка</a>
+  <a href="game-thorn.html" class="btn" style="background: linear-gradient(135deg, #8b0f5c, #4a1030); color: #ffb3c1; border-color: #8b0f5c;">🌹 Терновый Трон</a>
+</div>
   </div>
+  <!-- ↑ здесь ОДИН </div> для .container, второго быть не должно -->
 
   <!-- МЕНЮ ЕДЫ -->
   <div class="modal-overlay" id="foodMenu">
@@ -865,7 +787,6 @@
         У тебя: <b style="color: #ffa500;">🪙 <span id="shopCoins">0</span></b>
       </p>
 
-      <!-- Вкладки -->
       <div class="shop-tabs">
         <button class="shop-tab active" id="tabHats" onclick="switchShopTab('hats')">🎩 Шапки</button>
         <button class="shop-tab" id="tabFood" onclick="switchShopTab('food')">🍽️ Еда</button>
@@ -882,49 +803,6 @@
       <h3>🏆 Достижения</h3>
       <div id="achievementsList"></div>
       <button class="btn" onclick="closeModal('achievementsMenu')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- ИГРА -->
-  <div class="game-overlay" id="gameOverlay">
-    <div class="game-container">
-      <h2 class="game-title">🎮 Котик-прыгун</h2>
-      <p class="game-subtitle" id="gameSubtitle">Прыгай через препятствия и собирай рыбки! 🐟</p>
-
-      <div class="game-score-row">
-        <div class="game-score-chip">Очки: <b id="gameScore">0</b></div>
-        <div class="game-score-chip">Рекорд: <b id="gameRecord">0</b></div>
-        <div class="game-score-chip">🪙 +<b id="gameCoins">0</b></div>
-        <div class="game-score-chip">🐟 +<b id="gameFishes">0</b></div>
-      </div>
-
-      <div class="game-canvas-wrap">
-        <div class="powerup-indicator" id="powerupIndicator">
-          ⚡ ×2 ×<span id="powerupTimer">10</span>с
-        </div>
-
-        <canvas id="gameCanvas"></canvas>
-
-        <div class="game-pause-box" id="gameOverBox">
-          <div class="pause-emoji" id="goEmoji">😿</div>
-          <h3 id="goTitle">Ой, котик упал!</h3>
-          <p style="color: #c71585; font-size: 14px; font-weight: 700; margin: 4px 0;">Результат:</p>
-          <div style="font-size: 32px; font-weight: 900; color: #ff4d6d; margin: 4px 0 12px;" id="goScore">0</div>
-          <div style="color: #c71585; font-size: 12px; font-weight: 700; margin-bottom: 14px;" id="goRecord">Рекорд: 0</div>
-          <div style="color: #ffa500; font-size: 13px; font-weight: 800; margin-bottom: 6px;" id="goCoins">+0 монеток</div>
-          <div style="color: #4caf50; font-size: 13px; font-weight: 800; margin-bottom: 14px;" id="goFish">+0 🐟</div>
-          <button class="btn primary" onclick="restartGame()">🔄 Играть снова</button>
-        </div>
-      </div>
-
-      <div class="game-controls">
-        <button class="btn primary" onclick="startGame()" id="startBtn">▶ Начать</button>
-        <button class="btn" onclick="closeGame()">✖ Закрыть</button>
-      </div>
-
-      <div class="game-hint" id="gameHint">
-        💡 ПРОБЕЛ или тапни, чтобы прыгнуть • Собирай 🐟 • Лови ⚡ ×2
-      </div>
     </div>
   </div>
 
@@ -982,10 +860,10 @@
       hunger: 50, mood: 60, affection: 50,
       sleeping: false,
       coins: 0,
-      ownedHats: [],       // id купленных шапок
-      ownedFood: {},        // { food_id: количество }
-      fishCollected: 0,     // сколько рыбок поймал в игре
-      equippedHat: null,    // ТОЛЬКО одна шапка
+      ownedHats: [],
+      ownedFood: {},
+      fishCollected: 0,
+      equippedHat: null,
       achievements: [],
       totalFishCollected: 0,
       lastUpdate: Date.now()
@@ -999,31 +877,30 @@
         if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
         const raw = JSON.parse(saved);
         const state = { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), ...raw };
-        
-        // Миграция со старого формата
+
         if (raw.ownedItems && !raw.ownedHats) {
-          state.ownedHats = raw.ownedItems.filter(id => id.startsWith('hat_'));
-          // Еду из старого формата переносим как запас
-          state.ownedFood = state.ownedFood || {};
+          state.ownedHats = raw.ownedItems.filter(id => typeof id === 'string' && id.startsWith('hat_'));
         }
         if (raw.equipped && raw.equipped.hat && !raw.equippedHat) {
           state.equippedHat = raw.equipped.hat;
         }
 
-        // Убедимся, что поля правильных типов
         state.ownedHats = Array.isArray(state.ownedHats) ? state.ownedHats : [];
-        state.ownedFood = typeof state.ownedFood === 'object' && state.ownedFood ? state.ownedFood : {};
+        state.ownedFood = (typeof state.ownedFood === 'object' && state.ownedFood) ? state.ownedFood : {};
+        state.achievements = Array.isArray(state.achievements) ? state.achievements : [];
+
         if (state.equippedHat && !state.ownedHats.includes(state.equippedHat)) {
           state.equippedHat = null;
         }
 
         const now = Date.now();
-        const elapsed = Math.floor((now - state.lastUpdate) / 1000 / 30);
+        const elapsed = Math.floor((now - (state.lastUpdate || now)) / 1000 / 30);
         state.hunger = Math.max(0, state.hunger - elapsed * 2);
         state.mood = Math.max(0, state.mood - elapsed * 1);
         state.lastUpdate = now;
         return state;
-      } catch {
+      } catch (e) {
+        console.error('loadState error:', e);
         return JSON.parse(JSON.stringify(DEFAULT_STATE));
       }
     }
@@ -1042,7 +919,11 @@
       { id: 'ten_fish', icon: '🐟', title: 'Собрал 10 рыбок', desc: 'Поймай 10 рыбок за всё время' },
       { id: 'first_buy', icon: '🛍️', title: 'Первая покупка', desc: 'Купи что-нибудь в магазине' },
       { id: 'max_hunger', icon: '🍖', title: 'Сыт по горло', desc: 'Покорми котика до 100% сытости' },
-      { id: 'level_master', icon: '🌈', title: 'Путешественник', desc: 'Пройди через 3 разных уровня' }
+      { id: 'level_master', icon: '🌈', title: 'Путешественник', desc: 'Пройди через 3 разных уровня' },
+      { id: 'sky_high', icon: '☁️', title: 'Небесный кот', desc: 'Набери 500 высоты в Doodle' },
+      { id: 'hacker_cat', icon: '🔐', title: 'Кот-взломщик', desc: 'Взломай 10 замков за раз' },
+      { id: 'thorn_king', icon: '🌹', title: 'Король шипов', desc: 'Пройди 5 волн в Терновом Троне' },
+      { id: 'thorn_legend', icon: '👑', title: 'Легенда трона', desc: 'Набери 50 000 очков в Терновом Троне' }
     ];
 
     function unlockAchievement(id) {
@@ -1143,7 +1024,6 @@
           grid.appendChild(el);
         });
       } else {
-        // ЕДА
         FOOD_SHOP.forEach(item => {
           const count = catState.ownedFood[item.id] || 0;
           const canAfford = catState.coins >= item.price;
@@ -1170,8 +1050,6 @@
 
       catState.coins -= item.price;
       catState.ownedHats.push(id);
-
-      // Автоматически надеваем новую шапку (старая снимается автоматически, т.к. одно поле)
       catState.equippedHat = id;
       showToast(`👗 ${item.name} куплен и надет!`);
       spawnHearts(8);
@@ -1184,7 +1062,6 @@
       renderShop();
     }
 
-    // Надеть / снять шапку — ТОЛЬКО ОДНА шапка
     function equipHat(id) {
       if (catState.equippedHat === id) {
         catState.equippedHat = null;
@@ -1300,7 +1177,6 @@
         else if (mood < 30) catEmoji = '😿';
       }
 
-      // ЕДИНАЯ шапка (одна, не накладывается)
       let hatEmoji = '';
       if (equippedHat) {
         const item = HATS.find(i => i.id === equippedHat);
@@ -1314,20 +1190,28 @@
            </span>`
         : catEmoji;
 
-      applyNightMode(sleeping);
+      const hour = new Date().getHours();
+      const isRealNight = hour >= 22 || hour < 7;
+      applyNightMode(sleeping || isRealNight);
     }
 
     function changeStat(key, amount) {
       catState[key] = Math.max(0, Math.min(100, catState[key] + amount));
+      if (catState.hunger >= 100) unlockAchievement('max_hunger');
+    }
+
+    function changeStats(obj) {
+      for (const k in obj) {
+        catState[k] = Math.max(0, Math.min(100, catState[k] + obj[k]));
+      }
+      if (catState.hunger >= 100) unlockAchievement('max_hunger');
       saveState();
       updateUI();
-      if (catState.hunger >= 100) unlockAchievement('max_hunger');
     }
 
     function petCat() {
       if (catState.sleeping) { catSay('Мррр... не буди 😴', 2000); return; }
-      changeStat('affection', +10);
-      changeStat('mood', +5);
+      changeStats({ affection: 10, mood: 5 });
       catSay(pickPhrase('happy'), 2000);
       spawnHearts(5);
       Sound.fish();
@@ -1337,15 +1221,12 @@
       showToast('💗 Мур-мур! Котик доволен');
     }
 
-    // ═══ МЕНЮ ЕДЫ — только то, что ЕСТЬ в инвентаре ═══
     function openFoodMenu() {
       if (catState.sleeping) { catSay('Я сплю... 💤', 2000); return; }
       if (catState.hunger > 90) { catSay('Я наелся! 😽', 2000); return; }
 
-      // Собираем то, что есть
       const available = [];
 
-      // Рыбки — из игры (не покупаются!)
       if (catState.fishCollected > 0) {
         available.push({
           id: 'fish',
@@ -1358,7 +1239,6 @@
         });
       }
 
-      // Еда из магазина
       Object.keys(catState.ownedFood).forEach(id => {
         const count = catState.ownedFood[id];
         if (count > 0) {
@@ -1383,7 +1263,6 @@
         return;
       }
 
-      // Рендерим
       const grid = document.getElementById('foodGrid');
       grid.innerHTML = '';
 
@@ -1430,14 +1309,11 @@
         if (catState.ownedFood[foodId] <= 0) delete catState.ownedFood[foodId];
       }
 
-      changeStat('hunger', +item.bonus);
-      changeStat('mood', +item.mood);
-      changeStat('affection', +3);
+      changeStats({ hunger: item.bonus, mood: item.mood, affection: 3 });
 
       catSay(`${item.emoji} ${item.name}! Спасибо!`, 2500);
       showToast(`🍽️ Покормила: ${item.emoji} +${item.bonus} сытости`);
       Sound.fish();
-      saveState();
 
       const cat = document.getElementById('catPet');
       let i = 0;
@@ -1456,9 +1332,7 @@
         showToast('🍖 Котик слишком голоден');
         return;
       }
-      changeStat('mood', +15);
-      changeStat('affection', +10);
-      changeStat('hunger', -10);
+      changeStats({ mood: 15, affection: 10, hunger: -10 });
       catSay(pickPhrase('playing'), 2500);
       showToast('🎾 Котик набегался!');
       spawnHearts(6);
@@ -1481,7 +1355,7 @@
         return;
       }
       catState.sleeping = true;
-      changeStat('mood', +10);
+      changeStats({ mood: 10 });
       catSay('Сладких снов... 💤', 2500);
       showToast('🌙 Ночь наступила');
 
@@ -1497,6 +1371,7 @@
 
     function spawnHearts(count) {
       const cat = document.getElementById('catPet');
+      if (!cat) return;
       const rect = cat.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
@@ -1560,453 +1435,6 @@
     }, 800);
 
     // ═══════════════════════════════════════════
-    // МИНИ-ИГРА
-    // ═══════════════════════════════════════════
-    const gameOverlay = document.getElementById('gameOverlay');
-    const gameCanvas = document.getElementById('gameCanvas');
-    const gctx = gameCanvas.getContext('2d');
-    const gameScoreEl = document.getElementById('gameScore');
-    const gameRecordEl = document.getElementById('gameRecord');
-    const gameCoinsEl = document.getElementById('gameCoins');
-    const gameFishesEl = document.getElementById('gameFishes');
-    const gameOverBox = document.getElementById('gameOverBox');
-    const goScoreEl = document.getElementById('goScore');
-    const goRecordEl = document.getElementById('goRecord');
-    const goCoinsEl = document.getElementById('goCoins');
-    const goFishEl = document.getElementById('goFish');
-    const goTitleEl = document.getElementById('goTitle');
-    const goEmojiEl = document.getElementById('goEmoji');
-    const startBtn = document.getElementById('startBtn');
-    const powerupIndicator = document.getElementById('powerupIndicator');
-    const powerupTimerEl = document.getElementById('powerupTimer');
-    const gameSubtitle = document.getElementById('gameSubtitle');
-
-    const LEVELS = [
-      { name: '🌳 Лес', sky: ['#e8f5e9', '#c8e6c9'], ground: '#8bc34a', obstacle: ['🌵', '🌳', '🌲', '🍄'], cloud: true, stars: false },
-      { name: '🌃 Ночной город', sky: ['#1a1a3e', '#2a1a5e'], ground: '#4a4a6a', obstacle: ['🏢', '🚗', '🚦', '🛢️'], cloud: false, stars: true },
-      { name: '🏖️ Пляж', sky: ['#fff9c4', '#ffe082'], ground: '#f4d58d', obstacle: ['🐚', '🌴', '⛱️', '🦀'], cloud: true, stars: false }
-    ];
-
-    let currentLevel = 0;
-    function getLevelIndexByScore(score) { return Math.min(LEVELS.length - 1, Math.floor(score / 200)); }
-
-    let game = {
-      running: false, finished: false,
-      score: 0,
-      record: parseInt(localStorage.getItem('catGameRecord') || '0'),
-      speed: 4, gravity: 0.7, jumpPower: -13,
-      groundY: 0,
-      cat: null,
-      obstacles: [], fishes: [], powerups: [], clouds: [], stars: [],
-      lastObstacleTime: 0, lastFishTime: 0, lastPowerupTime: 0,
-      frame: 0,
-      doubleScore: false,
-      doubleScoreEndTime: 0,
-      coinsThisRun: 0,
-      fishThisRun: 0,
-      nextCoinScore: 50,
-      levelsSeen: new Set()
-    };
-
-    gameRecordEl.textContent = game.record;
-
-    function resizeGameCanvas() {
-      const wrap = gameCanvas.parentElement;
-      const rect = wrap.getBoundingClientRect();
-      gameCanvas.width = rect.width;
-      gameCanvas.height = rect.height;
-      game.groundY = rect.height - 40;
-    }
-
-    function initGameObjects() {
-      const W = gameCanvas.width;
-      game.cat = { x: 60, y: game.groundY - 40, width: 44, height: 44, vy: 0, onGround: true };
-      game.obstacles = [];
-      game.fishes = [];
-      game.powerups = [];
-      game.clouds = [];
-      game.stars = [];
-
-      for (let i = 0; i < 4; i++) {
-        game.clouds.push({ x: Math.random() * W, y: 20 + Math.random() * 60, speed: 0.3 + Math.random() * 0.4, size: 30 + Math.random() * 20 });
-      }
-      for (let i = 0; i < 30; i++) {
-        game.stars.push({ x: Math.random() * W, y: Math.random() * (game.groundY - 20), size: Math.random() * 1.5 + 0.5 });
-      }
-
-      game.lastObstacleTime = Date.now();
-      game.lastFishTime = Date.now();
-      game.lastPowerupTime = Date.now();
-      game.frame = 0;
-      game.doubleScore = false;
-      powerupIndicator.classList.remove('active');
-      game.nextCoinScore = 10;
-      game.levelsSeen = new Set([0]);
-      currentLevel = 0;
-    }
-
-    function jump() {
-      if (!game.running) return;
-      if (game.cat.onGround) {
-        game.cat.vy = game.jumpPower;
-        game.cat.onGround = false;
-        Sound.jump();
-      }
-    }
-
-    function updateGame() {
-      if (!game.running) return;
-      const W = gameCanvas.width;
-
-      game.cat.vy += game.gravity;
-      game.cat.y += game.cat.vy;
-      if (game.cat.y >= game.groundY - game.cat.height) {
-        game.cat.y = game.groundY - game.cat.height;
-        game.cat.vy = 0;
-        game.cat.onGround = true;
-      }
-
-      game.clouds.forEach(c => {
-        c.x -= c.speed;
-        if (c.x + c.size < 0) { c.x = W + c.size; c.y = 20 + Math.random() * 60; }
-      });
-
-      if (game.doubleScore && Date.now() > game.doubleScoreEndTime) {
-        game.doubleScore = false;
-        powerupIndicator.classList.remove('active');
-      }
-      if (game.doubleScore) {
-        const left = Math.max(0, Math.ceil((game.doubleScoreEndTime - Date.now()) / 1000));
-        powerupTimerEl.textContent = left;
-      }
-
-            const now = Date.now();
-      
-      const obstacleDelay = Math.max(1300, 1800 - game.score * 6);
-      if (now - game.lastObstacleTime > obstacleDelay) {
-        game.lastObstacleTime = now;
-        const level = LEVELS[currentLevel];
-        const type = level.obstacle[Math.floor(Math.random() * level.obstacle.length)];
-        const h = 30 + Math.random() * 20;
-        
-        const lastObs = game.obstacles[game.obstacles.length - 1];
-        if (lastObs && (W + 20 - lastObs.x) < 250) {
-          // Слишком близко — не спавним это препятствие
-        } else {
-          const obsX = W + 20;
-          game.obstacles.push({ x: obsX, y: game.groundY - h, width: 30, height: h, emoji: type });
-
-          // 🐟 Рыбка НАД препятствием (шанс 60%)
-          if (Math.random() < 0.6) {
-            game.fishes.push({
-              x: obsX + 10,                           // чуть правее препятствия
-              y: game.groundY - h - 60,               // НАД препятствием
-              size: 26,
-              collected: false,
-              bobPhase: Math.random() * Math.PI * 2
-            });
-          }
-        }
-      }
-
-      if (now - game.lastPowerupTime > 15000 + Math.random() * 15000) {
-        game.lastPowerupTime = now;
-        game.powerups.push({ x: W + 20, y: game.groundY - 80 - Math.random() * 30, size: 30, collected: false, bobPhase: 0 });
-      }
-
-      game.obstacles.forEach(o => o.x -= game.speed);
-      game.obstacles = game.obstacles.filter(o => o.x + o.width > -20);
-
-      game.fishes.forEach(f => { f.x -= game.speed; f.bobPhase += 0.15; });
-      game.fishes = game.fishes.filter(f => f.x + f.size > -20);
-
-      game.powerups.forEach(p => { p.x -= game.speed; p.bobPhase += 0.2; });
-      game.powerups = game.powerups.filter(p => p.x + p.size > -20);
-
-      const catBox = { x: game.cat.x + 6, y: game.cat.y + 6, w: game.cat.width - 12, h: game.cat.height - 8 };
-      for (const o of game.obstacles) {
-        if (catBox.x < o.x + o.width && catBox.x + catBox.w > o.x && catBox.y < o.y + o.height && catBox.y + catBox.h > o.y) {
-          endGame(); return;
-        }
-      }
-
-      for (const f of game.fishes) {
-        if (!f.collected) {
-          const dx = (game.cat.x + game.cat.width / 2) - (f.x + f.size / 2);
-          const dy = (game.cat.y + game.cat.height / 2) - (f.y + f.size / 2);
-        if (Math.sqrt(dx * dx + dy * dy) < 38) {
-            f.collected = true;
-            const points = game.doubleScore ? 10 : 5;
-            game.score += points;
-            game.fishThisRun++;
-            gameScoreEl.textContent = game.score;
-            gameFishesEl.textContent = game.fishThisRun;
-            catState.totalFishCollected++;
-            showFloatingScore(f.x, f.y, `+${points}`, '#ff4d6d');
-            Sound.fish();
-            if (catState.totalFishCollected >= 10) unlockAchievement('ten_fish');
-          }
-        }
-      }
-      game.fishes = game.fishes.filter(f => !f.collected);
-
-      for (const p of game.powerups) {
-        if (!p.collected) {
-          const dx = (game.cat.x + game.cat.width / 2) - (p.x + p.size / 2);
-          const dy = (game.cat.y + game.cat.height / 2) - (p.y + p.size / 2);
-        if (Math.sqrt(dx * dx + dy * dy) < 38) {
-            p.collected = true;
-            game.doubleScore = true;
-            game.doubleScoreEndTime = Date.now() + 10000;
-            powerupIndicator.classList.add('active');
-            powerupTimerEl.textContent = '10';
-            showFloatingScore(p.x, p.y, '⚡ ×2!', '#ffa500');
-            Sound.powerup();
-            spawnHearts(8);
-          }
-        }
-      }
-      game.powerups = game.powerups.filter(p => !p.collected);
-
-            game.frame++;
-      if (game.frame % 6 === 0) {
-        const points = game.doubleScore ? 2 : 1;
-        game.score += points;
-        gameScoreEl.textContent = game.score;
-
-        // 🪙 Монетка за каждые 10 очков (в 5 раз быстрее чем было 50)
-        if (game.score >= game.nextCoinScore) {
-          game.nextCoinScore += 10;
-          game.coinsThisRun++;
-          gameCoinsEl.textContent = game.coinsThisRun;
-          Sound.coin();
-          showFloatingScore(gameCanvas.width - 80, 40, '🪙 +1', '#ffa500');
-        }
-      }
-
-      const newLevel = getLevelIndexByScore(game.score);
-      if (newLevel !== currentLevel) {
-        currentLevel = newLevel;
-        game.levelsSeen.add(newLevel);
-        gameSubtitle.textContent = `Достигнут уровень: ${LEVELS[currentLevel].name}`;
-        showToast(`🌈 Новый уровень: ${LEVELS[currentLevel].name}`);
-        setTimeout(() => { gameSubtitle.textContent = 'Прыгай через препятствия и собирай рыбки! 🐟'; }, 3000);
-        if (game.levelsSeen.size >= 3) unlockAchievement('level_master');
-      }
-
-      game.speed = 4 + Math.min(6, game.score * 0.03);
-    }
-
-    function showFloatingScore(x, y, text, color) {
-      const el = document.createElement('div');
-      el.textContent = text;
-      el.style.cssText = `position:absolute;left:${x}px;top:${y}px;color:${color};font-weight:800;font-size:18px;pointer-events:none;z-index:100;animation:floatUpScore 0.9s ease-out forwards;`;
-      document.querySelector('.game-canvas-wrap').appendChild(el);
-      setTimeout(() => el.remove(), 900);
-    }
-
-    const floatStyle = document.createElement('style');
-    floatStyle.textContent = `@keyframes floatUpScore { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-40px) scale(1.3); opacity: 0; } }`;
-    document.head.appendChild(floatStyle);
-
-    function drawGame() {
-      const W = gameCanvas.width;
-      const H = gameCanvas.height;
-      const level = LEVELS[currentLevel];
-
-      const grad = gctx.createLinearGradient(0, 0, 0, H);
-      grad.addColorStop(0, level.sky[0]);
-      grad.addColorStop(1, level.sky[1]);
-      gctx.fillStyle = grad;
-      gctx.fillRect(0, 0, W, H);
-
-      if (currentLevel === 1) {
-        gctx.fillStyle = '#fff';
-        gctx.beginPath(); gctx.arc(W - 60, 50, 22, 0, Math.PI * 2); gctx.fill();
-        gctx.fillStyle = level.sky[0];
-        gctx.beginPath(); gctx.arc(W - 68, 45, 20, 0, Math.PI * 2); gctx.fill();
-      } else {
-        gctx.fillStyle = '#ffeb3b';
-        gctx.beginPath(); gctx.arc(W - 60, 50, 22, 0, Math.PI * 2); gctx.fill();
-      }
-
-      if (level.stars) {
-        gctx.fillStyle = '#fff';
-        game.stars.forEach(s => {
-          gctx.globalAlpha = 0.5 + Math.sin(game.frame * 0.05 + s.x) * 0.5;
-          gctx.beginPath(); gctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); gctx.fill();
-        });
-        gctx.globalAlpha = 1;
-      }
-
-      if (level.cloud) {
-        gctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-        game.clouds.forEach(c => {
-          gctx.beginPath();
-          gctx.arc(c.x, c.y, c.size * 0.6, 0, Math.PI * 2);
-          gctx.arc(c.x + c.size * 0.5, c.y - c.size * 0.2, c.size * 0.5, 0, Math.PI * 2);
-          gctx.arc(c.x + c.size, c.y, c.size * 0.55, 0, Math.PI * 2);
-          gctx.fill();
-        });
-      }
-
-      gctx.fillStyle = level.ground;
-      gctx.fillRect(0, game.groundY, W, H - game.groundY);
-
-      gctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
-      gctx.lineWidth = 2;
-      gctx.beginPath(); gctx.moveTo(0, game.groundY); gctx.lineTo(W, game.groundY); gctx.stroke();
-
-      gctx.font = '30px serif';
-      gctx.textAlign = 'center';
-      gctx.textBaseline = 'bottom';
-      game.obstacles.forEach(o => { gctx.fillText(o.emoji, o.x + o.width / 2, o.y + o.height); });
-
-      gctx.font = '26px serif';
-      game.fishes.forEach(f => {
-        const bob = Math.sin(f.bobPhase) * 4;
-        gctx.fillText('🐟', f.x + f.size / 2, f.y + f.size + bob);
-      });
-
-      gctx.font = '28px serif';
-      game.powerups.forEach(p => {
-        const bob = Math.sin(p.bobPhase) * 5;
-        gctx.fillText('⚡', p.x + p.size / 2, p.y + p.size + bob);
-      });
-
-            const cat = game.cat;
-      
-      // Тень под котиком
-      gctx.save();
-      gctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-      gctx.beginPath();
-      gctx.ellipse(cat.x + cat.width / 2, game.groundY + 3, cat.width / 2.5, 5, 0, 0, Math.PI * 2);
-      gctx.fill();
-      gctx.restore();
-
-      // САМ КОТИК — сбрасываем fillStyle на непрозрачный
-      gctx.save();
-      gctx.globalAlpha = 1;
-      gctx.fillStyle = '#000000';
-      gctx.font = '44px serif';
-      gctx.textAlign = 'left';
-      gctx.textBaseline = 'top';
-      gctx.fillText(cat.onGround ? '🐱' : '😸', cat.x, cat.y);
-      gctx.restore();
-    }
-
-    function gameLoop() {
-      if (!game.running && !game.finished) return;
-      updateGame();
-      drawGame();
-      if (game.running) requestAnimationFrame(gameLoop);
-    }
-
-    function openGame() {
-      initAudio();
-      gameOverlay.classList.add('active');
-      setTimeout(() => { resizeGameCanvas(); initGameObjects(); drawGame(); }, 100);
-    }
-
-    function closeGame() {
-      gameOverlay.classList.remove('active');
-      game.running = false;
-      game.finished = false;
-    }
-
-    function startGame() {
-      initAudio();
-      resizeGameCanvas();
-      initGameObjects();
-      game.running = true;
-      game.finished = false;
-      game.score = 0;
-      game.speed = 4;
-      game.coinsThisRun = 0;
-      game.fishThisRun = 0;
-      game.nextCoinScore = 10;
-      gameScoreEl.textContent = '0';
-      gameCoinsEl.textContent = '0';
-      gameFishesEl.textContent = '0';
-      gameOverBox.classList.remove('show');
-      startBtn.disabled = true;
-      startBtn.textContent = '🎮 Играем...';
-      gameLoop();
-    }
-
-    function endGame() {
-      game.running = false;
-      game.finished = true;
-      Sound.hurt();
-
-      // Начисляем монетки
-      catState.coins += game.coinsThisRun;
-
-      // Начисляем рыбок — в инвентарь
-      catState.fishCollected += game.fishThisRun;
-
-      saveState();
-      document.getElementById('coinsCount').textContent = catState.coins;
-
-      let isNewRecord = false;
-      if (game.score > game.record) {
-        game.record = game.score;
-        localStorage.setItem('catGameRecord', game.record);
-        gameRecordEl.textContent = game.record;
-        isNewRecord = true;
-      }
-
-      if (game.score > 0) unlockAchievement('first_record');
-      if (game.score >= 100) unlockAchievement('hundred');
-
-      goScoreEl.textContent = game.score;
-      goRecordEl.textContent = 'Рекорд: ' + game.record;
-      goCoinsEl.textContent = `+${game.coinsThisRun} 🪙 заработано`;
-      goFishEl.textContent = `+${game.fishThisRun} 🐟 поймано (всего ${catState.fishCollected})`;
-
-      if (isNewRecord) {
-        goEmojiEl.textContent = '🏆';
-        goTitleEl.textContent = 'Новый рекорд!';
-      } else {
-        goEmojiEl.textContent = '😿';
-        goTitleEl.textContent = 'Ой, котик упал!';
-      }
-
-      gameOverBox.classList.add('show');
-      startBtn.disabled = false;
-      startBtn.textContent = '▶ Начать';
-
-      if (isNewRecord && game.score > 0) spawnHearts(20);
-    }
-
-    function restartGame() {
-      gameOverBox.classList.remove('show');
-      startGame();
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (!gameOverlay.classList.contains('active')) return;
-      if (e.code === 'Space' || e.code === 'ArrowUp') {
-        e.preventDefault();
-        if (game.running) jump();
-        else if (!game.finished) startGame();
-      }
-    });
-
-    gameCanvas.addEventListener('click', () => { if (game.running) jump(); });
-    gameCanvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      if (game.running) jump();
-    }, { passive: false });
-
-    window.addEventListener('resize', () => {
-      if (gameOverlay.classList.contains('active')) {
-        resizeGameCanvas();
-        if (game.cat) game.groundY = gameCanvas.height - 40;
-      }
-    });
-
-    // ═══════════════════════════════════════════
     // АДМИН
     // ═══════════════════════════════════════════
     const ADMIN_COINS = 666;
@@ -2018,9 +1446,6 @@
       const indicator = document.getElementById('adminIndicator');
 
       if (isAdminMode()) {
-        // ═══════════════════════════════════════
-        // ВЫКЛЮЧАЕМ — восстанавливаем снимок
-        // ═══════════════════════════════════════
         const confirmed = confirm(
           '👑 Выключить админ-режим?\n\n' +
           '↩️ Всё вернётся к состоянию ДО включения админа:\n' +
@@ -2031,13 +1456,10 @@
         );
         if (!confirmed) return;
 
-        // Восстанавливаем снимок
         try {
           const snapshotRaw = localStorage.getItem('adminSnapshot');
           if (snapshotRaw) {
             const snapshot = JSON.parse(snapshotRaw);
-            
-            // Возвращаем всё, что было до админа
             catState.coins = snapshot.coins;
             catState.ownedHats = snapshot.ownedHats || [];
             catState.ownedFood = snapshot.ownedFood || {};
@@ -2045,9 +1467,7 @@
             catState.achievements = snapshot.achievements || [];
             catState.fishCollected = snapshot.fishCollected || 0;
             catState.totalFishCollected = snapshot.totalFishCollected || 0;
-            // Уровни котика не трогаем — они честно шли
           } else {
-            // На всякий случай — если снимок пропал, просто убираем 666 монет
             catState.coins = Math.max(0, catState.coins - ADMIN_COINS);
           }
           localStorage.removeItem('adminSnapshot');
@@ -2070,9 +1490,6 @@
         catSay('Мои вещи вернулись! 🥰', 3000);
 
       } else {
-        // ═══════════════════════════════════════
-        // ВКЛЮЧАЕМ — сохраняем снимок
-        // ═══════════════════════════════════════
         const confirmed = confirm(
           '👑 Включить админ-режим?\n\n' +
           '• Ты получишь 666 монет\n' +
@@ -2082,7 +1499,6 @@
         );
         if (!confirmed) return;
 
-        // 💾 Сохраняем снимок текущего прогресса
         const snapshot = {
           coins: catState.coins,
           ownedHats: [...catState.ownedHats],
@@ -2094,7 +1510,6 @@
         };
         localStorage.setItem('adminSnapshot', JSON.stringify(snapshot));
 
-        // 💰 Даём 666 монет
         catState.coins += ADMIN_COINS;
         saveState();
 

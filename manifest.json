@@ -1,0 +1,25 @@
+{
+  "name": "Для Вероники ❤️",
+  "short_name": "Вероника",
+  "description": "Сайт-подарок для самой любимой девушки",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffe5ec",
+  "theme_color": "#ff4d6d",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "photos/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "photos/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

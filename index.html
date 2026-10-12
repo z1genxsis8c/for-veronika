@@ -2,1003 +2,1472 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Для Вероники ❤️</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Для Вероники</title>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f3ede4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Вероника">
+  <link rel="apple-touch-icon" href="photos/icon-192.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
   <style>
+    /* ============================================================
+       TOKENS
+       ============================================================ */
+    :root {
+      --paper:     #f3ede4;
+      --paper-2:   #ece4d8;
+      --surface:   #fdfaf6;
+      --surface-2: #f7f0e6;
+
+      --ink:   #1e1a16;
+      --ink-2: #4a423c;
+      --ink-3: #8a7f75;
+      --ink-4: #b8aca1;
+
+      --line:   rgba(30, 26, 22, 0.08);
+      --line-2: rgba(30, 26, 22, 0.16);
+
+      --rose:      #b58794;
+      --rose-deep: #8f6472;
+      --rose-soft: #e8d4d8;
+      --rose-tint: #f2e4e7;
+
+      --sand: #cfb8a3;
+
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * { box-sizing: border-box; }
+
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      min-height: 100%;
-      overflow-x: hidden;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #ffe5ec, #ffc2d1, #fba3b7);
-      position: relative;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.5;
       min-height: 100vh;
-      padding: 20px;
-      padding-bottom: 120px;
-      box-sizing: border-box;
+      overflow-x: hidden;
+      position: relative;
     }
 
-    #hearts-container {
+    /* Ambient light + grain */
+    body::before {
+      content: '';
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      inset: 0;
+      z-index: -1;
       pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
+      background:
+        radial-gradient(ellipse 90% 60% at 15% -10%, rgba(232, 212, 216, 0.55), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 95% 15%, rgba(207, 184, 163, 0.28), transparent 55%),
+        radial-gradient(ellipse 70% 55% at 5% 105%, rgba(181, 135, 148, 0.16), transparent 60%),
+        var(--paper);
     }
 
-    .game-zone {
-      position: relative;
-      width: 100%;
-      max-width: 620px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-      gap: 16px;
-    }
-
-    /* ---------- ДОЖДЬ ИЗ СЕРДЕЧЕК ---------- */
-    .heart {
-      position: absolute;
-      top: -30px;
-      color: #ffb3c1;
-      font-size: 20px;
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
       pointer-events: none;
-      animation: fall linear infinite;
+      opacity: 0.30;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
     }
 
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-    }
+    img { max-width: 100%; display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    a { color: inherit; text-decoration: none; }
 
-    /* ---------- ФОТО-СЛАЙДЕР ---------- */
-    .photo-slider {
-      position: relative;
-      width: 130px;
-      height: 130px;
-      margin-bottom: 4px;
-      flex-shrink: 0;
-      z-index: 20;
-    }
+    ::selection { background: var(--rose-soft); color: var(--rose-deep); }
 
-    .photo-slider img {
-      position: absolute;
-      top: 0; left: 0;
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid #fff;
-      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.4);
-      opacity: 0;
-      animation: photoSlide 9s infinite;
-    }
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(30, 26, 22, 0.12); border-radius: 10px; border: 3px solid var(--paper); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(30, 26, 22, 0.22); }
 
-    .photo-slider img:nth-child(1) { animation-delay: 0s; }
-    .photo-slider img:nth-child(2) { animation-delay: 3s; }
-    .photo-slider img:nth-child(3) { animation-delay: 6s; }
-
-    @keyframes photoSlide {
-      0% { opacity: 0; transform: scale(0.9); }
-      10% { opacity: 1; transform: scale(1); }
-      33% { opacity: 1; transform: scale(1); }
-      43% { opacity: 0; transform: scale(1.05); }
-      100% { opacity: 0; transform: scale(0.9); }
-    }
-
-    /* ---------- КАРТОЧКА ---------- */
-    .card {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 34px 34px;
-      border-radius: 24px;
-      box-shadow: 0 10px 40px rgba(251, 163, 183, 0.5);
-      text-align: center;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 2px solid #ffffff;
-      width: 100%;
-      box-sizing: border-box;
-      z-index: 10;
-      position: relative;
-    }
-
-    h1 {
-      color: #ff4d6d;
-      margin: 0 0 8px;
-      font-size: 22px;
-      line-height: 1.3;
-    }
-
-    .subtitle {
-      color: #c71585;
-      font-size: 13px;
-      margin-bottom: 22px;
-      opacity: 0.85;
-    }
-
-    .btn-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
-      height: 54px;
-      position: relative;
-    }
-
-    button {
-      padding: 12px 30px;
-      font-size: 17px;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      font-weight: bold;
-      font-family: inherit;
-    }
-
-    .btn-yes {
-      background-color: #ff4d6d;
-      color: white;
-      box-shadow: 0 5px 20px rgba(255, 77, 109, 0.5);
-      transition: all 0.25s ease;
-      animation: pulseGlow 2s infinite;
-    }
-
-    .btn-yes:hover {
-      background-color: #ff758f;
-      transform: scale(1.08);
-    }
-
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 5px 20px rgba(255, 77, 109, 0.5); }
-      50% { box-shadow: 0 5px 30px rgba(255, 77, 109, 0.9); }
-    }
-
-    .btn-no {
-      background-color: #fff0f3;
-      color: #ff4d6d;
-      border: 2px solid #ff4d6d;
+    /* ============================================================
+       TOP BAR
+       ============================================================ */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
       z-index: 100;
-      transition: left 0.1s ease, top 0.1s ease;
-    }
-
-        /* ---------- КОТИК И ДОМИК ---------- */
-    .cat-zone {
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      z-index: 50;
+      justify-content: space-between;
+      padding: 20px 32px;
+      background: rgba(243, 237, 228, 0.72);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border-bottom: 1px solid var(--line);
+      font-size: 12.5px;
+      letter-spacing: 0.02em;
     }
 
-    .cat {
-      font-size: 44px;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--ink);
+      border-radius: 50%;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 17px;
+      line-height: 1;
+      color: var(--ink);
+      padding-bottom: 2px;
+    }
+
+    .brand-label {
+      color: var(--ink-2);
+      font-weight: 500;
+    }
+
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink-2);
       cursor: pointer;
-      animation: catBob 2s ease-in-out infinite;
-      filter: drop-shadow(0 4px 10px rgba(255, 77, 109, 0.4));
-      user-select: none;
-      transition: transform 0.3s;
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+      transition: color 0.2s;
     }
 
-    .cat:hover {
-      transform: scale(1.2);
-    }
+    .topbar-meta:hover { color: var(--ink); }
 
-    @keyframes catBob {
-      0%, 100% { transform: translateY(0) rotate(-3deg); }
-      50% { transform: translateY(-8px) rotate(3deg); }
-    }
-
-    .cat-bubble {
-      position: absolute;
-      bottom: 100%;
-      right: 0;
-      margin-bottom: 8px;
-      max-width: 220px;
-      background: #fff;
-      color: #c71585;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 10px 14px;
-      border-radius: 18px 18px 4px 18px;
-      box-shadow: 0 6px 20px rgba(255, 77, 109, 0.25);
-      border: 2px solid #ffc2d1;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.3s;
-      pointer-events: none;
-      white-space: normal;
-      text-align: center;
-    }
-
-    .cat-bubble.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Кнопка "Домик котика" */
-    .cat-house-btn {
+    .meta-item {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: linear-gradient(135deg, #ff4d6d, #c71585);
-      color: #fff;
-      text-decoration: none;
-      padding: 10px 18px;
-      border-radius: 50px;
-      font-size: 13px;
-      font-weight: 700;
-      font-family: inherit;
-      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.5);
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      animation: houseBtnPulse 2.5s ease-in-out infinite;
-      white-space: nowrap;
-      cursor: pointer;
     }
 
-    .cat-house-btn:hover {
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 14px 28px rgba(255, 77, 109, 0.7);
-      background: linear-gradient(135deg, #ff758f, #ff4d6d);
+    .meta-item .icon { font-size: 13px; filter: saturate(0.7); }
+
+    .meta-sep { color: var(--ink-4); }
+
+    /* ============================================================
+       LAYOUT
+       ============================================================ */
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 32px 96px;
     }
 
-    .cat-house-btn:active {
-      transform: scale(0.98);
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero {
+      padding: 160px 0 120px;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 80px;
+      align-items: center;
+      min-height: 100vh;
     }
 
-    .cat-house-icon {
+    .hero-copy {
+      max-width: 560px;
+      position: relative;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--rose-deep);
+      margin-bottom: 32px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 24px;
+      height: 1px;
+      background: var(--rose-deep);
+    }
+
+    h1 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(42px, 5.6vw, 78px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin: 0 0 28px;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--rose-deep);
+    }
+
+    .hero-sub {
       font-size: 16px;
-      animation: catBob 2s ease-in-out infinite;
+      line-height: 1.6;
+      color: var(--ink-2);
+      margin: 0 0 44px;
+      max-width: 40ch;
+      font-weight: 400;
+    }
+
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      min-height: 56px;
+      position: relative;
+    }
+
+    .btn-primary {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 30px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 14.5px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: transform 0.35s var(--ease), background 0.3s;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover { background: #000; transform: translateY(-2px); }
+    .btn-primary:active { transform: translateY(0) scale(0.98); }
+
+    .btn-primary .arrow {
       display: inline-block;
+      transition: transform 0.4s var(--ease);
+    }
+    .btn-primary:hover .arrow { transform: translateX(4px); }
+
+    .btn-ghost {
+      padding: 16px 28px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ink-2);
+      font-size: 14.5px;
+      font-weight: 500;
+      border: 1px solid var(--line-2);
+      transition: left 0.15s, top 0.15s, background 0.25s, color 0.25s, border-color 0.25s;
+      z-index: 100;
     }
 
-    @keyframes houseBtnPulse {
-      0%, 100% { box-shadow: 0 8px 20px rgba(255, 77, 109, 0.5); }
-      50% { box-shadow: 0 8px 28px rgba(255, 77, 109, 0.9); }
+    .btn-ghost:hover {
+      background: var(--surface-2);
+      color: var(--ink);
+      border-color: var(--ink-3);
     }
 
-    /* На телефоне */
-    @media (max-width: 480px) {
-      .cat-zone {
-        bottom: 80px;
-        right: 14px;
-        gap: 6px;
-      }
-      .cat {
-        font-size: 36px;
-      }
-      .cat-bubble {
-        max-width: 180px;
-        font-size: 12px;
-        padding: 8px 12px;
-      }
-      .cat-house-btn {
-        font-size: 11px;
-        padding: 8px 14px;
-      }
-      .cat-house-text {
-        display: none; /* На маленьких экранах только иконка */
-      }
-      .cat-house-btn {
-        width: 44px;
-        height: 44px;
-        padding: 0;
-        justify-content: center;
-        border-radius: 50%;
-      }
-      .cat-house-icon {
-        font-size: 20px;
-      }
+    .hero-meta-line {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      font-size: 11.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
     }
 
-    /* ---------- МОДАЛЬНОЕ ОКНО ---------- */
+    .hero-meta-line span { display: inline-flex; align-items: center; gap: 8px; }
+    .hero-meta-line .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--rose); }
+
+    /* --- Photo stack (polaroids) --- */
+    .photo-stack {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+      justify-self: center;
+    }
+
+    .polaroid {
+      position: absolute;
+      padding: 12px 12px 44px 12px;
+      background: var(--surface);
+      border-radius: 3px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 30px 60px rgba(30, 26, 22, 0.14),
+        0 6px 16px rgba(30, 26, 22, 0.06);
+      transition: transform 0.6s var(--ease);
+    }
+
+    .polaroid .frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 1px;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, #ecd8dc 0%, #ddc5ca 55%, #cbb0b6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Fallback monogram shown when no photo */
+    .polaroid .frame::before {
+      content: 'V';
+      position: absolute;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 78px;
+      line-height: 1;
+      color: rgba(30, 26, 22, 0.14);
+      padding-bottom: 6px;
+      z-index: 0;
+    }
+
+    .polaroid .frame img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    .polaroid figcaption {
+      position: absolute;
+      left: 0; right: 0;
+      bottom: 12px;
+      text-align: center;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--ink-3);
+      letter-spacing: 0.01em;
+    }
+
+    .polaroid--back {
+      width: 58%;
+      top: 0;
+      left: 0;
+      transform: rotate(-9deg);
+      z-index: 1;
+    }
+    .polaroid--mid {
+      width: 58%;
+      top: 7%;
+      right: 0;
+      transform: rotate(7.5deg);
+      z-index: 2;
+    }
+    .polaroid--front {
+      width: 66%;
+      bottom: 0;
+      left: 17%;
+      transform: rotate(-2deg);
+      z-index: 3;
+    }
+
+    .photo-stack:hover .polaroid--back  { transform: rotate(-11deg) translateY(-6px); }
+    .photo-stack:hover .polaroid--mid   { transform: rotate(9.5deg) translateY(-6px); }
+    .photo-stack:hover .polaroid--front { transform: rotate(-1deg) translateY(-8px); }
+
+    /* ============================================================
+       INDEX (navigation)
+       ============================================================ */
+    .index-section {
+      padding: 120px 0 40px;
+      border-top: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 60px;
+      margin-bottom: 72px;
+      align-items: baseline;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .section-label .num {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 18px;
+      color: var(--rose-deep);
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .section-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .section-title em { font-style: italic; color: var(--rose-deep); }
+
+    .index-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .index-row {
+      display: grid;
+      grid-template-columns: 60px 1fr auto auto;
+      gap: 32px;
+      align-items: center;
+      padding: 28px 8px;
+      border-top: 1px solid var(--line);
+      transition: background 0.3s, padding 0.4s var(--ease);
+      position: relative;
+    }
+
+    .index-row:last-child { border-bottom: 1px solid var(--line); }
+
+    .index-row:hover {
+      background: rgba(253, 250, 246, 0.6);
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .index-num {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 17px;
+      color: var(--ink-3);
+      transition: color 0.3s;
+      letter-spacing: 0.02em;
+    }
+
+    .index-row:hover .index-num { color: var(--rose-deep); }
+
+    .index-name {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(22px, 2.4vw, 30px);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      line-height: 1.15;
+      transition: color 0.3s;
+    }
+
+    .index-desc {
+      font-size: 13px;
+      color: var(--ink-3);
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .index-arrow {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line-2);
+      border-radius: 50%;
+      color: var(--ink-2);
+      font-size: 15px;
+      transition: all 0.4s var(--ease);
+      flex-shrink: 0;
+    }
+
+    .index-row:hover .index-arrow {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+      transform: rotate(-45deg);
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .footer {
+      padding: 40px 32px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    /* ============================================================
+       CAT
+       ============================================================ */
+    .cat-zone {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 80;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .cat-bubble {
+      max-width: 230px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px 16px 4px 16px;
+      font-size: 13px;
+      color: var(--ink);
+      line-height: 1.4;
+      box-shadow: 0 12px 28px rgba(30, 26, 22, 0.10);
+      opacity: 0;
+      transform: translateY(8px) scale(0.96);
+      transition: all 0.4s var(--ease-spring);
+      pointer-events: none;
+    }
+
+    .cat-bubble.show { opacity: 1; transform: translateY(0) scale(1); }
+
+    .cat-btn {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--line-2);
+      border-radius: 50%;
+      font-size: 26px;
+      cursor: pointer;
+      user-select: none;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 12px 28px rgba(30, 26, 22, 0.10);
+      transition: transform 0.4s var(--ease-spring), box-shadow 0.3s;
+      filter: saturate(0.85);
+    }
+
+    .cat-btn:hover {
+      transform: scale(1.06) rotate(-6deg);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 16px 36px rgba(30, 26, 22, 0.16);
+    }
+
+    .cat-btn:active { transform: scale(0.95); }
+
+    .cat-house-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: transform 0.3s var(--ease), background 0.25s;
+      box-shadow: 0 10px 22px rgba(30, 26, 22, 0.18);
+    }
+
+    .cat-house-link:hover { transform: translateY(-2px); background: #000; }
+    .cat-house-link .h-icon { filter: saturate(0.9); }
+
+    /* ============================================================
+       MODAL
+       ============================================================ */
     .modal-overlay {
       display: none;
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(255, 200, 210, 0.7);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      inset: 0;
       z-index: 1000;
+      padding: 16px;
       justify-content: center;
       align-items: center;
-      padding: 16px;
-      box-sizing: border-box;
+      background: rgba(30, 26, 22, 0.42);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      animation: overlayIn 0.4s var(--ease);
     }
 
-    .modal-overlay.active {
-      display: flex;
-    }
+    @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-overlay.active { display: flex; }
 
     .modal {
       position: relative;
-      background: #fff;
-      border-radius: 28px;
-      padding: 26px 24px 22px;
-      max-width: 560px;
       width: 100%;
+      max-width: 540px;
       max-height: 92vh;
       overflow-y: auto;
-      box-shadow: 0 20px 50px rgba(255, 77, 109, 0.4);
-      border: 3px solid #ffc2d1;
-      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-sizing: border-box;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 44px 40px 36px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 50px 100px rgba(30, 26, 22, 0.28);
+      animation: modalIn 0.5s var(--ease-spring);
     }
 
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    @keyframes modalIn {
+      from { transform: translateY(20px) scale(0.96); opacity: 0; }
+      to   { transform: translateY(0) scale(1); opacity: 1; }
     }
 
     .modal-close {
       position: absolute;
-      top: 12px;
-      right: 14px;
+      top: 20px;
+      right: 20px;
       width: 34px;
       height: 34px;
-      border-radius: 50%;
-      background: #fff0f3;
-      color: #ff4d6d;
-      border: 2px solid #ffc2d1;
-      font-size: 17px;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0;
-      z-index: 20;
-      transition: all 0.2s;
-      font-weight: bold;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--ink-2);
+      font-size: 14px;
+      transition: all 0.35s var(--ease);
+      z-index: 10;
     }
 
     .modal-close:hover {
-      background: #ff4d6d;
-      color: white;
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
       transform: rotate(90deg);
     }
 
-    /* ---------- ПРОГРЕСС-БАР ---------- */
+    /* Progress */
     .progress-bar {
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 6px;
-      margin-bottom: 20px;
-      padding: 0 8px;
+      margin-bottom: 36px;
+      justify-content: center;
     }
 
     .progress-step {
-      width: 30px;
-      height: 30px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      background: #ffe5ec;
-      color: #ffb3c1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: bold;
-      border: 2px solid #ffc2d1;
-      transition: all 0.3s;
-      flex-shrink: 0;
+      background: var(--line-2);
+      transition: all 0.4s var(--ease);
+      position: relative;
     }
 
     .progress-step.active {
-      background: linear-gradient(135deg, #ff4d6d, #ff758f);
-      color: #fff;
-      border-color: #ff4d6d;
-      transform: scale(1.15);
-      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.5);
+      background: var(--ink);
+      transform: scale(1.7);
     }
 
-    .progress-step.done {
-      background: #ffc2d1;
-      color: #fff;
-      border-color: #ffc2d1;
+    .progress-step.active::after {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 1px solid var(--rose);
+      opacity: 0.5;
+      animation: ringPulse 1.8s ease infinite;
     }
+
+    @keyframes ringPulse {
+      0%   { transform: scale(0.8); opacity: 0.6; }
+      100% { transform: scale(1.9); opacity: 0; }
+    }
+
+    .progress-step.done { background: var(--rose); }
 
     .progress-line {
-      flex: 1;
-      max-width: 24px;
-      height: 3px;
-      background: #ffc2d1;
-      border-radius: 3px;
+      flex: 0 0 22px;
+      height: 1px;
+      background: var(--line-2);
     }
 
-    /* ---------- ШАГИ ---------- */
-    .step {
-      display: none;
-      animation: slideIn 0.35s ease;
-    }
+    /* Steps */
+    .step { display: none; }
+    .step.active { display: block; animation: stepIn 0.45s var(--ease); }
 
-    .step.active {
-      display: block;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(30px); }
-      to { opacity: 1; transform: translateX(0); }
+    @keyframes stepIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .step-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: 30px;
+      line-height: 1.1;
+      letter-spacing: -0.015em;
       text-align: center;
-      color: #ff4d6d;
-      font-size: 20px;
-      font-weight: 700;
-      margin: 0 0 6px;
+      color: var(--ink);
+      margin: 0 0 8px;
     }
+
+    .step-title em { font-style: italic; color: var(--rose-deep); }
 
     .step-subtitle {
       text-align: center;
-      color: #c71585;
-      font-size: 13px;
-      margin: 0 0 18px;
-      opacity: 0.85;
+      font-size: 13.5px;
+      color: var(--ink-3);
+      margin: 0 0 28px;
+      line-height: 1.5;
     }
 
-    /* ---------- КАРТОЧКИ-ВАРИАНТЫ ---------- */
+    /* Options */
     .options-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
       gap: 10px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .option-card {
-      background: #fff7f9;
-      border: 2px solid #ffc2d1;
-      border-radius: 18px;
-      padding: 14px 6px 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      user-select: none;
       position: relative;
-      overflow: hidden;
+      padding: 18px 8px 16px;
+      text-align: center;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.35s var(--ease);
+      user-select: none;
     }
 
     .option-card:hover {
-      transform: translateY(-4px) scale(1.03);
-      border-color: #ff4d6d;
-      box-shadow: 0 0 20px rgba(255, 77, 109, 0.55), 0 8px 20px rgba(255, 77, 109, 0.25);
-      background: #fff;
-      animation: cardPulse 1.5s infinite;
-    }
-
-    @keyframes cardPulse {
-      0%, 100% { box-shadow: 0 0 20px rgba(255, 77, 109, 0.55), 0 8px 20px rgba(255, 77, 109, 0.25); }
-      50% { box-shadow: 0 0 32px rgba(255, 77, 109, 0.9), 0 8px 24px rgba(255, 77, 109, 0.35); }
+      transform: translateY(-3px);
+      background: var(--surface);
+      border-color: rgba(143, 100, 114, 0.35);
+      box-shadow: 0 14px 28px rgba(30, 26, 22, 0.08);
     }
 
     .option-card.selected {
-      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
-      border-color: #ff4d6d;
-      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.4);
-      transform: translateY(-3px) scale(1.04);
+      background: linear-gradient(135deg, var(--rose-tint), rgba(253, 250, 246, 0.9));
+      border-color: var(--rose-deep);
+      box-shadow: 0 10px 24px rgba(143, 100, 114, 0.15);
     }
 
     .option-card.selected::after {
-      content: '✓';
+      content: '';
       position: absolute;
-      top: 6px;
+      top: 8px;
       right: 8px;
-      width: 22px;
-      height: 22px;
-      background: #ff4d6d;
-      color: #fff;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: popIn 0.3s ease;
+      background: var(--ink);
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M3 6L5.2 8.2L9 4.4' stroke='%23fdfaf6' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>");
+      background-size: 12px;
+      background-position: center;
+      background-repeat: no-repeat;
+      animation: popIn 0.35s var(--ease-spring);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.4); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
     }
 
     .option-emoji {
-      font-size: 32px;
       display: block;
-      margin-bottom: 4px;
+      font-size: 28px;
       line-height: 1;
-      transition: transform 0.3s;
+      margin-bottom: 8px;
+      filter: saturate(0.75) brightness(1.02);
+      transition: transform 0.35s var(--ease-spring);
     }
 
-    .option-card:hover .option-emoji {
-      transform: scale(1.2) rotate(-5deg);
-    }
+    .option-card:hover .option-emoji { transform: scale(1.1); }
 
     .option-label {
-      font-size: 12px;
-      color: #c71585;
-      font-weight: 600;
-      line-height: 1.2;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--ink-2);
+      letter-spacing: 0.005em;
+      line-height: 1.25;
     }
 
-    /* ---------- ДАТА/ВРЕМЯ/EMAIL ---------- */
+    /* Input boxes */
     .date-time-box {
-      background: #fff7f9;
-      border: 2px dashed #ffc2d1;
-      border-radius: 18px;
-      padding: 16px 16px 12px;
-      margin-bottom: 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
     }
 
     .date-time-box label {
       display: block;
-      color: #c71585;
-      font-weight: 700;
-      font-size: 13px;
-      margin-bottom: 6px;
-      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 8px;
+      margin-top: 14px;
     }
 
     .date-time-box label:first-child { margin-top: 0; }
 
     .date-time-box input {
       width: 100%;
-      padding: 11px 14px;
-      border: 2px solid #ffc2d1;
-      border-radius: 14px;
-      font-size: 15px;
+      padding: 13px 16px;
       font-family: inherit;
-      color: #333;
-      box-sizing: border-box;
-      background: #fff;
-      transition: border 0.2s;
+      font-size: 15px;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1px solid var(--line-2);
+      border-radius: 12px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .date-time-box input:focus {
       outline: none;
-      border-color: #ff4d6d;
-      box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.15);
+      border-color: var(--rose-deep);
+      box-shadow: 0 0 0 4px rgba(143, 100, 114, 0.10);
     }
 
-    /* ---------- СВОЙ ВАРИАНТ ---------- */
-    .custom-input {
-      display: none;
-      margin-top: 10px;
-    }
-
-    .custom-input.visible {
-      display: block;
-      animation: slideIn 0.3s ease;
-    }
+    .custom-input { display: none; margin-top: 12px; }
+    .custom-input.visible { display: block; animation: stepIn 0.3s var(--ease); }
 
     .custom-input input {
       width: 100%;
-      padding: 11px 14px;
-      border: 2px solid #ffc2d1;
-      border-radius: 14px;
-      font-size: 15px;
+      padding: 13px 16px;
       font-family: inherit;
-      color: #333;
-      box-sizing: border-box;
-      background: #fff7f9;
+      font-size: 15px;
+      color: var(--ink);
+      background: var(--surface-2);
+      border: 1px solid var(--line-2);
+      border-radius: 12px;
     }
 
     .custom-input input:focus {
       outline: none;
-      border-color: #ff4d6d;
-      background: #fff;
+      border-color: var(--rose-deep);
+      background: var(--surface);
+      box-shadow: 0 0 0 4px rgba(143, 100, 114, 0.10);
     }
 
-    /* ---------- КНОПКИ ---------- */
+    /* Nav buttons */
     .step-nav {
       display: flex;
-      gap: 8px;
-      margin-top: 6px;
+      gap: 10px;
+      margin-top: 14px;
     }
 
     .btn-back, .btn-next, .btn-submit, .btn-surprise {
-      padding: 12px 18px;
-      font-size: 15px;
-      border-radius: 50px;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.25s;
+      padding: 14px 22px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      border-radius: 999px;
+      transition: all 0.35s var(--ease);
       font-family: inherit;
     }
 
     .btn-back {
-      background: #fff0f3;
-      color: #ff4d6d;
-      border: 2px solid #ffc2d1;
       flex: 0 0 auto;
-      padding: 12px 20px;
+      background: transparent;
+      color: var(--ink-2);
+      border: 1px solid var(--line-2);
     }
 
-    .btn-back:hover {
-      background: #ffe5ec;
-      transform: scale(1.03);
-    }
+    .btn-back:hover { background: var(--surface-2); color: var(--ink); }
 
     .btn-next, .btn-submit {
       flex: 1;
-      background: linear-gradient(135deg, #ff4d6d, #ff758f);
-      color: white;
-      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.4);
+      background: var(--ink);
+      color: var(--paper);
     }
 
     .btn-next:hover, .btn-submit:hover {
-      transform: scale(1.03);
-      box-shadow: 0 8px 22px rgba(255, 77, 109, 0.55);
+      background: #000;
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(30, 26, 22, 0.22);
     }
 
     .btn-next:disabled, .btn-submit:disabled {
-      opacity: 0.5;
+      opacity: 0.35;
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
+      background: var(--line-2);
+      color: var(--ink-4);
     }
 
     .btn-surprise {
       width: 100%;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #ffb3c1, #ff8fa3);
-      color: #fff;
-      font-size: 14px;
-      box-shadow: 0 4px 14px rgba(255, 143, 163, 0.4);
+      margin-bottom: 16px;
+      background: var(--surface-2);
+      color: var(--rose-deep);
+      border: 1px solid rgba(143, 100, 114, 0.22);
+      font-size: 13.5px;
     }
 
     .btn-surprise:hover {
-      transform: scale(1.02);
-      background: linear-gradient(135deg, #ff8fa3, #ff4d6d);
+      background: var(--rose-tint);
+      border-color: var(--rose);
+      transform: translateY(-1px);
     }
 
-    /* ---------- РЕЗУЛЬТАТ ---------- */
-    .result-box {
-      text-align: center;
-      padding: 6px 0;
-    }
+    /* Result */
+    .result-box { text-align: center; }
 
     .result-emoji {
-      font-size: 60px;
-      margin-bottom: 4px;
-      animation: heartbeat 1.4s ease infinite;
+      font-size: 52px;
+      margin-bottom: 8px;
+      filter: saturate(0.8);
+      animation: heartbeat 2.4s ease infinite;
     }
 
     @keyframes heartbeat {
       0%, 100% { transform: scale(1); }
-      15% { transform: scale(1.15); }
-      30% { transform: scale(1); }
-      45% { transform: scale(1.1); }
-      60% { transform: scale(1); }
+      15%      { transform: scale(1.10); }
+      30%      { transform: scale(1); }
+      45%      { transform: scale(1.06); }
+      60%      { transform: scale(1); }
     }
 
     .result-box h3 {
-      color: #ff4d6d;
-      font-size: 21px;
-      margin: 4px 0 14px;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 32px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin: 4px 0 22px;
+      color: var(--ink);
     }
 
     .result-list {
-      background: #fff7f9;
-      border: 2px solid #ffc2d1;
-      border-radius: 18px;
-      padding: 14px 18px;
       text-align: left;
-      margin-bottom: 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 6px 20px;
+      margin-bottom: 18px;
     }
 
     .result-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 8px 0;
-      border-bottom: 1px dashed #ffd1dc;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
       font-size: 14px;
-      color: #555;
     }
 
     .result-item:last-child { border-bottom: none; }
 
-    .result-item .r-emoji { font-size: 20px; flex-shrink: 0; }
+    .result-item .r-emoji { font-size: 17px; flex-shrink: 0; filter: saturate(0.8); }
 
     .result-item .r-label {
-      color: #c71585;
-      font-weight: 600;
-      min-width: 80px;
       flex-shrink: 0;
+      min-width: 78px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
     }
 
     .result-item .r-value {
-      color: #333;
+      color: var(--ink);
       font-weight: 500;
       word-break: break-word;
     }
 
-    /* ---------- ОБРАТНЫЙ ОТСЧЁТ ---------- */
     .countdown {
-      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
-      border: 2px solid #ffc2d1;
-      border-radius: 18px;
-      padding: 14px;
-      margin-bottom: 14px;
-      text-align: center;
+      background: linear-gradient(135deg, var(--rose-tint), var(--surface-2));
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
     }
 
     .countdown-title {
-      color: #c71585;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 14px;
     }
 
     .countdown-timer {
       display: flex;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
     .countdown-block {
-      background: #fff;
+      min-width: 62px;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--line);
       border-radius: 12px;
-      padding: 8px 12px;
-      min-width: 54px;
-      box-shadow: 0 3px 10px rgba(255, 77, 109, 0.15);
+      box-shadow: 0 4px 12px rgba(30, 26, 22, 0.04);
     }
 
     .countdown-num {
-      color: #ff4d6d;
-      font-size: 20px;
-      font-weight: 800;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
       line-height: 1;
+      color: var(--ink);
     }
 
     .countdown-lbl {
-      color: #c71585;
       font-size: 10px;
-      font-weight: 600;
-      margin-top: 3px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
       text-transform: uppercase;
+      color: var(--ink-3);
+      margin-top: 5px;
     }
 
-    /* ---------- ПАСХАЛКА С КУБИКАМИ ---------- */
-    .cubes-game {
-      text-align: center;
-      padding: 6px 0;
-    }
+    /* Cubes */
+    .cubes-game { text-align: center; padding: 8px 0; }
 
     .cubes-title {
-      color: #ff4d6d;
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 6px;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: 28px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0 0 8px;
+      color: var(--ink);
     }
 
+    .cubes-title em { font-style: italic; color: var(--rose-deep); }
+
     .cubes-subtitle {
-      color: #c71585;
-      font-size: 13px;
-      margin-bottom: 16px;
+      font-size: 13.5px;
+      color: var(--ink-3);
+      margin-bottom: 26px;
     }
 
     .cubes-row {
       display: flex;
       justify-content: center;
-      gap: 12px;
-      margin-bottom: 18px;
       flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
     }
 
     .cube {
       width: 62px;
       height: 62px;
-      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
-      border: 2px solid #ffc2d1;
-      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
+      background: var(--surface-2);
+      border: 1px solid var(--line-2);
+      border-radius: 16px;
+      font-size: 24px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       user-select: none;
-      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.15);
+      filter: saturate(0.9);
+      transition: all 0.4s var(--ease-spring);
     }
 
     .cube:hover {
-      transform: translateY(-4px) scale(1.08);
-      box-shadow: 0 0 20px rgba(255, 77, 109, 0.6);
+      transform: translateY(-4px);
+      border-color: var(--rose);
+      box-shadow: 0 14px 28px rgba(30, 26, 22, 0.10);
     }
 
     .cube.opened {
-      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+      border-color: var(--rose-deep);
       color: #fff;
-      animation: popIn 0.4s ease;
+      filter: none;
     }
 
     .cube.wrong {
-      background: #e0e0e0;
-      color: #999;
-      border-color: #ccc;
+      background: var(--surface-2);
+      color: var(--ink-4);
+      opacity: 0.5;
+      filter: grayscale(0.5);
     }
 
     .cube-prize {
       display: none;
-      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
-      border: 3px dashed #ff4d6d;
+      margin-top: 12px;
+      padding: 26px;
+      background: linear-gradient(135deg, var(--rose-tint), rgba(253, 250, 246, 0.9));
+      border: 1px dashed var(--rose);
       border-radius: 20px;
-      padding: 18px;
-      margin-top: 8px;
-      animation: popIn 0.4s ease;
     }
 
-    .cube-prize.show { display: block; }
+    .cube-prize.show { display: block; animation: modalIn 0.5s var(--ease-spring); }
 
     .cube-prize-emoji {
-      font-size: 44px;
-      margin-bottom: 8px;
-      animation: heartbeat 1.4s infinite;
+      font-size: 42px;
+      margin-bottom: 12px;
+      animation: heartbeat 2.2s infinite;
     }
 
     .cube-prize-text {
-      color: #c71585;
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.4;
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.5;
     }
 
-    /* ---------- КНОПКИ НАПОМИНАНИЯ И КАЛЕНДАРЯ ---------- */
+    /* Action buttons */
     .action-buttons {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 18px;
     }
 
     .btn-action {
-      padding: 12px 18px;
-      border-radius: 50px;
-      border: 2px solid #ffc2d1;
-      background: #fff;
-      color: #c71585;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
+      padding: 14px 20px;
       font-family: inherit;
-      transition: all 0.25s;
-      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.12);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1px solid var(--line-2);
+      border-radius: 999px;
+      transition: all 0.3s var(--ease);
+      letter-spacing: 0.01em;
     }
 
     .btn-action:hover {
-      background: #ff4d6d;
-      color: white;
-      border-color: #ff4d6d;
-      transform: translateY(-2px);
+      background: var(--surface-2);
+      border-color: var(--rose-deep);
+      color: var(--rose-deep);
+      transform: translateY(-1px);
     }
 
     .loading-text {
+      margin-top: 12px;
       text-align: center;
-      color: #c71585;
       font-size: 13px;
-      margin-top: 8px;
+      color: var(--ink-3);
       min-height: 18px;
     }
 
-    /* ---------- КНОПКИ ПЕРЕХОДА ВНИЗУ ---------- */
-    .nav-buttons-bottom {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;
-      z-index: 100;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 0 10px;
-      max-width: calc(100% - 20px);
-      box-sizing: border-box;
-    }
-
-    .nav-btn {
-      background: rgba(255, 255, 255, 0.95);
-      color: #c71585;
-      border: 2px solid #ffc2d1;
-      font-size: 14px;
-      padding: 12px 22px;
-      text-decoration: none;
-      border-radius: 50px;
-      font-weight: 600;
-      font-family: inherit;
-      white-space: nowrap;
-      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.25);
-      transition: all 0.3s;
-    }
-
-    .nav-btn:hover {
-      background: #ff4d6d;
-      color: white;
-      border-color: #ff4d6d;
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(255, 77, 109, 0.5);
-    }
-
-    /* ---------- АДАПТИВ ---------- */
-    @media (max-width: 480px) {
-      body { padding: 20px 16px 140px 16px; }
-      .card { padding: 24px 20px; }
-      h1 { font-size: 19px; }
-      .options-grid { grid-template-columns: repeat(2, 1fr); }
-      .option-emoji { font-size: 28px; }
-      .photo-slider { width: 110px; height: 110px; }
-      .photo-slider img { width: 110px; height: 110px; }
-      .cat { font-size: 36px; bottom: 90px; right: 14px; }
-      .cat-bubble { bottom: 140px; right: 14px; max-width: 180px; font-size: 12px; }
-      .cube { width: 52px; height: 52px; font-size: 22px; }
-      .nav-buttons-bottom {
-        bottom: 12px;
-        flex-direction: column;
-        width: calc(100% - 24px);
-        align-items: center;
-        gap: 6px;
-      }
-      .nav-btn {
-        font-size: 12px;
-        padding: 10px 16px;
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 960px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 60px;
+        padding: 130px 0 80px;
+        min-height: auto;
         text-align: center;
-        width: 100%;
-        max-width: 280px;
+      }
+      .hero-copy { max-width: 100%; margin: 0 auto; }
+      .hero-sub { margin-left: auto; margin-right: auto; }
+      .hero-cta { justify-content: center; }
+      .hero-meta-line { justify-content: center; }
+      .photo-stack { max-width: 400px; order: -1; }
+
+      .section-head {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .index-row {
+        grid-template-columns: 40px 1fr auto;
+        gap: 16px;
+        padding: 22px 4px;
+      }
+      .index-desc { display: none; }
+      .index-row:hover { padding-left: 10px; padding-right: 10px; }
+
+      main { padding: 0 20px 80px; }
+    }
+
+    @media (max-width: 560px) {
+      .topbar { padding: 16px 20px; font-size: 11.5px; }
+      .brand-label { display: none; }
+      .brand-mark { width: 26px; height: 26px; font-size: 15px; }
+      .meta-sep { display: none; }
+      .topbar-meta { gap: 10px; font-size: 11.5px; }
+
+      .hero { padding: 110px 0 60px; }
+      h1 { font-size: clamp(36px, 10vw, 52px); }
+      .hero-meta-line { flex-wrap: wrap; gap: 10px; font-size: 10.5px; }
+
+      .index-name { font-size: 20px; }
+      .index-arrow { width: 34px; height: 34px; font-size: 13px; }
+      .index-num { font-size: 15px; }
+
+      .footer {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+        font-size: 10.5px;
+        padding: 32px 20px;
+      }
+
+      .modal { padding: 36px 22px 28px; border-radius: 20px; }
+      .step-title { font-size: 24px; }
+      .step-subtitle { font-size: 13px; margin-bottom: 22px; }
+      .options-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .option-emoji { font-size: 24px; }
+      .option-card { padding: 14px 6px 12px; }
+      .cube { width: 54px; height: 54px; font-size: 22px; }
+      .countdown-block { min-width: 54px; padding: 10px 12px; }
+      .countdown-num { font-size: 22px; }
+      .result-box h3 { font-size: 26px; }
+
+      .cat-zone { bottom: 16px; right: 16px; gap: 8px; }
+      .cat-btn { width: 50px; height: 50px; font-size: 22px; }
+      .cat-bubble { max-width: 190px; font-size: 12px; padding: 10px 13px; }
+      .cat-house-link { padding: 8px 13px; font-size: 11.5px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
+
 <body>
 
-  <div id="hearts-container"></div>
+  <div class="grain"></div>
 
-  <!-- КНОПКИ ПЕРЕХОДА ВНИЗУ -->
-  <div class="nav-buttons-bottom">
-    <a href="timer.html" class="nav-btn">❤️ Наша история в цифрах</a>
-    <a href="song.html" class="nav-btn">🎵 Наша песня</a>
-    <a href="reasons.html" class="nav-btn">💕 100 причин</a>
-    <a href="surprise.html" class="nav-btn">💌 Открой меня</a>
-    <a href="map.html" class="nav-btn">🗺️ Карта наших мест</a>
-    <a href="puzzle.html" class="nav-btn">🧩 Собери моё сердце</a>
-    <a href="stars.html" class="nav-btn">✨ Созвездие Вероники</a>
-    <a href="love.html" class="nav-btn">💗 Что я в тебе люблю</a>
-    <a href="draw.html" class="nav-btn">🎨 Нарисуй мне</a>
-  </div>
-
-  <div class="game-zone">
-
-    <!-- ФОТО-СЛАЙДЕР -->
-    <div class="photo-slider">
-      <!-- Замени src на свои фото! -->
-      <img src="photos/photo1.jpg" alt="Мы">
-      <img src="photos/photo2.jpg" alt="Мы">
-      <img src="photos/photo3.jpg" alt="Мы">
+  <!-- ============================================================
+       TOP BAR
+       ============================================================ -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">V</span>
+      <span class="brand-label">Для Вероники</span>
     </div>
+    <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+      <span class="meta-item">
+        <span class="icon" id="timeIcon">☀️</span>
+        <span id="timeText">--:--</span>
+      </span>
+      <span class="meta-sep">·</span>
+      <span class="meta-item">
+        <span class="icon" id="weatherIcon">🌤️</span>
+        <span id="weatherText">...</span>
+      </span>
+    </div>
+  </header>
 
-    <!-- КАРТОЧКА -->
-    <div class="card">
-      <h1 id="mainTitle">Вероничка, пойдешь со мной на свидание? ✨</h1>
-      <p class="subtitle" id="mainSubtitle">Нажми «Да», и мы всё спланируем 💖</p>
-      <div class="btn-container">
-        <button class="btn-yes" onclick="agree(event)">ДА!</button>
-        <button class="btn-no" id="noBtn" onmouseenter="moveButton()" onmouseover="moveButton()" ontouchstart="moveButton()">Нет</button>
+  <main>
+
+    <!-- ============================================================
+         HERO
+         ============================================================ -->
+    <section class="hero">
+      <div class="hero-copy card">
+        <span class="eyebrow">Приглашение · 2026</span>
+        <h1 id="mainTitle">Вероничка, пойдёшь со мной на <em>свидание</em>?</h1>
+        <p class="hero-sub" id="mainSubtitle">
+          Нажми «Да» — и мы вместе всё спланируем. Выберем день, место, еду и маленькие сюрпризы.
+        </p>
+        <div class="hero-cta">
+          <button class="btn-primary" onclick="agree(event)">
+            Да, пойду
+            <span class="arrow">→</span>
+          </button>
+          <button class="btn-ghost" id="noBtn"
+                  onmouseenter="moveButton()"
+                  onmouseover="moveButton()"
+                  ontouchstart="moveButton()">Нет</button>
+        </div>
+        <div class="hero-meta-line">
+          <span>Сделано с любовью</span>
+          <span class="dot"></span>
+          <span>Только для тебя</span>
+        </div>
       </div>
-    </div>
+
+      <div class="photo-stack">
+        <figure class="polaroid polaroid--back">
+          <div class="frame">
+            <img src="photos/photo2.jpg" alt="" onerror="this.remove()" loading="lazy" decoding="async">
+          </div>
+          <figcaption>мгновение</figcaption>
+        </figure>
+
+        <figure class="polaroid polaroid--mid">
+          <div class="frame">
+            <img src="photos/photo3.jpg" alt="" onerror="this.remove()" loading="lazy" decoding="async">
+          </div>
+          <figcaption>твой смех</figcaption>
+        </figure>
+
+        <figure class="polaroid polaroid--front">
+          <div class="frame">
+            <img src="photos/photo1.jpg" alt="" onerror="this.remove()" loading="eager" decoding="async">
+          </div>
+          <figcaption>мы</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         INDEX / NAV
+         ============================================================ -->
+    <section class="index-section">
+      <div class="section-head">
+        <div class="section-label">
+          <span class="num">01</span>
+          <span>Индекс</span>
+        </div>
+        <h2 class="section-title">Маленькие миры,<br><em>созданные</em> для тебя</h2>
+      </div>
+
+      <div class="index-list">
+        <a href="timer.html" class="index-row">
+          <span class="index-num">01</span>
+          <span class="index-name">Наша история в цифрах</span>
+          <span class="index-desc">Сколько мы вместе</span>
+          <span class="index-arrow">→</span>
+        </a>
+
+        <a href="song.html" class="index-row">
+          <span class="index-num">02</span>
+          <span class="index-name">Наша песня</span>
+          <span class="index-desc">Мелодия, что нас связала</span>
+          <span class="index-arrow">→</span>
+        </a>
+
+        <a href="reasons.html" class="index-row">
+          <span class="index-num">03</span>
+          <span class="index-name">100 причин</span>
+          <span class="index-desc">Почему я люблю тебя</span>
+          <span class="index-arrow">→</span>
+        </a>
+
+        <a href="surprise.html" class="index-row">
+          <span class="index-num">04</span>
+          <span class="index-name">Открой меня</span>
+          <span class="index-desc">Маленький сюрприз</span>
+          <span class="index-arrow">→</span>
+        </a>
+
+        <a href="map.html" class="index-row">
+          <span class="index-num">05</span>
+          <span class="index-name">Карта наших мест</span>
+          <span class="index-desc">Точки нашей истории</span>
+          <span class="index-arrow">→</span>
+        </a>
+
+        <a href="puzzle.html" class="index-row">
+          <span class="index-num">06</span>
+          <span class="index-name">Собери моё сердце</span>
+          <span class="index-desc">Небольшая игра</span>
+          <span class="index-arrow">→</span>
+        </a>
+
+        <a href="stars.html" class="index-row">
+          <span class="index-num">07</span>
+          <span class="index-name">Созвездие Вероники</span>
+          <span class="index-desc">Твоё имя среди звёзд</span>
+          <span class="index-arrow">→</span>
+        </a>
+
+        <a href="love.html" class="index-row">
+          <span class="index-num">08</span>
+          <span class="index-name">Что я в тебе люблю</span>
+          <span class="index-desc">Признание по буквам</span>
+          <span class="index-arrow">→</span>
+        </a>
+
+        <a href="draw.html" class="index-row">
+          <span class="index-num">09</span>
+          <span class="index-name">Нарисуй мне</span>
+          <span class="index-desc">Творческий момент</span>
+          <span class="index-arrow">→</span>
+        </a>
+
+        <a href="countdown.html" class="index-row">
+          <span class="index-num">10</span>
+          <span class="index-name">Наши даты</span>
+          <span class="index-desc">Важные дни рядом</span>
+          <span class="index-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 · Вселенная для Вероники</span>
+    <span>Сделано с любовью</span>
+  </footer>
+
+  <!-- ============================================================
+       CAT
+       ============================================================ -->
+  <div class="cat-zone" id="catZone">
+    <div class="cat-bubble" id="catBubble">Привет! Я помогу выбрать 😺</div>
+    <div class="cat-btn" id="cat" onclick="catMeow()">🐱</div>
+    <a href="cat.html" class="cat-house-link" title="Зайти в домик котика">
+      <span class="h-icon">🏠</span>
+      <span>Домик котика</span>
+    </a>
   </div>
 
-  <!-- СКРЫТАЯ ФОРМА -->
+  <!-- ============================================================
+       HIDDEN FORM
+       ============================================================ -->
   <form id="dateForm" style="display:none;" method="POST">
     <input type="hidden" name="_subject" value="💖 Вероника согласилась на свидание!">
     <input type="hidden" name="_template" value="table">
@@ -1013,41 +1482,32 @@
     <input type="hidden" name="Время на шагах" id="f_timing">
   </form>
 
-  <!-- КОТИК + КНОПКА ДОМИКА -->
-  <div class="cat-zone" id="catZone">
-    <div class="cat" id="cat" onclick="catMeow()">🐱</div>
-    <div class="cat-bubble" id="catBubble">Привет! Я помогу выбрать 😺</div>
-    <a href="cat.html" class="cat-house-btn" title="Зайти в домик котика">
-      <span class="cat-house-icon">🏠</span>
-      <span class="cat-house-text">Домик котика</span>
-    </a>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО -->
+  <!-- ============================================================
+       MODAL
+       ============================================================ -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <button class="modal-close" onclick="closeModal()" title="Закрыть">✕</button>
 
       <div class="progress-bar" id="progressBar">
-        <div class="progress-step active" data-step="0">1</div>
+        <div class="progress-step active" data-step="0"></div>
         <div class="progress-line"></div>
-        <div class="progress-step" data-step="1">2</div>
+        <div class="progress-step" data-step="1"></div>
         <div class="progress-line"></div>
-        <div class="progress-step" data-step="2">3</div>
+        <div class="progress-step" data-step="2"></div>
         <div class="progress-line"></div>
-        <div class="progress-step" data-step="3">4</div>
+        <div class="progress-step" data-step="3"></div>
         <div class="progress-line"></div>
-        <div class="progress-step" data-step="4">5</div>
+        <div class="progress-step" data-step="4"></div>
       </div>
 
-      <!-- ШАГ 1 -->
       <div class="step active" id="step0">
-        <h3 class="step-title">📅 Когда встретимся?</h3>
+        <h3 class="step-title">Когда <em>встретимся</em>?</h3>
         <p class="step-subtitle">Выбери удобный день и время</p>
         <div class="date-time-box">
-          <label for="dateInput">День 📆</label>
+          <label for="dateInput">День</label>
           <input type="date" id="dateInput" onchange="validateStep0()">
-          <label for="timeInput">Время ⏰</label>
+          <label for="timeInput">Время</label>
           <input type="time" id="timeInput" onchange="validateStep0()">
         </div>
         <div class="step-nav">
@@ -1055,11 +1515,10 @@
         </div>
       </div>
 
-      <!-- ШАГ 2 -->
       <div class="step" id="step1">
-        <h3 class="step-title">🎬 Чем займёмся?</h3>
-        <p class="step-subtitle">Или нажми «Удиви меня» 🎲</p>
-        <button class="btn-surprise" onclick="surpriseMe('event')">🎲 Удиви меня!</button>
+        <h3 class="step-title">Чем <em>займёмся</em>?</h3>
+        <p class="step-subtitle">Выбери или доверься случаю</p>
+        <button class="btn-surprise" onclick="surpriseMe('event')">🎲 Удиви меня</button>
         <div class="options-grid" id="eventOptions">
           <div class="option-card" data-value="Кино" onclick="selectOption(this, 'event')">
             <span class="option-emoji">🎥</span><span class="option-label">Кино</span>
@@ -1089,11 +1548,10 @@
         </div>
       </div>
 
-      <!-- ШАГ 3 -->
       <div class="step" id="step2">
-        <h3 class="step-title">🍕 Что будем кушать?</h3>
-        <p class="step-subtitle">Или нажми «Удиви меня» 🎲</p>
-        <button class="btn-surprise" onclick="surpriseMe('food')">🎲 Удиви меня!</button>
+        <h3 class="step-title">Что будем <em>кушать</em>?</h3>
+        <p class="step-subtitle">Выбери или доверься случаю</p>
+        <button class="btn-surprise" onclick="surpriseMe('food')">🎲 Удиви меня</button>
         <div class="options-grid" id="foodOptions">
           <div class="option-card" data-value="Пицца" onclick="selectOption(this, 'food')">
             <span class="option-emoji">🍕</span><span class="option-label">Пицца</span>
@@ -1123,10 +1581,9 @@
         </div>
       </div>
 
-      <!-- ШАГ 4 -->
       <div class="step" id="step3">
-        <h3 class="step-title">🎁 Что ещё?</h3>
-        <p class="step-subtitle">Добавим немного магии ✨</p>
+        <h3 class="step-title">Что <em>ещё</em>?</h3>
+        <p class="step-subtitle">Добавим немного магии</p>
         <div class="options-grid" id="extraOptions">
           <div class="option-card" data-value="Цветы" onclick="selectOption(this, 'extra')">
             <span class="option-emoji">💐</span><span class="option-label">Цветы</span>
@@ -1156,32 +1613,29 @@
         </div>
       </div>
 
-      <!-- ШАГ 5 -->
       <div class="step" id="step4">
-        <h3 class="step-title">💌 Куда прислать подтверждение?</h3>
-        <p class="step-subtitle">Укажи свою почту — я отправлю тебе наши планы</p>
+        <h3 class="step-title">Куда прислать <em>подтверждение</em>?</h3>
+        <p class="step-subtitle">Укажи почту — я отправлю наши планы</p>
         <div class="date-time-box">
-          <label for="emailInput">Твоя почта 📧</label>
+          <label for="emailInput">Твоя почта</label>
           <input type="email" id="emailInput" placeholder="example@mail.ru" oninput="validateStep4()">
         </div>
         <div class="step-nav">
           <button class="btn-back" onclick="goToStep(3)">←</button>
-          <button class="btn-submit" id="next4" disabled onclick="showResult()">Отправить! 💖</button>
+          <button class="btn-submit" id="next4" disabled onclick="showResult()">Отправить</button>
         </div>
         <div class="loading-text" id="loadingText"></div>
       </div>
 
-      <!-- РЕЗУЛЬТАТ -->
       <div class="step" id="stepResult">
         <div class="result-box">
           <div class="result-emoji">🥰</div>
-          <h3>Договорились!</h3>
+          <h3>Договорились</h3>
           <div class="result-list" id="resultList"></div>
-          <p style="font-size:13px;color:#c71585;margin-bottom:14px;" id="emailConfirmText"></p>
+          <p style="font-size:13px;color:var(--ink-3);margin-bottom:18px;" id="emailConfirmText"></p>
 
-          <!-- ОБРАТНЫЙ ОТСЧЁТ -->
           <div class="countdown" id="countdownBox" style="display:none;">
-            <div class="countdown-title">⏳ До нашей встречи осталось:</div>
+            <div class="countdown-title">До нашей встречи осталось</div>
             <div class="countdown-timer" id="countdownTimer">
               <div class="countdown-block"><div class="countdown-num" id="cd_d">0</div><div class="countdown-lbl">дней</div></div>
               <div class="countdown-block"><div class="countdown-num" id="cd_h">0</div><div class="countdown-lbl">часов</div></div>
@@ -1190,7 +1644,6 @@
             </div>
           </div>
 
-          <!-- ДЕЙСТВИЯ -->
           <div class="action-buttons">
             <button class="btn-action" onclick="addToCalendar()">📅 Сохранить в календарь</button>
             <button class="btn-action" onclick="remindMe()">⏰ Напомни за день</button>
@@ -1201,11 +1654,10 @@
         </div>
       </div>
 
-      <!-- ПАСХАЛКА С КУБИКАМИ -->
       <div class="step" id="stepCubes">
         <div class="cubes-game">
-          <div class="cubes-title">🎁 Найди сердечко!</div>
-          <div class="cubes-subtitle">Под одним из 5 кубиков — сюрприз 💝</div>
+          <div class="cubes-title">Найди <em>сердечко</em></div>
+          <div class="cubes-subtitle">Под одним из пяти — сюрприз</div>
           <div class="cubes-row" id="cubesRow">
             <div class="cube" data-i="0" onclick="pickCube(this)">🎁</div>
             <div class="cube" data-i="1" onclick="pickCube(this)">🎁</div>
@@ -1215,8 +1667,8 @@
           </div>
           <div class="cube-prize" id="cubePrize">
             <div class="cube-prize-emoji">💋</div>
-            <div class="cube-prize-text">Поцелуй в щёку при встрече 😘<br><br>
-              <span style="font-size:12px;opacity:0.8;">(это записка, покажи её мне 😉)</span>
+            <div class="cube-prize-text">Поцелуй в щёку при встрече<br><br>
+              <span style="font-size:12px;opacity:0.7;">(это записка, покажи её мне)</span>
             </div>
           </div>
           <div class="step-nav" style="margin-top:16px;">
@@ -1228,45 +1680,125 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       TIME + WEATHER
+       ============================================================ -->
   <script>
-    // ============================================================
-    // ⚠️ ЗАМЕНИ НА СВОЮ ПОЧТУ
-    // ============================================================
+    function updateTimeWidget() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('timeText').textContent = `${hh}:${mm}`;
+
+      const h = now.getHours();
+      let icon = '🌙';
+      if      (h >= 5  && h < 12) icon = '🌅';
+      else if (h >= 12 && h < 18) icon = '☀️';
+      else if (h >= 18 && h < 23) icon = '🌆';
+      document.getElementById('timeIcon').textContent = icon;
+    }
+    updateTimeWidget();
+    setInterval(updateTimeWidget, 1000);
+
+    const WEATHER_CITY = { name: 'Улан-Удэ' };
+
+    function pickIconFromDesc(desc) {
+      desc = (desc || '').toLowerCase();
+      if (desc.includes('sun') || desc.includes('clear')) return '☀️';
+      if (desc.includes('partly') || desc.includes('mostly sun')) return '🌤️';
+      if (desc.includes('cloud') || desc.includes('overcast')) return '☁️';
+      if (desc.includes('rain') || desc.includes('drizzle')) return '🌧️';
+      if (desc.includes('snow') || desc.includes('sleet')) return '❄️';
+      if (desc.includes('thunder') || desc.includes('storm')) return '⛈️';
+      if (desc.includes('fog') || desc.includes('mist')) return '🌫️';
+      return '🌤️';
+    }
+
+    function seasonalWeather() {
+      const m = new Date().getMonth();
+      let icon, temp;
+      if (m === 11 || m === 0 || m === 1) { icon = '❄️'; temp = -18; }
+      else if (m === 2 || m === 3) { icon = '🌨️'; temp = -5; }
+      else if (m === 4) { icon = '🌱'; temp = 8; }
+      else if (m >= 5 && m <= 7) { icon = '☀️'; temp = 24; }
+      else if (m === 8) { icon = '🍂'; temp = 12; }
+      else { icon = '🌧️'; temp = 2; }
+      return { icon, temp };
+    }
+
+    async function loadWeather() {
+      const iconEl = document.getElementById('weatherIcon');
+      const textEl = document.getElementById('weatherText');
+      iconEl.textContent = '⛅';
+      textEl.textContent = '...';
+
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 5000);
+        const res = await fetch(
+          `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+          { signal: ctrl.signal, cache: 'no-store' }
+        );
+        clearTimeout(timer);
+
+        if (res.ok) {
+          const data = await res.json();
+          const cur = data.current_condition && data.current_condition[0];
+          if (cur && cur.temp_C !== undefined) {
+            const temp = parseInt(cur.temp_C, 10);
+            const desc = cur.weatherDesc && cur.weatherDesc[0] ? cur.weatherDesc[0].value : '';
+            iconEl.textContent = pickIconFromDesc(desc);
+            textEl.textContent = `${temp > 0 ? '+' : ''}${temp}°C`;
+            return;
+          }
+        }
+      } catch (e) {}
+
+      const w = seasonalWeather();
+      iconEl.textContent = w.icon;
+      textEl.textContent = `${w.temp > 0 ? '+' : ''}${w.temp}°C`;
+    }
+
+    loadWeather();
+    setInterval(loadWeather, 30 * 60 * 1000);
+    document.getElementById('infoWidget').addEventListener('click', loadWeather);
+  </script>
+
+  <!-- ============================================================
+       MAIN SCRIPT
+       ============================================================ -->
+  <script>
     const MY_EMAIL = "vilya51aura@gmail.com";
 
     const noBtn = document.getElementById('noBtn');
-    const zone = document.querySelector('.card');
+    const zone = document.querySelector('.hero-copy');
     const modalOverlay = document.getElementById('modalOverlay');
     const catBubble = document.getElementById('catBubble');
 
     const state = { event: null, food: null, extra: null };
-
-    // ---------- Время на шагах (аналитика) ----------
     const stepTimes = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 };
     let stepStartTime = Date.now();
     let currentStep = 0;
 
-    // ---------- Персонализация по времени суток ----------
     (function personalizeByTime() {
       const hour = new Date().getHours();
       const title = document.getElementById('mainTitle');
       const sub = document.getElementById('mainSubtitle');
       if (hour >= 5 && hour < 12) {
-        title.textContent = 'Вероничка, доброе утро! Пойдёшь со мной на свидание? ☀️';
-        sub.textContent = 'Начни день с чего-то волшебного 💕';
+        title.innerHTML = 'Вероничка, доброе утро. Пойдёшь со мной на <em>свидание</em>?';
+        sub.textContent = 'Начни день с чего-то волшебного. Нажми «Да» — и мы вместе всё спланируем.';
       } else if (hour >= 12 && hour < 18) {
-        title.textContent = 'Вероничка, пойдёшь со мной на свидание? ✨';
-        sub.textContent = 'Давай устроим что-то классное 💖';
+        title.innerHTML = 'Вероничка, пойдёшь со мной на <em>свидание</em>?';
+        sub.textContent = 'Нажми «Да» — и мы вместе всё спланируем. Выберем день, место, еду и маленькие сюрпризы.';
       } else if (hour >= 18 && hour < 23) {
-        title.textContent = 'Вероничка, добрый вечер! Готова к приключению? 🌙';
-        sub.textContent = 'Вечер — лучшее время для магии ✨';
+        title.innerHTML = 'Вероничка, добрый вечер. Готова к <em>приключению</em>?';
+        sub.textContent = 'Вечер — лучшее время для магии. Нажми «Да», и мы всё спланируем.';
       } else {
-        title.textContent = 'Вероничка, не спишь? Пойдёшь со мной на свидание? 🌙';
-        sub.textContent = 'Даже ночью я думаю о тебе 💕';
+        title.innerHTML = 'Вероничка, не спишь? Пойдёшь со мной на <em>свидание</em>?';
+        sub.textContent = 'Даже ночью я думаю о тебе. Нажми «Да», и мы вместе всё придумаем.';
       }
     })();
 
-    // ---------- Котик ----------
     const catPhrases = {
       start: ['Привет! Я помогу выбрать 😺', 'Мяу! Ты не пожалеешь 💕', 'Я тут за главного котика 😸'],
       event: {
@@ -1302,9 +1834,6 @@
     function catMeow() {
       const phrases = ['Мяу 🐱', 'Мур-мур 💕', 'Я тебя люблю 😻', 'Гладь меня! 🐾'];
       catSay(phrases[Math.floor(Math.random() * phrases.length)], 1500);
-      for (let i = 0; i < 5; i++) {
-        setTimeout(() => spawnHeartAt(window.innerWidth - 60, window.innerHeight - 150), i * 100);
-      }
     }
 
     setTimeout(() => {
@@ -1312,63 +1841,33 @@
       catSay(phrases[Math.floor(Math.random() * phrases.length)], 3500);
     }, 1200);
 
-    // ---------- Кнопка "Нет" ----------
     function moveButton() {
-      if (noBtn.style.position !== 'absolute') {
-        noBtn.style.position = 'absolute';
-      }
+      if (noBtn.style.position !== 'absolute') noBtn.style.position = 'absolute';
       const rect = zone.getBoundingClientRect();
-      const maxX = rect.width - noBtn.offsetWidth;
-      const maxY = rect.height - noBtn.offsetHeight;
+      const maxX = Math.max(0, rect.width - noBtn.offsetWidth);
+      const maxY = Math.max(0, rect.height - noBtn.offsetHeight);
       noBtn.style.left = Math.floor(Math.random() * maxX) + 'px';
-      noBtn.style.top = Math.floor(Math.random() * maxY) + 'px';
+      noBtn.style.top  = Math.floor(Math.random() * maxY) + 'px';
       const phrases = ['Не-не-не, так не пойдёт 😹', 'Кнопка «Нет» — против меня!', 'Не поймаешь! 🐱', 'Мяу! Нажимай «ДА» 💕'];
       catSay(phrases[Math.floor(Math.random() * phrases.length)], 1500);
     }
 
-    // ---------- Салют из сердечек ----------
-    function spawnHeartAt(x, y) {
-      const heart = document.createElement('div');
-      heart.textContent = ['❤️', '💖', '💗', '💕', '✨'][Math.floor(Math.random() * 5)];
-      heart.style.cssText = `
-        position: fixed; left: ${x}px; top: ${y}px;
-        font-size: ${20 + Math.random() * 20}px;
-        pointer-events: none; z-index: 2000;
-        transition: all ${0.8 + Math.random() * 0.6}s cubic-bezier(0.34, 1.56, 0.64, 1);
-      `;
-      document.body.appendChild(heart);
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 150 + Math.random() * 250;
-      requestAnimationFrame(() => {
-        heart.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${Math.random() * 360}deg) scale(0.3)`;
-        heart.style.opacity = '0';
-      });
-      setTimeout(() => heart.remove(), 1500);
-    }
-
-    function heartExplosion() {
-      const rect = zone.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      for (let i = 0; i < 30; i++) {
-        setTimeout(() => spawnHeartAt(cx, cy), i * 30);
-      }
-    }
-
-    // ---------- Открытие/закрытие ----------
     function agree(e) {
-      heartExplosion();
+      // Subtle button feedback instead of heart explosion
+      const btn = e && e.currentTarget;
+      if (btn) {
+        btn.style.transform = 'scale(0.96)';
+        setTimeout(() => btn.style.transform = '', 220);
+      }
       setTimeout(() => {
         modalOverlay.classList.add('active');
         resetWizard();
         startStepTimer(0);
-      }, 300);
+      }, 260);
       catSay('Ура! Готовься к магии ✨', 2000);
     }
 
-    function closeModal() {
-      modalOverlay.classList.remove('active');
-    }
+    function closeModal() { modalOverlay.classList.remove('active'); }
 
     function resetWizard() {
       document.getElementById('dateInput').value = '';
@@ -1380,11 +1879,9 @@
       document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
       document.querySelectorAll('.custom-input').forEach(c => c.classList.remove('visible'));
       document.querySelectorAll('.custom-input input').forEach(i => i.value = '');
-      document.getElementById('next0').disabled = true;
-      document.getElementById('next1').disabled = true;
-      document.getElementById('next2').disabled = true;
-      document.getElementById('next3').disabled = true;
-      document.getElementById('next4').disabled = true;
+      ['next0','next1','next2','next3','next4'].forEach(id => {
+        const b = document.getElementById(id); if (b) b.disabled = true;
+      });
       document.getElementById('countdownBox').style.display = 'none';
       document.getElementById('cubePrize').classList.remove('show');
       document.querySelectorAll('.cube').forEach(c => {
@@ -1409,9 +1906,7 @@
       startStepTimer(index);
     }
 
-    function startStepTimer(index) {
-      stepStartTime = Date.now();
-    }
+    function startStepTimer(index) { stepStartTime = Date.now(); }
 
     function saveStepTime(stepIndex) {
       if (stepTimes[stepIndex] !== undefined) {
@@ -1470,7 +1965,6 @@
       if (phrase) catSay(phrase, 2200);
     }
 
-    // ---------- Удиви меня ----------
     function surpriseMe(type) {
       const options = document.querySelectorAll(`#${type}Options .option-card`);
       const filtered = Array.from(options).filter(o => o.dataset.value !== 'Свой вариант');
@@ -1483,8 +1977,8 @@
       const stepMap = { event: 1, food: 2, extra: 3 };
       validateStep(stepMap[type]);
       catSay(`Я выбрал: ${value}! 🎲`, 2500);
-      random.style.transition = 'transform 0.4s';
-      random.style.transform = 'scale(1.15) rotate(5deg)';
+      random.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      random.style.transform = 'scale(1.12) rotate(3deg)';
       setTimeout(() => random.style.transform = '', 400);
     }
 
@@ -1495,13 +1989,12 @@
       return state[type];
     }
 
-    // ---------- Показ результата ----------
     function showResult() {
       saveStepTime(currentStep);
-      const date = document.getElementById('dateInput').value;
-      const time = document.getElementById('timeInput').value;
+      const date  = document.getElementById('dateInput').value;
+      const time  = document.getElementById('timeInput').value;
       const event = getValue('event');
-      const food = getValue('food');
+      const food  = getValue('food');
       const extra = getValue('extra');
       const email = document.getElementById('emailInput').value.trim();
 
@@ -1509,22 +2002,22 @@
       const dateStr = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 
       const eventEmoji = document.querySelector('#eventOptions .option-card.selected .option-emoji')?.innerText || '🎬';
-      const foodEmoji = document.querySelector('#foodOptions .option-card.selected .option-emoji')?.innerText || '🍽️';
+      const foodEmoji  = document.querySelector('#foodOptions .option-card.selected .option-emoji')?.innerText || '🍽️';
       const extraEmoji = document.querySelector('#extraOptions .option-card.selected .option-emoji')?.innerText || '🎁';
 
       const timingStr = `Дата/время: ${stepTimes[0] || 0}с | Мероприятие: ${stepTimes[1] || 0}с | Еда: ${stepTimes[2] || 0}с | Доп: ${stepTimes[3] || 0}с | Почта: ${stepTimes[4] || 0}с`;
 
-      document.getElementById('f_date').value = dateStr;
-      document.getElementById('f_time').value = time;
-      document.getElementById('f_event').value = event;
-      document.getElementById('f_food').value = food;
-      document.getElementById('f_extra').value = extra;
-      document.getElementById('f_email').value = email;
+      document.getElementById('f_date').value   = dateStr;
+      document.getElementById('f_time').value   = time;
+      document.getElementById('f_event').value  = event;
+      document.getElementById('f_food').value   = food;
+      document.getElementById('f_extra').value  = extra;
+      document.getElementById('f_email').value  = email;
       document.getElementById('f_timing').value = timingStr;
-      document.getElementById('ccField').value = email;
+      document.getElementById('ccField').value  = email;
 
       const loadingText = document.getElementById('loadingText');
-      loadingText.textContent = '💌 Отправляю...';
+      loadingText.textContent = 'Отправляю...';
       document.getElementById('next4').disabled = true;
 
       const form = document.getElementById('dateForm');
@@ -1536,26 +2029,24 @@
         body: formData,
         headers: { 'Accept': 'application/json' }
       })
-      .then(res => {
-        console.log('OK', res.status);
-        loadingText.textContent = '';
-        renderResult(dateStr, time, event, food, extra, email, eventEmoji, foodEmoji, extraEmoji);
-      })
-      .catch(err => {
-        console.error('Ошибка:', err);
-        loadingText.textContent = '😔 Не получилось отправить, но всё сохранено!';
-        renderResult(dateStr, time, event, food, extra, email, eventEmoji, foodEmoji, extraEmoji);
-      });
+        .then(() => {
+          loadingText.textContent = '';
+          renderResult(dateStr, time, event, food, extra, email, eventEmoji, foodEmoji, extraEmoji);
+        })
+        .catch(() => {
+          loadingText.textContent = 'Не получилось отправить, но всё сохранено!';
+          renderResult(dateStr, time, event, food, extra, email, eventEmoji, foodEmoji, extraEmoji);
+        });
     }
 
     function renderResult(dateStr, time, event, food, extra, email, ee, fe, ex) {
       document.getElementById('resultList').innerHTML = `
-        <div class="result-item"><span class="r-emoji">📅</span><span class="r-label">Когда:</span><span class="r-value">${dateStr} в ${time}</span></div>
-        <div class="result-item"><span class="r-emoji">${ee}</span><span class="r-label">Занятие:</span><span class="r-value">${event}</span></div>
-        <div class="result-item"><span class="r-emoji">${fe}</span><span class="r-label">Еда:</span><span class="r-value">${food}</span></div>
-        <div class="result-item"><span class="r-emoji">${ex}</span><span class="r-label">Ещё:</span><span class="r-value">${extra}</span></div>
+        <div class="result-item"><span class="r-emoji">📅</span><span class="r-label">Когда</span><span class="r-value">${dateStr} в ${time}</span></div>
+        <div class="result-item"><span class="r-emoji">${ee}</span><span class="r-label">Занятие</span><span class="r-value">${event}</span></div>
+        <div class="result-item"><span class="r-emoji">${fe}</span><span class="r-label">Еда</span><span class="r-value">${food}</span></div>
+        <div class="result-item"><span class="r-emoji">${ex}</span><span class="r-label">Ещё</span><span class="r-value">${extra}</span></div>
       `;
-      document.getElementById('emailConfirmText').textContent = `✉️ Копия отправлена на ${email}`;
+      document.getElementById('emailConfirmText').textContent = `Копия отправлена на ${email}`;
       window._dateStr = dateStr;
       window._timeStr = time;
       document.getElementById('countdownBox').style.display = 'block';
@@ -1564,7 +2055,6 @@
       catSay('Всё готово! Скоро встреча 💕', 3000);
     }
 
-    // ---------- Обратный отсчёт ----------
     let countdownInterval = null;
     function startCountdown(dateStr, timeStr) {
       if (countdownInterval) clearInterval(countdownInterval);
@@ -1574,29 +2064,20 @@
       const target = d.getTime();
 
       function tick() {
-        const now = Date.now();
-        const diff = target - now;
+        const diff = target - Date.now();
         if (diff <= 0) {
-          document.getElementById('cd_d').textContent = '0';
-          document.getElementById('cd_h').textContent = '0';
-          document.getElementById('cd_m').textContent = '0';
-          document.getElementById('cd_s').textContent = '0';
+          ['cd_d','cd_h','cd_m','cd_s'].forEach(id => document.getElementById(id).textContent = '0');
           return;
         }
-        const days = Math.floor(diff / 86400000);
-        const hours = Math.floor((diff / 3600000) % 24);
-        const mins = Math.floor((diff / 60000) % 60);
-        const secs = Math.floor((diff / 1000) % 60);
-        document.getElementById('cd_d').textContent = days;
-        document.getElementById('cd_h').textContent = hours;
-        document.getElementById('cd_m').textContent = mins;
-        document.getElementById('cd_s').textContent = secs;
+        document.getElementById('cd_d').textContent = Math.floor(diff / 86400000);
+        document.getElementById('cd_h').textContent = Math.floor((diff / 3600000) % 24);
+        document.getElementById('cd_m').textContent = Math.floor((diff / 60000) % 60);
+        document.getElementById('cd_s').textContent = Math.floor((diff / 1000) % 60);
       }
       tick();
       countdownInterval = setInterval(tick, 1000);
     }
 
-    // ---------- Календарь (.ics) ----------
     function addToCalendar() {
       const dateVal = document.getElementById('dateInput').value;
       const timeVal = document.getElementById('timeInput').value;
@@ -1606,9 +2087,7 @@
       const start = new Date(y, mo - 1, d, h, mi);
       const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
 
-      function fmt(dt) {
-        return dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-      }
+      function fmt(dt) { return dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'; }
 
       const ics = [
         'BEGIN:VCALENDAR',
@@ -1640,7 +2119,6 @@
       catSay('Открой файл — и в календарь! 📅', 2500);
     }
 
-    // ---------- Напомни за день (mailto) ----------
     function remindMe() {
       const dateStr = window._dateStr || '';
       const timeStr = window._timeStr || '';
@@ -1656,7 +2134,6 @@
       window.location.href = `mailto:${document.getElementById('emailInput').value.trim()}?subject=${subject}&body=${body}`;
     }
 
-    // ---------- Пасхалка с кубиками ----------
     let prizeIndex = 0;
     function startCubesGame() {
       prizeIndex = Math.floor(Math.random() * 5);
@@ -1675,10 +2152,6 @@
         el.classList.add('opened');
         el.textContent = '💖';
         document.getElementById('cubePrize').classList.add('show');
-        const rect = el.getBoundingClientRect();
-        for (let k = 0; k < 20; k++) {
-          setTimeout(() => spawnHeartAt(rect.left + rect.width / 2, rect.top + rect.height / 2), k * 40);
-        }
         catSay('Сюрприз! 😽', 3000);
       } else {
         el.classList.add('wrong');
@@ -1687,28 +2160,44 @@
       }
     }
 
-    // ---------- Модальное окно: закрытие ----------
-    modalOverlay.addEventListener('click', function(e) {
+    modalOverlay.addEventListener('click', function (e) {
       if (e.target === this) closeModal();
     });
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
     });
-
-    // ---------- Дождь из сердечек (фон) ----------
-    const container = document.getElementById('hearts-container');
-    function createHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
-      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸'];
-      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
-      heart.style.left = Math.random() * 100 + "vw";
-      heart.style.animationDuration = Math.random() * 3 + 2 + "s";
-      heart.style.fontSize = Math.random() * 15 + 15 + "px";
-      container.appendChild(heart);
-      setTimeout(() => { heart.remove(); }, 5000);
-    }
-    setInterval(createHeart, 300);
   </script>
+
+  <!-- ============================================================
+       Service Worker
+       ============================================================ -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          const reg = await navigator.serviceWorker.register('service-worker.js', {
+            updateViaCache: 'none'
+          });
+          setInterval(() => reg.update().catch(() => {}), 30000);
+          reg.addEventListener('updatefound', () => {
+            const nw = reg.installing;
+            if (!nw) return;
+            nw.addEventListener('statechange', () => {
+              if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                nw.postMessage('SKIP_WAITING');
+              }
+            });
+          });
+        } catch (e) {}
+      });
+      let reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (reloaded) return;
+        reloaded = true;
+        window.location.reload();
+      });
+    }
+  </script>
+
 </body>
 </html>

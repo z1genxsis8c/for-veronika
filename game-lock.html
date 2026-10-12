@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>🔐 Взлом замка</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff4d6d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Взлом замка">
+  <link rel="apple-touch-icon" href="photos/icon-192.png">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; width: 100%; min-height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none; -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overflow: hidden;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 50%, #fba3b7 100%);
+      display: flex; flex-direction: column; align-items: center;
+      padding: 12px; height: 100vh;
+      transition: background 1.5s;
+    }
+
+    body.night {
+      background: linear-gradient(135deg, #1a0a2e, #2b0a1f);
+    }
+
+    .game-container {
+      width: 100%; max-width: 480px;
+      text-align: center;
+      display: flex; flex-direction: column;
+      height: 100%;
+    }
+
+    .game-title {
+      color: #ff4d6d; font-size: 22px; font-weight: 800;
+      margin: 0 0 4px;
+      text-shadow: 0 2px 10px rgba(255,255,255,0.9);
+    }
+    body.night .game-title { color: #ffb3c1; text-shadow: none; }
+
+    .game-subtitle {
+      color: #c71585; font-size: 12px; font-weight: 600;
+      margin: 0 0 10px; font-style: italic;
+      min-height: 18px;
+    }
+    body.night .game-subtitle { color: #ff8fa3; }
+
+    /* ═══ HUD ═══ */
+    .hud {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px; margin-bottom: 10px;
+    }
+
+    .hud-chip {
+      background: rgba(255,255,255,0.95);
+      border: 2px solid #ffc2d1; border-radius: 50px;
+      padding: 6px 16px; font-size: 13px; font-weight: 800;
+      color: #c71585;
+      box-shadow: 0 4px 12px rgba(255,77,109,0.2);
+      display: flex; align-items: center; gap: 5px;
+      transition: all 0.3s;
+    }
+    .hud-chip b { color: #ff4d6d; font-weight: 900; }
+    body.night .hud-chip {
+      background: rgba(43,10,31,0.85);
+      border-color: #8b0f5c; color: #ffb3c1;
+    }
+    body.night .hud-chip b { color: #ff8fa3; }
+
+    /* ═══ ТАЙМЕР ═══ */
+    .timer-wrap {
+      width: 100%;
+      height: 14px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.1);
+      border: 2px solid #fff;
+      position: relative;
+    }
+    body.night .timer-wrap { background: rgba(43,10,31,0.6); border-color: #4a1030; }
+
+    .timer-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #4caf50, #8bc34a);
+      border-radius: 8px;
+      transition: width 0.15s linear, background 0.4s;
+      box-shadow: 0 0 12px rgba(76,175,80,0.5);
+    }
+    .timer-fill.mid {
+      background: linear-gradient(90deg, #ffc107, #ffeb3b);
+      box-shadow: 0 0 12px rgba(255,193,7,0.6);
+    }
+    .timer-fill.low {
+      background: linear-gradient(90deg, #ff4d6d, #ff8fa3);
+      box-shadow: 0 0 16px rgba(255,77,109,0.8);
+      animation: timerPulse 0.5s ease-in-out infinite;
+    }
+    .timer-fill.boost {
+      background: linear-gradient(90deg, #2196f3, #64b5f6);
+      box-shadow: 0 0 20px rgba(33,150,243,0.8);
+    }
+
+    @keyframes timerPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* ═══ ИГРОВОЕ ПОЛЕ ═══ */
+    .lock-wrap {
+      position: relative; width: 100%;
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 300px;
+      margin-bottom: 10px;
+    }
+
+    #lockCanvas {
+      display: block;
+      touch-action: none;
+      max-width: 100%;
+      max-height: 100%;
+      filter: drop-shadow(0 10px 30px rgba(255,77,109,0.25));
+    }
+
+    /* ═══ ЭКРАН ПРОИГРЫША ═══ */
+    .game-pause-box {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255,255,255,0.96);
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 5; padding: 20px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .game-pause-box.show { display: flex; animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    body.night .game-pause-box { background: rgba(43,10,31,0.96); }
+
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .game-pause-box h3 { color: #ff4d6d; font-size: 20px; margin: 0 0 12px; }
+    body.night .game-pause-box h3 { color: #ffb3c1; }
+
+    .pause-emoji {
+      font-size: 55px; margin-bottom: 8px;
+      animation: heartbeat 1.5s infinite;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.2); }
+      30% { transform: scale(1); }
+    }
+
+    .result-score {
+      font-size: 40px; font-weight: 900; color: #ff4d6d;
+      margin: 4px 0 12px;
+      text-shadow: 0 4px 20px rgba(255,77,109,0.4);
+    }
+
+    /* ═══ КНОПКИ ═══ */
+    .game-controls {
+      display: flex; gap: 10px;
+      justify-content: center; flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .hack-btn {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: #fff; border: 3px solid #fff;
+      font-size: 22px; font-weight: 900;
+      padding: 18px 42px; border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(255,77,109,0.5);
+      transition: all 0.15s;
+      font-family: inherit;
+      letter-spacing: 1px;
+      animation: hackPulse 1.2s ease-in-out infinite;
+    }
+    .hack-btn:hover:not(:disabled) { transform: scale(1.05); }
+    .hack-btn:active:not(:disabled) { transform: scale(0.93); }
+    .hack-btn:disabled { opacity: 0.5; cursor: not-allowed; animation: none; }
+
+    @keyframes hackPulse {
+      0%, 100% { box-shadow: 0 10px 30px rgba(255,77,109,0.5); }
+      50% { box-shadow: 0 10px 40px rgba(255,77,109,0.9), 0 0 60px rgba(199,21,133,0.5); }
+    }
+
+    .hack-btn.error {
+      animation: hackError 0.4s;
+      background: linear-gradient(135deg, #555, #222);
+    }
+    @keyframes hackError {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    .hack-btn.success {
+      background: linear-gradient(135deg, #4caf50, #2e7d32);
+      animation: hackSuccess 0.4s;
+    }
+    @keyframes hackSuccess {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .hack-btn.blue {
+      background: linear-gradient(135deg, #2196f3, #1565c0);
+      animation: hackBlue 0.5s;
+    }
+    @keyframes hackBlue {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .game-hint {
+      color: #c71585; font-size: 12px;
+      font-weight: 700; margin-top: 4px; opacity: 0.85;
+    }
+    body.night .game-hint { color: #ff8fa3; }
+
+    .btn {
+      background: rgba(255,255,255,0.95);
+      color: #c71585; border: 2px solid #ffc2d1;
+      font-size: 14px; padding: 10px 20px;
+      text-decoration: none; border-radius: 50px;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(255,77,109,0.2);
+      transition: all 0.25s; cursor: pointer;
+      font-family: inherit;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:hover { background: #ff4d6d; color: white; border-color: #ff4d6d; transform: translateY(-2px); }
+    .btn.primary { background: linear-gradient(135deg, #ff4d6d, #c71585); color: white; border-color: #ff4d6d; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    body.night .btn { background: rgba(43,10,31,0.85); color: #ffb3c1; border-color: #8b0f5c; }
+
+    /* ═══ ТОСТЫ ═══ */
+    .toast {
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: #fff; padding: 12px 22px;
+      border-radius: 50px; font-size: 14px; font-weight: 700;
+      box-shadow: 0 12px 32px rgba(199,21,133,0.5);
+      z-index: 3000; opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none; max-width: 90vw; text-align: center;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .float-heart {
+      position: fixed; font-size: 20px;
+      pointer-events: none; z-index: 5000;
+      animation: floatUp 1.5s ease-out forwards;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.5); opacity: 1; }
+      100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+    }
+
+    .float-score {
+      position: fixed;
+      font-size: 22px;
+      font-weight: 900;
+      color: #ff4d6d;
+      text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 2px 6px rgba(0,0,0,0.2);
+      pointer-events: none;
+      z-index: 5000;
+      animation: floatScoreUp 1s ease-out forwards;
+    }
+    .float-score.blue { color: #2196f3; }
+    @keyframes floatScoreUp {
+      0% { transform: translateY(0) scale(0.7); opacity: 1; }
+      100% { transform: translateY(-80px) scale(1.4); opacity: 0; }
+    }
+
+    .flash-red {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: radial-gradient(circle, rgba(255,0,0,0.5) 0%, rgba(255,0,0,0) 70%);
+      pointer-events: none; z-index: 4000;
+      animation: flashOut 0.4s ease-out forwards;
+    }
+    .flash-green {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: radial-gradient(circle, rgba(76,175,80,0.35) 0%, rgba(76,175,80,0) 70%);
+      pointer-events: none; z-index: 4000;
+      animation: flashOut 0.35s ease-out forwards;
+    }
+    .flash-blue {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: radial-gradient(circle, rgba(33,150,243,0.55) 0%, rgba(33,150,243,0) 70%);
+      pointer-events: none; z-index: 4000;
+      animation: flashOut 0.5s ease-out forwards;
+    }
+    @keyframes flashOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .time-bonus-popup {
+      position: fixed;
+      top: 40%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      background: linear-gradient(135deg, #2196f3, #1565c0);
+      color: #fff;
+      font-size: 32px;
+      font-weight: 900;
+      padding: 14px 30px;
+      border-radius: 50px;
+      box-shadow: 0 15px 50px rgba(33,150,243,0.7);
+      z-index: 6000;
+      animation: timeBonusPop 1.2s ease-out forwards;
+      pointer-events: none;
+      border: 3px solid #fff;
+    }
+    @keyframes timeBonusPop {
+      0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+      30% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+      70% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      100% { transform: translate(-50%, -80%) scale(1); opacity: 0; }
+    }
+
+    @media (max-width: 480px) {
+      .game-title { font-size: 18px; }
+      .hud-chip { font-size: 11px; padding: 5px 12px; }
+      .hack-btn { font-size: 18px; padding: 14px 30px; }
+      .result-score { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    <h2 class="game-title">🔐 Взлом замка</h2>
+    <p class="game-subtitle" id="lockSubtitle">Котик-взломщик в деле! 🐱</p>
+
+    <div class="hud">
+      <div class="hud-chip">🎯 <b id="lockScore">0</b></div>
+      <div class="hud-chip">⏱️ <b id="timerText">30</b>с</div>
+    </div>
+
+    <div class="timer-wrap">
+      <div class="timer-fill" id="timerFill"></div>
+    </div>
+
+    <div class="lock-wrap">
+      <canvas id="lockCanvas" width="400" height="400"></canvas>
+      <div class="game-pause-box" id="lockOverBox">
+        <div class="pause-emoji" id="lockGoEmoji">⏰</div>
+        <h3 id="lockGoTitle">Время вышло!</h3>
+        <p style="color:#c71585; font-size:14px; font-weight:700; margin:4px 0;">Очки:</p>
+        <div class="result-score" id="lockGoScore">0</div>
+        <div style="color:#c71585; font-size:12px; font-weight:700; margin-bottom:14px;" id="lockGoRecord">Рекорд: 0</div>
+        <div style="color:#ffa500; font-size:14px; font-weight:800; margin-bottom:16px;" id="lockGoCoins">+0 монеток</div>
+        <button class="btn primary" onclick="restartLock()">🔄 Попробовать снова</button>
+      </div>
+    </div>
+
+    <div class="game-controls">
+      <button class="hack-btn" id="hackBtn">🐾 ВЗЛОМ!</button>
+    </div>
+
+    <div class="game-controls">
+      <button class="btn primary" onclick="startLock()" id="lockStartBtn">▶ Начать</button>
+      <a href="cat.html" class="btn" id="backLink">← К котику</a>
+    </div>
+
+    <div class="game-hint">
+      💡 ⭐ +1000 • 💎 +1000 и +3 сек • Успей до исчезновения!
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ═══════════════════════════════════════════
+    // ЗВУКИ
+    // ═══════════════════════════════════════════
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
+      }
+    }
+    function playTone(frequency, duration, type = 'sine', volume = 0.15) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = frequency;
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + duration);
+      } catch {}
+    }
+    const Sound = {
+      click: () => { playTone(600, 0.05, 'square', 0.08); },
+      success: () => { playTone(880, 0.08, 'sine', 0.18); setTimeout(() => playTone(1320, 0.12, 'sine', 0.15), 60); },
+      blue: () => { playTone(660, 0.1, 'sine', 0.18); setTimeout(() => playTone(990, 0.1, 'sine', 0.18), 70); setTimeout(() => playTone(1320, 0.18, 'sine', 0.18), 140); },
+      fail: () => { playTone(220, 0.25, 'sawtooth', 0.15); setTimeout(() => playTone(140, 0.3, 'sawtooth', 0.12), 80); },
+      expire: () => { playTone(400, 0.15, 'triangle', 0.08); },
+      coin: () => { playTone(1200, 0.08, 'sine', 0.12); setTimeout(() => playTone(1600, 0.12, 'sine', 0.1), 50); },
+      ach: () => { playTone(660, 0.15, 'sine', 0.15); setTimeout(() => playTone(880, 0.15, 'sine', 0.15), 100); setTimeout(() => playTone(1100, 0.25, 'sine', 0.15), 200); },
+      start: () => { playTone(440, 0.1, 'sine', 0.15); setTimeout(() => playTone(660, 0.1, 'sine', 0.15), 90); setTimeout(() => playTone(880, 0.15, 'sine', 0.15), 180); }
+    };
+
+    // ═══════════════════════════════════════════
+    // СОСТОЯНИЕ
+    // ═══════════════════════════════════════════
+    const DEFAULT_STATE = {
+      hunger: 50, mood: 60, affection: 50,
+      sleeping: false, coins: 0,
+      ownedHats: [], ownedFood: {},
+      fishCollected: 0, equippedHat: null,
+      achievements: [], totalFishCollected: 0,
+      lastUpdate: Date.now()
+    };
+
+    let catState = loadState();
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem('catState');
+        if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        const raw = JSON.parse(saved);
+        const state = { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), ...raw };
+        state.ownedHats = Array.isArray(state.ownedHats) ? state.ownedHats : [];
+        state.ownedFood = (typeof state.ownedFood === 'object' && state.ownedFood) ? state.ownedFood : {};
+        state.achievements = Array.isArray(state.achievements) ? state.achievements : [];
+        const now = Date.now();
+        const elapsed = Math.floor((now - (state.lastUpdate || now)) / 1000 / 30);
+        state.hunger = Math.max(0, state.hunger - elapsed * 2);
+        state.mood = Math.max(0, state.mood - elapsed * 1);
+        state.lastUpdate = now;
+        return state;
+      } catch (e) {
+        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+    }
+
+    function saveState() {
+      catState.lastUpdate = Date.now();
+      try { localStorage.setItem('catState', JSON.stringify(catState)); } catch {}
+    }
+
+    const ACHIEVEMENTS = [
+      { id: 'first_record', icon: '🥇', title: 'Первый рекорд' },
+      { id: 'ten_fish', icon: '🐟', title: 'Собрал 10 рыбок' },
+      { id: 'first_buy', icon: '🛍️', title: 'Первая покупка' },
+      { id: 'max_hunger', icon: '🍖', title: 'Сыт по горло' },
+      { id: 'level_master', icon: '🌈', title: 'Путешественник' },
+      { id: 'sky_high', icon: '☁️', title: 'Небесный кот' },
+      { id: 'hacker_cat', icon: '🔐', title: 'Кот-взломщик', desc: 'Взломай 10 секторов за раз' },
+      { id: 'hacker_pro', icon: '💠', title: 'Мастер взлома', desc: 'Набери 10000 очков в игре' }
+    ];
+
+    function unlockAchievement(id) {
+      if (catState.achievements.includes(id)) return;
+      catState.achievements.push(id);
+      saveState();
+      const ach = ACHIEVEMENTS.find(a => a.id === id);
+      if (ach) {
+        showToast(`🏆 Достижение: ${ach.title}!`);
+        Sound.ach();
+        spawnHearts(10);
+      }
+    }
+
+    let toastTimer = null;
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function spawnHearts(count) {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.className = 'float-heart';
+          heart.textContent = ['💗','💖','❤️','💕','✨'][Math.floor(Math.random()*5)];
+          heart.style.left = (cx + (Math.random()*60 - 30)) + 'px';
+          heart.style.top = cy + 'px';
+          heart.style.fontSize = (16 + Math.random()*12) + 'px';
+          document.body.appendChild(heart);
+          setTimeout(() => heart.remove(), 1500);
+        }, i * 80);
+      }
+    }
+
+    function spawnFloatScore(x, y, text, isBlue) {
+      const el = document.createElement('div');
+      el.className = 'float-score' + (isBlue ? ' blue' : '');
+      el.textContent = text;
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1000);
+    }
+
+    function flashScreen(type) {
+      const el = document.createElement('div');
+      el.className = 'flash-' + type;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 500);
+    }
+
+    function showTimeBonusPopup(sec) {
+      const el = document.createElement('div');
+      el.className = 'time-bonus-popup';
+      el.textContent = `+${sec} сек`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1200);
+    }
+
+    const hour = new Date().getHours();
+    if (hour >= 22 || hour < 7) document.body.classList.add('night');
+
+    // ═══════════════════════════════════════════
+    // ИГРА "ВЗЛОМ ЗАМКА"
+    // ═══════════════════════════════════════════
+    const lockCanvas = document.getElementById('lockCanvas');
+    const lctx = lockCanvas.getContext('2d');
+    const lockScoreEl = document.getElementById('lockScore');
+    const timerTextEl = document.getElementById('timerText');
+    const timerFillEl = document.getElementById('timerFill');
+    const lockOverBox = document.getElementById('lockOverBox');
+    const lockGoScore = document.getElementById('lockGoScore');
+    const lockGoRecord = document.getElementById('lockGoRecord');
+    const lockGoCoins = document.getElementById('lockGoCoins');
+    const lockGoTitle = document.getElementById('lockGoTitle');
+    const lockGoEmoji = document.getElementById('lockGoEmoji');
+    const lockStartBtn = document.getElementById('lockStartBtn');
+    const hackBtn = document.getElementById('hackBtn');
+    const lockSubtitle = document.getElementById('lockSubtitle');
+
+    const GAME_DURATION = 30;
+    const MAX_TIME_CAP = 60;
+    const POINTS_PER_HIT = 1000;
+    const BLUE_BONUS_TIME = 3;
+    const COINS_PER_STEP = 10;
+    const SCORE_PER_COIN_STEP = 1000;
+
+    // ═══ ПАРАМЕТРЫ СЕКТОРОВ ═══
+    const ZONE_LIFETIME = 4.0;        // секунд жизни сектора (короче — быстрее исчезают)
+    const ZONE_MIN_SCALE = 0.05;      // почти до нуля перед исчезновением
+    const BASE_SPEED = 0.033;         // ⬆️ скорость стрелки (было 0.025)
+
+    // ═══ СООТНОШЕНИЕ СИНИХ К ЖЁЛТЫМ ═══
+    // 2 синих = 3 жёлтых → вероятность синего = 2/5 = 0.4
+    const BLUE_RATIO = 0.4;
+
+    function resizeLockCanvas() {
+      const wrap = lockCanvas.parentElement;
+      const rect = wrap.getBoundingClientRect();
+      const size = Math.min(rect.width, rect.height, 420);
+      lockCanvas.width = size;
+      lockCanvas.height = size;
+    }
+
+    let lock = {
+      running: false,
+      finished: false,
+      score: 0,
+      record: parseInt(localStorage.getItem('lockGameRecord') || '0'),
+      coinsThisRun: 0,
+      nextCoinScore: 1000,
+      angle: 0,
+      speed: BASE_SPEED,
+      direction: 1,
+      timeLeft: GAME_DURATION,
+      lastTimeUpdate: 0,
+      zones: [],
+      hitZones: [],
+      expiredZones: [],
+      scoreCount: 0,
+      shakeTime: 0,
+      catAnim: 0,
+      boostFlashTime: 0,
+      frame: 0
+    };
+
+    // ═══════════════════════════════════════════
+    // ГЕНЕРАЦИЯ СЕКТОРОВ
+    // ═══════════════════════════════════════════
+    function generateZones() {
+      const zones = [];
+      const progression = Math.min(lock.scoreCount, 30);
+
+      // Количество жёлтых: 1 → 5
+      const yellowCount = Math.min(1 + Math.floor(progression / 8), 5);
+
+      // ═══ СИНИЕ: рандомно, но в среднем 2 синих = 3 жёлтых ═══
+      // Считаем вероятность появления синего = BLUE_RATIO (0.4)
+      // Плюс жёсткое ограничение: не больше жёлтых, чтобы баланс 2:3 держался
+      let blueCount = 0;
+      const maxBlue = Math.max(1, Math.floor(yellowCount * 2 / 3)); // макс. синих ≈ 2/3 от жёлтых
+      for (let i = 0; i < maxBlue; i++) {
+        if (Math.random() < BLUE_RATIO) blueCount++;
+      }
+      // Хотя бы 1 синий, если жёлтых >= 3 (для баланса 2:3)
+      if (yellowCount >= 3 && blueCount === 0 && Math.random() < 0.6) {
+        blueCount = 1;
+      }
+
+      const totalZones = yellowCount + blueCount;
+
+      // ⬇️ МАЛЕНЬКИЕ СЕКТОРА
+      const baseSize = Math.max(0.22, 0.5 - progression * 0.008);
+      const gap = 0.55;
+
+      // Собираем список типов и перемешиваем
+      const types = [];
+      for (let i = 0; i < yellowCount; i++) types.push('yellow');
+      for (let i = 0; i < blueCount; i++) types.push('blue');
+      for (let i = types.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [types[i], types[j]] = [types[j], types[i]];
+      }
+
+      let currentAngle = Math.random() * Math.PI * 2;
+      const now = performance.now();
+
+      for (let i = 0; i < totalZones; i++) {
+        const isBlue = types[i] === 'blue';
+
+        // Синие ещё меньше
+        const size = isBlue
+          ? baseSize * 0.75
+          : baseSize * (0.85 + Math.random() * 0.3);
+
+        // Синие живут чуть дольше
+        const lifetime = (isBlue ? ZONE_LIFETIME * 1.25 : ZONE_LIFETIME) * 1000;
+
+        zones.push({
+          start: currentAngle,
+          size: size,
+          type: isBlue ? 'blue' : 'yellow',
+          alive: true,
+          pulse: Math.random() * Math.PI * 2,
+          bornAt: now,
+          lifetime: lifetime,
+          scale: 1.0,          // начнём с полного
+          expiring: false
+        });
+
+        currentAngle += size + gap;
+      }
+
+      lock.zones = zones;
+      lock.hitZones = [];
+      lock.expiredZones = [];
+    }
+
+    function initLock() {
+      lock.score = 0;
+      lock.coinsThisRun = 0;
+      lock.angle = 0;
+      lock.speed = BASE_SPEED;
+      lock.direction = Math.random() < 0.5 ? 1 : -1;
+      lock.timeLeft = GAME_DURATION;
+      lock.lastTimeUpdate = performance.now();
+      lock.scoreCount = 0;
+      lock.nextCoinScore = SCORE_PER_COIN_STEP;
+      lock.shakeTime = 0;
+      lock.catAnim = 0;
+      lock.boostFlashTime = 0;
+      lock.frame = 0;
+
+      generateZones();
+
+      lockScoreEl.textContent = '0';
+      updateTimerUI();
+    }
+
+    function updateTimerUI() {
+      const t = Math.max(0, lock.timeLeft);
+      timerTextEl.textContent = Math.ceil(t);
+
+      const maxRef = Math.max(GAME_DURATION, Math.min(MAX_TIME_CAP, t));
+      const pct = (t / maxRef) * 100;
+      timerFillEl.style.width = Math.max(0, Math.min(100, pct)) + '%';
+
+      timerFillEl.classList.remove('mid', 'low', 'boost');
+
+      if (lock.boostFlashTime > 0) {
+        timerFillEl.classList.add('boost');
+      } else if (t <= 5) {
+        timerFillEl.classList.add('low');
+      } else if (t <= 12) {
+        timerFillEl.classList.add('mid');
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    // ОБНОВЛЕНИЕ ЖИЗНИ СЕКТОРОВ
+    // ═══════════════════════════════════════════
+    function updateZonesLife(now) {
+      let allDead = true;
+
+      for (const z of lock.zones) {
+        if (!z.alive) continue;
+        allDead = false;
+
+        const age = now - z.bornAt;
+        const lifeRatio = age / z.lifetime;
+
+        if (lifeRatio >= 1) {
+          z.alive = false;
+          Sound.expire();
+          lock.expiredZones.push({
+            start: z.start,
+            size: z.size * z.scale,
+            type: z.type,
+            expireTime: now
+          });
+          continue;
+        }
+
+        // ⬇️ СЖАТИЕ СРАЗУ С МОМЕНТА ПОЯВЛЕНИЯ
+        // В начале жизни scale = 1, к концу — ZONE_MIN_SCALE
+        z.scale = Math.max(ZONE_MIN_SCALE, 1 - lifeRatio * (1 - ZONE_MIN_SCALE));
+        z.expiring = true;
+      }
+
+      lock.expiredZones = lock.expiredZones.filter(e => now - e.expireTime < 400);
+
+      if (allDead && lock.zones.length > 0) {
+        generateZones();
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    // ВЗЛОМ
+    // ═══════════════════════════════════════════
+    function hackPress() {
+      if (!lock.running) {
+        if (!lock.finished) startLock();
+        return;
+      }
+
+      Sound.click();
+      lock.catAnim = 1;
+
+      const a = ((lock.angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+
+      let hit = null;
+      for (const z of lock.zones) {
+        if (!z.alive) continue;
+
+        const currentSize = z.size * z.scale;
+        const start = z.start;
+        const end = start + currentSize;
+
+        let inZone = false;
+        if (end <= Math.PI * 2) {
+          inZone = a >= start && a <= end;
+        } else {
+          const e = end - Math.PI * 2;
+          inZone = a >= start || a <= e;
+        }
+        if (inZone) { hit = z; break; }
+      }
+
+      if (hit) {
+        const isBlue = hit.type === 'blue';
+
+        lock.score += POINTS_PER_HIT;
+        lock.scoreCount++;
+        lockScoreEl.textContent = lock.score.toLocaleString('ru-RU');
+
+        const W = lockCanvas.width;
+        const H = lockCanvas.height;
+        const cx = W / 2 + Math.cos(lock.angle) * (Math.min(W, H) * 0.35);
+        const cy = H / 2 + Math.sin(lock.angle) * (Math.min(W, H) * 0.35);
+        const rect = lockCanvas.getBoundingClientRect();
+        spawnFloatScore(rect.left + cx, rect.top + cy, '+1000', isBlue);
+
+        if (isBlue) {
+          lock.timeLeft = Math.min(MAX_TIME_CAP, lock.timeLeft + BLUE_BONUS_TIME);
+          lock.boostFlashTime = 30;
+          Sound.blue();
+          flashScreen('blue');
+          showTimeBonusPopup(BLUE_BONUS_TIME);
+          spawnHearts(6);
+
+          hackBtn.classList.add('blue');
+          setTimeout(() => hackBtn.classList.remove('blue'), 500);
+        } else {
+          Sound.success();
+          flashScreen('green');
+          spawnHearts(3);
+
+          hackBtn.classList.add('success');
+          setTimeout(() => hackBtn.classList.remove('success'), 400);
+        }
+
+        checkCoinBonus();
+        if (lock.score >= 10000) unlockAchievement('hacker_pro');
+        if (lock.scoreCount >= 10) unlockAchievement('hacker_cat');
+
+        hit.alive = false;
+        lock.hitZones.push({ ...hit, hitTime: performance.now(), type: hit.type, hitScale: hit.scale });
+
+        lock.direction *= -1;
+
+        if (lock.zones.every(z => !z.alive)) {
+          generateZones();
+        }
+
+      } else {
+        Sound.fail();
+        flashScreen('red');
+        lock.shakeTime = 15;
+
+        hackBtn.classList.add('error');
+        setTimeout(() => hackBtn.classList.remove('error'), 400);
+      }
+    }
+
+    function checkCoinBonus() {
+      while (lock.score >= lock.nextCoinScore) {
+        lock.nextCoinScore += SCORE_PER_COIN_STEP;
+        lock.coinsThisRun += COINS_PER_STEP;
+        Sound.coin();
+        showToast('🪙 +10 монет!');
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    // КОНЕЦ ИГРЫ
+    // ═══════════════════════════════════════════
+    function lockEndGame() {
+      lock.running = false;
+      lock.finished = true;
+      Sound.fail();
+
+      const earned = lock.coinsThisRun;
+      catState.coins += earned;
+      saveState();
+      lock.coinsThisRun = 0;
+
+      let isNewRecord = false;
+      if (lock.score > lock.record) {
+        lock.record = lock.score;
+        localStorage.setItem('lockGameRecord', lock.record);
+        isNewRecord = true;
+      }
+
+      if (lock.score > 0) unlockAchievement('first_record');
+
+      lockGoScore.textContent = lock.score.toLocaleString('ru-RU');
+      lockGoRecord.textContent = 'Рекорд: ' + lock.record.toLocaleString('ru-RU');
+      lockGoCoins.textContent = `+${earned} 🪙 заработано`;
+
+      if (isNewRecord) {
+        lockGoEmoji.textContent = '🏆';
+        lockGoTitle.textContent = 'Новый рекорд!';
+      } else {
+        lockGoEmoji.textContent = '⏰';
+        lockGoTitle.textContent = 'Время вышло!';
+      }
+
+      lockOverBox.classList.add('show');
+      lockStartBtn.disabled = false;
+      lockStartBtn.textContent = '▶ Начать';
+      hackBtn.disabled = true;
+    }
+
+    function startLock() {
+      initAudio();
+      resizeLockCanvas();
+      initLock();
+      lock.running = true;
+      lock.finished = false;
+      lockOverBox.classList.remove('show');
+      lockStartBtn.disabled = true;
+      lockStartBtn.textContent = '🎮 Взламываем...';
+      hackBtn.disabled = false;
+      Sound.start();
+      lockLoop();
+    }
+
+    function restartLock() {
+      lockOverBox.classList.remove('show');
+      lock.finished = false;
+      startLock();
+    }
+
+    // ═══════════════════════════════════════════
+    // ОТРИСОВКА
+    // ═══════════════════════════════════════════
+    function drawLock() {
+      const W = lockCanvas.width;
+      const H = lockCanvas.height;
+      const cx = W / 2;
+      const cy = H / 2;
+      const R = Math.min(W, H) * 0.42;
+      const rInner = R * 0.55;
+
+      lctx.clearRect(0, 0, W, H);
+
+      let shakeX = 0, shakeY = 0;
+      if (lock.shakeTime > 0) {
+        shakeX = (Math.random() - 0.5) * 12;
+        shakeY = (Math.random() - 0.5) * 12;
+        lock.shakeTime--;
+      }
+
+      lctx.save();
+      lctx.translate(cx + shakeX, cy + shakeY);
+
+      const isNight = document.body.classList.contains('night');
+
+      // Внешний круг
+      lctx.beginPath();
+      lctx.arc(0, 0, R, 0, Math.PI * 2);
+      const gradBg = lctx.createRadialGradient(0, 0, rInner, 0, 0, R);
+      if (isNight) {
+        gradBg.addColorStop(0, '#2b0a1f');
+        gradBg.addColorStop(1, '#4a1030');
+      } else {
+        gradBg.addColorStop(0, '#fff5f8');
+        gradBg.addColorStop(1, '#ffb3c1');
+      }
+      lctx.fillStyle = gradBg;
+      lctx.fill();
+      lctx.lineWidth = 6;
+      lctx.strokeStyle = isNight ? '#8b0f5c' : '#c71585';
+      lctx.stroke();
+
+      const now = performance.now();
+      const startCap = 'round';
+
+      // ═══ СЕКТОРА ═══
+      for (const z of lock.zones) {
+        if (!z.alive) continue;
+
+        const isBlue = z.type === 'blue';
+        const pulse = 0.85 + Math.sin(now * 0.005 + z.pulse) * 0.15;
+        const currentSize = z.size * z.scale;
+
+        // Прозрачность падает вместе со scale
+        const alpha = Math.max(0.25, z.scale);
+
+        let fillColor, strokeColor;
+        if (isBlue) {
+          fillColor = `rgba(33, 150, 243, ${0.6 * pulse * alpha})`;
+          strokeColor = `rgba(21, 101, 192, ${alpha})`;
+        } else {
+          fillColor = `rgba(255, 193, 7, ${0.65 * pulse * alpha})`;
+          strokeColor = `rgba(245, 127, 23, ${alpha})`;
+        }
+
+        lctx.beginPath();
+        lctx.moveTo(0, 0);
+        lctx.arc(0, 0, R - 3, z.start, z.start + currentSize);
+        lctx.closePath();
+        lctx.fillStyle = fillColor;
+        lctx.fill();
+        lctx.strokeStyle = strokeColor;
+        lctx.lineWidth = 3;
+        lctx.stroke();
+
+        // Иконка (только если не сильно сжался)
+        if (z.scale > 0.35) {
+          const midAngle = z.start + currentSize / 2;
+          const iconR = R * 0.78;
+          const ix = Math.cos(midAngle) * iconR;
+          const iy = Math.sin(midAngle) * iconR;
+          lctx.globalAlpha = alpha;
+          lctx.font = `${Math.floor(R * 0.16)}px serif`;
+          lctx.textAlign = 'center';
+          lctx.textBaseline = 'middle';
+          lctx.fillText(isBlue ? '💎' : '⭐', ix, iy);
+          lctx.globalAlpha = 1;
+        }
+      }
+
+      // ═══ ИСЧЕЗАЮЩИЕ СЕКТОРА ═══
+      for (const e of lock.expiredZones) {
+        const dt = (now - e.expireTime) / 400;
+        if (dt >= 1) continue;
+        const alpha = (1 - dt) * 0.5;
+        const expand = 1 + dt * 0.5;
+        const isBlue = e.type === 'blue';
+
+        lctx.beginPath();
+        lctx.moveTo(0, 0);
+        lctx.arc(0, 0, (R - 3) * expand, e.start, e.start + e.size);
+        lctx.closePath();
+        lctx.fillStyle = isBlue
+          ? `rgba(33, 150, 243, ${alpha})`
+          : `rgba(255, 193, 7, ${alpha})`;
+        lctx.fill();
+      }
+
+      // ═══ АНИМАЦИЯ ПОПАДАНИЯ ═══
+      for (let i = lock.hitZones.length - 1; i >= 0; i--) {
+        const hz = lock.hitZones[i];
+        const dt = (now - hz.hitTime) / 500;
+        if (dt >= 1) { lock.hitZones.splice(i, 1); continue; }
+        const alpha = 1 - dt;
+        const expand = 1 + dt * 0.3;
+        const isBlue = hz.type === 'blue';
+        const hitSize = hz.size * (hz.hitScale || 1);
+
+        lctx.beginPath();
+        lctx.moveTo(0, 0);
+        lctx.arc(0, 0, (R - 3) * expand, hz.start, hz.start + hitSize);
+        lctx.closePath();
+        lctx.fillStyle = isBlue
+          ? `rgba(33, 150, 243, ${alpha * 0.7})`
+          : `rgba(76, 175, 80, ${alpha * 0.7})`;
+        lctx.fill();
+      }
+
+      // ═══ ВНУТРЕННИЙ КРУГ ═══
+      lctx.beginPath();
+      lctx.arc(0, 0, rInner, 0, Math.PI * 2);
+      const gradInner = lctx.createRadialGradient(0, 0, 0, 0, 0, rInner);
+      if (isNight) {
+        gradInner.addColorStop(0, '#0d0518');
+        gradInner.addColorStop(1, '#1a0a2e');
+      } else {
+        gradInner.addColorStop(0, '#fff');
+        gradInner.addColorStop(1, '#ffe5ec');
+      }
+      lctx.fillStyle = gradInner;
+      lctx.fill();
+      lctx.strokeStyle = isNight ? '#4a1030' : '#ffc2d1';
+      lctx.lineWidth = 3;
+      lctx.stroke();
+
+      // Замочная скважина
+      lctx.beginPath();
+      lctx.arc(0, -rInner * 0.15, rInner * 0.25, 0, Math.PI * 2);
+      lctx.fillStyle = isNight ? '#ffb3c1' : '#c71585';
+      lctx.fill();
+      lctx.beginPath();
+      lctx.moveTo(-rInner * 0.1, -rInner * 0.15);
+      lctx.lineTo(rInner * 0.1, -rInner * 0.15);
+      lctx.lineTo(rInner * 0.15, rInner * 0.4);
+      lctx.lineTo(-rInner * 0.15, rInner * 0.4);
+      lctx.closePath();
+      lctx.fillStyle = isNight ? '#ffb3c1' : '#c71585';
+      lctx.fill();
+
+      // ═══ СТРЕЛКА ═══
+      const ux = Math.cos(lock.angle) * R;
+      const uy = Math.sin(lock.angle) * R;
+
+      lctx.beginPath();
+      lctx.moveTo(0, 0);
+      lctx.lineTo(ux, uy);
+      lctx.strokeStyle = isNight ? 'rgba(255,179,193,0.3)' : 'rgba(255,77,109,0.3)';
+      lctx.lineWidth = 14;
+      lctx.lineCap = startCap;
+      lctx.stroke();
+
+      lctx.beginPath();
+      lctx.moveTo(0, 0);
+      lctx.lineTo(ux, uy);
+      lctx.strokeStyle = isNight ? '#ffb3c1' : '#ff4d6d';
+      lctx.lineWidth = 5;
+      lctx.lineCap = startCap;
+      lctx.stroke();
+
+      const catScale = 1 + lock.catAnim * 0.4;
+      lctx.beginPath();
+      lctx.arc(ux, uy, 14 * catScale, 0, Math.PI * 2);
+      lctx.fillStyle = isNight ? '#ff8fa3' : '#ff4d6d';
+      lctx.fill();
+      lctx.strokeStyle = '#fff';
+      lctx.lineWidth = 3;
+      lctx.stroke();
+
+      lctx.font = `${Math.floor(rInner * 0.85)}px serif`;
+      lctx.textAlign = 'center';
+      lctx.textBaseline = 'middle';
+      lctx.fillText('🐾', 0, 0);
+
+      lctx.restore();
+    }
+
+    // ═══════════════════════════════════════════
+    // ИГРОВОЙ ЦИКЛ
+    // ═══════════════════════════════════════════
+    function lockLoop() {
+      if (!lock.running) { drawLock(); return; }
+
+      const now = performance.now();
+      const dt = (now - lock.lastTimeUpdate) / 1000;
+      lock.lastTimeUpdate = now;
+
+      lock.timeLeft -= dt;
+
+      if (lock.boostFlashTime > 0) {
+        lock.boostFlashTime -= dt * 60;
+        if (lock.boostFlashTime < 0) lock.boostFlashTime = 0;
+      }
+
+      if (lock.timeLeft <= 0) {
+        lock.timeLeft = 0;
+        updateTimerUI();
+        lockEndGame();
+        drawLock();
+        return;
+      }
+      updateTimerUI();
+
+      // Обновляем жизнь секторов
+      updateZonesLife(now);
+
+      // Стрелка
+      lock.angle += lock.speed * lock.direction * (dt * 60);
+      lock.frame++;
+      if (lock.catAnim > 0) lock.catAnim *= 0.85;
+      if (lock.catAnim < 0.01) lock.catAnim = 0;
+
+      drawLock();
+      requestAnimationFrame(lockLoop);
+    }
+
+    // ═══════════════════════════════════════════
+    // УПРАВЛЕНИЕ
+    // ═══════════════════════════════════════════
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        hackPress();
+      }
+    });
+
+    let hackBtnPressed = false;
+    hackBtn.addEventListener('mousedown', (e) => { e.preventDefault(); hackPress(); });
+    hackBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (!hackBtnPressed) {
+        hackBtnPressed = true;
+        hackPress();
+        setTimeout(() => hackBtnPressed = false, 100);
+      }
+    }, { passive: false });
+
+    window.addEventListener('resize', () => {
+      resizeLockCanvas();
+      if (!lock.running && !lock.finished) drawLock();
+    });
+
+    function flushCoins() {
+      if (lock.coinsThisRun > 0) {
+        catState.coins += lock.coinsThisRun;
+        saveState();
+        lock.coinsThisRun = 0;
+      }
+    }
+    window.addEventListener('beforeunload', flushCoins);
+    document.getElementById('backLink').addEventListener('click', flushCoins);
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        resizeLockCanvas();
+        initLock();
+        drawLock();
+      }, 50);
+    });
+  </script>
+</body>
+</html>

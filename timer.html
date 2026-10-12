@@ -2,310 +2,1018 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Наша история в цифрах ❤️</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Наша история в цифрах · Для Вероники</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f3ede4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Вероника">
+  <link rel="apple-touch-icon" href="photos/icon-192.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
   <style>
+    /* ============================================================
+       TOKENS
+       ============================================================ */
+    :root {
+      --paper:     #f3ede4;
+      --paper-2:   #ece4d8;
+      --surface:   #fdfaf6;
+      --surface-2: #f7f0e6;
+
+      --ink:   #1e1a16;
+      --ink-2: #4a423c;
+      --ink-3: #8a7f75;
+      --ink-4: #b8aca1;
+
+      --line:   rgba(30, 26, 22, 0.08);
+      --line-2: rgba(30, 26, 22, 0.16);
+
+      --rose:      #b58794;
+      --rose-deep: #8f6472;
+      --rose-soft: #e8d4d8;
+      --rose-tint: #f2e4e7;
+
+      --sand: #cfb8a3;
+
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * { box-sizing: border-box; }
+
     html, body {
       margin: 0;
       padding: 0;
-      min-height: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     body {
-      background: linear-gradient(135deg, #ffe5ec, #ffc2d1, #fba3b7);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.5;
       min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 90% 60% at 15% -10%, rgba(232, 212, 216, 0.55), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 95% 15%, rgba(207, 184, 163, 0.28), transparent 55%),
+        radial-gradient(ellipse 70% 55% at 5% 105%, rgba(181, 135, 148, 0.16), transparent 60%),
+        var(--paper);
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      pointer-events: none;
+      opacity: 0.30;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    ::selection { background: var(--rose-soft); color: var(--rose-deep); }
+
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(30, 26, 22, 0.12); border-radius: 10px; border: 3px solid var(--paper); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(30, 26, 22, 0.22); }
+
+    /* ============================================================
+       TOP BAR
+       ============================================================ */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      background: rgba(243, 237, 228, 0.72);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border-bottom: 1px solid var(--line);
+      font-size: 12.5px;
+      letter-spacing: 0.02em;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      box-sizing: border-box;
-      position: relative;
+      border: 1px solid var(--ink);
+      border-radius: 50%;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 17px;
+      line-height: 1;
+      color: var(--ink);
+      padding-bottom: 2px;
+      transition: transform 0.4s var(--ease-spring);
     }
 
-    /* Дождь из сердечек */
-    #hearts-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
+    .brand:hover .brand-mark {
+      transform: rotate(-12deg) scale(1.05);
     }
 
-    .heart {
-      position: absolute;
-      top: -30px;
-      font-size: 20px;
-      pointer-events: none;
-      animation: fall linear infinite;
+    .brand-label {
+      color: var(--ink-2);
+      font-weight: 500;
     }
 
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink-2);
+      cursor: pointer;
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+      transition: color 0.2s;
     }
 
-    .container {
-      position: relative;
-      z-index: 10;
-      width: 100%;
-      max-width: 640px;
+    .topbar-meta:hover { color: var(--ink); }
+
+    .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-item .icon { font-size: 13px; filter: saturate(0.7); }
+    .meta-sep { color: var(--ink-4); }
+
+    /* ============================================================
+       LAYOUT
+       ============================================================ */
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 140px 32px 80px;
+    }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero {
+      padding: 60px 0 40px;
       text-align: center;
+      position: relative;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--rose-deep);
+      margin-bottom: 28px;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: '';
+      width: 24px;
+      height: 1px;
+      background: var(--rose-deep);
     }
 
     h1 {
-      color: #ff4d6d;
-      font-size: 26px;
-      margin: 0 0 8px;
-      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(38px, 5.4vw, 72px);
+      line-height: 1.04;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin: 0 0 22px;
+      max-width: 16ch;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .subtitle {
-      color: #c71585;
-      font-size: 14px;
-      margin-bottom: 28px;
-      opacity: 0.9;
+    h1 em {
+      font-style: italic;
+      color: var(--rose-deep);
     }
 
-    /* Главная большая цифра — дней */
-    .big-days {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 28px;
-      padding: 28px 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 12px 40px rgba(255, 77, 109, 0.3);
-      border: 3px solid #fff;
-      backdrop-filter: blur(10px);
+    .hero-sub {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--ink-2);
+      margin: 0 auto;
+      max-width: 42ch;
+      font-weight: 400;
     }
 
-    .big-days-num {
-      font-size: 72px;
-      font-weight: 900;
-      color: #ff4d6d;
-      line-height: 1;
-      margin-bottom: 6px;
-      text-shadow: 0 4px 20px rgba(255, 77, 109, 0.4);
-      animation: pulseNum 2s ease-in-out infinite;
+    /* ============================================================
+       BIG DAYS NUMBER
+       ============================================================ */
+    .big-display {
+      margin: 72px 0 0;
+      position: relative;
+      padding: 24px 0 8px;
+      text-align: center;
     }
 
-    @keyframes pulseNum {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+    .big-display::before,
+    .big-display::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, transparent, var(--line-2));
     }
 
-    .big-days-label {
-      color: #c71585;
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
+    .big-display::before { top: 0; }
+    .big-display::after {
+      bottom: -48px;
+      background: linear-gradient(to top, transparent, var(--line-2));
     }
 
-    /* Карточки со временем */
-    .grid {
+    .big-num {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(110px, 18vw, 240px);
+      line-height: 0.88;
+      letter-spacing: -0.055em;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: 'tnum';
+      margin: 0;
+      display: block;
+      transition: opacity 0.6s var(--ease);
+    }
+
+    .big-num.reveal {
+      animation: numReveal 1.1s var(--ease) both;
+    }
+
+    @keyframes numReveal {
+      from { opacity: 0; letter-spacing: -0.02em; filter: blur(6px); }
+      to   { opacity: 1; letter-spacing: -0.055em; filter: blur(0); }
+    }
+
+    .big-label {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(20px, 2.4vw, 28px);
+      color: var(--rose-deep);
+      margin-top: 16px;
+      letter-spacing: -0.005em;
+    }
+
+    /* ============================================================
+       SUB NUMBERS (hours / minutes / seconds)
+       ============================================================ */
+    .sub-numbers {
+      margin-top: 108px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
+      position: relative;
     }
 
-    .card {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 20px;
-      padding: 18px 10px;
-      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.2);
-      border: 2px solid #fff;
-      backdrop-filter: blur(10px);
-      transition: transform 0.3s;
+    .sub-item {
+      text-align: center;
+      padding: 8px 12px;
+      position: relative;
     }
 
-    .card:hover {
-      transform: translateY(-4px);
+    .sub-item + .sub-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 22%;
+      bottom: 22%;
+      width: 1px;
+      background: var(--line);
     }
 
-    .card-num {
-      font-size: 32px;
-      font-weight: 800;
-      color: #ff4d6d;
+    .sub-num {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 400;
       line-height: 1;
-      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: 'tnum';
+      position: relative;
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .card-label {
-      color: #c71585;
+    .sub-label {
+      margin-top: 12px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 500;
+      letter-spacing: 0.20em;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      color: var(--ink-3);
     }
 
-    /* Дата начала */
-    .start-date {
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 50px;
-      padding: 12px 22px;
+    .pulse-dot {
       display: inline-block;
-      color: #c71585;
-      font-size: 14px;
-      font-weight: 600;
-      border: 2px solid #fff;
-      box-shadow: 0 6px 20px rgba(255, 77, 109, 0.2);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--rose-deep);
+      align-self: center;
+      animation: pulseDot 1s ease-in-out infinite;
+      flex-shrink: 0;
     }
 
-    .start-date b {
-      color: #ff4d6d;
+    @keyframes pulseDot {
+      0%, 100% { opacity: 0.35; transform: scale(0.75); }
+      50%      { opacity: 1;    transform: scale(1.15); }
     }
 
-    /* Кнопка назад */
-    .back-btn {
+    /* ============================================================
+       SECTION HEAD
+       ============================================================ */
+    .section {
+      padding: 120px 0 40px;
+      border-top: 1px solid var(--line);
+      margin-top: 120px;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 60px;
+      margin-bottom: 56px;
+      align-items: baseline;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .section-label .num {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 18px;
+      color: var(--rose-deep);
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .section-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(28px, 3.6vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .section-title em { font-style: italic; color: var(--rose-deep); }
+
+    /* ============================================================
+       INDEX LIST (facts)
+       ============================================================ */
+    .index-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .index-row {
+      display: grid;
+      grid-template-columns: 60px 1fr auto auto;
+      gap: 32px;
+      align-items: center;
+      padding: 26px 8px;
+      border-top: 1px solid var(--line);
+      transition: background 0.3s, padding 0.4s var(--ease);
+      position: relative;
+    }
+
+    .index-row:last-child { border-bottom: 1px solid var(--line); }
+
+    .index-row:hover {
+      background: rgba(253, 250, 246, 0.6);
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .index-num {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 17px;
+      color: var(--ink-3);
+      transition: color 0.3s;
+      letter-spacing: 0.02em;
+    }
+
+    .index-row:hover .index-num { color: var(--rose-deep); }
+
+    .index-name {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(20px, 2.2vw, 26px);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      line-height: 1.15;
+    }
+
+    .index-value {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(22px, 2.4vw, 32px);
+      color: var(--rose-deep);
+      letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: 'tnum';
+      white-space: nowrap;
+    }
+
+    .index-icon {
+      font-size: 18px;
+      filter: saturate(0.7);
+      opacity: 0.75;
+      transition: transform 0.4s var(--ease-spring);
+    }
+
+    .index-row:hover .index-icon {
+      transform: scale(1.15) rotate(-6deg);
+      opacity: 1;
+    }
+
+    /* ============================================================
+       PULL QUOTE (rotating fact)
+       ============================================================ */
+    .pull-quote {
+      margin-top: 72px;
+      padding: 40px 8px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      text-align: center;
+      position: relative;
+    }
+
+    .pull-quote-mark {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 56px;
+      line-height: 1;
+      color: var(--rose);
+      opacity: 0.4;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .pull-quote-text {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(20px, 2.6vw, 32px);
+      line-height: 1.35;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      max-width: 26ch;
+      margin: 0 auto;
+      transition: opacity 0.5s var(--ease);
+    }
+
+    .pull-quote-text b {
+      font-weight: 400;
+      font-style: normal;
+      color: var(--rose-deep);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ============================================================
+       META (start date)
+       ============================================================ */
+    .meta-section {
+      margin-top: 100px;
+      padding-top: 40px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: center;
+    }
+
+    .meta-block {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      font-weight: 500;
+    }
+
+    .meta-block .meta-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--rose-deep);
+      box-shadow: 0 0 0 5px rgba(143, 100, 114, 0.12);
+    }
+
+    .meta-block .meta-value {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 22px;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    /* ============================================================
+       BACK LINK
+       ============================================================ */
+    .back-wrap {
+      margin-top: 96px;
+      text-align: center;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 32px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 14.5px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: all 0.35s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .back-link:hover {
+      background: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
+    }
+
+    .back-link .back-arrow {
       display: inline-block;
-      margin-top: 28px;
-      background: linear-gradient(135deg, #ff4d6d, #ff758f);
-      color: white;
-      padding: 14px 32px;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: bold;
+      transition: transform 0.4s var(--ease);
       font-size: 15px;
-      box-shadow: 0 8px 24px rgba(255, 77, 109, 0.4);
-      transition: all 0.25s;
     }
 
-    .back-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 12px 32px rgba(255, 77, 109, 0.6);
+    .back-link:hover .back-arrow {
+      transform: translateX(-5px);
     }
 
-    /* Дополнительный блок */
-    .extra-fact {
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 20px;
-      padding: 16px 20px;
-      margin-top: 18px;
-      color: #c71585;
-      font-size: 14px;
-      border: 2px dashed #ffc2d1;
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .footer {
+      padding: 40px 32px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      max-width: 1240px;
+      margin: 40px auto 0;
     }
 
-    .extra-fact b {
-      color: #ff4d6d;
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 900px) {
+      main { padding: 120px 20px 60px; }
+
+      .section-head {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 40px;
+      }
+
+      .index-row {
+        grid-template-columns: 44px 1fr auto;
+        gap: 16px;
+        padding: 22px 4px;
+      }
+      .index-icon { display: none; }
+      .index-row:hover { padding-left: 10px; padding-right: 10px; }
+
+      .sub-numbers { margin-top: 88px; }
     }
 
-    @media (max-width: 480px) {
-      .big-days-num { font-size: 56px; }
-      h1 { font-size: 22px; }
-      .card-num { font-size: 26px; }
-      .grid { gap: 8px; }
-      .card { padding: 14px 6px; }
+    @media (max-width: 560px) {
+      .topbar { padding: 16px 20px; font-size: 11.5px; }
+      .brand-label { display: none; }
+      .brand-mark { width: 26px; height: 26px; font-size: 15px; }
+      .meta-sep { display: none; }
+      .topbar-meta { gap: 10px; font-size: 11.5px; }
+
+      h1 { font-size: clamp(32px, 9vw, 46px); }
+      .big-display { margin-top: 56px; }
+      .big-label { font-size: 18px; }
+
+      .sub-numbers { margin-top: 72px; }
+      .sub-item { padding: 6px 4px; }
+      .sub-label { letter-spacing: 0.14em; font-size: 10px; margin-top: 10px; }
+
+      .index-name { font-size: 19px; }
+      .index-value { font-size: 21px; }
+      .index-num { font-size: 15px; }
+
+      .pull-quote { padding: 32px 4px; margin-top: 56px; }
+      .pull-quote-mark { font-size: 44px; }
+
+      .meta-section { margin-top: 72px; }
+      .meta-block {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+      .meta-block .meta-dot { display: none; }
+      .meta-block .meta-value { font-size: 20px; }
+
+      .back-wrap { margin-top: 64px; }
+      .back-link { padding: 16px 26px; font-size: 14px; }
+
+      .footer {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+        font-size: 10.5px;
+        padding: 32px 20px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <div id="hearts-container"></div>
+  <div class="grain"></div>
 
-  <div class="container">
-    <h1>❤️ Наша история в цифрах</h1>
-    <p class="subtitle">Каждое мгновение с тобой — бесценно 💕</p>
-
-    <div class="big-days">
-      <div class="big-days-num" id="days">0</div>
-      <div class="big-days-label">дней вместе</div>
+  <!-- ============================================================
+       TOP BAR
+       ============================================================ -->
+  <header class="topbar">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">V</span>
+      <span class="brand-label">Для Вероники</span>
+    </a>
+    <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+      <span class="meta-item">
+        <span class="icon" id="timeIcon">☀️</span>
+        <span id="timeText">--:--</span>
+      </span>
+      <span class="meta-sep">·</span>
+      <span class="meta-item">
+        <span class="icon" id="weatherIcon">🌤️</span>
+        <span id="weatherText">...</span>
+      </span>
     </div>
+  </header>
 
-    <div class="grid">
-      <div class="card">
-        <div class="card-num" id="hours">0</div>
-        <div class="card-label">часов</div>
+  <main>
+
+    <!-- ============================================================
+         HERO
+         ============================================================ -->
+    <section class="hero">
+      <span class="eyebrow">01 · Хроника</span>
+      <h1>Наша история <em>в цифрах</em></h1>
+      <p class="hero-sub">
+        Каждое мгновение с тобой — бесценно. Эти числа растут каждую секунду, пока мы вместе.
+      </p>
+
+      <div class="big-display">
+        <span class="big-num" id="days">0</span>
+        <div class="big-label">дней вместе</div>
       </div>
-      <div class="card">
-        <div class="card-num" id="minutes">0</div>
-        <div class="card-label">минут</div>
+
+      <div class="sub-numbers">
+        <div class="sub-item">
+          <div class="sub-num" id="hours">00</div>
+          <div class="sub-label">часов</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-num" id="minutes">00</div>
+          <div class="sub-label">минут</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-num"><span id="seconds">00</span><span class="pulse-dot"></span></div>
+          <div class="sub-label">секунд</div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-num" id="seconds">0</div>
-        <div class="card-label">секунд</div>
+    </section>
+
+    <!-- ============================================================
+         FACTS
+         ============================================================ -->
+    <section class="section">
+      <div class="section-head">
+        <div class="section-label">
+          <span class="num">02</span>
+          <span>Факты</span>
+        </div>
+        <h2 class="section-title">То, что скрывается<br>за <em>числами</em></h2>
       </div>
+
+      <div class="index-list">
+        <div class="index-row">
+          <span class="index-num">01</span>
+          <span class="index-name">Часов вместе</span>
+          <span class="index-value" id="totalHours">0</span>
+          <span class="index-icon">💕</span>
+        </div>
+
+        <div class="index-row">
+          <span class="index-num">02</span>
+          <span class="index-name">Недель тепла</span>
+          <span class="index-value" id="weeks">0</span>
+          <span class="index-icon">✨</span>
+        </div>
+
+        <div class="index-row">
+          <span class="index-num">03</span>
+          <span class="index-name">Месяцев счастья</span>
+          <span class="index-value" id="months">0</span>
+          <span class="index-icon">🌸</span>
+        </div>
+
+        <div class="index-row">
+          <span class="index-num">04</span>
+          <span class="index-name">Минут воспоминаний</span>
+          <span class="index-value" id="totalMinutes">0</span>
+          <span class="index-icon">💖</span>
+        </div>
+      </div>
+
+      <div class="pull-quote">
+        <span class="pull-quote-mark">“</span>
+        <p class="pull-quote-text" id="extraFact">
+          Каждую секунду с тобой я <b>счастливее</b>, чем в предыдущую
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         META — START DATE
+         ============================================================ -->
+    <section class="meta-section">
+      <div class="meta-block">
+        <span class="meta-dot"></span>
+        <span>Мы вместе с</span>
+        <span class="meta-value" id="startDate">4 октября 2025</span>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BACK LINK
+         ============================================================ -->
+    <div class="back-wrap">
+      <a href="index.html" class="back-link">
+        <span class="back-arrow">←</span>
+        <span>Назад к приглашению</span>
+      </a>
     </div>
 
-    <div class="start-date">
-      💖 Мы вместе с <b id="startDate">4 октября 2025</b>
-    </div>
+  </main>
 
-    <div class="extra-fact" id="extraFact">
-      За это время мы пережили миллион моментов ✨
-    </div>
+  <footer class="footer">
+    <span>© 2026 · Вселенная для Вероники</span>
+    <span>Сделано с любовью</span>
+  </footer>
 
-    <a href="index.html" class="back-btn">← Назад к приглашению</a>
-  </div>
+  <!-- ============================================================
+       TIME + WEATHER
+       ============================================================ -->
+  <script>
+    function updateTimeWidget() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('timeText').textContent = `${hh}:${mm}`;
 
+      const h = now.getHours();
+      let icon = '🌙';
+      if      (h >= 5  && h < 12) icon = '🌅';
+      else if (h >= 12 && h < 18) icon = '☀️';
+      else if (h >= 18 && h < 23) icon = '🌆';
+      document.getElementById('timeIcon').textContent = icon;
+    }
+    updateTimeWidget();
+    setInterval(updateTimeWidget, 1000);
+
+    const WEATHER_CITY = { name: 'Улан-Удэ' };
+
+    function pickIconFromDesc(desc) {
+      desc = (desc || '').toLowerCase();
+      if (desc.includes('sun') || desc.includes('clear')) return '☀️';
+      if (desc.includes('partly') || desc.includes('mostly sun')) return '🌤️';
+      if (desc.includes('cloud') || desc.includes('overcast')) return '☁️';
+      if (desc.includes('rain') || desc.includes('drizzle')) return '🌧️';
+      if (desc.includes('snow') || desc.includes('sleet')) return '❄️';
+      if (desc.includes('thunder') || desc.includes('storm')) return '⛈️';
+      if (desc.includes('fog') || desc.includes('mist')) return '🌫️';
+      return '🌤️';
+    }
+
+    function seasonalWeather() {
+      const m = new Date().getMonth();
+      let icon, temp;
+      if (m === 11 || m === 0 || m === 1) { icon = '❄️'; temp = -18; }
+      else if (m === 2 || m === 3) { icon = '🌨️'; temp = -5; }
+      else if (m === 4) { icon = '🌱'; temp = 8; }
+      else if (m >= 5 && m <= 7) { icon = '☀️'; temp = 24; }
+      else if (m === 8) { icon = '🍂'; temp = 12; }
+      else { icon = '🌧️'; temp = 2; }
+      return { icon, temp };
+    }
+
+    async function loadWeather() {
+      const iconEl = document.getElementById('weatherIcon');
+      const textEl = document.getElementById('weatherText');
+      iconEl.textContent = '⛅';
+      textEl.textContent = '...';
+
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 5000);
+        const res = await fetch(
+          `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+          { signal: ctrl.signal, cache: 'no-store' }
+        );
+        clearTimeout(timer);
+
+        if (res.ok) {
+          const data = await res.json();
+          const cur = data.current_condition && data.current_condition[0];
+          if (cur && cur.temp_C !== undefined) {
+            const temp = parseInt(cur.temp_C, 10);
+            const desc = cur.weatherDesc && cur.weatherDesc[0] ? cur.weatherDesc[0].value : '';
+            iconEl.textContent = pickIconFromDesc(desc);
+            textEl.textContent = `${temp > 0 ? '+' : ''}${temp}°C`;
+            return;
+          }
+        }
+      } catch (e) {}
+
+      const w = seasonalWeather();
+      iconEl.textContent = w.icon;
+      textEl.textContent = `${w.temp > 0 ? '+' : ''}${w.temp}°C`;
+    }
+
+    loadWeather();
+    setInterval(loadWeather, 30 * 60 * 1000);
+    document.getElementById('infoWidget').addEventListener('click', loadWeather);
+  </script>
+
+  <!-- ============================================================
+       TIMER SCRIPT
+       ============================================================ -->
   <script>
     // ============================================================
-    // ⚠️ ДАТА НАЧАЛА ВАШИХ ОТНОШЕНИЙ — должна совпадать с index.html
+    // ⚠️ ДАТА НАЧАЛА ОТНОШЕНИЙ
     // Формат: год, месяц-1 (0=январь, 9=октябрь), день
     // ============================================================
     const LOVE_START = new Date(2025, 9, 4); // 4 октября 2025
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    let firstRun = true;
+    let lastFactIndex = -1;
 
     function updateTimer() {
       const now = new Date();
       const diff = now - LOVE_START;
 
       const totalSeconds = Math.floor(diff / 1000);
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const days    = Math.floor(totalSeconds / 86400);
+      const hours   = Math.floor((totalSeconds % 86400) / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
       const seconds = totalSeconds % 60;
 
       document.getElementById('days').textContent = days;
-      document.getElementById('hours').textContent = hours;
-      document.getElementById('minutes').textContent = minutes;
-      document.getElementById('seconds').textContent = seconds;
+      document.getElementById('hours').textContent = pad(hours);
+      document.getElementById('minutes').textContent = pad(minutes);
+      document.getElementById('seconds').textContent = pad(seconds);
 
-      // Дополнительные интересные факты
+      // Reveal once on first paint
+      if (firstRun) {
+        const bigNum = document.getElementById('days');
+        bigNum.classList.add('reveal');
+        firstRun = false;
+      }
+
+      // -------- Facts --------
       const totalMinutes = Math.floor(totalSeconds / 60);
-      const totalHours = Math.floor(totalSeconds / 3600);
-      const weeks = Math.floor(days / 7);
-      const months = Math.floor(days / 30.44);
-      const kisses = Math.floor(days * 10); // шуточно :)
-      const smiles = Math.floor(totalMinutes * 3);
+      const totalHours   = Math.floor(totalSeconds / 3600);
+      const weeks        = Math.floor(days / 7);
+      const months       = Math.floor(days / 30.44);
 
-      const facts = [
-        `За это время мы провели вместе <b>${totalHours}</b> часов 💕`,
-        `Это <b>${weeks}</b> недель тепла и улыбок ✨`,
-        `Целых <b>${months}</b> месяцев счастья 🌸`,
-        `Плюс-минус <b>${kisses}</b> поцелуев 😘`,
-        `И примерно <b>${smiles}</b> улыбок друг другу 🥰`,
-        `А это <b>${totalMinutes.toLocaleString('ru-RU')}</b> минут воспоминаний 💖`
-      ];
-      const randomFact = facts[Math.floor(Math.random() * facts.length)];
-      document.getElementById('extraFact').innerHTML = randomFact;
+      document.getElementById('totalHours').textContent   = totalHours.toLocaleString('ru-RU');
+      document.getElementById('weeks').textContent        = weeks.toLocaleString('ru-RU');
+      document.getElementById('months').textContent       = months.toLocaleString('ru-RU');
+      document.getElementById('totalMinutes').textContent = totalMinutes.toLocaleString('ru-RU');
+
+      // -------- Rotating pull-quote (updates rarely, not every second) --------
+      // Only change every ~12 seconds to avoid flicker
+      const slot = Math.floor(Date.now() / 12000);
+      if (slot !== lastFactIndex) {
+        lastFactIndex = slot;
+        const kisses = Math.floor(days * 10);
+        const smiles = Math.floor(totalMinutes * 3);
+
+        const facts = [
+          `За это время мы провели вместе <b>${totalHours.toLocaleString('ru-RU')}</b> часов`,
+          `Это <b>${weeks.toLocaleString('ru-RU')}</b> недель тепла и улыбок`,
+          `Целых <b>${months.toLocaleString('ru-RU')}</b> месяцев счастья`,
+          `Плюс-минус <b>${kisses.toLocaleString('ru-RU')}</b> поцелуев`,
+          `И примерно <b>${smiles.toLocaleString('ru-RU')}</b> улыбок друг другу`,
+          `А это <b>${totalMinutes.toLocaleString('ru-RU')}</b> минут воспоминаний`,
+          `Каждую секунду с тобой я <b>счастливее</b>, чем в предыдущую`
+        ];
+        const pick = facts[Math.floor(Math.random() * facts.length)];
+        const el = document.getElementById('extraFact');
+        el.style.opacity = '0';
+        setTimeout(() => {
+          el.innerHTML = pick;
+          el.style.opacity = '1';
+        }, 220);
+      }
     }
 
     updateTimer();
     setInterval(updateTimer, 1000);
 
-    // Дата начала в читаемом виде
+    // Date formatted nicely
     document.getElementById('startDate').textContent =
       LOVE_START.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-
-    // ---------- Дождь из сердечек ----------
-    const container = document.getElementById('hearts-container');
-    function createHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
-      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸'];
-      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
-      heart.style.left = Math.random() * 100 + "vw";
-      heart.style.animationDuration = Math.random() * 3 + 2 + "s";
-      heart.style.fontSize = Math.random() * 15 + 15 + "px";
-      heart.style.color = '#ffb3c1';
-      container.appendChild(heart);
-      setTimeout(() => { heart.remove(); }, 5000);
-    }
-    setInterval(createHeart, 300);
   </script>
+
+  <!-- ============================================================
+       Service Worker
+       ============================================================ -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => console.log('✅ Service Worker зарегистрирован'))
+          .catch((err) => console.log('❌ Ошибка SW:', err));
+      });
+    }
+  </script>
+
 </body>
 </html>

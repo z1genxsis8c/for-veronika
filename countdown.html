@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Обратный отсчёт 💕</title>
+    <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff4d6d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Вероника">
+  <link rel="apple-touch-icon" href="photos/icon-192.png">
+  <style>
+    html, body {
+      margin: 0; padding: 0; width: 100%; min-height: 100%;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none; -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #ffe5ec 0%, #ffc2d1 40%, #fba3b7 100%);
+      min-height: 100vh;
+      padding: 20px 16px 40px;
+      box-sizing: border-box;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ---------- ДОЖДЬ ИЗ СЕРДЕЧЕК ---------- */
+    #hearts-container {
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none; z-index: 1; overflow: hidden;
+    }
+
+    .heart {
+      position: absolute; top: -30px;
+      color: #ffb3c1; font-size: 20px;
+      pointer-events: none;
+      animation: fall linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ---------- МЕРЦАЮЩИЕ ЗВЁЗДЫ ---------- */
+    .star-bg {
+      position: fixed;
+      width: 4px; height: 4px;
+      background: #fff;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      animation: twinkleStar 3s infinite ease-in-out;
+    }
+
+    @keyframes twinkleStar {
+      0%, 100% { opacity: 0.2; transform: scale(0.6); }
+      50% { opacity: 0.9; transform: scale(1.2); }
+    }
+
+    /* ---------- КОНТЕЙНЕР ---------- */
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    /* ---------- ЗАГОЛОВОК ---------- */
+    .page-header {
+      text-align: center;
+      margin-bottom: 24px;
+      animation: fadeInDown 1s ease;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-header h1 {
+      color: #ff4d6d;
+      font-size: 26px;
+      margin: 0 0 8px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 20px rgba(255, 255, 255, 0.9);
+    }
+
+    .page-header p {
+      color: #c71585;
+      font-size: 14px;
+      margin: 0;
+      font-style: italic;
+      opacity: 0.9;
+    }
+
+    /* ---------- КАРТОЧКА ОТСЧЁТА ---------- */
+    .event-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      padding: 24px 20px 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 12px 40px rgba(255, 77, 109, 0.25);
+      border: 3px solid #fff;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: cardAppear 0.6s ease backwards;
+    }
+
+    @keyframes cardAppear {
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Цветной фон-полоска сверху карточки */
+    .event-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 6px;
+      background: linear-gradient(90deg, #ff4d6d, #ff8fa3, #c71585);
+    }
+
+    .event-emoji {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 6px;
+      animation: emojiBob 3s ease-in-out infinite;
+    }
+
+    @keyframes emojiBob {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-6px) rotate(3deg); }
+    }
+
+    .event-title {
+      color: #c71585;
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .event-date {
+      color: #ff8fa3;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .event-date b {
+      color: #ff4d6d;
+    }
+
+    /* ---------- БОЛЬШИЕ ЦИФРЫ ---------- */
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .time-block {
+      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
+      border-radius: 16px;
+      padding: 12px 4px 10px;
+      border: 2px solid #ffc2d1;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.15);
+      transition: transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .time-block:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.3);
+    }
+
+    .time-num {
+      color: #ff4d6d;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 2px 8px rgba(255, 77, 109, 0.3);
+      transition: transform 0.2s;
+      display: block;
+    }
+
+    .time-num.tick {
+      animation: tickPop 0.4s ease;
+    }
+
+    @keyframes tickPop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.15); color: #c71585; }
+      100% { transform: scale(1); }
+    }
+
+    .time-label {
+      color: #c71585;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* Когда событие уже наступило */
+    .event-card.passed .time-num {
+      color: #4caf50;
+    }
+
+    .event-card.today {
+      box-shadow: 0 12px 40px rgba(255, 215, 0, 0.6);
+      animation: todayGlow 2s infinite;
+    }
+
+    @keyframes todayGlow {
+      0%, 100% { box-shadow: 0 12px 40px rgba(255, 215, 0, 0.6); }
+      50% { box-shadow: 0 12px 50px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.4); }
+    }
+
+    /* Сообщение "уже наступило" или "сегодня" */
+    .event-status {
+      color: #4caf50;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 8px 0;
+      display: none;
+    }
+
+    .event-card.passed .event-status,
+    .event-card.today .event-status {
+      display: block;
+    }
+
+    .event-card.passed .countdown-grid,
+    .event-card.today .countdown-grid {
+      display: none;
+    }
+
+    /* Кнопка удаления */
+    .event-delete {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #fff0f3;
+      color: #ff4d6d;
+      border: 2px solid #ffc2d1;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.5;
+      transition: all 0.25s;
+      padding: 0;
+      z-index: 5;
+    }
+
+    .event-delete:hover {
+      opacity: 1;
+      background: #ff4d6d;
+      color: #fff;
+      transform: rotate(90deg) scale(1.1);
+    }
+
+    /* ---------- ПАНЕЛЬ ДОБАВЛЕНИЯ ---------- */
+    .add-panel {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      padding: 22px 20px 20px;
+      box-shadow: 0 12px 40px rgba(255, 77, 109, 0.2);
+      border: 3px dashed #ffc2d1;
+      margin-bottom: 18px;
+      text-align: center;
+      animation: cardAppear 0.6s ease backwards;
+    }
+
+    .add-panel h2 {
+      color: #ff4d6d;
+      font-size: 18px;
+      margin: 0 0 14px;
+      font-weight: 800;
+    }
+
+    .input-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .input-row label {
+      color: #c71585;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: -4px;
+    }
+
+    .input-row input[type="text"],
+    .input-row input[type="date"],
+    .input-row input[type="time"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #ffc2d1;
+      border-radius: 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #333;
+      box-sizing: border-box;
+      background: #fff7f9;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    .input-row input:focus {
+      outline: none;
+      border-color: #ff4d6d;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.15);
+    }
+
+    /* Выбор эмодзи */
+    .emoji-picker {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
+    .emoji-choice {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #fff7f9;
+      border: 2px solid #ffc2d1;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      padding: 0;
+    }
+
+    .emoji-choice:hover {
+      transform: scale(1.1);
+      background: #ffe5ec;
+    }
+
+    .emoji-choice.selected {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      border-color: #ff4d6d;
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.4);
+    }
+
+    /* Кнопка добавления */
+    .btn-add {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-add:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 28px rgba(255, 77, 109, 0.55);
+    }
+
+    .btn-add:active {
+      transform: scale(0.98);
+    }
+
+    /* ---------- КНОПКИ ВНИЗУ ---------- */
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.95);
+      color: #c71585;
+      border: 2px solid #ffc2d1;
+      font-size: 14px;
+      padding: 12px 22px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      font-family: inherit;
+      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
+      transition: all 0.25s;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background: #ff4d6d;
+      color: #fff;
+      border-color: #ff4d6d;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(255, 77, 109, 0.45);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: #fff;
+      border-color: #ff4d6d;
+    }
+
+    /* ---------- ПАДАЮЩИЕ СЕРДЕЧКИ ПРИ СОЗДАНИИ ---------- */
+    .confetti-heart {
+      position: fixed;
+      font-size: 24px;
+      pointer-events: none;
+      z-index: 5000;
+      animation: confettiFall 2s ease-out forwards;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-10vh) rotate(0deg) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(720deg) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    /* ---------- УВЕДОМЛЕНИЕ ---------- */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #ff4d6d, #c71585);
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 12px 32px rgba(199, 21, 133, 0.5);
+      z-index: 3000;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ---------- ПОДСКАЗКА ЕСЛИ ПУСТО ---------- */
+    .empty-hint {
+      text-align: center;
+      color: #c71585;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 30px 20px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 20px;
+      border: 2px dashed #ffc2d1;
+      line-height: 1.5;
+    }
+
+    .empty-hint .big {
+      font-size: 42px;
+      display: block;
+      margin-bottom: 8px;
+      animation: emojiBob 3s ease-in-out infinite;
+    }
+
+    /* ---------- АДАПТИВ ---------- */
+    @media (max-width: 480px) {
+      .page-header h1 { font-size: 21px; }
+      .page-header p { font-size: 12px; }
+      .event-card { padding: 20px 14px 16px; border-radius: 20px; }
+      .event-emoji { font-size: 40px; }
+      .event-title { font-size: 16px; }
+      .time-num { font-size: 26px; }
+      .time-label { font-size: 9px; letter-spacing: 0.5px; }
+      .time-block { padding: 10px 2px 8px; border-radius: 12px; }
+      .emoji-choice { width: 36px; height: 36px; font-size: 18px; }
+    }
+
+    @media (max-width: 360px) {
+      .time-num { font-size: 22px; }
+      .countdown-grid { gap: 6px; }
+    }
+  </style>
+</head>
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then((reg) => console.log('✅ Service Worker зарегистрирован'))
+          .catch((err) => console.log('❌ Ошибка SW:', err));
+      });
+    }
+  </script>
+<body>
+
+  <div id="hearts-container"></div>
+
+  <div class="container">
+
+    <!-- ЗАГОЛОВОК -->
+    <div class="page-header">
+      <h1>🎂 Наши важные даты</h1>
+      <p>Каждое мгновение приближает нас к празднику 💕</p>
+    </div>
+
+    <!-- СПИСОК СОБЫТИЙ -->
+    <div id="eventsList"></div>
+
+    <!-- ПАНЕЛЬ ДОБАВЛЕНИЯ -->
+    <div class="add-panel">
+      <h2>➕ Добавить свою дату</h2>
+
+      <div class="input-row">
+        <label for="eventName">Название события</label>
+        <input type="text" id="eventName" placeholder="Например: День нашей встречи 💕" maxlength="40">
+      </div>
+
+      <div class="input-row">
+        <label>Эмодзи</label>
+        <div class="emoji-picker" id="emojiPicker">
+          <button class="emoji-choice selected" data-emoji="💖">💖</button>
+          <button class="emoji-choice" data-emoji="🎂">🎂</button>
+          <button class="emoji-choice" data-emoji="💍">💍</button>
+          <button class="emoji-choice" data-emoji="🎄">🎄</button>
+          <button class="emoji-choice" data-emoji="🎉">🎉</button>
+          <button class="emoji-choice" data-emoji="🌹">🌹</button>
+          <button class="emoji-choice" data-emoji="✨">✨</button>
+          <button class="emoji-choice" data-emoji="🥂">🥂</button>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <label for="eventDate">Дата</label>
+        <input type="date" id="eventDate">
+      </div>
+
+      <div class="input-row">
+        <label for="eventTime">Время (необязательно)</label>
+        <input type="time" id="eventTime" value="00:00">
+      </div>
+
+      <button class="btn-add" onclick="addEvent()">
+        <span>💕</span>
+        <span>Добавить дату</span>
+      </button>
+    </div>
+
+    <!-- КНОПКИ НАВИГАЦИИ -->
+    <div class="nav-buttons">
+      <a href="index.html" class="btn">← На главную</a>
+      <a href="cat.html" class="btn">🐱 Домик котика</a>
+      <button class="btn primary" onclick="resetEvents()">🔄 Сбросить к стандартным</button>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ============================================================
+    // ⚠️ СТАНДАРТНЫЕ ДАТЫ
+    // Формат: "YYYY-MM-DD"
+    // annual: true — праздник повторяется каждый год
+    // ============================================================
+    const DEFAULT_EVENTS = [
+      {
+        id: 'birthday_veronika',
+        name: 'День рождения Вероники 💕',
+        emoji: '🎂',
+        date: '2007-04-14',
+        annual: true
+      },
+      {
+        id: 'birthday_me',
+        name: 'День рождения Анатолия 💕',
+        emoji: '🎉',
+        date: '2006-06-06',
+        annual: true
+      },
+      {
+        id: 'our_date',
+        name: 'Наша дата 💕',
+        emoji: '💖',
+        date: '2025-10-04',
+        annual: true
+      }
+    ];
+    // ============================================================
+
+    const STORAGE_KEY = 'countdown_events';
+
+    let events = [];
+    let selectedEmoji = '💖';
+
+    // ---------- ЗАГРУЗКА / СОХРАНЕНИЕ ----------
+    function loadEvents() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          events = JSON.parse(saved);
+        } else {
+          events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
+          saveEvents();
+        }
+      } catch {
+        events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
+      }
+    }
+
+    function saveEvents() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+      } catch {}
+    }
+
+    // ---------- ВЫЧИСЛЕНИЕ СЛЕДУЮЩЕЙ ДАТЫ ----------
+    function getNextDate(event) {
+      const now = new Date();
+      const [year, month, day] = event.date.split('-').map(Number);
+      const hasTime = event.date.includes('T') || event.time;
+
+      // Если annual — праздник повторяется каждый год
+      if (event.annual) {
+        // Собираем дату в этом году
+        let target = new Date(now.getFullYear(), month - 1, day);
+
+        // Если хотим учесть время
+        if (event.time) {
+          const [h, m] = event.time.split(':').map(Number);
+          target.setHours(h, m, 0, 0);
+        } else {
+          target.setHours(0, 0, 0, 0);
+        }
+
+        // Если дата уже прошла в этом году — берём следующий год
+        if (target <= now) {
+          target = new Date(now.getFullYear() + 1, month - 1, day);
+          if (event.time) {
+            const [h, m] = event.time.split(':').map(Number);
+            target.setHours(h, m, 0, 0);
+          } else {
+            target.setHours(0, 0, 0, 0);
+          }
+        }
+
+        return target;
+      } else {
+        // Разовое событие — фиксированная дата
+        const target = new Date(year, month - 1, day);
+        if (event.time) {
+          const [h, m] = event.time.split(':').map(Number);
+          target.setHours(h, m, 0, 0);
+        } else {
+          target.setHours(0, 0, 0, 0);
+        }
+        return target;
+      }
+    }
+
+    // ---------- ФОРМАТИРОВАНИЕ ДАТЫ ----------
+    function formatDate(event) {
+      const [year, month, day] = event.date.split('-').map(Number);
+      const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                      'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+      let str = `${day} ${months[month - 1]}`;
+
+      // Для разовых событий добавляем год
+      if (!event.annual) {
+        str += ` ${year}`;
+      }
+
+      if (event.time && event.time !== '00:00') {
+        str += `, ${event.time}`;
+      }
+
+      return str;
+    }
+
+    // ---------- РЕНДЕР ВСЕХ СОБЫТИЙ ----------
+    function renderEvents() {
+      const list = document.getElementById('eventsList');
+
+      if (events.length === 0) {
+        list.innerHTML = `
+          <div class="empty-hint">
+            <span class="big">🎈</span>
+            Добавь первую важную дату — и я начну отсчёт до неё!
+          </div>
+        `;
+        return;
+      }
+
+      // Сортируем по дате (ближайшие первыми)
+      const sortedEvents = [...events].sort((a, b) => {
+        return getNextDate(a) - getNextDate(b);
+      });
+
+      list.innerHTML = sortedEvents.map((event, index) => {
+        const next = getNextDate(event);
+        const now = new Date();
+        const diffMs = next - now;
+
+        // Проверяем, что это "сегодня"
+        const isToday = next.getDate() === now.getDate() &&
+                        next.getMonth() === now.getMonth() &&
+                        next.getFullYear() === now.getFullYear();
+
+        const isPassed = !event.annual && next < now;
+        const cardClass = isToday ? 'today' : (isPassed ? 'passed' : '');
+
+        return `
+          <div class="event-card ${cardClass}" data-id="${event.id}" style="animation-delay: ${index * 0.1}s">
+            <button class="event-delete" onclick="deleteEvent('${event.id}')" title="Удалить">✕</button>
+            <span class="event-emoji">${event.emoji}</span>
+            <h3 class="event-title">${event.name}</h3>
+            <p class="event-date">📅 <b>${formatDate(event)}</b></p>
+            <div class="event-status">
+              ${isToday ? '🎉 Сегодня! Поздравляю!' : '✅ Уже прошло!'}
+            </div>
+            <div class="countdown-grid">
+              <div class="time-block">
+                <span class="time-num" data-unit="days">0</span>
+                <span class="time-label">дней</span>
+              </div>
+              <div class="time-block">
+                <span class="time-num" data-unit="hours">0</span>
+                <span class="time-label">часов</span>
+              </div>
+              <div class="time-block">
+                <span class="time-num" data-unit="minutes">0</span>
+                <span class="time-label">минут</span>
+              </div>
+              <div class="time-block">
+                <span class="time-num" data-unit="seconds">0</span>
+                <span class="time-label">секунд</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Запускаем обновление всех карточек
+      updateAllCountdowns();
+    }
+
+    // ---------- ОБНОВЛЕНИЕ ВСЕХ ОТСЧЁТОВ ----------
+    function updateAllCountdowns() {
+      const now = new Date();
+      const cards = document.querySelectorAll('.event-card');
+
+      cards.forEach(card => {
+        const id = card.dataset.id;
+        const event = events.find(e => e.id === id);
+        if (!event) return;
+
+        const next = getNextDate(event);
+        const diffMs = next - now;
+
+        if (diffMs <= 0) {
+          // Событие уже наступило
+          card.classList.add('today');
+          return;
+        }
+
+        const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
+        const seconds = Math.floor((diffMs / 1000) % 60);
+
+        const values = { days, hours, minutes, seconds };
+
+        card.querySelectorAll('.time-num').forEach(el => {
+          const unit = el.dataset.unit;
+          const oldValue = parseInt(el.textContent);
+          const newValue = values[unit];
+
+          if (oldValue !== newValue) {
+            el.textContent = newValue;
+            // Анимация "pop" при изменении
+            el.classList.remove('tick');
+            void el.offsetWidth; // reflow для перезапуска анимации
+            el.classList.add('tick');
+          }
+        });
+      });
+    }
+
+    // Запускаем обновление каждую секунду
+    setInterval(updateAllCountdowns, 1000);
+
+    // ---------- ДОБАВЛЕНИЕ СОБЫТИЯ ----------
+    function addEvent() {
+      const name = document.getElementById('eventName').value.trim();
+      const date = document.getElementById('eventDate').value;
+      const time = document.getElementById('eventTime').value || '00:00';
+
+      if (!name) {
+        showToast('📝 Напиши название события');
+        document.getElementById('eventName').focus();
+        return;
+      }
+
+      if (!date) {
+        showToast('📅 Выбери дату');
+        document.getElementById('eventDate').focus();
+        return;
+      }
+
+      // Проверяем, что дата в будущем (или сегодня)
+      const [year, month, day] = date.split('-').map(Number);
+      const targetDate = new Date(year, month - 1, day);
+
+      // Проверяем, повторяющееся ли это событие (если дата в прошлом и это не ДР — считаем праздником)
+      // Логика: если дата в прошлом, но это может быть ежегодный праздник
+      // Просто делаем все события annual: true, кроме явных разовых
+      const isAnnual = true; // Всё повторяется каждый год
+
+      const newEvent = {
+        id: 'event_' + Date.now(),
+        name: name,
+        emoji: selectedEmoji,
+        date: date,
+        time: time,
+        annual: isAnnual
+      };
+
+      events.push(newEvent);
+      saveEvents();
+      renderEvents();
+
+      // Салют из сердечек
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => spawnHeart(), i * 40);
+      }
+
+      showToast(`💕 Добавлено: ${name}`);
+
+      // Очищаем форму
+      document.getElementById('eventName').value = '';
+      document.getElementById('eventDate').value = '';
+      document.getElementById('eventTime').value = '00:00';
+    }
+
+    // ---------- УДАЛЕНИЕ СОБЫТИЯ ----------
+    function deleteEvent(id) {
+      const event = events.find(e => e.id === id);
+      if (!event) return;
+
+      if (!confirm(`Удалить "${event.name}"?`)) return;
+
+      events = events.filter(e => e.id !== id);
+      saveEvents();
+      renderEvents();
+      showToast('🗑️ Удалено');
+    }
+
+    // ---------- СБРОС К СТАНДАРТНЫМ ----------
+    function resetEvents() {
+      if (!confirm('Вернуть стандартные даты? Твои добавленные события удалятся.')) return;
+
+      events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
+      saveEvents();
+      renderEvents();
+      showToast('🔄 Стандартные даты восстановлены');
+    }
+
+    // ---------- ВЫБОР ЭМОДЗИ ----------
+    document.querySelectorAll('.emoji-choice').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.emoji-choice').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedEmoji = btn.dataset.emoji;
+      });
+    });
+
+    // ---------- УВЕДОМЛЕНИЕ ----------
+    let toastTimer = null;
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    // ---------- САЛЮТ ИЗ СЕРДЕЧЕК ----------
+    function spawnHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'confetti-heart';
+      heart.textContent = ['❤️', '💖', '💗', '💕', '✨', '🌸'][Math.floor(Math.random() * 6)];
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+      heart.style.fontSize = (20 + Math.random() * 16) + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 2500);
+    }
+
+    // ---------- ДОЖДЬ СЕРДЕЧЕК НА ФОНЕ ----------
+    const container = document.getElementById('hearts-container');
+    function createBgHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      const types = ['❤️', '💖', '💗', '💕', '🌸'];
+      heart.innerText = types[Math.floor(Math.random() * types.length)];
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = Math.random() * 3 + 4 + 's';
+      heart.style.fontSize = Math.random() * 15 + 14 + 'px';
+      container.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 8000);
+    }
+    setInterval(createBgHeart, 700);
+
+    // ---------- МЕРЦАЮЩИЕ ЗВЁЗДЫ НА ФОНЕ ----------
+    for (let i = 0; i < 25; i++) {
+      const star = document.createElement('div');
+      star.className = 'star-bg';
+      star.style.left = Math.random() * 100 + 'vw';
+      star.style.top = Math.random() * 100 + 'vh';
+      star.style.animationDelay = Math.random() * 3 + 's';
+      star.style.animationDuration = (2 + Math.random() * 3) + 's';
+      star.style.width = star.style.height = (2 + Math.random() * 3) + 'px';
+      document.body.appendChild(star);
+    }
+
+    // ---------- СТАРТ ----------
+    loadEvents();
+    renderEvents();
+
+    // Устанавливаем минимальную дату для input (не раньше сегодня, кроме стандартных)
+    document.getElementById('eventDate').min = new Date().toISOString().split('T')[0];
+  </script>
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>🎨 Doodle-кот</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#9b59b6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Doodle-кот">
+  <link rel="apple-touch-icon" href="photos/icon-192.png">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; width: 100%; min-height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none; -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overflow: hidden;
+    }
+    body {
+      background: linear-gradient(180deg, #ffd6e5 0%, #a8d8ff 100%);
+      display: flex; flex-direction: column; align-items: center;
+      padding: 12px; height: 100vh;
+    }
+    body.night { background: linear-gradient(180deg, #1a0a2e 0%, #0d0518 100%); }
+
+    .game-container {
+      width: 100%; max-width: 480px;
+      text-align: center;
+      display: flex; flex-direction: column;
+      height: 100%;
+    }
+
+    .game-title {
+      color: #8e44ad; font-size: 22px; font-weight: 800;
+      margin: 0 0 4px;
+      text-shadow: 0 2px 10px rgba(255,255,255,0.9);
+    }
+    body.night .game-title { color: #d7b8e8; }
+
+    .game-subtitle {
+      color: #9b59b6; font-size: 13px; font-weight: 600;
+      margin: 0 0 10px; font-style: italic;
+    }
+    body.night .game-subtitle { color: #c8a6e0; }
+
+    .game-score-row {
+      display: flex; justify-content: center;
+      gap: 8px; margin-bottom: 8px; flex-wrap: wrap;
+    }
+    .game-score-chip {
+      background: rgba(255,255,255,0.95);
+      border: 2px solid #d7b8e8; border-radius: 50px;
+      padding: 6px 14px; font-size: 12px; font-weight: 700;
+      color: #8e44ad;
+      box-shadow: 0 4px 12px rgba(155,89,182,0.2);
+    }
+    .game-score-chip b { color: #9b59b6; }
+
+    .doodle-canvas-wrap {
+      position: relative; width: 100%;
+      flex: 1;
+      background: linear-gradient(180deg, #a8d8ff 0%, #ffd6e5 100%);
+      border-radius: 20px; border: 3px solid #fff;
+      box-shadow: 0 10px 40px rgba(155,89,182,0.3);
+      overflow: hidden; margin-bottom: 10px;
+      min-height: 300px;
+    }
+    body.night .doodle-canvas-wrap {
+      background: linear-gradient(180deg, #1a0a2e 0%, #2b0a1f 100%);
+    }
+
+    #doodleCanvas { display: block; width: 100%; height: 100%; touch-action: none; }
+
+    .game-pause-box {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255,255,255,0.95);
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 5; padding: 20px;
+      border-radius: 17px;
+    }
+    .game-pause-box.show { display: flex; }
+    .game-pause-box h3 { color: #9b59b6; font-size: 20px; margin: 0 0 12px; }
+    .pause-emoji {
+      font-size: 50px; margin-bottom: 8px;
+      animation: heartbeat 1.5s infinite;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.2); }
+      30% { transform: scale(1); }
+    }
+
+    .game-controls {
+      display: flex; gap: 10px;
+      justify-content: center; flex-wrap: wrap;
+    }
+
+    .game-hint {
+      color: #9b59b6; font-size: 12px;
+      font-weight: 700; margin-top: 6px; opacity: 0.8;
+    }
+    body.night .game-hint { color: #c8a6e0; }
+
+    .btn {
+      background: rgba(255,255,255,0.95);
+      color: #9b59b6; border: 2px solid #d7b8e8;
+      font-size: 14px; padding: 10px 20px;
+      text-decoration: none; border-radius: 50px;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(155,89,182,0.2);
+      transition: all 0.25s; cursor: pointer;
+      font-family: inherit;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:hover { background: #9b59b6; color: white; border-color: #9b59b6; transform: translateY(-2px); }
+    .btn.primary { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; border-color: #9b59b6; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    @keyframes floatUpScore {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-40px) scale(1.3); opacity: 0; }
+    }
+
+    .toast {
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #9b59b6, #8e44ad);
+      color: #fff; padding: 12px 22px;
+      border-radius: 50px; font-size: 14px; font-weight: 700;
+      box-shadow: 0 12px 32px rgba(142,68,173,0.5);
+      z-index: 3000; opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none; max-width: 90vw; text-align: center;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .float-heart {
+      position: fixed; font-size: 20px;
+      pointer-events: none; z-index: 5000;
+      animation: floatUp 1.5s ease-out forwards;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.5); opacity: 1; }
+      100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    <h2 class="game-title">🎨 Doodle-кот</h2>
+    <p class="game-subtitle" id="doodleSubtitle">Прыгай по платформам выше и выше! ☁️</p>
+
+    <div class="game-score-row">
+      <div class="game-score-chip">Высота: <b id="doodleScore">0</b></div>
+      <div class="game-score-chip">Рекорд: <b id="doodleRecord">0</b></div>
+      <div class="game-score-chip">🪙 +<b id="doodleCoins">0</b></div>
+    </div>
+
+    <div class="doodle-canvas-wrap" id="doodleCanvasWrap">
+      <canvas id="doodleCanvas"></canvas>
+      <div class="game-pause-box" id="doodleOverBox">
+        <div class="pause-emoji" id="doodleGoEmoji">😿</div>
+        <h3 id="doodleGoTitle">Котик упал!</h3>
+        <p style="color:#9b59b6; font-size:14px; font-weight:700; margin:4px 0;">Высота:</p>
+        <div style="font-size:32px; font-weight:900; color:#9b59b6; margin:4px 0 12px;" id="doodleGoScore">0</div>
+        <div style="color:#9b59b6; font-size:12px; font-weight:700; margin-bottom:14px;" id="doodleGoRecord">Рекорд: 0</div>
+        <div style="color:#ffa500; font-size:13px; font-weight:800; margin-bottom:14px;" id="doodleGoCoins">+0 монеток</div>
+        <button class="btn primary" onclick="restartDoodle()">🔄 Играть снова</button>
+      </div>
+    </div>
+
+    <div class="game-controls">
+      <button class="btn primary" onclick="startDoodle()" id="doodleStartBtn">▶ Начать</button>
+      <a href="cat.html" class="btn" id="backLink">← К котику</a>
+    </div>
+
+    <div class="game-hint">
+      💡 ← → или наклоняй телефон • Прыгай по платформам вверх 🚀
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
+      }
+    }
+    function playTone(frequency, duration, type = 'sine', volume = 0.15) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = frequency;
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + duration);
+      } catch {}
+    }
+    const Sound = {
+      jump: () => { playTone(440, 0.1, 'square', 0.1); setTimeout(() => playTone(660, 0.1, 'square', 0.08), 50); },
+      fish: () => { playTone(880, 0.12, 'sine', 0.15); setTimeout(() => playTone(1320, 0.15, 'sine', 0.12), 60); },
+      hurt: () => { playTone(220, 0.3, 'sawtooth', 0.15); setTimeout(() => playTone(140, 0.4, 'sawtooth', 0.12), 100); },
+      coin: () => { playTone(1200, 0.08, 'sine', 0.12); setTimeout(() => playTone(1600, 0.12, 'sine', 0.1), 50); },
+      ach: () => { playTone(660, 0.15, 'sine', 0.15); setTimeout(() => playTone(880, 0.15, 'sine', 0.15), 100); setTimeout(() => playTone(1100, 0.25, 'sine', 0.15), 200); }
+    };
+
+    const DEFAULT_STATE = {
+      hunger: 50, mood: 60, affection: 50,
+      sleeping: false, coins: 0,
+      ownedHats: [], ownedFood: {},
+      fishCollected: 0, equippedHat: null,
+      achievements: [], totalFishCollected: 0,
+      lastUpdate: Date.now()
+    };
+
+    let catState = loadState();
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem('catState');
+        if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        const raw = JSON.parse(saved);
+        const state = { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), ...raw };
+        state.ownedHats = Array.isArray(state.ownedHats) ? state.ownedHats : [];
+        state.ownedFood = (typeof state.ownedFood === 'object' && state.ownedFood) ? state.ownedFood : {};
+        state.achievements = Array.isArray(state.achievements) ? state.achievements : [];
+        const now = Date.now();
+        const elapsed = Math.floor((now - (state.lastUpdate || now)) / 1000 / 30);
+        state.hunger = Math.max(0, state.hunger - elapsed * 2);
+        state.mood = Math.max(0, state.mood - elapsed * 1);
+        state.lastUpdate = now;
+        return state;
+      } catch (e) {
+        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+    }
+
+    function saveState() {
+      catState.lastUpdate = Date.now();
+      try { localStorage.setItem('catState', JSON.stringify(catState)); } catch {}
+    }
+
+    const ACHIEVEMENTS = [
+      { id: 'first_record', icon: '🥇', title: 'Первый рекорд' },
+      { id: 'hundred', icon: '💯', title: '100 очков' },
+      { id: 'ten_fish', icon: '🐟', title: 'Собрал 10 рыбок' },
+      { id: 'first_buy', icon: '🛍️', title: 'Первая покупка' },
+      { id: 'max_hunger', icon: '🍖', title: 'Сыт по горло' },
+      { id: 'level_master', icon: '🌈', title: 'Путешественник' },
+      { id: 'sky_high', icon: '☁️', title: 'Небесный кот' }
+    ];
+
+    function unlockAchievement(id) {
+      if (catState.achievements.includes(id)) return;
+      catState.achievements.push(id);
+      saveState();
+      const ach = ACHIEVEMENTS.find(a => a.id === id);
+      if (ach) {
+        showToast(`🏆 Достижение: ${ach.title}!`);
+        Sound.ach();
+        spawnHearts(10);
+      }
+    }
+
+    let toastTimer = null;
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function spawnHearts(count) {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.className = 'float-heart';
+          heart.textContent = ['💗','💖','❤️','💕','✨'][Math.floor(Math.random()*5)];
+          heart.style.left = (cx + (Math.random()*60 - 30)) + 'px';
+          heart.style.top = cy + 'px';
+          heart.style.fontSize = (16 + Math.random()*12) + 'px';
+          document.body.appendChild(heart);
+          setTimeout(() => heart.remove(), 1500);
+        }, i * 80);
+      }
+    }
+
+    const hour = new Date().getHours();
+    if (hour >= 22 || hour < 7) document.body.classList.add('night');
+
+    // ═══════════════════════════════════════════
+    // DOODLE-КОТ
+    // ═══════════════════════════════════════════
+    const doodleCanvas = document.getElementById('doodleCanvas');
+    const doodleCanvasWrap = document.getElementById('doodleCanvasWrap');
+    const dctx = doodleCanvas.getContext('2d');
+    const doodleScoreEl = document.getElementById('doodleScore');
+    const doodleRecordEl = document.getElementById('doodleRecord');
+    const doodleCoinsEl = document.getElementById('doodleCoins');
+    const doodleOverBox = document.getElementById('doodleOverBox');
+    const doodleGoScore = document.getElementById('doodleGoScore');
+    const doodleGoRecord = document.getElementById('doodleGoRecord');
+    const doodleGoCoins = document.getElementById('doodleGoCoins');
+    const doodleGoTitle = document.getElementById('doodleGoTitle');
+    const doodleGoEmoji = document.getElementById('doodleGoEmoji');
+    const doodleStartBtn = document.getElementById('doodleStartBtn');
+
+    let doodle = {
+      running: false, finished: false,
+      score: 0,
+      record: parseInt(localStorage.getItem('doodleCatRecord') || '0'),
+      coinsThisRun: 0, nextCoinScore: 100,
+      cat: null, platforms: [], fishes: [],
+      cameraY: 0, frame: 0,
+      moveLeft: false, moveRight: false, tiltX: 0
+    };
+
+    doodleRecordEl.textContent = doodle.record;
+
+    function resizeDoodleCanvas() {
+      const wrap = doodleCanvas.parentElement;
+      const rect = wrap.getBoundingClientRect();
+      doodleCanvas.width = rect.width;
+      doodleCanvas.height = rect.height;
+    }
+
+    const PLATFORM_STYLES = {
+      normal:  { color: '#8b5a2b', border: '#5d3a1a' },
+      moving:  { color: '#2196f3', border: '#1565c0' },
+      fragile: { color: '#fdd835', border: '#c6a700' },
+      spring:  { color: '#4caf50', border: '#2e7d32' }
+    };
+
+    function createPlatform(x, y, forceType) {
+      const rand = Math.random();
+      let type = forceType;
+      if (!type) {
+        if (rand < 0.7) type = 'normal';
+        else if (rand < 0.85) type = 'moving';
+        else if (rand < 0.95) type = 'fragile';
+        else type = 'spring';
+      }
+      return {
+        x, y, width: 100, height: 22, type,
+        vx: type === 'moving' ? (Math.random() < 0.5 ? -1.5 : 1.5) : 0,
+        broken: false, brokenTime: 0,
+        bouncePower: type === 'spring' ? -20 : -12
+      };
+    }
+
+    function initDoodle() {
+      const W = doodleCanvas.width;
+      const H = doodleCanvas.height;
+
+      doodle.cat = { x: W/2 - 20, y: H - 120, width: 40, height: 40, vy: 0, vx: 0 };
+      doodle.platforms = [];
+      doodle.fishes = [];
+      doodle.cameraY = 0;
+      doodle.frame = 0;
+      doodle.score = 0;
+      doodle.coinsThisRun = 0;
+      doodle.nextCoinScore = 100;
+
+      doodle.platforms.push(createPlatform(W/2 - 50, H - 80, 'normal'));
+
+      let y = H - 80;
+      while (y > -H * 2) {
+        y -= 60 + Math.random() * 40;
+        const x = 20 + Math.random() * Math.max(10, W - 140);
+        doodle.platforms.push(createPlatform(x, y));
+        if (Math.random() < 0.25) {
+          doodle.fishes.push({ x: x + 50 - 12, y: y - 40, size: 24, collected: false, bobPhase: Math.random()*Math.PI*2 });
+        }
+      }
+
+      doodleScoreEl.textContent = '0';
+      doodleCoinsEl.textContent = '0';
+    }
+
+    function doodleUpdate() {
+      if (!doodle.running || !doodle.cat) return;
+      const W = doodleCanvas.width;
+      const H = doodleCanvas.height;
+      const cat = doodle.cat;
+
+      if (doodle.moveLeft) cat.vx = -5;
+      else if (doodle.moveRight) cat.vx = 5;
+      else if (doodle.tiltX !== 0) cat.vx = doodle.tiltX * 0.6;
+      else cat.vx *= 0.85;
+
+      cat.x += cat.vx;
+      cat.vy += 0.5;
+      cat.y += cat.vy;
+
+      if (cat.x + cat.width < 0) cat.x = W;
+      if (cat.x > W) cat.x = -cat.width;
+
+      const targetCameraY = cat.y - H * 0.4;
+      if (targetCameraY < doodle.cameraY) {
+        doodle.cameraY = targetCameraY;
+        doodle.score = Math.max(doodle.score, Math.floor((H - 80 - cat.y) / 10));
+      }
+
+      for (const p of doodle.platforms) {
+        if (p.broken) continue;
+        if (p.type === 'moving') {
+          p.x += p.vx;
+          if (p.x < 0 || p.x + p.width > W) p.vx *= -1;
+        }
+        if (cat.vy > 0 && cat.x + cat.width > p.x && cat.x < p.x + p.width &&
+            cat.y + cat.height >= p.y && cat.y + cat.height <= p.y + p.height + 10) {
+          cat.vy = p.bouncePower;
+          if (p.type === 'fragile') { p.broken = true; p.brokenTime = Date.now(); }
+          Sound.jump();
+        }
+      }
+
+      for (const f of doodle.fishes) {
+        if (f.collected) continue;
+        f.bobPhase += 0.1;
+        const dx = (cat.x + cat.width/2) - (f.x + f.size/2);
+        const dy = (cat.y + cat.height/2) - (f.y + f.size/2);
+        if (Math.sqrt(dx*dx + dy*dy) < 32) {
+          f.collected = true;
+          doodle.score += 20;
+          Sound.fish();
+          showDoodleScore(f.x, f.y, '+20', '#ff4d6d');
+        }
+      }
+
+      while (doodle.score >= doodle.nextCoinScore) {
+        doodle.nextCoinScore += 100;
+        doodle.coinsThisRun += 10;
+        doodleCoinsEl.textContent = doodle.coinsThisRun;
+        Sound.coin();
+        showDoodleScore(W/2, 60, '🪙 +10', '#ffa500');
+      }
+
+      doodleScoreEl.textContent = doodle.score;
+
+      let generated = 0;
+      const maxGen = 5;
+      let highestY = Infinity;
+      for (const p of doodle.platforms) if (p.y < highestY) highestY = p.y;
+      if (highestY === Infinity) highestY = H;
+
+      while (highestY > doodle.cameraY - 200 && generated < maxGen) {
+        const newY = highestY - (60 + Math.random()*40);
+        const x = 20 + Math.random() * Math.max(10, W - 140);
+        doodle.platforms.push(createPlatform(x, newY));
+        if (Math.random() < 0.25) {
+          doodle.fishes.push({ x: x + 50 - 12, y: newY - 40, size: 24, collected: false, bobPhase: Math.random()*Math.PI*2 });
+        }
+        highestY = newY;
+        generated++;
+      }
+
+      const bottomCutoff = doodle.cameraY + H + 200;
+      const topCutoff = doodle.cameraY - 400;
+
+      doodle.platforms = doodle.platforms.filter(p => {
+        if (p.broken && Date.now() - p.brokenTime > 500) return false;
+        return p.y < bottomCutoff && p.y > topCutoff;
+      });
+      doodle.fishes = doodle.fishes.filter(f => !f.collected && f.y < bottomCutoff && f.y > topCutoff);
+
+      if (cat.y > doodle.cameraY + H + 50) doodleEndGame();
+      doodle.frame++;
+    }
+
+    function showDoodleScore(x, y, text, color) {
+      if (!doodleCanvasWrap) return;
+      const rect = doodleCanvasWrap.getBoundingClientRect();
+      const scaleX = rect.width / doodleCanvas.width;
+      const scaleY = rect.height / doodleCanvas.height;
+      const screenX = x * scaleX;
+      const screenY = (y - doodle.cameraY) * scaleY;
+
+      const el = document.createElement('div');
+      el.textContent = text;
+      el.style.cssText = `position:absolute;left:${screenX}px;top:${screenY}px;color:${color};font-weight:800;font-size:18px;pointer-events:none;z-index:100;animation:floatUpScore 0.9s ease-out forwards;`;
+      doodleCanvasWrap.appendChild(el);
+      setTimeout(() => el.remove(), 900);
+    }
+
+    function drawPlatform(p) {
+      const style = PLATFORM_STYLES[p.type];
+
+      dctx.fillStyle = 'rgba(0,0,0,0.15)';
+      dctx.beginPath();
+      if (dctx.roundRect) dctx.roundRect(p.x + 2, p.y + 3, p.width, p.height, 6);
+      else dctx.rect(p.x + 2, p.y + 3, p.width, p.height);
+      dctx.fill();
+
+      dctx.fillStyle = style.color;
+      dctx.beginPath();
+      if (dctx.roundRect) dctx.roundRect(p.x, p.y, p.width, p.height, 6);
+      else dctx.rect(p.x, p.y, p.width, p.height);
+      dctx.fill();
+
+      dctx.strokeStyle = style.border;
+      dctx.lineWidth = 2;
+      dctx.beginPath();
+      if (dctx.roundRect) dctx.roundRect(p.x, p.y, p.width, p.height, 6);
+      else dctx.rect(p.x, p.y, p.width, p.height);
+      dctx.stroke();
+
+      dctx.fillStyle = 'rgba(255,255,255,0.3)';
+      dctx.beginPath();
+      if (dctx.roundRect) dctx.roundRect(p.x + 4, p.y + 3, p.width - 8, 5, 3);
+      else dctx.rect(p.x + 4, p.y + 3, p.width - 8, 5);
+      dctx.fill();
+
+      if (p.type === 'spring') {
+        dctx.strokeStyle = '#fff';
+        dctx.lineWidth = 2;
+        for (let i = 0; i < 5; i++) {
+          const sx = p.x + 15 + i * 18;
+          dctx.beginPath();
+          dctx.moveTo(sx, p.y + 5);
+          dctx.lineTo(sx, p.y + p.height - 5);
+          dctx.stroke();
+        }
+      }
+      if (p.type === 'fragile') {
+        dctx.strokeStyle = '#c6a700';
+        dctx.lineWidth = 1.5;
+        dctx.beginPath();
+        dctx.moveTo(p.x + 25, p.y + 5);
+        dctx.lineTo(p.x + 30, p.y + 12);
+        dctx.lineTo(p.x + 35, p.y + 8);
+        dctx.moveTo(p.x + 60, p.y + 5);
+        dctx.lineTo(p.x + 65, p.y + 14);
+        dctx.stroke();
+      }
+      if (p.type === 'moving') {
+        dctx.fillStyle = '#fff';
+        dctx.font = 'bold 14px sans-serif';
+        dctx.textAlign = 'center';
+        dctx.textBaseline = 'middle';
+        dctx.fillText('↔', p.x + p.width/2, p.y + p.height/2);
+      }
+    }
+
+    function doodleDraw() {
+      const W = doodleCanvas.width;
+      const H = doodleCanvas.height;
+      const cat = doodle.cat;
+
+      const grad = dctx.createLinearGradient(0, 0, 0, H);
+      if (document.body.classList.contains('night')) {
+        grad.addColorStop(0, '#1a0a2e');
+        grad.addColorStop(1, '#2b0a1f');
+      } else {
+        grad.addColorStop(0, '#a8d8ff');
+        grad.addColorStop(1, '#ffd6e5');
+      }
+      dctx.fillStyle = grad;
+      dctx.fillRect(0, 0, W, H);
+
+      dctx.save();
+      dctx.translate(0, -doodle.cameraY);
+
+      for (const p of doodle.platforms) {
+        if (p.broken) continue;
+        drawPlatform(p);
+      }
+      for (const f of doodle.fishes) {
+        if (f.collected) continue;
+        const bob = Math.sin(f.bobPhase) * 3;
+        dctx.font = '24px serif';
+        dctx.textAlign = 'left';
+        dctx.textBaseline = 'top';
+        dctx.fillText('🐟', f.x, f.y + bob);
+      }
+      if (cat) {
+        dctx.save();
+        dctx.fillStyle = '#000';
+        dctx.font = '40px serif';
+        dctx.textAlign = 'left';
+        dctx.textBaseline = 'top';
+        dctx.fillText('🐱', cat.x, cat.y);
+        dctx.restore();
+      }
+      dctx.restore();
+    }
+
+    function doodleLoop() {
+      if (!doodle.running && !doodle.finished) return;
+      doodleUpdate();
+      doodleDraw();
+      if (doodle.running) requestAnimationFrame(doodleLoop);
+    }
+
+    function startDoodle() {
+      initAudio();
+      resizeDoodleCanvas();
+      initDoodle();
+      doodle.running = true;
+      doodle.finished = false;
+      doodleOverBox.classList.remove('show');
+      doodleStartBtn.disabled = true;
+      doodleStartBtn.textContent = '🎮 Играем...';
+      doodleLoop();
+    }
+
+    function doodleEndGame() {
+      doodle.running = false;
+      doodle.finished = true;
+      Sound.hurt();
+
+      // ⬇️ НАЧИСЛЯЕМ ЗДЕСЬ И СРАЗУ ОБНУЛЯЕМ, чтобы beforeunload не начислил повторно
+      const earned = doodle.coinsThisRun;
+      catState.coins += earned;
+      saveState();
+      doodle.coinsThisRun = 0;
+
+      let isNewRecord = false;
+      if (doodle.score > doodle.record) {
+        doodle.record = doodle.score;
+        localStorage.setItem('doodleCatRecord', doodle.record);
+        doodleRecordEl.textContent = doodle.record;
+        isNewRecord = true;
+      }
+
+      if (doodle.score >= 500) unlockAchievement('sky_high');
+      if (doodle.score > 0) unlockAchievement('first_record');
+
+      doodleGoScore.textContent = doodle.score;
+      doodleGoRecord.textContent = 'Рекорд: ' + doodle.record;
+      doodleGoCoins.textContent = `+${earned} 🪙 заработано`;
+
+      if (isNewRecord) {
+        doodleGoEmoji.textContent = '🏆';
+        doodleGoTitle.textContent = 'Новый рекорд!';
+      } else {
+        doodleGoEmoji.textContent = '😿';
+        doodleGoTitle.textContent = 'Котик упал!';
+      }
+
+      doodleOverBox.classList.add('show');
+      doodleStartBtn.disabled = false;
+      doodleStartBtn.textContent = '▶ Начать';
+    }
+
+    function restartDoodle() {
+      doodleOverBox.classList.remove('show');
+      doodle.finished = false;
+      startDoodle();
+    }
+
+    function setupDoodleControls() {
+      cleanupDoodleControls();
+      document.addEventListener('keydown', doodleKeyDown);
+      document.addEventListener('keyup', doodleKeyUp);
+      window.addEventListener('deviceorientation', doodleOrientation);
+    }
+
+    function cleanupDoodleControls() {
+      document.removeEventListener('keydown', doodleKeyDown);
+      document.removeEventListener('keyup', doodleKeyUp);
+      window.removeEventListener('deviceorientation', doodleOrientation);
+      doodle.moveLeft = false;
+      doodle.moveRight = false;
+      doodle.tiltX = 0;
+    }
+
+    function doodleKeyDown(e) {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') { doodle.moveLeft = true; e.preventDefault(); }
+      else if (e.code === 'ArrowRight' || e.code === 'KeyD') { doodle.moveRight = true; e.preventDefault(); }
+    }
+    function doodleKeyUp(e) {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') doodle.moveLeft = false;
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') doodle.moveRight = false;
+    }
+    function doodleOrientation(e) {
+      doodle.tiltX = Math.max(-5, Math.min(5, e.gamma / 6));
+    }
+
+    doodleCanvas.addEventListener('touchstart', (e) => {
+      if (!doodle.running) return;
+      e.preventDefault();
+      const rect = doodleCanvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      if (x < rect.width / 2) doodle.moveLeft = true;
+      else doodle.moveRight = true;
+    }, { passive: false });
+
+    doodleCanvas.addEventListener('touchend', () => {
+      doodle.moveLeft = false;
+      doodle.moveRight = false;
+    });
+
+    window.addEventListener('resize', () => resizeDoodleCanvas());
+
+    // ⬇️ ЕДИНАЯ ФУНКЦИЯ сохранения несохранённых монет
+    function flushCoins() {
+      if (doodle.coinsThisRun > 0) {
+        catState.coins += doodle.coinsThisRun;
+        saveState();
+        doodle.coinsThisRun = 0;
+      }
+    }
+
+    window.addEventListener('beforeunload', flushCoins);
+
+    document.getElementById('backLink').addEventListener('click', flushCoins);
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        resizeDoodleCanvas();
+        initDoodle();
+        doodleDraw();
+        setupDoodleControls();
+      }, 50);
+    });
+  </script>
+</body>
+</html>

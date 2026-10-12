@@ -2,202 +2,342 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Открой меня 💌</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Открой меня · Для Вероники</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f3ede4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Вероника">
+  <link rel="apple-touch-icon" href="photos/icon-192.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
   <style>
+    /* ============================================================
+       TOKENS
+       ============================================================ */
+    :root {
+      --paper:     #f3ede4;
+      --paper-2:   #ece4d8;
+      --paper-3:   #e3d9ca;
+      --surface:   #fdfaf6;
+      --surface-2: #f7f0e6;
+      --letter:    #faf6ee;
+
+      --ink:   #1e1a16;
+      --ink-2: #4a423c;
+      --ink-3: #8a7f75;
+      --ink-4: #b8aca1;
+
+      --line:   rgba(30, 26, 22, 0.08);
+      --line-2: rgba(30, 26, 22, 0.16);
+
+      --rose:      #b58794;
+      --rose-deep: #8f6472;
+      --rose-soft: #e8d4d8;
+      --rose-tint: #f2e4e7;
+
+      --sand: #cfb8a3;
+
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * { box-sizing: border-box; }
+
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      min-height: 100%;
-      overflow-x: hidden;
-      font-family: 'Georgia', 'Segoe UI', serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     body {
-      background: radial-gradient(circle at center, #4a1030 0%, #2b0a1f 60%, #1a0413 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.5;
       min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 90% 60% at 15% -10%, rgba(232, 212, 216, 0.55), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 95% 15%, rgba(207, 184, 163, 0.28), transparent 55%),
+        radial-gradient(ellipse 70% 55% at 5% 105%, rgba(181, 135, 148, 0.16), transparent 60%),
+        var(--paper);
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      pointer-events: none;
+      opacity: 0.30;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    img { max-width: 100%; display: block; }
+
+    ::selection { background: var(--rose-soft); color: var(--rose-deep); }
+
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(30, 26, 22, 0.12); border-radius: 10px; border: 3px solid var(--paper); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(30, 26, 22, 0.22); }
+
+    /* ============================================================
+       TOP BAR
+       ============================================================ */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      background: rgba(243, 237, 228, 0.72);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border-bottom: 1px solid var(--line);
+      font-size: 12.5px;
+      letter-spacing: 0.02em;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--ink);
+      border-radius: 50%;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 17px;
+      line-height: 1;
+      color: var(--ink);
+      padding-bottom: 2px;
+      transition: transform 0.4s var(--ease-spring);
+    }
+
+    .brand:hover .brand-mark {
+      transform: rotate(-12deg) scale(1.05);
+    }
+
+    .brand-label {
+      color: var(--ink-2);
+      font-weight: 500;
+    }
+
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink-2);
+      cursor: pointer;
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .topbar-meta:hover { color: var(--ink); }
+
+    .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-item .icon { font-size: 13px; filter: saturate(0.7); }
+    .meta-sep { color: var(--ink-4); }
+
+    /* ============================================================
+       LAYOUT
+       ============================================================ */
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 140px 32px 80px;
+    }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero {
+      padding: 40px 0 40px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--rose-deep);
+      margin-bottom: 28px;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: '';
+      width: 24px;
+      height: 1px;
+      background: var(--rose-deep);
+    }
+
+    h1 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(38px, 5.4vw, 72px);
+      line-height: 1.04;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin: 0 0 22px;
+      max-width: 16ch;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    h1 em { font-style: italic; color: var(--rose-deep); }
+
+    .hero-sub {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--ink-2);
+      margin: 0 auto;
+      max-width: 44ch;
+      font-weight: 400;
+    }
+
+    /* ============================================================
+       ENVELOPE STAGE
+       ============================================================ */
+    .envelope-zone {
+      margin-top: 72px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      padding: 20px;
-      box-sizing: border-box;
+      justify-content: center;
+      min-height: 420px;
       position: relative;
-      overflow: hidden;
     }
 
-    /* ---------- ЗВЁЗДЫ НА ФОНЕ ---------- */
-    .stars {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
-    }
-
-    .star {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      border-radius: 50%;
-      background: #fff;
-      opacity: 0.6;
-      animation: twinkle 3s infinite;
-    }
-
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.2; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1.2); }
-    }
-
-    /* ---------- ПЛАВАЮЩИЕ СЕРДЕЧКИ ---------- */
-    #hearts-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none;
-      z-index: 2;
-      overflow: hidden;
-    }
-
-    .heart {
-      position: absolute;
-      top: -30px;
-      font-size: 20px;
-      pointer-events: none;
-      animation: fall linear infinite;
-      opacity: 0.7;
-    }
-
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-    }
-
-    /* ---------- ЗАГОЛОВОК ---------- */
-    .header {
-      position: relative;
-      z-index: 10;
-      text-align: center;
-      margin-bottom: 30px;
-      animation: fadeInDown 1s ease;
-    }
-
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .header h1 {
-      color: #ffc2d1;
-      font-size: 24px;
-      margin: 0 0 8px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-shadow: 0 4px 20px rgba(255, 77, 109, 0.5);
-    }
-
-    .header p {
-      color: #ffb3c1;
-      font-size: 14px;
-      margin: 0;
-      opacity: 0.8;
-      font-style: italic;
-    }
-
-    /* ---------- КОНВЕРТ ---------- */
     .envelope-stage {
       position: relative;
-      z-index: 10;
-      width: 340px;
-      height: 240px;
+      width: 380px;
+      height: 260px;
       cursor: pointer;
-      perspective: 1000px;
-      transition: transform 0.4s;
+      perspective: 1600px;
+      transition:
+        transform 0.5s var(--ease),
+        opacity 0.6s var(--ease);
       -webkit-tap-highlight-color: transparent;
+      outline: none;
     }
 
-    .envelope-stage:hover {
-      transform: scale(1.03);
+    .envelope-stage:hover { transform: scale(1.02); }
+    .envelope-stage:focus-visible {
+      outline: 2px solid var(--rose-deep);
+      outline-offset: 12px;
+      border-radius: 8px;
     }
 
     .envelope-stage.hidden {
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.6s, transform 0.6s;
-      transform: scale(0.5) translateY(-100px);
+      transform: scale(0.82) translateY(-40px);
     }
 
-    /* Конверт */
+    /* ---- ENVELOPE ---- */
     .envelope {
       position: relative;
       width: 100%;
       height: 100%;
-      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
+      filter:
+        drop-shadow(0 30px 40px rgba(30, 26, 22, 0.20))
+        drop-shadow(0 8px 14px rgba(30, 26, 22, 0.10));
     }
 
-    /* Основа конверта */
+    /* Base paper color */
     .envelope-back {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #c71585 0%, #8b0f5c 100%);
-      border-radius: 8px;
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+      inset: 0;
+      background: linear-gradient(160deg, #f0e6d8 0%, #e6d8c6 100%);
+      border-radius: 6px;
+      box-shadow: inset 0 0 40px rgba(30, 26, 22, 0.08);
     }
 
-    /* Боковые клапаны */
+    /* Body with side triangles */
     .envelope-body {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #d92690 0%, #a01368 100%);
-      border-radius: 8px;
+      inset: 0;
+      background: linear-gradient(160deg, #eee2d1 0%, #e0cfb9 100%);
+      border-radius: 6px;
       overflow: hidden;
     }
 
+    /* Top inner triangle (visible when flap opens) */
     .envelope-body::before {
       content: '';
       position: absolute;
       top: 0; left: 0;
-      width: 0;
-      height: 0;
-      border-top: 120px solid #b8177a;
-      border-right: 170px solid transparent;
-      border-left: 170px solid transparent;
-      transform: translateY(-1px);
+      width: 0; height: 0;
+      border-top: 130px solid #d9c6ad;
+      border-right: 190px solid transparent;
+      border-left: 190px solid transparent;
     }
 
+    /* Bottom triangle */
     .envelope-body::after {
       content: '';
       position: absolute;
-      top: 0; left: 0;
-      width: 0;
-      height: 0;
-      border-bottom: 130px solid #991363;
-      border-left: 170px solid transparent;
-      border-right: 170px solid transparent;
-      top: auto;
-      bottom: 0;
+      bottom: 0; left: 0;
+      width: 0; height: 0;
+      border-bottom: 140px solid #cbb499;
+      border-left: 190px solid transparent;
+      border-right: 190px solid transparent;
     }
 
-    /* Верхний клапан (открывающийся) */
+    /* Flap */
     .envelope-flap {
       position: absolute;
       top: 0; left: 0;
-      width: 0;
-      height: 0;
-      border-top: 130px solid #ff4d6d;
-      border-right: 170px solid transparent;
-      border-left: 170px solid transparent;
-      transform-origin: top;
-      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: 0; height: 0;
+      border-top: 140px solid #e3d2bb;
+      border-right: 190px solid transparent;
+      border-left: 190px solid transparent;
+      transform-origin: top center;
+      transition: transform 1s cubic-bezier(0.34, 1.2, 0.64, 1);
       z-index: 5;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      filter: drop-shadow(0 6px 10px rgba(30, 26, 22, 0.15));
     }
 
     .envelope.open .envelope-flap {
@@ -205,590 +345,864 @@
       z-index: 1;
     }
 
-    /* Сердечко на клапане */
-    .envelope-heart {
-      position: absolute;
-      top: 55px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 32px;
-      z-index: 6;
-      transition: all 0.5s;
-      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
-      animation: heartPulse 2s infinite;
-    }
-
-    .envelope.open .envelope-heart {
-      opacity: 0;
-      transform: translateX(-50%) scale(0);
-    }
-
-    @keyframes heartPulse {
-      0%, 100% { transform: translateX(-50%) scale(1); }
-      50% { transform: translateX(-50%) scale(1.15); }
-    }
-
-    /* Печать */
+    /* Wax seal */
     .envelope-seal {
       position: absolute;
-      top: 55px;
+      top: 52%;
       left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 60px;
+      transform: translate(-50%, -50%);
+      width: 68px;
+      height: 68px;
       border-radius: 50%;
-      background: radial-gradient(circle, #ff8fa3 0%, #c71585 70%);
-      border: 3px solid #fff;
+      background:
+        radial-gradient(circle at 35% 30%, #b56a7d 0%, #8f6472 45%, #5f3f4e 100%);
+      border: none;
       z-index: 7;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      transition: all 0.5s;
-      animation: sealGlow 3s infinite;
-    }
-
-    @keyframes sealGlow {
-      0%, 100% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 rgba(255, 143, 163, 0.7); }
-      50% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 143, 163, 1); }
+      box-shadow:
+        inset 0 -3px 8px rgba(0, 0, 0, 0.25),
+        inset 0 2px 4px rgba(255, 255, 255, 0.15),
+        0 6px 16px rgba(30, 26, 22, 0.28);
+      transition: all 0.6s var(--ease);
     }
 
     .envelope-seal::before {
-      content: '❤';
-      color: #fff;
-      font-size: 28px;
-      font-weight: bold;
+      /* tiny wax texture ring */
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 255, 255, 0.25);
+    }
+
+    .envelope-seal::after {
+      content: 'V';
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 30px;
+      color: rgba(253, 250, 246, 0.92);
+      line-height: 1;
+      padding-bottom: 3px;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
     }
 
     .envelope.open .envelope-seal {
       opacity: 0;
-      transform: translateX(-50%) scale(0.5) rotate(180deg);
+      transform: translate(-50%, -50%) scale(0.4) rotate(120deg);
     }
 
-    /* Подпись «Для Вероники» */
-    .envelope-label {
+    /* Address label — like handwritten on the front */
+    .envelope-address {
       position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #fff;
-      font-family: 'Georgia', serif;
-      font-size: 15px;
-      font-weight: 700;
-      font-style: italic;
+      top: 24px;
+      right: 26px;
       z-index: 6;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-      letter-spacing: 0.5px;
-      white-space: nowrap;
+      text-align: right;
+      line-height: 1.3;
     }
 
-    /* Подсказка «Кликни» */
+    .envelope-address .to {
+      display: block;
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+
+    .envelope-address .name {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 19px;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(30, 26, 22, 0.18);
+    }
+
+    /* Click hint below envelope */
     .click-hint {
-      position: absolute;
-      bottom: -50px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #ffb3c1;
-      font-size: 14px;
-      font-weight: 600;
-      animation: hintPulse 2s infinite;
-      white-space: nowrap;
-      font-family: 'Segoe UI', sans-serif;
+      margin-top: 44px;
+      color: var(--ink-3);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      transition: opacity 0.5s var(--ease);
+      text-align: center;
     }
 
-    @keyframes hintPulse {
-      0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
-      50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
-    }
+    .envelope-stage.open + .click-hint { opacity: 0; }
 
-    .envelope-stage.open .click-hint {
-      opacity: 0;
-    }
-
-    /* ---------- ПИСЬМО ---------- */
-    .letter-stage {
+    /* ============================================================
+       LETTER OVERLAY
+       ============================================================ */
+    .letter-overlay {
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+      inset: 0;
+      z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      box-sizing: border-box;
-      z-index: 100;
+      padding: 24px;
+      background: rgba(30, 26, 22, 0.42);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.6s;
+      transition: opacity 0.5s var(--ease);
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
-    .letter-stage.active {
+    .letter-overlay.active {
       opacity: 1;
       pointer-events: auto;
     }
 
+    /* Letter */
     .letter {
-      background: #fffaf4;
-      background-image:
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 28px,
-          rgba(255, 179, 193, 0.15) 28px,
-          rgba(255, 179, 193, 0.15) 29px
-        );
-      max-width: 540px;
-      width: 100%;
-      border-radius: 16px;
-      padding: 40px 34px 34px;
-      box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.6),
-        inset 0 0 60px rgba(255, 179, 193, 0.15);
-      border: 2px solid #ffc2d1;
       position: relative;
-      box-sizing: border-box;
-      transform: translateY(60px) scale(0.9) rotate(-2deg);
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      background: var(--letter);
+      border-radius: 4px;
+      padding: 56px 56px 40px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 50px 100px rgba(30, 26, 22, 0.28),
+        0 12px 30px rgba(30, 26, 22, 0.14);
+      transform: translateY(40px) scale(0.94) rotate(-1.5deg);
       opacity: 0;
-      transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-      max-height: 90vh;
+      transition:
+        transform 0.9s var(--ease-spring),
+        opacity 0.6s var(--ease);
+      transition-delay: 0.1s;
+      max-height: calc(100vh - 48px);
       overflow-y: auto;
+      will-change: transform, opacity;
     }
 
-    .letter-stage.active .letter {
+    .letter-overlay.active .letter {
       transform: translateY(0) scale(1) rotate(0deg);
       opacity: 1;
-      transition-delay: 0.2s;
     }
 
-    /* Декоративные уголки */
-    .letter::before,
-    .letter::after {
-      content: '💕';
-      position: absolute;
-      font-size: 24px;
-      opacity: 0.5;
-    }
-
+    /* subtle paper fibers */
     .letter::before {
-      top: 14px;
-      left: 18px;
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 4px;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(
+          135deg,
+          transparent 0,
+          transparent 3px,
+          rgba(143, 100, 114, 0.02) 3px,
+          rgba(143, 100, 114, 0.02) 4px
+        );
+      opacity: 0.9;
     }
 
+    /* Inner frame */
     .letter::after {
-      bottom: 14px;
-      right: 18px;
+      content: '';
+      position: absolute;
+      inset: 16px;
+      border: 1px solid rgba(30, 26, 22, 0.06);
+      border-radius: 2px;
+      pointer-events: none;
     }
 
-    .letter-header {
-      text-align: center;
-      margin-bottom: 24px;
-      padding-bottom: 18px;
-      border-bottom: 2px dashed #ffc2d1;
+    /* Letter header */
+    .letter-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 20px;
+      margin-bottom: 36px;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+      z-index: 1;
     }
 
-    .letter-emoji {
-      font-size: 42px;
-      display: block;
-      margin-bottom: 8px;
-      animation: heartPulse 2s infinite;
+    .letter-head .date {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--ink-3);
+      letter-spacing: 0.02em;
     }
 
-    .letter-title {
-      color: #c71585;
-      font-size: 22px;
-      font-weight: 700;
-      margin: 0;
-      font-family: 'Georgia', serif;
-      letter-spacing: 0.5px;
+    .letter-head .num {
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    /* Letter body text */
+    .letter-body {
+      position: relative;
+      z-index: 1;
+    }
+
+    .letter-salutation {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      margin: 0 0 28px;
+    }
+
+    .letter-salutation em {
+      font-style: italic;
+      color: var(--rose-deep);
     }
 
     .letter-text {
-      color: #4a2a3a;
-      font-size: 16px;
-      line-height: 1.8;
-      margin: 0 0 18px;
-      font-family: 'Georgia', serif;
-      text-align: left;
-      text-indent: 20px;
-    }
-
-    .letter-text:last-of-type {
-      margin-bottom: 24px;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: 17.5px;
+      line-height: 1.72;
+      color: var(--ink-2);
+      margin: 0 0 22px;
+      letter-spacing: -0.005em;
+      text-wrap: pretty;
     }
 
     .letter-text b {
-      color: #c71585;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--ink);
     }
 
-    .letter-signature {
-      text-align: right;
-      margin-top: 24px;
-      padding-top: 18px;
-      border-top: 1px dashed #ffc2d1;
-      color: #c71585;
-      font-family: 'Georgia', serif;
-      font-size: 17px;
-      font-weight: 700;
+    /* First letter drop cap */
+    .letter-text.lead::first-letter {
+      font-family: 'Instrument Serif', Georgia, serif;
       font-style: italic;
-      line-height: 1.5;
+      float: left;
+      font-size: 68px;
+      line-height: 0.85;
+      padding: 8px 12px 0 0;
+      color: var(--rose-deep);
+      font-weight: 400;
+    }
+
+    /* Signature */
+    .letter-signature {
+      margin-top: 40px;
+      padding-top: 26px;
+      border-top: 1px solid var(--line);
+      text-align: right;
+      position: relative;
+      z-index: 1;
     }
 
     .letter-signature .from {
       display: block;
-      font-size: 14px;
-      color: #8b0f5c;
-      opacity: 0.8;
-      margin-bottom: 4px;
-      font-weight: 600;
-      font-style: normal;
-      letter-spacing: 1px;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 8px;
     }
 
     .letter-signature .name {
-      font-size: 24px;
-      background: linear-gradient(135deg, #ff4d6d, #c71585);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: inline-block;
-      transform: rotate(-2deg);
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 32px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
     }
 
-    /* ---------- ФОТО В ПИСЬМЕ ---------- */
+    /* Photos — polaroids */
     .letter-photos {
       display: flex;
-      gap: 12px;
+      gap: 16px;
       justify-content: center;
-      margin: 20px 0 24px;
+      margin: 40px 0 8px;
       flex-wrap: wrap;
     }
 
-    .letter-photo {
-      width: 120px;
-      height: 120px;
-      border-radius: 12px;
-      object-fit: cover;
-      border: 4px solid #fff;
-      box-shadow: 0 8px 20px rgba(199, 21, 133, 0.3);
+    .polaroid {
+      position: relative;
+      padding: 10px 10px 34px;
+      background: var(--surface);
+      border-radius: 2px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 12px 28px rgba(30, 26, 22, 0.16),
+        0 3px 8px rgba(30, 26, 22, 0.06);
+      transition: transform 0.5s var(--ease);
       transform: rotate(-3deg);
-      transition: transform 0.3s;
     }
 
-    .letter-photo:nth-child(2) {
-      transform: rotate(3deg);
-    }
+    .polaroid:nth-child(2) { transform: rotate(2.5deg); }
+    .polaroid:nth-child(3) { transform: rotate(-1.5deg); }
 
-    .letter-photo:nth-child(3) {
-      transform: rotate(-2deg);
-    }
-
-    .letter-photo:hover {
-      transform: rotate(0deg) scale(1.08);
+    .polaroid:hover {
+      transform: rotate(0deg) translateY(-4px) scale(1.02);
       z-index: 5;
     }
 
-    /* ---------- КНОПКА ВНИЗУ ПИСЬМА ---------- */
+    .polaroid .frame {
+      position: relative;
+      width: 118px;
+      height: 118px;
+      background: linear-gradient(135deg, var(--rose-tint) 0%, var(--rose-soft) 55%, #cbb0b6 100%);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Monogram fallback */
+    .polaroid .frame::before {
+      content: 'V';
+      position: absolute;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 60px;
+      line-height: 1;
+      color: rgba(30, 26, 22, 0.14);
+      padding-bottom: 4px;
+      z-index: 0;
+    }
+
+    .polaroid .frame img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    .polaroid figcaption {
+      position: absolute;
+      left: 0; right: 0;
+      bottom: 8px;
+      text-align: center;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 12px;
+      color: var(--ink-3);
+      letter-spacing: 0.01em;
+    }
+
+    /* Letter actions */
     .letter-actions {
       display: flex;
       gap: 10px;
       justify-content: center;
       flex-wrap: wrap;
-      margin-top: 20px;
+      margin-top: 40px;
+      position: relative;
+      z-index: 1;
     }
 
     .letter-btn {
-      background: linear-gradient(135deg, #ff4d6d, #c71585);
-      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 28px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Inter', sans-serif;
+      font-size: 14.5px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
       border: none;
-      padding: 12px 26px;
-      border-radius: 50px;
-      font-size: 14px;
-      font-weight: 700;
-      font-family: 'Segoe UI', sans-serif;
-      cursor: pointer;
-      box-shadow: 0 8px 24px rgba(199, 21, 133, 0.4);
-      transition: all 0.25s;
       text-decoration: none;
-      display: inline-block;
+      cursor: pointer;
+      transition: all 0.35s var(--ease);
     }
 
     .letter-btn:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 12px 32px rgba(199, 21, 133, 0.6);
+      background: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
     }
 
+    .letter-btn .arrow {
+      display: inline-block;
+      transition: transform 0.4s var(--ease);
+      font-size: 15px;
+    }
+
+    .letter-btn:hover .arrow { transform: translateX(-4px); }
+
     .letter-btn.secondary {
-      background: #fff;
-      color: #c71585;
-      border: 2px solid #ffc2d1;
-      box-shadow: 0 6px 16px rgba(199, 21, 133, 0.15);
+      background: transparent;
+      color: var(--ink-2);
+      border: 1px solid var(--line-2);
+      padding: 16px 26px;
     }
 
     .letter-btn.secondary:hover {
-      background: #fff5f8;
-      box-shadow: 0 8px 20px rgba(199, 21, 133, 0.25);
+      background: var(--surface-2);
+      color: var(--ink);
+      border-color: var(--ink-3);
+      box-shadow: 0 8px 20px rgba(30, 26, 22, 0.08);
     }
 
-    /* ---------- АНИМАЦИЯ ПИСЬМА ПРИ ОТКРЫТИИ ---------- */
-    .letter-flying {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.2) rotate(-10deg);
-      background: #fffaf4;
-      border-radius: 12px;
-      padding: 20px;
-      z-index: 50;
-      opacity: 0;
-      pointer-events: none;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-      width: 300px;
-      height: 200px;
-      transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Close button (X in corner) */
+    .letter-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink-3);
+      border: 1px solid transparent;
+      transition: all 0.3s var(--ease);
+      z-index: 10;
+      font-size: 14px;
     }
 
-    .letter-flying.active {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1.1) rotate(2deg);
-      transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    .letter-close:hover {
+      background: var(--surface-2);
+      color: var(--ink);
+      border-color: var(--line);
+      transform: rotate(90deg);
     }
 
-    /* ---------- АДАПТИВ ---------- */
-    @media (max-width: 480px) {
-      .header h1 { font-size: 20px; }
-      .header p { font-size: 12px; }
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .footer {
+      padding: 40px 32px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      max-width: 1240px;
+      margin: 40px auto 0;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 640px) {
+      main { padding: 120px 20px 60px; }
+      h1 { font-size: clamp(32px, 9vw, 46px); }
+
+      .envelope-zone { margin-top: 56px; min-height: 340px; }
       .envelope-stage {
-        width: 280px;
-        height: 200px;
+        width: 300px;
+        height: 210px;
       }
+
+      /* Scale down the CSS triangle dimensions */
       .envelope-flap {
-        border-top-width: 108px;
-        border-right-width: 140px;
-        border-left-width: 140px;
+        border-top-width: 112px;
+        border-right-width: 150px;
+        border-left-width: 150px;
       }
       .envelope-body::before {
-        border-top-width: 100px;
-        border-right-width: 140px;
-        border-left-width: 140px;
+        border-top-width: 104px;
+        border-right-width: 150px;
+        border-left-width: 150px;
       }
       .envelope-body::after {
-        border-bottom-width: 108px;
-        border-left-width: 140px;
-        border-right-width: 140px;
+        border-bottom-width: 112px;
+        border-left-width: 150px;
+        border-right-width: 150px;
       }
-      .envelope-heart { font-size: 26px; top: 46px; }
-      .envelope-seal { width: 48px; height: 48px; top: 46px; }
-      .envelope-seal::before { font-size: 22px; }
-      .envelope-label { font-size: 13px; bottom: 14px; }
-      .letter {
-        padding: 30px 22px 24px;
-        border-radius: 12px;
+
+      .envelope-seal { width: 56px; height: 56px; }
+      .envelope-seal::after { font-size: 24px; }
+
+      .envelope-address .name { font-size: 16px; }
+      .envelope-address .to { font-size: 9px; }
+
+      .click-hint { margin-top: 32px; font-size: 10px; letter-spacing: 0.18em; }
+
+      /* Letter */
+      .letter { padding: 40px 26px 32px; border-radius: 3px; }
+      .letter-head { margin-bottom: 28px; padding-bottom: 16px; }
+      .letter-head .num { font-size: 9.5px; letter-spacing: 0.16em; }
+      .letter-head .date { font-size: 12.5px; }
+
+      .letter-salutation { font-size: 24px; margin-bottom: 22px; }
+      .letter-text { font-size: 16px; line-height: 1.68; margin-bottom: 18px; }
+      .letter-text.lead::first-letter { font-size: 56px; padding: 6px 10px 0 0; }
+
+      .letter-signature { margin-top: 32px; padding-top: 22px; }
+      .letter-signature .name { font-size: 26px; }
+
+      .polaroid .frame { width: 88px; height: 88px; }
+      .polaroid .frame::before { font-size: 44px; }
+      .polaroid { padding: 8px 8px 26px; }
+      .polaroid figcaption { font-size: 11px; bottom: 6px; }
+      .letter-photos { gap: 12px; margin: 32px 0 8px; }
+
+      .letter-actions { margin-top: 32px; gap: 8px; }
+      .letter-btn { padding: 14px 22px; font-size: 13.5px; }
+      .letter-btn.secondary { padding: 14px 20px; }
+
+      .letter-close { top: 14px; right: 14px; width: 32px; height: 32px; }
+
+      .topbar { padding: 16px 20px; font-size: 11.5px; }
+      .brand-label { display: none; }
+      .brand-mark { width: 26px; height: 26px; font-size: 15px; }
+      .meta-sep { display: none; }
+      .topbar-meta { gap: 10px; font-size: 11.5px; }
+
+      .footer {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+        font-size: 10.5px;
+        padding: 32px 20px;
       }
-      .letter-title { font-size: 18px; }
-      .letter-text { font-size: 15px; line-height: 1.7; }
-      .letter-emoji { font-size: 36px; }
-      .letter-photo {
-        width: 90px;
-        height: 90px;
-      }
-      .letter-signature .name { font-size: 20px; }
     }
 
-    /* Плавное появление body */
-    body {
-      animation: bodyFadeIn 1.2s ease;
-    }
-
-    @keyframes bodyFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <!-- ЗВЁЗДЫ -->
-  <div class="stars" id="starsContainer"></div>
+  <div class="grain"></div>
 
-  <!-- СЕРДЕЧКИ -->
-  <div id="hearts-container"></div>
-
-  <!-- ЗАГОЛОВОК -->
-  <div class="header">
-    <h1>💌 Для тебя кое-что есть</h1>
-    <p>Нажми на конверт, чтобы открыть</p>
-  </div>
-
-  <!-- КОНВЕРТ -->
-  <div class="envelope-stage" id="envelopeStage" onclick="openEnvelope()">
-    <div class="envelope" id="envelope">
-      <div class="envelope-back"></div>
-      <div class="envelope-body"></div>
-      <div class="envelope-flap"></div>
-      <div class="envelope-heart">💖</div>
-      <div class="envelope-seal"></div>
-      <div class="envelope-label">Для Вероники ❤️</div>
+  <!-- ============================================================
+       TOP BAR
+       ============================================================ -->
+  <header class="topbar">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">V</span>
+      <span class="brand-label">Для Вероники</span>
+    </a>
+    <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+      <span class="meta-item">
+        <span class="icon" id="timeIcon">☀️</span>
+        <span id="timeText">--:--</span>
+      </span>
+      <span class="meta-sep">·</span>
+      <span class="meta-item">
+        <span class="icon" id="weatherIcon">🌤️</span>
+        <span id="weatherText">...</span>
+      </span>
     </div>
-    <div class="click-hint">👆 Нажми, чтобы открыть</div>
-  </div>
+  </header>
 
-  <!-- ПИСЬМО -->
-  <div class="letter-stage" id="letterStage">
-    <div class="letter">
+  <main>
 
-      <div class="letter-header">
-        <span class="letter-emoji">💖</span>
-        <h2 class="letter-title">Моей любимой Веронике</h2>
+    <!-- ============================================================
+         HERO
+         ============================================================ -->
+    <section class="hero">
+      <span class="eyebrow">04 · Письмо</span>
+      <h1>Для тебя <em>кое-что есть</em></h1>
+      <p class="hero-sub">
+        Нажми на конверт — внутри письмо, которое я хочу, чтобы ты прочитала.
+      </p>
+    </section>
+
+    <!-- ============================================================
+         ENVELOPE
+         ============================================================ -->
+    <section class="envelope-zone">
+      <div class="envelope-stage" id="envelopeStage" tabindex="0" role="button" aria-label="Открыть письмо">
+        <div class="envelope" id="envelope">
+          <div class="envelope-back"></div>
+          <div class="envelope-body"></div>
+          <div class="envelope-flap"></div>
+
+          <div class="envelope-address">
+            <span class="to">Кому</span>
+            <span class="name">Веронике</span>
+          </div>
+
+          <div class="envelope-seal"></div>
+        </div>
       </div>
+      <div class="click-hint" id="clickHint">Нажми на конверт</div>
+    </section>
 
-      <!-- ⚠️ ЗАМЕНИ ТЕКСТ НИЖЕ НА СВОЁ ПРИЗНАНИЕ -->
-      <p class="letter-text">
-        <b>Вероничка</b>, я долго думал, как передать то, что чувствую, и понял —
-        словами это сложно. Но я попробую.
-      </p>
+  </main>
 
-      <p class="letter-text">
-        Ты — самое лучшее, что случилось со мной. Каждый день с тобой — как маленький праздник,
-        даже если мы просто молчим рядом. Ты умеешь делать обычное волшебным:
-        одним взглядом, одной улыбкой, одним «привет».
-      </p>
+  <!-- ============================================================
+       LETTER OVERLAY
+       ============================================================ -->
+  <div class="letter-overlay" id="letterOverlay">
+    <article class="letter" id="letter">
 
-      <p class="letter-text">
-        Я люблю тебя за твою нежность, за твой характер, за твоё сердце.
-        За то, что рядом с тобой я становлюсь лучше. За то, что ты есть.
-      </p>
+      <button class="letter-close" onclick="closeLetter()" aria-label="Закрыть письмо">✕</button>
 
-      <p class="letter-text">
-        Спасибо, что ты выбрала меня. Я постараюсь быть тем, кто тебя никогда не подведёт. 💕
-      </p>
+      <header class="letter-head">
+        <span class="date" id="letterDate">— сегодня —</span>
+        <span class="num">№ 01 · от сердца</span>
+      </header>
+
+      <div class="letter-body">
+
+        <h2 class="letter-salutation">
+          Моей любимой <em>Веронике</em>,
+        </h2>
+
+        <!-- ⚠️ ЗАМЕНИ ТЕКСТ НИЖЕ НА СВОЁ ПРИЗНАНИЕ -->
+        <p class="letter-text lead">
+          я долго думал, как передать то, что чувствую, и понял — словами это сложно.
+          Но я попробую.
+        </p>
+
+        <p class="letter-text">
+          Ты — самое лучшее, что случилось со мной. Каждый день с тобой — как маленький
+          праздник, даже если мы просто молчим рядом. Ты умеешь делать обычное волшебным:
+          одним взглядом, одной улыбкой, одним <b>«привет»</b>.
+        </p>
+
+        <p class="letter-text">
+          Я люблю тебя за твою нежность, за твой характер, за твоё сердце.
+          За то, что рядом с тобой я становлюсь лучше. За то, что ты есть.
+        </p>
+
+        <p class="letter-text">
+          Спасибо, что ты выбрала меня. Я постараюсь быть тем, кто тебя никогда не подведёт.
+        </p>
+
+      </div>
 
       <!-- ⚠️ ЗАМЕНИ ФОТО НА СВОИ -->
       <div class="letter-photos">
-        <img class="letter-photo" src="photos/photo1.jpg" alt="Мы">
-        <img class="letter-photo" src="photos/photo2.jpg" alt="Мы">
-        <img class="letter-photo" src="photos/photo3.jpg" alt="Мы">
+        <figure class="polaroid">
+          <div class="frame">
+            <img src="photos/photo1.jpg" alt="" onerror="this.remove()" loading="lazy" decoding="async">
+          </div>
+          <figcaption>мы</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <div class="frame">
+            <img src="photos/photo2.jpg" alt="" onerror="this.remove()" loading="lazy" decoding="async">
+          </div>
+          <figcaption>твой смех</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <div class="frame">
+            <img src="photos/photo3.jpg" alt="" onerror="this.remove()" loading="lazy" decoding="async">
+          </div>
+          <figcaption>мгновение</figcaption>
+        </figure>
       </div>
 
       <div class="letter-signature">
         <span class="from">С любовью,</span>
         <!-- ⚠️ ЗАМЕНИ НА СВОЁ ИМЯ -->
-        <span class="name">твой Толянчик ❤️</span>
+        <span class="name">твой Толянчик</span>
       </div>
 
       <div class="letter-actions">
-        <a href="index.html" class="letter-btn">← К приглашению</a>
-        <button class="letter-btn secondary" onclick="closeLetter()">Закрыть письмо</button>
+        <a href="index.html" class="letter-btn">
+          <span class="arrow">←</span>
+          <span>К приглашению</span>
+        </a>
+        <button class="letter-btn secondary" onclick="closeLetter()">
+          Закрыть письмо
+        </button>
       </div>
 
-    </div>
+    </article>
   </div>
 
-  <script>
-    // ============================================================
-    // ⚠️ Настройки
-    // ============================================================
+  <footer class="footer">
+    <span>© 2026 · Вселенная для Вероники</span>
+    <span>Сделано с любовью</span>
+  </footer>
 
+  <!-- ============================================================
+       TIME + WEATHER
+       ============================================================ -->
+  <script>
+    function updateTimeWidget() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('timeText').textContent = `${hh}:${mm}`;
+
+      const h = now.getHours();
+      let icon = '🌙';
+      if      (h >= 5  && h < 12) icon = '🌅';
+      else if (h >= 12 && h < 18) icon = '☀️';
+      else if (h >= 18 && h < 23) icon = '🌆';
+      document.getElementById('timeIcon').textContent = icon;
+    }
+    updateTimeWidget();
+    setInterval(updateTimeWidget, 1000);
+
+    const WEATHER_CITY = { name: 'Улан-Удэ' };
+
+    function pickIconFromDesc(desc) {
+      desc = (desc || '').toLowerCase();
+      if (desc.includes('sun') || desc.includes('clear')) return '☀️';
+      if (desc.includes('partly') || desc.includes('mostly sun')) return '🌤️';
+      if (desc.includes('cloud') || desc.includes('overcast')) return '☁️';
+      if (desc.includes('rain') || desc.includes('drizzle')) return '🌧️';
+      if (desc.includes('snow') || desc.includes('sleet')) return '❄️';
+      if (desc.includes('thunder') || desc.includes('storm')) return '⛈️';
+      if (desc.includes('fog') || desc.includes('mist')) return '🌫️';
+      return '🌤️';
+    }
+
+    function seasonalWeather() {
+      const m = new Date().getMonth();
+      let icon, temp;
+      if (m === 11 || m === 0 || m === 1) { icon = '❄️'; temp = -18; }
+      else if (m === 2 || m === 3) { icon = '🌨️'; temp = -5; }
+      else if (m === 4) { icon = '🌱'; temp = 8; }
+      else if (m >= 5 && m <= 7) { icon = '☀️'; temp = 24; }
+      else if (m === 8) { icon = '🍂'; temp = 12; }
+      else { icon = '🌧️'; temp = 2; }
+      return { icon, temp };
+    }
+
+    async function loadWeather() {
+      const iconEl = document.getElementById('weatherIcon');
+      const textEl = document.getElementById('weatherText');
+      iconEl.textContent = '⛅';
+      textEl.textContent = '...';
+
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 5000);
+        const res = await fetch(
+          `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+          { signal: ctrl.signal, cache: 'no-store' }
+        );
+        clearTimeout(timer);
+
+        if (res.ok) {
+          const data = await res.json();
+          const cur = data.current_condition && data.current_condition[0];
+          if (cur && cur.temp_C !== undefined) {
+            const temp = parseInt(cur.temp_C, 10);
+            const desc = cur.weatherDesc && cur.weatherDesc[0] ? cur.weatherDesc[0].value : '';
+            iconEl.textContent = pickIconFromDesc(desc);
+            textEl.textContent = `${temp > 0 ? '+' : ''}${temp}°C`;
+            return;
+          }
+        }
+      } catch (e) {}
+
+      const w = seasonalWeather();
+      iconEl.textContent = w.icon;
+      textEl.textContent = `${w.temp > 0 ? '+' : ''}${w.temp}°C`;
+    }
+
+    loadWeather();
+    setInterval(loadWeather, 30 * 60 * 1000);
+    document.getElementById('infoWidget').addEventListener('click', loadWeather);
+  </script>
+
+  <!-- ============================================================
+       ENVELOPE + LETTER LOGIC
+       ============================================================ -->
+  <script>
     const envelopeStage = document.getElementById('envelopeStage');
-    const envelope = document.getElementById('envelope');
-    const letterStage = document.getElementById('letterStage');
+    const envelope      = document.getElementById('envelope');
+    const letterOverlay = document.getElementById('letterOverlay');
+    const letterDate    = document.getElementById('letterDate');
 
     let isOpen = false;
 
-    // ---------- ОТКРЫТИЕ КОНВЕРТА ----------
+    // Nice today's date in letter header
+    (function initDate() {
+      const today = new Date();
+      const formatted = today.toLocaleDateString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      letterDate.textContent = formatted;
+    })();
+
+    // Open
     function openEnvelope() {
       if (isOpen) return;
       isOpen = true;
 
-      // Открываем клапан
       envelope.classList.add('open');
       envelopeStage.classList.add('open');
 
-      // Салют из сердечек
-      const rect = envelopeStage.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      for (let i = 0; i < 25; i++) {
-        setTimeout(() => spawnHeartAt(cx, cy), i * 40);
-      }
-
-      // Через секунду — скрываем конверт и показываем письмо
+      // Delay before showing letter so flap animation reads
       setTimeout(() => {
         envelopeStage.classList.add('hidden');
-        letterStage.classList.add('active');
-      }, 1200);
+        letterOverlay.classList.add('active');
+        // lock body scroll
+        document.body.style.overflow = 'hidden';
+      }, 950);
     }
 
-    // ---------- ЗАКРЫТИЕ ПИСЬМА ----------
+    // Close
     function closeLetter() {
-      letterStage.classList.remove('active');
-      isOpen = false;
+      letterOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+
       setTimeout(() => {
         envelopeStage.classList.remove('hidden', 'open');
         envelope.classList.remove('open');
-      }, 400);
+        isOpen = false;
+      }, 500);
     }
 
-    // ---------- САЛЮТ ИЗ СЕРДЕЧЕК ----------
-    function spawnHeartAt(x, y) {
-      const heart = document.createElement('div');
-      heart.textContent = ['❤️', '💖', '💗', '💕', '✨', '💝', '🌸'][Math.floor(Math.random() * 7)];
-      heart.style.cssText = `
-        position: fixed; left: ${x}px; top: ${y}px;
-        font-size: ${20 + Math.random() * 24}px;
-        pointer-events: none; z-index: 2000;
-        transition: all ${0.9 + Math.random() * 0.7}s cubic-bezier(0.34, 1.56, 0.64, 1);
-      `;
-      document.body.appendChild(heart);
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 150 + Math.random() * 250;
-      requestAnimationFrame(() => {
-        heart.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${Math.random() * 360}deg) scale(0.3)`;
-        heart.style.opacity = '0';
-      });
-      setTimeout(() => heart.remove(), 1800);
-    }
-
-    // ---------- ДОЖДЬ ИЗ СЕРДЕЧЕК НА ФОНЕ ----------
-    const container = document.getElementById('hearts-container');
-    function createHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
-      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸', '✨'];
-      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
-      heart.style.left = Math.random() * 100 + "vw";
-      heart.style.animationDuration = Math.random() * 4 + 3 + "s";
-      heart.style.fontSize = Math.random() * 15 + 14 + "px";
-      container.appendChild(heart);
-      setTimeout(() => { heart.remove(); }, 7000);
-    }
-    setInterval(createHeart, 500);
-
-    // ---------- ЗВЁЗДЫ НА ФОНЕ ----------
-    const starsContainer = document.getElementById('starsContainer');
-    function createStars() {
-      for (let i = 0; i < 60; i++) {
-        const star = document.createElement('div');
-        star.classList.add('star');
-        star.style.left = Math.random() * 100 + 'vw';
-        star.style.top = Math.random() * 100 + 'vh';
-        star.style.animationDelay = Math.random() * 3 + 's';
-        star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-        star.style.width = star.style.height = (Math.random() * 2 + 1.5) + 'px';
-        starsContainer.appendChild(star);
+    // Events
+    envelopeStage.addEventListener('click', openEnvelope);
+    envelopeStage.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openEnvelope();
       }
-    }
-    createStars();
+    });
 
-    // ---------- ESC ЗАКРЫВАЕТ ПИСЬМО ----------
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && isOpen) closeLetter();
     });
 
-    // ---------- КЛИК ПО ФОНУ ПИСЬМА ЗАКРЫВАЕТ ----------
-    letterStage.addEventListener('click', (e) => {
-      if (e.target === letterStage) closeLetter();
+    letterOverlay.addEventListener('click', (e) => {
+      if (e.target === letterOverlay) closeLetter();
     });
   </script>
+
+  <!-- ============================================================
+       Service Worker
+       ============================================================ -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => console.log('✅ Service Worker зарегистрирован'))
+          .catch((err) => console.log('❌ Ошибка SW:', err));
+      });
+    }
+  </script>
+
 </body>
 </html>
