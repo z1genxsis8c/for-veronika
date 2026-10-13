@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Аукцион · Лот №1 · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
+        --sand: #cfb8a3;
+        --gold: #b89968;
+        --gold-deep: #8a6f4d;
+        --night: #1a1613;
+        --night-2: #2b2620;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+      }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
+
+      /* TOPBAR */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.72);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+      }
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      /* LAYOUT */
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
+
+      /* HERO */
+      .hero {
+        padding: 20px 0 40px;
+        text-align: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+      }
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 72px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+        max-width: 16ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 48ch;
+        font-weight: 400;
+      }
+
+      /* AUCTION CATALOG */
+      .catalog {
+        position: relative;
+        margin-top: 72px;
+        padding: 48px 56px 48px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 3px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.12),
+          0 8px 20px rgba(30, 26, 22, 0.06);
+        isolation: isolate;
+      }
+
+      .catalog::before {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(30, 26, 22, 0.1);
+        border-radius: 2px;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .catalog::after {
+        content: "";
+        position: absolute;
+        inset: 20px;
+        border: 1px solid rgba(143, 100, 114, 0.16);
+        border-radius: 2px;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* House header */
+      .house-head {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 22px;
+        margin-bottom: 36px;
+        border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .house-brand {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .house-mark {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 26px;
+        line-height: 1;
+        letter-spacing: 0.02em;
+        color: var(--ink);
+        margin: 0;
+      }
+      .house-mark em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .house-sub {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      .house-meta {
+        text-align: right;
+      }
+      .house-meta .label {
+        display: block;
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+        margin-bottom: 4px;
+      }
+      .house-meta .value {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink);
+        letter-spacing: 0.06em;
+      }
+
+      /* Lot */
+      .lot {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 56px;
+        align-items: start;
+        position: relative;
+        z-index: 2;
+        margin-bottom: 48px;
+      }
+
+      .lot-image {
+        position: relative;
+        padding: 24px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        box-shadow: inset 0 0 40px rgba(30, 26, 22, 0.04);
+      }
+      .lot-image::before {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: 1px solid rgba(30, 26, 22, 0.14);
+        pointer-events: none;
+      }
+      .lot-photo {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        background: linear-gradient(
+          135deg,
+          var(--rose-tint) 0%,
+          var(--rose-soft) 55%,
+          #cbb0b6 100%
+        );
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 1px;
+      }
+      .lot-photo::before {
+        content: "V";
+        position: absolute;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: clamp(140px, 20vw, 220px);
+        line-height: 1;
+        color: rgba(30, 26, 22, 0.13);
+        padding-bottom: 8px;
+        z-index: 0;
+      }
+      .lot-photo img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        filter: saturate(0.92);
+      }
+      .lot-caption {
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        bottom: 12px;
+        text-align: center;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 12px;
+        color: var(--ink-3);
+        letter-spacing: 0.01em;
+        z-index: 3;
+      }
+
+      .lot-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .lot-number {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        color: var(--rose-deep);
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 12px;
+      }
+
+      .lot-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(32px, 4.4vw, 52px);
+        line-height: 1.02;
+        letter-spacing: -0.025em;
+        color: var(--ink);
+        margin: 0 0 8px;
+      }
+      .lot-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .lot-subtitle {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 15px;
+        color: var(--ink-3);
+        letter-spacing: -0.005em;
+        margin: 0 0 28px;
+      }
+
+      .lot-details {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 32px;
+      }
+      .lot-row {
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        gap: 20px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
+        align-items: baseline;
+      }
+      .lot-row:first-child {
+        border-top: 1px solid var(--line);
+      }
+      .lot-row .key {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .lot-row .val {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 17px;
+        line-height: 1.4;
+        letter-spacing: -0.005em;
+        color: var(--ink);
+      }
+      .lot-row .val em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .lot-estimate {
+        padding: 22px 24px;
+        background: linear-gradient(
+          135deg,
+          var(--rose-tint) 0%,
+          var(--surface-2) 100%
+        );
+        border: 1px solid rgba(143, 100, 114, 0.2);
+        border-left: 2px solid var(--rose-deep);
+        border-radius: 2px;
+        margin-bottom: 24px;
+      }
+      .lot-estimate .est-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        display: block;
+        margin-bottom: 8px;
+      }
+      .lot-estimate .est-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-style: italic;
+        font-size: clamp(26px, 3vw, 34px);
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+      }
+
+      .lot-provenance {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .prov-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .prov-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .prov-list li {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 16px;
+        line-height: 1.7;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+        padding-left: 22px;
+        position: relative;
+      }
+      .prov-list li::before {
+        content: "·";
+        position: absolute;
+        left: 8px;
+        color: var(--rose-deep);
+        font-size: 20px;
+        line-height: 1.2;
+      }
+      .prov-list li em {
+        font-style: italic;
+        color: var(--ink);
+      }
+
+      /* Footnotes */
+      .lot-notes {
+        position: relative;
+        z-index: 2;
+        padding-top: 36px;
+        border-top: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+      .note-block {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .note-block .nb-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
+      .note-block .nb-label .num {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        color: var(--rose-deep);
+        letter-spacing: 0.02em;
+        text-transform: none;
+      }
+      .note-block p {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 15px;
+        line-height: 1.65;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+        margin: 0;
+      }
+      .note-block p em {
+        font-style: italic;
+        color: var(--ink);
+      }
+
+      /* ============================================================
+         SIGNATURE BLOCK — переделано, чтобы печать не перекрывала текст
+         ============================================================ */
+      .catalog-sign {
+        position: relative;
+        z-index: 2;
+        padding-top: 32px;
+        border-top: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 40px;
+        align-items: center;
+      }
+
+      .sign-left {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+      }
+      .sign-left .label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .sign-left .name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 28px;
+        line-height: 1;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        padding-bottom: 4px;
+      }
+      .sign-left .role {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 13px;
+        color: var(--ink-3);
+      }
+
+      /* Правая группа: цена + печать рядом */
+      .sign-right-group {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        flex-shrink: 0;
+      }
+
+      .sign-right {
+        text-align: right;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+        line-height: 1.7;
+        white-space: nowrap;
+      }
+      .sign-right .price {
+        display: block;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 22px;
+        letter-spacing: -0.01em;
+        text-transform: none;
+        color: var(--rose-deep);
+        margin-top: 8px;
+      }
+
+      /* Wax seal — теперь в потоке, а не absolute */
+      .wax-seal {
+        position: relative;
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 35% 30%,
+          #b56a7d 0%,
+          #8f6472 45%,
+          #5f3f4e 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          inset 0 -4px 12px rgba(0, 0, 0, 0.3),
+          inset 0 3px 8px rgba(255, 255, 255, 0.15),
+          0 10px 24px rgba(30, 26, 22, 0.25);
+        transform: rotate(-8deg);
+        flex-shrink: 0;
+      }
+      .wax-seal::before {
+        content: "";
+        position: absolute;
+        inset: 9px;
+        border-radius: 50%;
+        border: 1px dashed rgba(255, 255, 255, 0.28);
+      }
+      .wax-seal-text {
+        text-align: center;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        color: rgba(253, 250, 246, 0.95);
+        line-height: 1.15;
+        padding: 0 10px;
+        font-size: 10px;
+      }
+      .wax-seal-text .big {
+        display: block;
+        font-size: 20px;
+        padding-bottom: 2px;
+        margin-bottom: 2px;
+      }
+
+      /* NAV */
+      .nav-wrap {
+        margin-top: 96px;
+        padding-top: 40px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 32px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .back-link:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
+      }
+      .back-link .arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 15px;
+      }
+      .back-link:hover .arrow {
+        transform: translateX(-5px);
+      }
+      .nav-link-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 28px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .nav-link-secondary:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+      .nav-link-secondary .icon {
+        font-size: 14px;
+        filter: saturate(0.75);
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .nav-link-secondary:hover .icon {
+        transform: scale(1.15);
+      }
+
+      /* FOOTER */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 900px) {
+        .lot {
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        .lot-notes {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+        .catalog-sign {
+          grid-template-columns: 1fr;
+          gap: 28px;
+          align-items: flex-start;
+        }
+        .sign-right-group {
+          justify-content: flex-start;
+          flex-wrap: wrap;
+          gap: 20px;
+        }
+        .sign-right {
+          text-align: left;
+        }
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(32px, 9vw, 46px);
+        }
+        .catalog {
+          padding: 28px 22px 28px;
+          margin-top: 56px;
+        }
+        .house-mark {
+          font-size: 22px;
+        }
+        .house-sub {
+          font-size: 9px;
+          letter-spacing: 0.2em;
+        }
+        .house-meta .value {
+          font-size: 12px;
+        }
+        .lot-title {
+          font-size: 28px;
+        }
+        .lot-subtitle {
+          font-size: 14px;
+          margin-bottom: 22px;
+        }
+        .lot-row {
+          grid-template-columns: 110px 1fr;
+          gap: 14px;
+          padding: 12px 0;
+        }
+        .lot-row .val {
+          font-size: 15.5px;
+        }
+        .lot-estimate {
+          padding: 18px 20px;
+        }
+        .lot-estimate .est-value {
+          font-size: 24px;
+        }
+        .prov-list li {
+          font-size: 15px;
+        }
+        .note-block p {
+          font-size: 14.5px;
+        }
+        .sign-left .name {
+          font-size: 24px;
+        }
+        .sign-right .price {
+          font-size: 19px;
+        }
+        .wax-seal {
+          width: 80px;
+          height: 80px;
+        }
+        .wax-seal-text {
+          font-size: 9px;
+          padding: 0 6px;
+        }
+        .wax-seal-text .big {
+          font-size: 17px;
+        }
+        .nav-wrap {
+          margin-top: 72px;
+          padding-top: 32px;
+          gap: 10px;
+        }
+        .back-link,
+        .nav-link-secondary {
+          padding: 16px 24px;
+          font-size: 13.5px;
+        }
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item"
+          ><span class="icon" id="timeIcon">☀️</span
+          ><span id="timeText">--:--</span></span
+        >
+        <span class="meta-sep">·</span>
+        <span class="meta-item"
+          ><span class="icon" id="weatherIcon">🌤️</span
+          ><span id="weatherText">...</span></span
+        >
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="eyebrow">26 · Аукцион</span>
+        <h1>Лот <em>№ 1</em> · Вероника</h1>
+        <p class="hero-sub">
+          Единственный экземпляр. Поступил из личной коллекции. Происхождение —
+          судьба. Оценочная стоимость — бесценно.
+        </p>
+      </section>
+
+      <article class="catalog">
+        <header class="house-head">
+          <div class="house-brand">
+            <h2 class="house-mark">Дом <em>Аукционов</em></h2>
+            <span class="house-sub">Fine Hearts · Since 2025</span>
+          </div>
+          <div class="house-meta">
+            <span class="label">Каталог · Том I</span>
+            <span class="value">ЛОТ № 001 / 001</span>
+          </div>
+        </header>
+
+        <div class="lot">
+          <div class="lot-image">
+            <div class="lot-photo">
+              <img
+                src="photos/photo1.jpg"
+                alt=""
+                onerror="this.remove()"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <p class="lot-caption">Вероника · ок. 2025, Улан-Удэ</p>
+          </div>
+
+          <div class="lot-info">
+            <span class="lot-number">Лот · 001</span>
+            <h3 class="lot-title">Жукова <em>Вероника</em> Юрьевна</h3>
+            <p class="lot-subtitle">
+              Редчайший экземпляр. Единственная в своём роде.
+            </p>
+
+            <div class="lot-details">
+              <div class="lot-row">
+                <span class="key">Состояние</span>
+                <span class="val"
+                  >Идеальное, <em>в оригинальной упаковке</em></span
+                >
+              </div>
+              <div class="lot-row">
+                <span class="key">Провенанс</span>
+                <span class="val">Единственная в своём роде</span>
+              </div>
+              <div class="lot-row">
+                <span class="key">Происхождение</span>
+                <span class="val"><em>Судьба</em> · 14 апреля 2007</span>
+              </div>
+              <div class="lot-row">
+                <span class="key">Материалы</span>
+                <span class="val">Нежность, смех, любовь к котикам</span>
+              </div>
+              <div class="lot-row">
+                <span class="key">Подпись</span>
+                <span class="val"
+                  >Овен, огонь, <em>все права защищены</em></span
+                >
+              </div>
+            </div>
+
+            <div class="lot-estimate">
+              <span class="est-label">Оценочная стоимость</span>
+              <span class="est-value">Бесценно</span>
+            </div>
+
+            <div class="lot-provenance">
+              <span class="prov-label">Провенанс · История</span>
+              <ul class="prov-list">
+                <li><em>2007</em> — изготовлен в единственном экземпляре</li>
+                <li><em>2025</em> — обнаружен на выставке будней</li>
+                <li><em>2026</em> — приобретён за всю мою жизнь</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="lot-notes">
+          <div class="note-block">
+            <span class="nb-label"
+              ><span class="num">i</span> Примечание куратора</span
+            >
+            <p>
+              Данный лот был заявлен в аукционном доме 9 сентября 2025 года в
+              13:09 по местному времени. Покупатель был в зале,
+              <em>сделал единственную ставку</em> — и выиграл.
+            </p>
+          </div>
+
+          <div class="note-block">
+            <span class="nb-label"
+              ><span class="num">ii</span> Заключение эксперта</span
+            >
+            <p>
+              Произведение обладает высокой художественной ценностью. Является
+              <em>объектом исключительной редкости</em>. Рекомендуется хранить в
+              тепле, обнимать ежедневно, влюбляться всё сильнее.
+            </p>
+          </div>
+
+          <div class="note-block">
+            <span class="nb-label"
+              ><span class="num">iii</span> Условия продажи</span
+            >
+            <p>
+              Лот не подлежит перепродаже. Возврат невозможен — и не нужен.
+              <em>Владелец не заинтересован в торге</em>. Найден счастливый
+              покупатель на всю жизнь.
+            </p>
+          </div>
+
+          <div class="note-block">
+            <span class="nb-label"
+              ><span class="num">iv</span> Финальная ставка</span
+            >
+            <p>
+              Победителем аукциона стал один конкретный Анатолий, предложивший
+              <em>всё, что у него есть</em> — и своё сердце в придачу.
+            </p>
+          </div>
+        </div>
+
+        <!-- Подписи + печать в потоке, не поверх текста -->
+        <div class="catalog-sign">
+          <div class="sign-left">
+            <span class="label">Подписано куратором</span>
+            <span class="name">Анатолий</span>
+            <span class="role">Личный покупатель лота, навсегда</span>
+          </div>
+
+          <div class="sign-right-group">
+            <div class="sign-right">
+              Итоговая цена · Sold<br />
+              <span class="price">♥ Всё моё время</span>
+            </div>
+
+            <div class="wax-seal">
+              <div class="wax-seal-text">
+                <span class="big">♥</span>
+                Sold<br />Forever
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="nav-wrap">
+        <a href="index.html" class="back-link">
+          <span class="arrow">←</span>
+          <span>На главную</span>
+        </a>
+        <a href="wanted.html" class="nav-link-secondary">
+          <span class="icon">📰</span>
+          <span>Wanted</span>
+        </a>
+        <a href="court.html" class="nav-link-secondary">
+          <span class="icon">⚖️</span>
+          <span>Суд над сердцем</span>
+        </a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const t = document.getElementById("timeText");
+        if (t) t.textContent = `${hh}:${mm}`;
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        const ti = document.getElementById("timeIcon");
+        if (ti) ti.textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
+
+      const WEATHER_CITY = { name: "Улан-Удэ" };
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        if (!iconEl || !textEl) return;
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      const iw = document.getElementById("infoWidget");
+      if (iw) iw.addEventListener("click", loadWeather);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1920 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Наш фотоальбом · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --paper: #f3ede4;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
+
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
+
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
+
+        --gold: #b89968;
+        --gold-deep: #8a6f4d;
+
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+      }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+
+      /* TOPBAR */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.72);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+      }
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      main {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
+
+      /* HERO */
+      .hero {
+        padding: 20px 0 40px;
+        text-align: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+      }
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 72px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+        max-width: 18ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 52ch;
+      }
+
+      /* STAGE */
+      .album-stage {
+        margin-top: 72px;
+        padding: 56px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 3px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.12),
+          0 8px 20px rgba(30, 26, 22, 0.06);
+        position: relative;
+        isolation: isolate;
+      }
+      .album-stage::before {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(30, 26, 22, 0.08);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .album-stage::after {
+        content: "";
+        position: absolute;
+        inset: 20px;
+        border: 1px solid rgba(143, 100, 114, 0.14);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .album-head {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 0 0 22px;
+        margin-bottom: 44px;
+        border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .album-head .left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .album-head .mark {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 26px;
+        line-height: 1;
+        color: var(--ink);
+        margin: 0;
+      }
+      .album-head .mark em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .album-head .sub {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .album-head .right {
+        text-align: right;
+      }
+      .album-head .right .label {
+        display: block;
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+        margin-bottom: 4px;
+      }
+      .album-head .right .value {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink);
+        letter-spacing: 0.06em;
+      }
+
+      /* Управление: добавить + счётчик */
+      .album-controls {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+      .btn-add {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 26px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .btn-add:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
+      }
+      .btn-add .plus {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid currentColor;
+        font-size: 14px;
+        line-height: 1;
+        padding-bottom: 2px;
+      }
+      .album-counter {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .album-counter b {
+        color: var(--rose-deep);
+        font-weight: 500;
+      }
+
+      /* Сетка альбома */
+      .album-grid {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 36px 32px;
+      }
+
+      /* Карточка-полароид */
+      .photo-card {
+        position: relative;
+        padding: 14px 14px 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 14px 30px rgba(30, 26, 22, 0.12),
+          0 4px 10px rgba(30, 26, 22, 0.06);
+        transition:
+          transform 0.5s var(--ease),
+          box-shadow 0.5s var(--ease);
+        transform: rotate(var(--rot, 0deg));
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+      }
+      .photo-card:nth-child(3n + 1) {
+        --rot: -1.2deg;
+      }
+      .photo-card:nth-child(3n + 2) {
+        --rot: 0.8deg;
+      }
+      .photo-card:nth-child(3n) {
+        --rot: -0.4deg;
+      }
+      .photo-card:hover {
+        transform: rotate(0deg) translateY(-6px);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 28px 56px rgba(30, 26, 22, 0.18),
+          0 8px 18px rgba(30, 26, 22, 0.08);
+        z-index: 3;
+      }
+      .photo-card.is-empty {
+        cursor: pointer;
+        background: transparent;
+        border: 1.5px dashed rgba(143, 100, 114, 0.4);
+        box-shadow: none;
+      }
+      .photo-card.is-empty:hover {
+        background: var(--rose-tint);
+        border-color: var(--rose-deep);
+        transform: rotate(0deg) translateY(-4px);
+      }
+
+      /* Скотч сверху карточки */
+      .photo-card:not(.is-empty)::before {
+        content: "";
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-2deg);
+        width: 78px;
+        height: 22px;
+        background: linear-gradient(
+          180deg,
+          rgba(220, 200, 160, 0.85),
+          rgba(200, 175, 130, 0.75)
+        );
+        box-shadow:
+          inset 0 0 6px rgba(255, 255, 255, 0.5),
+          0 2px 4px rgba(30, 26, 22, 0.14);
+        border-radius: 1px;
+        opacity: 0.9;
+        z-index: 4;
+      }
+
+      /* Фото */
+      .photo-frame {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        overflow: hidden;
+        background: linear-gradient(
+          135deg,
+          var(--rose-tint) 0%,
+          var(--rose-soft) 55%,
+          #cbb0b6 100%
+        );
+        border-radius: 1px;
+      }
+      .photo-frame::before {
+        content: "V";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: clamp(80px, 12vw, 140px);
+        line-height: 1;
+        color: rgba(30, 26, 22, 0.14);
+        padding-bottom: 6px;
+      }
+      .photo-frame img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        filter: saturate(0.95);
+      }
+
+      /* Пустая карточка */
+      .empty-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        aspect-ratio: 4 / 5;
+        color: var(--rose-deep);
+      }
+      .empty-plus {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        border: 1.5px solid currentColor;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        line-height: 1;
+        padding-bottom: 4px;
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .photo-card.is-empty:hover .empty-plus {
+        transform: rotate(90deg) scale(1.06);
+      }
+      .empty-text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 15px;
+        color: var(--rose-deep);
+        text-align: center;
+        line-height: 1.3;
+        max-width: 160px;
+      }
+      .empty-sub {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 9.5px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      /* Подписи под фото */
+      .photo-caption {
+        margin-top: 14px;
+        padding: 0 2px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+      }
+      .photo-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 19px;
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin: 0;
+      }
+      .photo-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .photo-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .photo-meta .dot {
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background: var(--rose);
+      }
+      .photo-story {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 13.5px;
+        line-height: 1.55; /* чуть свободнее — не режем выносные */
+        color: var(--ink-2);
+        margin: 6px 0 0;
+
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2; /* стандартное свойство для будущего */
+        overflow: hidden;
+        min-height: calc(
+          13.5px * 1.55 * 2
+        ); /* фиксируем высоту ровно под 2 строки */
+        /* это держит карточки одной высоты, даже когда у одной истории 1 строка, а у другой 2 */
+      }
+
+      /* Кнопки на карточке (edit/delete) */
+      .photo-actions {
+        position: absolute;
+        top: 22px;
+        right: 22px;
+        display: flex;
+        gap: 6px;
+        z-index: 5;
+        opacity: 0;
+        transform: translateY(-4px);
+        transition: all 0.35s var(--ease);
+      }
+      .photo-card:hover .photo-actions {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .icon-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(253, 250, 246, 0.94);
+        border: 1px solid var(--line-2);
+        color: var(--ink-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        line-height: 1;
+        transition: all 0.3s var(--ease);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      .icon-btn:hover {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        transform: scale(1.06);
+      }
+      .icon-btn.del:hover {
+        background: #c42b21;
+        border-color: #c42b21;
+        color: #fff;
+      }
+
+      /* Подпись под альбомом */
+      .album-caption {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        margin: 56px auto 0;
+        max-width: 52ch;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 15px;
+        color: var(--ink-3);
+        line-height: 1.6;
+      }
+      .album-caption em {
+        color: var(--rose-deep);
+      }
+
+      /* ============================================================
+         МОДАЛКА (добавить / редактировать / посмотреть)
+         ============================================================ */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        padding: 16px;
+        justify-content: center;
+        align-items: center;
+        background: rgba(30, 26, 22, 0.44);
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        animation: overlayIn 0.35s var(--ease);
+        overflow-y: auto;
+      }
+      @keyframes overlayIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal {
+        position: relative;
+        width: 100%;
+        max-width: 620px;
+        max-height: 92vh;
+        overflow-y: auto;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 40px 40px 34px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 50px 100px rgba(30, 26, 22, 0.3);
+        animation: modalIn 0.5s var(--ease-spring);
+      }
+      @keyframes modalIn {
+        from {
+          transform: translateY(20px) scale(0.96);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+      .modal-close {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        color: var(--ink-2);
+        font-size: 14px;
+        transition: all 0.35s var(--ease);
+        z-index: 10;
+      }
+      .modal-close:hover {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        transform: rotate(90deg);
+      }
+
+      .modal-head {
+        margin-bottom: 24px;
+      }
+      .modal-eyebrow {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        display: block;
+        margin-bottom: 10px;
+      }
+      .modal-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(26px, 3.4vw, 34px);
+        line-height: 1.1;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0;
+      }
+      .modal-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      /* Загрузка фото */
+      .upload-zone {
+        position: relative;
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        border: 2px dashed var(--line-2);
+        border-radius: 12px;
+        background: var(--surface-2);
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        margin-bottom: 22px;
+      }
+      .upload-zone:hover {
+        border-color: var(--rose);
+        background: var(--rose-tint);
+      }
+      .upload-zone.has-image {
+        border-style: solid;
+        border-color: var(--line);
+        background: #111;
+      }
+      .upload-zone img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        z-index: 1;
+      }
+      .upload-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: var(--ink-3);
+        text-align: center;
+        padding: 20px;
+      }
+      .upload-placeholder .cam {
+        font-size: 34px;
+        filter: saturate(0.7);
+      }
+      .upload-placeholder .txt {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 15px;
+        color: var(--ink-2);
+        max-width: 30ch;
+      }
+      .upload-placeholder .hint {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 9.5px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+      }
+      .upload-zone.has-image .upload-placeholder {
+        display: none;
+      }
+      .upload-zone input[type="file"] {
+        display: none;
+      }
+
+      /* Поля */
+      .field {
+        margin-bottom: 16px;
+      }
+      .field label {
+        display: block;
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 8px;
+        padding-left: 0.2em;
+      }
+      .field input,
+      .field textarea {
+        width: 100%;
+        padding: 13px 16px;
+        font-family: inherit;
+        font-size: 15px;
+        color: var(--ink);
+        background: var(--surface-2);
+        border: 1px solid var(--line-2);
+        border-radius: 12px;
+        transition: all 0.2s;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .field textarea {
+        resize: vertical;
+        min-height: 96px;
+        line-height: 1.5;
+      }
+      .field input:focus,
+      .field textarea:focus {
+        outline: none;
+        border-color: var(--rose-deep);
+        background: var(--surface);
+        box-shadow: 0 0 0 4px rgba(143, 100, 114, 0.1);
+      }
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 22px;
+      }
+      .btn-secondary,
+      .btn-primary {
+        padding: 14px 22px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 999px;
+        transition: all 0.35s var(--ease);
+        font-family: inherit;
+      }
+      .btn-secondary {
+        flex: 0 0 auto;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+      }
+      .btn-secondary:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+      }
+      .btn-primary {
+        flex: 1;
+        background: var(--ink);
+        color: var(--paper);
+      }
+      .btn-primary:hover {
+        background: #000;
+        transform: translateY(-1px);
+        box-shadow: 0 12px 28px rgba(30, 26, 22, 0.22);
+      }
+      .btn-primary:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Просмотр фото */
+      .viewer-photo {
+        width: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #111;
+        margin-bottom: 22px;
+        position: relative;
+      }
+      .viewer-photo img {
+        width: 100%;
+        height: auto;
+        display: block;
+        max-height: 60vh;
+        object-fit: contain;
+      }
+      .viewer-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 28px;
+        line-height: 1.1;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0 0 10px;
+        padding-bottom: 3px;
+      }
+      .viewer-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 18px;
+      }
+      .viewer-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .viewer-meta .dot {
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background: var(--rose);
+      }
+      .viewer-story {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 16.5px;
+        line-height: 1.65;
+        color: var(--ink-2);
+        margin: 0 0 22px;
+        white-space: pre-wrap;
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--ink-3);
+      }
+      .empty-state .big {
+        font-size: 56px;
+        margin-bottom: 12px;
+        filter: saturate(0.7);
+      }
+      .empty-state p {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 16px;
+        max-width: 40ch;
+        margin: 0 auto;
+      }
+
+      /* Toast */
+      #toast {
+        position: fixed;
+        left: 50%;
+        bottom: 32px;
+        transform: translateX(-50%) translateY(20px);
+        padding: 14px 22px;
+        background: var(--ink);
+        color: var(--paper);
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 999px;
+        box-shadow: 0 18px 40px rgba(30, 26, 22, 0.3);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.4s var(--ease-spring);
+        z-index: 200;
+        max-width: 90vw;
+        text-align: center;
+      }
+
+      /* NAV */
+      .nav-wrap {
+        margin-top: 96px;
+        padding-top: 40px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 32px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-size: 14.5px;
+        font-weight: 500;
+        transition: all 0.35s var(--ease);
+      }
+      .back-link:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
+      }
+      .back-link .arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 15px;
+      }
+      .back-link:hover .arrow {
+        transform: translateX(-5px);
+      }
+      .nav-link-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 28px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-size: 14.5px;
+        font-weight: 500;
+        transition: all 0.35s var(--ease);
+      }
+      .nav-link-secondary:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+      .nav-link-secondary .icon {
+        font-size: 14px;
+        filter: saturate(0.75);
+      }
+
+      /* FOOTER */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 960px) {
+        .album-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 28px 24px;
+        }
+        .album-stage {
+          padding: 40px 24px 48px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(32px, 9vw, 46px);
+        }
+        .album-stage {
+          padding: 26px 14px 32px;
+          margin-top: 56px;
+        }
+        .album-head {
+          margin-bottom: 32px;
+        }
+        .album-head .mark {
+          font-size: 22px;
+        }
+        .album-grid {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+        .photo-card {
+          --rot: 0deg !important;
+        }
+        .photo-card:not(.is-empty)::before {
+          width: 60px;
+          height: 18px;
+          top: -8px;
+        }
+        .photo-actions {
+          opacity: 1;
+          transform: none;
+        }
+        .modal {
+          padding: 32px 22px 26px;
+          border-radius: 18px;
+        }
+        .field-row {
+          grid-template-columns: 1fr;
+        }
+        .modal-title {
+          font-size: 24px;
+        }
+        .nav-wrap {
+          margin-top: 72px;
+          padding-top: 32px;
+          gap: 10px;
+        }
+        .back-link,
+        .nav-link-secondary {
+          padding: 16px 24px;
+          font-size: 13.5px;
+        }
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item"
+          ><span class="icon" id="timeIcon">☀️</span
+          ><span id="timeText">--:--</span></span
+        >
+        <span class="meta-sep">·</span>
+        <span class="meta-item"
+          ><span class="icon" id="weatherIcon">🌤️</span
+          ><span id="weatherText">...</span></span
+        >
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="eyebrow">Фотоальбом · наш, личный</span>
+        <h1>Наш <em>фотоальбом</em></h1>
+        <p class="hero-sub">
+          Каждая фотография — маленькая история. С датой, местом и тем, что было
+          тогда в сердце. Добавляй свои — альбом обновляется прямо здесь, в
+          твоём браузере.
+        </p>
+      </section>
+
+      <section class="album-stage">
+        <header class="album-head">
+          <div class="left">
+            <h2 class="mark">Album <em>Nostrum</em></h2>
+            <span class="sub">Фотографии · сохранены только для тебя</span>
+          </div>
+          <div class="right">
+            <span class="label">Слотов занято</span>
+            <span class="value"
+              ><span id="counterNum">3</span> /
+              <span id="counterMax">6</span></span
+            >
+          </div>
+        </header>
+
+        <div class="album-controls">
+          <button class="btn-add" id="btnAddNew">
+            <span class="plus">+</span>
+            <span>Добавить фотографию</span>
+          </button>
+          <span class="album-counter" id="counterLine"
+            >Заполнено · <b>3</b> из 6</span
+          >
+        </div>
+
+        <div class="album-grid" id="albumGrid"></div>
+
+        <p class="album-caption">
+          Всё, что ты добавишь, останется <em>только здесь</em>, в твоём
+          браузере. Никаких облаков и чужих глаз — как дневник, только с
+          фотографиями.
+        </p>
+      </section>
+
+      <div class="nav-wrap">
+        <a href="index.html" class="back-link">
+          <span class="arrow">←</span>
+          <span>На главную</span>
+        </a>
+        <a href="heartmap.html" class="nav-link-secondary">
+          <span class="icon">🗺</span>
+          <span>Карта сердца</span>
+        </a>
+        <a href="passport.html" class="nav-link-secondary">
+          <span class="icon">📋</span>
+          <span>Паспорт</span>
+        </a>
+        <a href="menu.html" class="nav-link-secondary">
+          <span class="icon">💌</span>
+          <span>Ресторан</span>
+        </a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Кадр за кадром</span>
+    </footer>
+
+    <!-- Тост -->
+    <div id="toast"></div>
+
+    <!-- Модалка: добавить / редактировать -->
+    <div class="modal-overlay" id="modalEdit">
+      <div class="modal">
+        <button class="modal-close" id="modalClose" title="Закрыть">✕</button>
+        <div class="modal-head">
+          <span class="modal-eyebrow" id="modalEyebrow">Новая фотография</span>
+          <h3 class="modal-title" id="modalTitle">Добавь <em>мгновение</em></h3>
+        </div>
+
+        <label class="upload-zone" id="uploadZone" for="fileInput">
+          <img id="previewImg" alt="" />
+          <span class="upload-placeholder" id="uploadPlaceholder">
+            <span class="cam">📷</span>
+            <span class="txt">Нажми, чтобы выбрать фото</span>
+            <span class="hint">jpg · png · heic</span>
+          </span>
+          <input type="file" id="fileInput" accept="image/*" />
+        </label>
+
+        <div class="field">
+          <label for="fTitle">Название</label>
+          <input
+            type="text"
+            id="fTitle"
+            placeholder="Например: «Первый закат вместе»"
+            maxlength="80"
+          />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="fDate">Дата</label>
+            <input type="date" id="fDate" />
+          </div>
+          <div class="field">
+            <label for="fPlace">Место</label>
+            <input
+              type="text"
+              id="fPlace"
+              placeholder="Город, место"
+              maxlength="60"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="fStory">История</label>
+          <textarea
+            id="fStory"
+            placeholder="Что было в тот момент? Что ты чувствовала? Что помнишь…"
+            maxlength="600"
+          ></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" id="btnCancel">Отмена</button>
+          <button class="btn-primary" id="btnSave" disabled>Сохранить</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модалка: просмотр -->
+    <div class="modal-overlay" id="modalView">
+      <div class="modal">
+        <button class="modal-close" id="viewClose" title="Закрыть">✕</button>
+        <div class="viewer-photo">
+          <img id="viewImg" alt="" />
+        </div>
+        <h3 class="viewer-title" id="viewTitle"></h3>
+        <div class="viewer-meta" id="viewMeta"></div>
+        <p class="viewer-story" id="viewStory"></p>
+        <div class="modal-actions">
+          <button class="btn-secondary" id="btnEditFromView">
+            ✏️ Изменить
+          </button>
+          <button class="btn-primary" id="btnCloseView">Закрыть</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* ============ Топбар: время + погода ============ */
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const t = document.getElementById("timeText");
+        if (t) t.textContent = `${hh}:${mm}`;
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        const ti = document.getElementById("timeIcon");
+        if (ti) ti.textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
+
+      const WEATHER_CITY = { name: "Улан-Удэ" };
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        if (!iconEl || !textEl) return;
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      const iw = document.getElementById("infoWidget");
+      if (iw) iw.addEventListener("click", loadWeather);
+
+      /* ============================================================
+         ФОТОАЛЬБОМ
+         ============================================================ */
+      const STORAGE_KEY = "album_veronika_v1";
+      const MAX_SLOTS = 6;
+
+      // Дефолтные фото — те, что уже есть в /photos
+      const DEFAULTS = [
+        {
+          id: "default-1",
+          src: "photos/photo1.jpg",
+          title: "текст",
+          date: "текст",
+          place: "текст",
+          story: "текст",
+        },
+        {
+          id: "default-2",
+          src: "photos/photo2.jpg",
+          title: "текст",
+          date: "текст",
+          place: "текст",
+          story: "текст",
+        },
+        {
+          id: "default-3",
+          src: "photos/photo3.jpg",
+          title: "текст",
+          date: "текст",
+          place: "текст",
+          story: "текст",
+        },
+      ];
+
+      /* ---------- Хранилище ---------- */
+      function loadPhotos() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return [...DEFAULTS];
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return [...DEFAULTS];
+          return parsed;
+        } catch (e) {
+          return [...DEFAULTS];
+        }
+      }
+
+      function savePhotos(arr) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+          return true;
+        } catch (e) {
+          toast("Не хватило места в браузере 😔");
+          return false;
+        }
+      }
+
+      let photos = loadPhotos();
+
+      /* ---------- Утилиты ---------- */
+      function uid() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      }
+      function escapeHtml(s) {
+        return String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function fmtDateRu(iso) {
+        if (!iso) return "";
+        const d = new Date(iso);
+        if (isNaN(d)) return iso;
+        return d.toLocaleDateString("ru-RU", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+      }
+      const MONTHS_SHORT = [
+        "I",
+        "II",
+        "III",
+        "IV",
+        "V",
+        "VI",
+        "VII",
+        "VIII",
+        "IX",
+        "X",
+        "XI",
+        "XII",
+      ];
+      function fmtDateMono(iso) {
+        if (!iso) return "";
+        const d = new Date(iso);
+        if (isNaN(d)) return "";
+        return `${String(d.getDate()).padStart(2, "0")} · ${
+          MONTHS_SHORT[d.getMonth()]
+        } · ${d.getFullYear()}`;
+      }
+
+      function toast(msg, ms = 2200) {
+        const el = document.getElementById("toast");
+        el.textContent = msg;
+        el.style.opacity = "1";
+        el.style.transform = "translateX(-50%) translateY(0)";
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => {
+          el.style.opacity = "0";
+          el.style.transform = "translateX(-50%) translateY(20px)";
+        }, ms);
+      }
+
+      /* ---------- Сжатие изображения ---------- */
+      function compressImage(file, maxWidth = 1600, quality = 0.85) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onerror = () => reject(new Error("read failed"));
+          reader.onload = () => {
+            const img = new Image();
+            img.onerror = () => reject(new Error("img load failed"));
+            img.onload = () => {
+              let w = img.naturalWidth;
+              let h = img.naturalHeight;
+              if (w > maxWidth) {
+                h = Math.round((h * maxWidth) / w);
+                w = maxWidth;
+              }
+              const canvas = document.createElement("canvas");
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, w, h);
+              try {
+                const data = canvas.toDataURL("image/jpeg", quality);
+                resolve(data);
+              } catch (e) {
+                reject(e);
+              }
+            };
+            img.src = reader.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      /* ---------- Отрисовка ---------- */
+      const grid = document.getElementById("albumGrid");
+      const counterNum = document.getElementById("counterNum");
+      const counterMax = document.getElementById("counterMax");
+      const counterLine = document.getElementById("counterLine");
+
+      function renderAlbum() {
+        grid.innerHTML = "";
+        counterMax.textContent = MAX_SLOTS;
+
+        photos.forEach((p, idx) => {
+          const card = document.createElement("article");
+          card.className = "photo-card";
+          card.dataset.id = p.id;
+          card.style.setProperty("--rot", `${((idx * 1.4) % 3) - 1.2}deg`);
+          card.innerHTML = `
+            <div class="photo-actions">
+              <button class="icon-btn" data-act="edit" title="Изменить">✏️</button>
+              <button class="icon-btn del" data-act="del" title="Удалить">🗑</button>
+            </div>
+            <div class="photo-frame">
+              <img src="${escapeHtml(p.src)}" alt="" loading="lazy" decoding="async" onerror="this.remove()" />
+            </div>
+            <div class="photo-caption">
+              <h3 class="photo-title">${escapeHtml(p.title || "Без названия")}</h3>
+              <div class="photo-meta">
+                ${p.date ? `<span>📅 ${escapeHtml(fmtDateMono(p.date))}</span>` : ""}
+                ${p.place ? `<span><span class="dot"></span>📍 ${escapeHtml(p.place)}</span>` : ""}
+              </div>
+              ${
+                p.story
+                  ? `<p class="photo-story">${escapeHtml(p.story)}</p>`
+                  : ""
+              }
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        // Пустые слоты
+        const emptyCount = Math.max(0, MAX_SLOTS - photos.length);
+        for (let i = 0; i < emptyCount; i++) {
+          const empty = document.createElement("article");
+          empty.className = "photo-card is-empty";
+          empty.dataset.empty = "1";
+          empty.innerHTML = `
+            <div class="empty-inner">
+              <span class="empty-plus">+</span>
+              <span class="empty-text">Добавить<br/>фотографию</span>
+              <span class="empty-sub">Слот ${photos.length + i + 1} / ${MAX_SLOTS}</span>
+            </div>
+          `;
+          grid.appendChild(empty);
+        }
+
+        counterNum.textContent = photos.length;
+        counterLine.innerHTML = `Заполнено · <b>${photos.length}</b> из ${MAX_SLOTS}`;
+      }
+
+      /* ---------- Делегирование кликов ---------- */
+      grid.addEventListener("click", (e) => {
+        const emptyCard = e.target.closest(".photo-card.is-empty");
+        if (emptyCard) {
+          openEdit(null);
+          return;
+        }
+        const card = e.target.closest(".photo-card");
+        if (!card) return;
+        const id = card.dataset.id;
+        const photo = photos.find((p) => p.id === id);
+        if (!photo) return;
+
+        const act = e.target.closest("[data-act]");
+        if (act) {
+          e.stopPropagation();
+          if (act.dataset.act === "edit") {
+            openEdit(photo);
+          } else if (act.dataset.act === "del") {
+            if (
+              confirm(`Удалить фотографию «${photo.title || "без названия"}»?`)
+            ) {
+              photos = photos.filter((p) => p.id !== id);
+              savePhotos(photos);
+              renderAlbum();
+              toast("Фотография удалена");
+            }
+          }
+          return;
+        }
+
+        // Клик по самой карточке → просмотр
+        openView(photo);
+      });
+
+      /* ============================================================
+         Модалка: редактирование / добавление
+         ============================================================ */
+      const modalEdit = document.getElementById("modalEdit");
+      const modalEyebrow = document.getElementById("modalEyebrow");
+      const modalTitle = document.getElementById("modalTitle");
+      const uploadZone = document.getElementById("uploadZone");
+      const fileInput = document.getElementById("fileInput");
+      const previewImg = document.getElementById("previewImg");
+      const fTitle = document.getElementById("fTitle");
+      const fDate = document.getElementById("fDate");
+      const fPlace = document.getElementById("fPlace");
+      const fStory = document.getElementById("fStory");
+      const btnSave = document.getElementById("btnSave");
+      const btnCancel = document.getElementById("btnCancel");
+      const modalClose = document.getElementById("modalClose");
+
+      let editingId = null; // null = создаём новое
+      let pendingSrc = null; // dataURL выбранной картинки
+
+      function openEdit(photo) {
+        editingId = photo ? photo.id : null;
+        pendingSrc = photo ? photo.src : null;
+
+        if (photo) {
+          modalEyebrow.textContent = "Редактирование";
+          modalTitle.innerHTML = "Измени <em>момент</em>";
+          fTitle.value = photo.title || "";
+          fDate.value = photo.date || "";
+          fPlace.value = photo.place || "";
+          fStory.value = photo.story || "";
+        } else {
+          modalEyebrow.textContent = "Новая фотография";
+          modalTitle.innerHTML = "Добавь <em>мгновение</em>";
+          fTitle.value = "";
+          fDate.value = "";
+          fPlace.value = "";
+          fStory.value = "";
+        }
+        updatePreview();
+        modalEdit.classList.add("active");
+        setTimeout(() => {
+          if (!photo) fileInput.click();
+          else fTitle.focus();
+        }, 300);
+      }
+
+      function closeEdit() {
+        modalEdit.classList.remove("active");
+        fileInput.value = "";
+        pendingSrc = null;
+        editingId = null;
+      }
+
+      function updatePreview() {
+        if (pendingSrc) {
+          previewImg.src = pendingSrc;
+          uploadZone.classList.add("has-image");
+        } else {
+          previewImg.removeAttribute("src");
+          uploadZone.classList.remove("has-image");
+        }
+        btnSave.disabled = !pendingSrc;
+      }
+
+      fileInput.addEventListener("change", async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          toast("Это не похоже на картинку 🤔");
+          return;
+        }
+        try {
+          toast("Обрабатываю фото…", 1400);
+          const data = await compressImage(file, 1600, 0.85);
+          pendingSrc = data;
+          updatePreview();
+        } catch (err) {
+          toast("Не удалось прочитать файл");
+        }
+      });
+
+      // Drag & drop на зону загрузки
+      ["dragenter", "dragover"].forEach((ev) => {
+        uploadZone.addEventListener(ev, (e) => {
+          e.preventDefault();
+          uploadZone.style.borderColor = "var(--rose-deep)";
+        });
+      });
+      ["dragleave", "drop"].forEach((ev) => {
+        uploadZone.addEventListener(ev, (e) => {
+          e.preventDefault();
+          uploadZone.style.borderColor = "";
+        });
+      });
+      uploadZone.addEventListener("drop", async (e) => {
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (!file || !file.type.startsWith("image/")) return;
+        try {
+          toast("Обрабатываю фото…", 1400);
+          const data = await compressImage(file, 1600, 0.85);
+          pendingSrc = data;
+          updatePreview();
+        } catch (err) {
+          toast("Не удалось прочитать файл");
+        }
+      });
+
+      btnSave.addEventListener("click", () => {
+        if (!pendingSrc) return;
+        const entry = {
+          id: editingId || uid(),
+          src: pendingSrc,
+          title: fTitle.value.trim(),
+          date: fDate.value,
+          place: fPlace.value.trim(),
+          story: fStory.value.trim(),
+        };
+
+        if (editingId) {
+          const i = photos.findIndex((p) => p.id === editingId);
+          if (i >= 0) photos[i] = entry;
+        } else {
+          if (photos.length >= MAX_SLOTS) {
+            toast("Все слоты заняты. Удали что-нибудь, чтобы добавить новое.");
+            return;
+          }
+          photos.push(entry);
+        }
+
+        const ok = savePhotos(photos);
+        if (!ok) return;
+        renderAlbum();
+        closeEdit();
+        toast(editingId ? "Изменения сохранены ✨" : "Фотография добавлена ✨");
+      });
+
+      btnCancel.addEventListener("click", closeEdit);
+      modalClose.addEventListener("click", closeEdit);
+      modalEdit.addEventListener("click", (e) => {
+        if (e.target === modalEdit) closeEdit();
+      });
+
+      /* ============================================================
+         Модалка: просмотр
+         ============================================================ */
+      const modalView = document.getElementById("modalView");
+      const viewImg = document.getElementById("viewImg");
+      const viewTitle = document.getElementById("viewTitle");
+      const viewMeta = document.getElementById("viewMeta");
+      const viewStory = document.getElementById("viewStory");
+      const viewClose = document.getElementById("viewClose");
+      const btnCloseView = document.getElementById("btnCloseView");
+      const btnEditFromView = document.getElementById("btnEditFromView");
+
+      let viewingId = null;
+
+      function openView(photo) {
+        viewingId = photo.id;
+        viewImg.src = photo.src;
+        viewTitle.textContent = photo.title || "Без названия";
+        viewMeta.innerHTML = `
+          ${photo.date ? `<span>📅 ${escapeHtml(fmtDateRu(photo.date))}</span>` : ""}
+          ${photo.place ? `<span><span class="dot"></span>📍 ${escapeHtml(photo.place)}</span>` : ""}
+        `;
+        viewStory.textContent = photo.story || "";
+        viewStory.style.display = photo.story ? "block" : "none";
+        modalView.classList.add("active");
+      }
+
+      function closeView() {
+        modalView.classList.remove("active");
+        viewingId = null;
+      }
+
+      viewClose.addEventListener("click", closeView);
+      btnCloseView.addEventListener("click", closeView);
+      modalView.addEventListener("click", (e) => {
+        if (e.target === modalView) closeView();
+      });
+      btnEditFromView.addEventListener("click", () => {
+        const p = photos.find((x) => x.id === viewingId);
+        closeView();
+        if (p) setTimeout(() => openEdit(p), 200);
+      });
+
+      /* ---------- Escape закрывает модалки ---------- */
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        if (modalEdit.classList.contains("active")) closeEdit();
+        if (modalView.classList.contains("active")) closeView();
+      });
+
+      /* ---------- Кнопка «Добавить» сверху ---------- */
+      document.getElementById("btnAddNew").addEventListener("click", () => {
+        if (photos.length >= MAX_SLOTS) {
+          toast("Все слоты заняты. Удали что-нибудь, чтобы добавить новое.");
+          return;
+        }
+        openEdit(null);
+      });
+
+      /* ---------- Старт ---------- */
+      renderAlbum();
+    </script>
+  </body>
+</html>

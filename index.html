@@ -542,6 +542,9 @@
         flex-direction: column;
       }
 
+      /* ============================================================
+         ЕДИНЫЙ СТИЛЬ СТРОКИ (все строки = как «Наш фильм»)
+         ============================================================ */
       .index-row {
         display: grid;
         grid-template-columns: 60px 1fr auto auto;
@@ -550,7 +553,7 @@
         padding: 28px 8px;
         border-top: 1px solid var(--line);
         transition:
-          background 0.3s,
+          background 0.35s var(--ease),
           padding 0.4s var(--ease);
         position: relative;
       }
@@ -565,29 +568,36 @@
         padding-right: 20px;
       }
 
+      /* Номер */
       .index-num {
         font-family: "Instrument Serif", Georgia, serif;
         font-style: italic;
         font-size: 17px;
-        color: var(--ink-3);
-        transition: color 0.3s;
-        letter-spacing: 0.02em;
-      }
-
-      .index-row:hover .index-num {
         color: var(--rose-deep);
+        opacity: 0.65;
+        letter-spacing: 0.02em;
+        transition: opacity 0.3s;
+      }
+      .index-row:hover .index-num {
+        opacity: 1;
       }
 
+      /* Название — italic serif в розовом */
       .index-name {
         font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
         font-size: clamp(22px, 2.4vw, 30px);
         font-weight: 400;
         letter-spacing: -0.01em;
-        color: var(--ink);
+        color: var(--rose-deep);
         line-height: 1.15;
         transition: color 0.3s;
       }
+      .index-row:hover .index-name {
+        color: var(--rose);
+      }
 
+      /* Описание справа */
       .index-desc {
         font-size: 13px;
         color: var(--ink-3);
@@ -595,6 +605,7 @@
         white-space: nowrap;
       }
 
+      /* Круглая стрелка */
       .index-arrow {
         width: 40px;
         height: 40px;
@@ -614,24 +625,6 @@
         color: var(--paper);
         border-color: var(--ink);
         transform: rotate(-45deg);
-      }
-
-      /* Highlighted row (for "Наш фильм") */
-      .index-row--feature {
-        background: linear-gradient(
-          90deg,
-          rgba(232, 212, 216, 0.22) 0%,
-          rgba(253, 250, 246, 0.5) 60%,
-          transparent 100%
-        );
-      }
-
-      .index-row--feature .index-name {
-        color: var(--rose-deep);
-      }
-
-      .index-row--feature .index-num {
-        color: var(--rose-deep);
       }
 
       /* FOOTER */
@@ -1763,71 +1756,63 @@
             <span class="index-arrow">→</span>
           </a>
 
-          <a href="movie.html" class="index-row index-row--feature">
+          <a href="movie.html" class="index-row">
             <span class="index-num">11</span>
             <span class="index-name">Наш фильм</span>
             <span class="index-desc">Кинопремьера в одном экземпляре</span>
             <span class="index-arrow">→</span>
           </a>
 
-          <!-- ⏳ КАПСУЛА ВРЕМЕНИ — новая страница -->
-          <a href="capsule.html" class="index-row index-row--feature">
+          <a href="capsule.html" class="index-row">
             <span class="index-num">12</span>
             <span class="index-name">Капсула времени</span>
             <span class="index-desc">Письмо в будущее</span>
             <span class="index-arrow">→</span>
           </a>
 
-          <!-- 🌌 НЕБО СЕГОДНЯ — новая страница -->
-          <a href="sky.html" class="index-row index-row--feature">
+          <a href="sky.html" class="index-row">
             <span class="index-num">13</span>
             <span class="index-name">Небо сегодня над тобой</span>
             <span class="index-desc">Реальные данные космоса</span>
             <span class="index-arrow">→</span>
           </a>
 
-          <!-- ✈️ БИЛЕТ В БУДУЩЕЕ — новая страница -->
-          <a href="boarding.html" class="index-row index-row--feature">
+          <a href="boarding.html" class="index-row">
             <span class="index-num">14</span>
             <span class="index-name">Билет в наше будущее</span>
             <span class="index-desc">Посадочный талон навсегда</span>
             <span class="index-arrow">→</span>
           </a>
 
-          <!-- 📖 ИНСТРУКЦИЯ ПО ПРИМЕНЕНИЮ — новая страница -->
-          <a href="manual.html" class="index-row index-row--feature">
+          <a href="manual.html" class="index-row">
             <span class="index-num">15</span>
             <span class="index-name">Инструкция по применению</span>
             <span class="index-desc">Техпаспорт устройства «Анатолий»</span>
             <span class="index-arrow">→</span>
           </a>
 
-          <!-- 🩺 МЕДИЦИНСКАЯ КАРТА — новая страница -->
-          <a href="medcard.html" class="index-row index-row--feature">
+          <a href="medcard.html" class="index-row">
             <span class="index-num">16</span>
             <span class="index-name">История болезни</span>
             <span class="index-desc">Диагноз: Острая Вероникомания</span>
             <span class="index-arrow">→</span>
           </a>
 
-          <!-- 📚 ВИКИПЕДИЯ: ВЕРОНИКА — новая страница -->
-          <a href="wiki.html" class="index-row index-row--feature">
+          <a href="wiki.html" class="index-row">
             <span class="index-num">17</span>
             <span class="index-name">Вероника — энциклопедия</span>
             <span class="index-desc">Официальная статья о тебе</span>
             <span class="index-arrow">→</span>
           </a>
 
-          <!-- 🌟 ГОРОСКОП НА НАС — новая страница -->
-          <a href="horoscope.html" class="index-row index-row--feature">
+          <a href="horoscope.html" class="index-row">
             <span class="index-num">18</span>
             <span class="index-name">Гороскоп на нас</span>
             <span class="index-desc">Совместимость по звёздам</span>
             <span class="index-arrow">→</span>
           </a>
 
-          <!-- ⚖️ СУД НАД МОИМ СЕРДЦЕМ — новая страница -->
-          <a href="court.html" class="index-row index-row--feature">
+          <a href="court.html" class="index-row">
             <span class="index-num">19</span>
             <span class="index-name">Суд над моим сердцем</span>
             <span class="index-desc"
@@ -1836,11 +1821,89 @@
             <span class="index-arrow">→</span>
           </a>
 
-          <!-- 🎧 ПЛЕЙЛИСТ — новая страница -->
-          <a href="playlist.html" class="index-row index-row--feature">
+          <a href="playlist.html" class="index-row">
             <span class="index-num">20</span>
             <span class="index-name">Плейлист с комментариями</span>
             <span class="index-desc">10 треков из нашей истории</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="wanted.html" class="index-row">
+            <span class="index-num">21</span>
+            <span class="index-name">Wanted: розыск моего сердца</span>
+            <span class="index-desc"
+              >Объявление о розыске · награда гарантирована</span
+            >
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="auction.html" class="index-row">
+            <span class="index-num">22</span>
+            <span class="index-name">Аукцион · Лот №1</span>
+            <span class="index-desc">Единственный экземпляр · бесценно</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="clock.html" class="index-row">
+            <span class="index-num">23</span>
+            <span class="index-name">Часы нашей любви</span>
+            <span class="index-desc">Механика · швейцарская точность</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="credits.html" class="index-row">
+            <span class="index-num">24</span>
+            <span class="index-name">Титры нашей жизни</span>
+            <span class="index-desc">Фильм длиной в жизнь · Coming soon</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="temple.html" class="index-row">
+            <span class="index-num">25</span>
+            <span class="index-name">Храм нашей любви</span>
+            <span class="index-desc">Пять колонн · один алтарь</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="slots.html" class="index-row">
+            <span class="index-num">26</span>
+            <span class="index-name">Слот-машина любви</span>
+            <span class="index-desc">Крути и получай предсказание на день</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="passport.html" class="index-row">
+            <span class="index-num">27</span>
+            <span class="index-name">Паспорт Вероники</span>
+            <span class="index-desc">Официальный документ · бессрочно</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="heartmap.html" class="index-row">
+            <span class="index-num">28</span>
+            <span class="index-name">Карта моего сердца</span>
+            <span class="index-desc">Carta Marina · XVII век</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="menu.html" class="index-row">
+            <span class="index-num">29</span>
+            <span class="index-name">Меню ресторана «Анатолий»</span>
+            <span class="index-desc">Столик на одного · кухня открыта</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="call.html" class="index-row">
+            <span class="index-num">30</span>
+            <span class="index-name">Звонок от меня</span>
+            <span class="index-desc">Входящий · прими, если готова</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="album.html" class="index-row">
+            <span class="index-num">31</span>
+            <span class="index-name">Наш фотоальбом</span>
+            <span class="index-desc">Кадры с историей · можно добавлять</span>
             <span class="index-arrow">→</span>
           </a>
         </div>

@@ -1,0 +1,1248 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Храм нашей любви · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
+        --sand: #cfb8a3;
+        --gold: #b89968;
+        --gold-deep: #8a6f4d;
+        --night: #1a1613;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.32),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+      }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+
+      /* TOPBAR (как в аукционе) */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.72);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+      }
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      /* LAYOUT */
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
+
+      /* HERO */
+      .hero {
+        padding: 20px 0 40px;
+        text-align: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+      }
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 72px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+        max-width: 18ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 48ch;
+      }
+
+      /* ============================================================
+         ХРАМ
+         ============================================================ */
+      .temple-wrap {
+        margin-top: 72px;
+        padding: 56px 24px 80px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 3px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.12),
+          0 8px 20px rgba(30, 26, 22, 0.06);
+        position: relative;
+        isolation: isolate;
+        overflow: visible;
+      }
+      .temple-wrap::before {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(30, 26, 22, 0.08);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .temple-wrap::after {
+        content: "";
+        position: absolute;
+        inset: 20px;
+        border: 1px solid rgba(143, 100, 114, 0.14);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .temple-head {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 0 0 22px;
+        margin-bottom: 44px;
+        border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .temple-head .left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .temple-head .mark {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 26px;
+        line-height: 1;
+        color: var(--ink);
+        margin: 0;
+      }
+      .temple-head .mark em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .temple-head .sub {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .temple-head .right {
+        text-align: right;
+      }
+      .temple-head .right .label {
+        display: block;
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+        margin-bottom: 4px;
+      }
+      .temple-head .right .value {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink);
+        letter-spacing: 0.06em;
+      }
+
+      /* --- Сам храм --- */
+      .temple {
+        position: relative;
+        z-index: 2;
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 0 8px;
+      }
+
+      /* Фронтон (треугольник с LV) */
+      .pediment {
+        position: relative;
+        width: 100%;
+      }
+      .pediment svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .pediment-overlay {
+        position: absolute;
+        top: 63%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        width: 55%;
+        pointer-events: none;
+      }
+      .monogram {
+        display: block;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: clamp(34px, 6.4vw, 62px);
+        line-height: 0.9;
+        letter-spacing: -0.05em;
+        color: var(--ink);
+        padding-bottom: 4px;
+      }
+      .ped-caption {
+        display: block;
+        font-family: "Inter", sans-serif;
+        font-size: clamp(7px, 0.9vw, 9.5px);
+        font-weight: 500;
+        letter-spacing: 0.42em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        padding-left: 0.42em;
+        margin-top: 6px;
+      }
+
+      /* Архитрав (балка) */
+      .architrave {
+        position: relative;
+        height: clamp(22px, 3.2vw, 34px);
+        background: linear-gradient(180deg, #f0e8db 0%, #e0d5c2 100%);
+        margin: -1px 4% 0;
+        border-top: 1px solid rgba(30, 26, 22, 0.18);
+        border-bottom: 1px solid rgba(30, 26, 22, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .architrave::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: rgba(30, 26, 22, 0.08);
+      }
+      .inscription {
+        position: relative;
+        z-index: 1;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: clamp(6px, 0.82vw, 8.5px);
+        letter-spacing: 0.4em;
+        color: var(--ink-3);
+        text-transform: uppercase;
+        padding-left: 0.4em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 92%;
+      }
+
+      /* Колонны */
+      .columns {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: clamp(8px, 2.6vw, 36px);
+        padding: 0 clamp(14px, 5.5%, 56px);
+        align-items: end;
+        position: relative;
+        overflow: visible;
+      }
+
+      .column {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        cursor: pointer;
+        transition: transform 0.5s var(--ease);
+        overflow: visible;
+      }
+      .column:hover {
+        transform: translateY(-8px);
+      }
+
+      /* Капитель */
+      .col-capital {
+        height: clamp(9px, 1.4vw, 14px);
+        background: linear-gradient(180deg, #f7f0e6 0%, #e8dfd1 100%);
+        border: 1px solid rgba(30, 26, 22, 0.16);
+        border-bottom: none;
+        border-radius: 2px 2px 0 0;
+        margin: 0 -5px;
+        transition: background 0.5s var(--ease);
+      }
+
+      /* Ствол (с каннелюрами) */
+      .col-shaft {
+        height: clamp(180px, 28vw, 300px);
+        background:
+          repeating-linear-gradient(
+            90deg,
+            rgba(30, 26, 22, 0.055) 0px,
+            rgba(30, 26, 22, 0.055) 1px,
+            transparent 1px,
+            transparent 11px
+          ),
+          linear-gradient(
+            90deg,
+            #ddd2c0 0%,
+            #f3ece0 22%,
+            #faf5ec 50%,
+            #f3ece0 78%,
+            #ddd2c0 100%
+          );
+        border-left: 1px solid rgba(30, 26, 22, 0.1);
+        border-right: 1px solid rgba(30, 26, 22, 0.1);
+        transition:
+          background 0.5s var(--ease),
+          box-shadow 0.5s var(--ease);
+      }
+
+      /* База */
+      .col-base {
+        height: clamp(9px, 1.4vw, 14px);
+        background: linear-gradient(180deg, #e8dfd1 0%, #ddd2c0 100%);
+        border: 1px solid rgba(30, 26, 22, 0.16);
+        border-top: none;
+        border-radius: 0 0 2px 2px;
+        margin: 0 -7px;
+        transition: background 0.5s var(--ease);
+      }
+
+      /* Hover: колонна в розовом мраморе + мягкое свечение */
+      .column:hover .col-shaft {
+        background:
+          repeating-linear-gradient(
+            90deg,
+            rgba(143, 100, 114, 0.09) 0px,
+            rgba(143, 100, 114, 0.09) 1px,
+            transparent 1px,
+            transparent 11px
+          ),
+          linear-gradient(
+            90deg,
+            #e8d4d8 0%,
+            #f2e4e7 22%,
+            #faf5ec 50%,
+            #f2e4e7 78%,
+            #e8d4d8 100%
+          );
+        box-shadow:
+          0 0 44px rgba(181, 135, 148, 0.4),
+          inset 0 0 20px rgba(143, 100, 114, 0.08);
+      }
+      .column:hover .col-capital {
+        background: linear-gradient(180deg, #f2e4e7 0%, #e8d4d8 100%);
+      }
+      .column:hover .col-base {
+        background: linear-gradient(180deg, #e8d4d8 0%, #dbc4c8 100%);
+      }
+
+      /* Тултип над колонной */
+      .col-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        margin-bottom: 14px;
+        transform: translateX(-50%);
+        padding: 14px 20px 16px;
+        min-width: 190px;
+        max-width: 240px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 2px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 18px 40px rgba(30, 26, 22, 0.14),
+          0 4px 12px rgba(30, 26, 22, 0.06);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.35s var(--ease),
+          transform 0.45s var(--ease);
+        z-index: 20;
+        text-align: left;
+      }
+      .col-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        width: 1px;
+        height: 14px;
+        background: var(--rose-deep);
+        opacity: 0.5;
+        transform: translateX(-50%);
+      }
+      .column:hover .col-tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-6px);
+      }
+
+      /* Крайние колонны — выравниваем тултип к краю */
+      .columns .column:first-child .col-tooltip {
+        left: 0;
+        transform: translateX(0);
+      }
+      .columns .column:first-child:hover .col-tooltip {
+        transform: translateX(0) translateY(-6px);
+      }
+      .columns .column:last-child .col-tooltip {
+        left: auto;
+        right: 0;
+        transform: translateX(0);
+      }
+      .columns .column:last-child:hover .col-tooltip {
+        transform: translateX(0) translateY(-6px);
+      }
+
+      .tt-num {
+        display: block;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 8px;
+      }
+      .tt-name {
+        display: block;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 23px;
+        line-height: 1;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin-bottom: 10px;
+        padding-bottom: 2px;
+      }
+      .tt-date {
+        display: block;
+        font-size: 10.5px;
+        letter-spacing: 0.04em;
+        color: var(--ink-3);
+        line-height: 1.45;
+      }
+
+      /* Ступени */
+      .steps {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: -1px;
+      }
+      .step {
+        background: linear-gradient(180deg, #f5eee2 0%, #e8dfd1 100%);
+        border: 1px solid rgba(30, 26, 22, 0.12);
+        border-top: none;
+      }
+      .step-1 {
+        width: 90%;
+        height: clamp(10px, 1.6vw, 16px);
+      }
+      .step-2 {
+        width: 95%;
+        height: clamp(12px, 1.8vw, 18px);
+      }
+      .step-3 {
+        width: 100%;
+        height: clamp(14px, 2vw, 20px);
+      }
+
+      /* Подпись под храмом */
+      .temple-caption {
+        text-align: center;
+        margin: 32px auto 0;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        color: var(--ink-3);
+        letter-spacing: 0.005em;
+        max-width: 46ch;
+        line-height: 1.6;
+      }
+      .temple-caption em {
+        color: var(--rose-deep);
+      }
+
+      /* ============================================================
+         АЛТАРЬ (внутри храма)
+         ============================================================ */
+      .altar-section {
+        margin-top: 96px;
+        text-align: center;
+        position: relative;
+      }
+      .altar-head {
+        margin-bottom: 44px;
+      }
+      .altar-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: clamp(28px, 4vw, 44px);
+        font-weight: 400;
+        color: var(--ink);
+        margin: 14px 0 0;
+        letter-spacing: -0.02em;
+        line-height: 1.05;
+      }
+      .altar-title em {
+        color: var(--rose-deep);
+        font-style: italic;
+      }
+
+      .altar-frame {
+        position: relative;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 28px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 2px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.12),
+          0 8px 20px rgba(30, 26, 22, 0.06);
+      }
+      .altar-frame::before {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(143, 100, 114, 0.2);
+        pointer-events: none;
+      }
+      .altar-frame::after {
+        content: "";
+        position: absolute;
+        inset: 20px;
+        border: 1px solid rgba(30, 26, 22, 0.08);
+        pointer-events: none;
+      }
+      .altar-photo {
+        position: relative;
+        aspect-ratio: 4 / 5;
+        background: linear-gradient(
+          135deg,
+          var(--rose-tint) 0%,
+          var(--rose-soft) 55%,
+          #cbb0b6 100%
+        );
+        overflow: hidden;
+        border-radius: 1px;
+      }
+      .altar-photo::before {
+        content: "V";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: clamp(140px, 20vw, 220px);
+        line-height: 1;
+        color: rgba(30, 26, 22, 0.13);
+        padding-bottom: 8px;
+      }
+      .altar-photo img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        filter: saturate(0.92);
+      }
+
+      .altar-caption {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 28px auto 0;
+        max-width: 40ch;
+      }
+      .altar-caption em {
+        color: var(--rose-deep);
+      }
+
+      /* NAV */
+      .nav-wrap {
+        margin-top: 96px;
+        padding-top: 40px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 32px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .back-link:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
+      }
+      .back-link .arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 15px;
+      }
+      .back-link:hover .arrow {
+        transform: translateX(-5px);
+      }
+      .nav-link-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 28px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        transition: all 0.35s var(--ease);
+      }
+      .nav-link-secondary:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+      .nav-link-secondary .icon {
+        font-size: 14px;
+        filter: saturate(0.75);
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .nav-link-secondary:hover .icon {
+        transform: scale(1.15);
+      }
+
+      /* FOOTER */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 900px) {
+        .temple-wrap {
+          padding: 40px 16px 60px;
+          margin-top: 56px;
+        }
+        .temple-head {
+          margin-bottom: 32px;
+        }
+        .altar-section {
+          margin-top: 72px;
+        }
+        .altar-head {
+          margin-bottom: 32px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(32px, 9vw, 46px);
+        }
+        .temple-head .mark {
+          font-size: 22px;
+        }
+        .temple-head .sub {
+          font-size: 9px;
+          letter-spacing: 0.2em;
+        }
+        .temple-head .right .value {
+          font-size: 11.5px;
+        }
+        .temple {
+          padding: 0;
+        }
+        .columns {
+          gap: 8px;
+          padding: 0 12px;
+        }
+        .col-shaft {
+          height: 170px;
+        }
+        .col-tooltip {
+          min-width: 160px;
+          max-width: 200px;
+          padding: 11px 14px 13px;
+        }
+        .tt-name {
+          font-size: 18px;
+        }
+        .tt-date {
+          font-size: 10px;
+        }
+        .inscription {
+          font-size: 6.5px;
+          letter-spacing: 0.3em;
+        }
+        .altar-frame {
+          padding: 20px;
+        }
+        .altar-caption {
+          font-size: 15px;
+        }
+        .nav-wrap {
+          margin-top: 64px;
+          padding-top: 28px;
+          gap: 10px;
+        }
+        .back-link,
+        .nav-link-secondary {
+          padding: 15px 22px;
+          font-size: 13.5px;
+        }
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item"
+          ><span class="icon" id="timeIcon">☀️</span
+          ><span id="timeText">--:--</span></span
+        >
+        <span class="meta-sep">·</span>
+        <span class="meta-item"
+          ><span class="icon" id="weatherIcon">🌤️</span
+          ><span id="weatherText">...</span></span
+        >
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="eyebrow">04 · Октября 2025</span>
+        <h1>Храм <em>нашей любви</em></h1>
+        <p class="hero-sub">
+          Пять колонн. Один алтарь. И целая вечность, чтобы это построить.
+          Каждая колонна — принцип, на котором держится всё.
+        </p>
+      </section>
+
+      <section class="temple-wrap">
+        <header class="temple-head">
+          <div class="left">
+            <h2 class="mark">Templum <em>Amoris</em></h2>
+            <span class="sub">Aeternum · MMXXV</span>
+          </div>
+          <div class="right">
+            <span class="label">Основан</span>
+            <span class="value">IV · X · MMXXV</span>
+          </div>
+        </header>
+
+        <div class="temple">
+          <!-- Фронтон -->
+          <div class="pediment">
+            <svg
+              viewBox="0 0 900 200"
+              preserveAspectRatio="xMidYMid meet"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="pedGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#f7f0e6" />
+                  <stop offset="100%" stop-color="#e6ddcd" />
+                </linearGradient>
+              </defs>
+              <polygon
+                points="450,8 892,192 8,192"
+                fill="url(#pedGrad)"
+                stroke="rgba(30,26,22,0.2)"
+                stroke-width="1.2"
+                vector-effect="non-scaling-stroke"
+              />
+              <polygon
+                points="450,34 870,182 30,182"
+                fill="none"
+                stroke="rgba(143,100,114,0.28)"
+                stroke-width="1"
+                vector-effect="non-scaling-stroke"
+              />
+            </svg>
+            <div class="pediment-overlay">
+              <span class="monogram">LV</span>
+              <span class="ped-caption">Amor Aeternum</span>
+            </div>
+          </div>
+
+          <!-- Архитрав -->
+          <div class="architrave">
+            <span class="inscription">· DEDICATVM · IV · OCT · MMXXV ·</span>
+          </div>
+
+          <!-- Колонны -->
+          <div class="columns">
+            <div class="column" tabindex="0">
+              <div class="col-tooltip">
+                <span class="tt-num">Колонна I</span>
+                <span class="tt-name">Верность</span>
+                <span class="tt-date">Установлена 4 октября 2025</span>
+              </div>
+              <div class="col-capital"></div>
+              <div class="col-shaft"></div>
+              <div class="col-base"></div>
+            </div>
+
+            <div class="column" tabindex="0">
+              <div class="col-tooltip">
+                <span class="tt-num">Колонна II</span>
+                <span class="tt-name">Нежность</span>
+                <span class="tt-date">Установлена 4 октября 2025</span>
+              </div>
+              <div class="col-capital"></div>
+              <div class="col-shaft"></div>
+              <div class="col-base"></div>
+            </div>
+
+            <div class="column" tabindex="0">
+              <div class="col-tooltip">
+                <span class="tt-num">Колонна III</span>
+                <span class="tt-name">Смех</span>
+                <span class="tt-date">Установлена 4 октября 2025</span>
+              </div>
+              <div class="col-capital"></div>
+              <div class="col-shaft"></div>
+              <div class="col-base"></div>
+            </div>
+
+            <div class="column" tabindex="0">
+              <div class="col-tooltip">
+                <span class="tt-num">Колонна IV</span>
+                <span class="tt-name">Прощение</span>
+                <span class="tt-date">Установлена 4 октября 2025</span>
+              </div>
+              <div class="col-capital"></div>
+              <div class="col-shaft"></div>
+              <div class="col-base"></div>
+            </div>
+
+            <div class="column" tabindex="0">
+              <div class="col-tooltip">
+                <span class="tt-num">Колонна V</span>
+                <span class="tt-name">Удивление</span>
+                <span class="tt-date">Установлена 4 октября 2025</span>
+              </div>
+              <div class="col-capital"></div>
+              <div class="col-shaft"></div>
+              <div class="col-base"></div>
+            </div>
+          </div>
+
+          <!-- Ступени -->
+          <div class="steps">
+            <div class="step step-1"></div>
+            <div class="step step-2"></div>
+            <div class="step step-3"></div>
+          </div>
+
+          <p class="temple-caption">
+            Наведи на колонну — и храм <em>шепнёт её имя</em>.
+          </p>
+        </div>
+      </section>
+
+      <!-- Алтарь -->
+      <section class="altar-section">
+        <div class="altar-head">
+          <span class="eyebrow">Внутри храма</span>
+          <h2 class="altar-title">Алтарь, на котором — <em>мы</em></h2>
+        </div>
+        <div class="altar-frame">
+          <div class="altar-photo">
+            <img
+              src="photos/photo2.jpg"
+              alt=""
+              onerror="this.remove()"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+        <p class="altar-caption">
+          Всё, что построено снаружи — лишь стены. Настоящее — здесь, внутри. И
+          оно <em>светится</em>.
+        </p>
+      </section>
+
+      <div class="nav-wrap">
+        <a href="index.html" class="back-link">
+          <span class="arrow">←</span>
+          <span>На главную</span>
+        </a>
+        <a href="auction.html" class="nav-link-secondary">
+          <span class="icon">🏛</span>
+          <span>Аукцион</span>
+        </a>
+        <a href="wanted.html" class="nav-link-secondary">
+          <span class="icon">📰</span>
+          <span>Wanted</span>
+        </a>
+        <a href="court.html" class="nav-link-secondary">
+          <span class="icon">⚖️</span>
+          <span>Суд над сердцем</span>
+        </a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Построено вдвоём</span>
+    </footer>
+
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const t = document.getElementById("timeText");
+        if (t) t.textContent = `${hh}:${mm}`;
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        const ti = document.getElementById("timeIcon");
+        if (ti) ti.textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
+
+      const WEATHER_CITY = { name: "Улан-Удэ" };
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        if (!iconEl || !textEl) return;
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      const iw = document.getElementById("infoWidget");
+      if (iw) iw.addEventListener("click", loadWeather);
+    </script>
+  </body>
+</html>
