@@ -1,0 +1,1772 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Инструкция по применению · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
+        --sand: #cfb8a3;
+        --gold: #b89968;
+        --gold-deep: #8a6f4d;
+        --night: #1a1613;
+        --night-2: #2b2620;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+      }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
+
+      /* TOPBAR */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.72);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+      }
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      /* LAYOUT */
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
+
+      /* HERO */
+      .hero {
+        padding: 20px 0 40px;
+        text-align: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+      }
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 72px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+        max-width: 16ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 46ch;
+        font-weight: 400;
+      }
+
+      /* DEVICE PASSPORT CARD */
+      .passport {
+        position: relative;
+        margin-top: 72px;
+        padding: 48px 48px 44px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 8px 20px rgba(30, 26, 22, 0.05);
+      }
+      .passport::before {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(30, 26, 22, 0.05);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+      /* Corner ticks */
+      .passport::after {
+        content: "";
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        width: 14px;
+        height: 14px;
+        border-top: 1px solid var(--ink-3);
+        border-left: 1px solid var(--ink-3);
+        opacity: 0.5;
+      }
+
+      .passport-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 22px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid var(--line);
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .passport-head-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .device-mark {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--rose) 0%,
+          var(--rose-deep) 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fdfaf6;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 26px;
+        line-height: 1;
+        padding-bottom: 4px;
+        box-shadow:
+          inset 0 0 12px rgba(0, 0, 0, 0.18),
+          0 8px 20px rgba(143, 100, 114, 0.28);
+      }
+      .device-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 26px;
+        line-height: 1.1;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0;
+      }
+      .device-sub {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-top: 4px;
+      }
+
+      .passport-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: var(--ink);
+        color: var(--paper);
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .passport-badge .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--gold);
+        box-shadow: 0 0 0 3px rgba(184, 153, 104, 0.25);
+        animation: pulseDot 2s ease-in-out infinite;
+      }
+      @keyframes pulseDot {
+        0%,
+        100% {
+          box-shadow: 0 0 0 3px rgba(184, 153, 104, 0.25);
+        }
+        50% {
+          box-shadow: 0 0 0 6px rgba(184, 153, 104, 0.05);
+        }
+      }
+
+      /* Specs grid */
+      .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px 40px;
+        position: relative;
+        z-index: 1;
+      }
+      .spec {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--line);
+      }
+      .spec-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .spec-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 19px;
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        font-style: italic;
+      }
+      .spec-value.mono {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-style: normal;
+        font-size: 16px;
+        letter-spacing: 0.04em;
+        font-weight: 500;
+      }
+      .spec-value.rose {
+        color: var(--rose-deep);
+      }
+
+      /* SECTIONS */
+      .manual-section {
+        margin-top: 56px;
+      }
+
+      .section-head {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 60px;
+        margin-bottom: 32px;
+        align-items: baseline;
+      }
+      .section-label {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .section-label .num {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 20px;
+        color: var(--rose-deep);
+        letter-spacing: 0;
+        text-transform: none;
+      }
+      .section-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(24px, 3vw, 36px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin: 0;
+        color: var(--ink);
+      }
+      .section-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      /* PANEL — general box */
+      .panel {
+        position: relative;
+        padding: 36px 40px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 20px 45px rgba(30, 26, 22, 0.08),
+          0 4px 12px rgba(30, 26, 22, 0.04);
+      }
+      .panel::after {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: 1px solid rgba(30, 26, 22, 0.05);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      /* COMPONENTS LIST */
+      .components-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 32px;
+      }
+      .component {
+        display: flex;
+        gap: 14px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      .component:nth-last-child(-n + 2) {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .component-icon {
+        font-size: 26px;
+        flex-shrink: 0;
+        filter: saturate(0.75);
+        line-height: 1;
+      }
+      .component-body {
+        flex: 1;
+        min-width: 0;
+      }
+      .component-name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 18px;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin: 0 0 4px;
+      }
+      .component-desc {
+        font-size: 13px;
+        color: var(--ink-3);
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      /* WARNINGS */
+      .warnings-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .warning {
+        display: flex;
+        gap: 16px;
+        padding: 18px 22px;
+        background: linear-gradient(
+          135deg,
+          rgba(232, 212, 216, 0.35),
+          var(--surface-2)
+        );
+        border: 1px solid var(--line);
+        border-left: 2px solid var(--rose-deep);
+        border-radius: 3px;
+        transition: transform 0.35s var(--ease);
+      }
+      .warning:hover {
+        transform: translateX(3px);
+      }
+      .warning-icon {
+        font-size: 20px;
+        flex-shrink: 0;
+        filter: saturate(0.75);
+        line-height: 1.2;
+      }
+      .warning-body {
+        flex: 1;
+        min-width: 0;
+      }
+      .warning-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 16px;
+        font-weight: 400;
+        font-style: italic;
+        letter-spacing: -0.005em;
+        color: var(--ink);
+        margin: 0 0 4px;
+      }
+      .warning-desc {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--ink-2);
+        margin: 0;
+      }
+
+      /* CONDITIONS */
+      .conditions-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px 32px;
+      }
+      .condition {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--line);
+      }
+      .condition:nth-last-child(-n + 2) {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .condition-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+      }
+      .condition-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 20px;
+        line-height: 1.25;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+      }
+      .condition-value em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .condition-note {
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--ink-3);
+        margin: 0;
+      }
+
+      /* SPECS BARS */
+      .stats-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+      }
+      .stat-row {
+        display: grid;
+        grid-template-columns: 200px 1fr 80px;
+        gap: 24px;
+        align-items: center;
+      }
+      .stat-name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 17px;
+        letter-spacing: -0.005em;
+        color: var(--ink);
+      }
+      .stat-bar {
+        height: 4px;
+        background: var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+        position: relative;
+      }
+      .stat-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, var(--rose), var(--rose-deep));
+        border-radius: 2px;
+        transition: width 1.2s var(--ease);
+      }
+      .stat-fill.full {
+        background: linear-gradient(90deg, var(--gold), var(--rose-deep));
+      }
+      .stat-value {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: var(--ink-2);
+        text-align: right;
+      }
+      .stat-value.infinity {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 22px;
+        font-style: italic;
+        color: var(--rose-deep);
+        letter-spacing: 0;
+      }
+
+      /* WARRANTY */
+      .warranty-card {
+        position: relative;
+        padding: 44px 48px 40px;
+        background:
+          repeating-linear-gradient(
+            135deg,
+            transparent 0,
+            transparent 4px,
+            rgba(143, 100, 114, 0.02) 4px,
+            rgba(143, 100, 114, 0.02) 5px
+          ),
+          linear-gradient(160deg, #faf6ee 0%, var(--surface) 100%);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 8px 20px rgba(30, 26, 22, 0.05);
+        overflow: hidden;
+      }
+      .warranty-card::before {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(143, 100, 114, 0.15);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+      .warranty-grid {
+        display: grid;
+        grid-template-columns: 1fr 180px;
+        gap: 40px;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+      }
+      .warranty-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(24px, 3vw, 32px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 14px;
+      }
+      .warranty-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .warranty-text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 16px;
+        line-height: 1.65;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+        margin: 0 0 20px;
+        max-width: 42ch;
+      }
+      .warranty-meta {
+        display: flex;
+        gap: 32px;
+        flex-wrap: wrap;
+      }
+      .warranty-meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .warranty-meta-item .label {
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .warranty-meta-item .value {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--ink);
+        letter-spacing: 0.04em;
+      }
+
+      .wax-seal {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 35% 30%,
+          #b56a7d 0%,
+          #8f6472 45%,
+          #5f3f4e 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-shadow:
+          inset 0 -4px 12px rgba(0, 0, 0, 0.3),
+          inset 0 3px 8px rgba(255, 255, 255, 0.15),
+          0 12px 28px rgba(30, 26, 22, 0.28);
+        transform: rotate(-7deg);
+      }
+      .wax-seal::before {
+        content: "";
+        position: absolute;
+        inset: 10px;
+        border-radius: 50%;
+        border: 1px dashed rgba(255, 255, 255, 0.25);
+      }
+      .wax-seal-text {
+        text-align: center;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        color: rgba(253, 250, 246, 0.95);
+        line-height: 1.1;
+        padding: 0 20px;
+      }
+      .wax-seal-text .big {
+        display: block;
+        font-size: 28px;
+        margin-bottom: 4px;
+        padding-bottom: 4px;
+      }
+      .wax-seal-text .small {
+        display: block;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-style: normal;
+        opacity: 0.85;
+      }
+
+      /* CARE INSTRUCTIONS */
+      .care-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        counter-reset: care;
+        position: relative;
+        z-index: 1;
+      }
+      .care-list li {
+        counter-increment: care;
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        gap: 20px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--line);
+        align-items: baseline;
+      }
+      .care-list li:last-child {
+        border-bottom: none;
+      }
+      .care-list li::before {
+        content: counter(care, decimal-leading-zero);
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 18px;
+        color: var(--rose-deep);
+        letter-spacing: 0.02em;
+      }
+      .care-text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 16px;
+        line-height: 1.6;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+      }
+      .care-text b {
+        font-weight: 400;
+        font-style: italic;
+        color: var(--ink);
+      }
+
+      /* FOOTER NOTE */
+      .footnote {
+        margin-top: 80px;
+        text-align: center;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 15px;
+        color: var(--ink-3);
+        letter-spacing: -0.005em;
+      }
+      .footnote b {
+        font-weight: 400;
+        color: var(--rose-deep);
+      }
+
+      /* NAV */
+      .nav-wrap {
+        margin-top: 80px;
+        padding-top: 40px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 32px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .back-link:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
+      }
+      .back-link .arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 15px;
+      }
+      .back-link:hover .arrow {
+        transform: translateX(-5px);
+      }
+      .nav-link-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 28px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .nav-link-secondary:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+      .nav-link-secondary .icon {
+        font-size: 14px;
+        filter: saturate(0.75);
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .nav-link-secondary:hover .icon {
+        transform: scale(1.15);
+      }
+
+      /* FOOTER */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 780px) {
+        .section-head {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          margin-bottom: 24px;
+        }
+        .passport {
+          padding: 32px 24px 28px;
+          margin-top: 56px;
+        }
+        .passport-head {
+          padding-bottom: 16px;
+          margin-bottom: 24px;
+        }
+        .device-title {
+          font-size: 22px;
+        }
+        .device-mark {
+          width: 46px;
+          height: 46px;
+          font-size: 22px;
+        }
+        .specs-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        .components-list {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        .component:nth-last-child(-n + 2) {
+          border-bottom: 1px solid var(--line);
+          padding-bottom: 16px;
+        }
+        .component:last-child {
+          border-bottom: none;
+          padding-bottom: 0;
+        }
+        .conditions-list {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        .condition:nth-last-child(-n + 2) {
+          border-bottom: 1px solid var(--line);
+          padding-bottom: 18px;
+        }
+        .condition:last-child {
+          border-bottom: none;
+          padding-bottom: 0;
+        }
+        .panel {
+          padding: 28px 22px;
+        }
+        .warranty-card {
+          padding: 32px 24px 28px;
+        }
+        .warranty-grid {
+          grid-template-columns: 1fr;
+          gap: 28px;
+        }
+        .wax-seal {
+          width: 120px;
+          height: 120px;
+          margin: 0 auto;
+        }
+        .wax-seal-text .big {
+          font-size: 24px;
+        }
+        .stat-row {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+        .stat-value {
+          text-align: left;
+        }
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(32px, 9vw, 46px);
+        }
+        .passport {
+          padding: 28px 20px 24px;
+        }
+        .passport-badge {
+          font-size: 9px;
+          padding: 6px 12px;
+        }
+        .spec-value {
+          font-size: 17px;
+        }
+        .spec-value.mono {
+          font-size: 14px;
+        }
+        .section-title {
+          font-size: 22px;
+        }
+        .component-name {
+          font-size: 16px;
+        }
+        .component-icon {
+          font-size: 22px;
+        }
+        .warning {
+          padding: 14px 16px;
+        }
+        .warning-title {
+          font-size: 15px;
+        }
+        .warning-desc {
+          font-size: 12.5px;
+        }
+        .condition-value {
+          font-size: 17px;
+        }
+        .stat-name {
+          font-size: 15px;
+        }
+        .care-list li {
+          grid-template-columns: 34px 1fr;
+          gap: 14px;
+        }
+        .care-text {
+          font-size: 15px;
+        }
+        .wax-seal {
+          width: 100px;
+          height: 100px;
+        }
+        .wax-seal-text .big {
+          font-size: 20px;
+        }
+        .wax-seal-text .small {
+          font-size: 8.5px;
+          letter-spacing: 0.12em;
+        }
+        .nav-wrap {
+          margin-top: 60px;
+          padding-top: 32px;
+          gap: 10px;
+        }
+        .back-link,
+        .nav-link-secondary {
+          padding: 16px 24px;
+          font-size: 13.5px;
+        }
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+        .stat-fill {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item"
+          ><span class="icon" id="timeIcon">☀️</span
+          ><span id="timeText">--:--</span></span
+        >
+        <span class="meta-sep">·</span>
+        <span class="meta-item"
+          ><span class="icon" id="weatherIcon">🌤️</span
+          ><span id="weatherText">...</span></span
+        >
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <span class="eyebrow">19 · Документация</span>
+        <h1>Инструкция по <em>применению</em></h1>
+        <p class="hero-sub">
+          Официальный техпаспорт устройства «Анатолий». Внимательно прочитайте
+          перед первым использованием. Действует пожизненно.
+        </p>
+      </section>
+
+      <!-- DEVICE PASSPORT -->
+      <article class="passport">
+        <header class="passport-head">
+          <div class="passport-head-left">
+            <div class="device-mark">А</div>
+            <div>
+              <h2 class="device-title">Устройство «Анатолий»</h2>
+              <div class="device-sub">Модель AT-2026 · Версия для Вероники</div>
+            </div>
+          </div>
+          <div class="passport-badge">
+            <span class="dot"></span>
+            <span>Активно</span>
+          </div>
+        </header>
+
+        <div class="specs-grid">
+          <div class="spec">
+            <span class="spec-label">Модель</span>
+            <span class="spec-value mono">AT-2026-♥</span>
+          </div>
+          <div class="spec">
+            <span class="spec-label">Серийный номер</span>
+            <span class="spec-value mono">0001 / 0001</span>
+          </div>
+          <div class="spec">
+            <span class="spec-label">Дата выпуска</span>
+            <span class="spec-value">6 июня 2006</span>
+          </div>
+          <div class="spec">
+            <span class="spec-label">Производитель</span>
+            <span class="spec-value">Судьба и звёзды</span>
+          </div>
+          <div class="spec">
+            <span class="spec-label">Совместимость</span>
+            <span class="spec-value rose">Только с Вероникой</span>
+          </div>
+          <div class="spec">
+            <span class="spec-label">Страна/Город</span>
+            <span class="spec-value">Улан-Удэ, но сердце везде</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 01 КОМПЛЕКТАЦИЯ -->
+      <section class="manual-section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">01</span>
+            <span>Комплектация</span>
+          </div>
+          <h3 class="section-title">Что входит в <em>базовую</em> сборку</h3>
+        </div>
+
+        <div class="panel">
+          <ul class="components-list">
+            <li class="component">
+              <span class="component-icon">🤲</span>
+              <div class="component-body">
+                <h4 class="component-name">Руки</h4>
+                <p class="component-desc">
+                  Всегда готовы обнять. Настроены на поиск её руки в любой
+                  ситуации.
+                </p>
+              </div>
+            </li>
+            <li class="component">
+              <span class="component-icon">❤️</span>
+              <div class="component-body">
+                <h4 class="component-name">Сердце</h4>
+                <p class="component-desc">
+                  Работает громче при её появлении. Использовать бережно, оно
+                  нежное.
+                </p>
+              </div>
+            </li>
+            <li class="component">
+              <span class="component-icon">😂</span>
+              <div class="component-body">
+                <h4 class="component-name">Чувство юмора</h4>
+                <p class="component-desc">
+                  Хранится в отсеке «для её шуток». Работает в любом состоянии.
+                </p>
+              </div>
+            </li>
+            <li class="component">
+              <span class="component-icon">🎧</span>
+              <div class="component-body">
+                <h4 class="component-name">Умение слушать</h4>
+                <p class="component-desc">
+                  Встроенная функция, работает 24/7. Питается её голосом.
+                </p>
+              </div>
+            </li>
+            <li class="component">
+              <span class="component-icon">☕</span>
+              <div class="component-body">
+                <h4 class="component-name">Утренний кофе</h4>
+                <p class="component-desc">
+                  Опционально, но без него сложнее включить устройство до 9
+                  утра.
+                </p>
+              </div>
+            </li>
+            <li class="component">
+              <span class="component-icon">💬</span>
+              <div class="component-body">
+                <h4 class="component-name">Три слова</h4>
+                <p class="component-desc">
+                  «Я люблю тебя». Говорит каждый день, без напоминаний.
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 02 МЕРЫ ПРЕДОСТОРОЖНОСТИ -->
+      <section class="manual-section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">02</span>
+            <span>Безопасность</span>
+          </div>
+          <h3 class="section-title">Меры <em>предосторожности</em></h3>
+        </div>
+
+        <div class="panel">
+          <ul class="warnings-list">
+            <li class="warning">
+              <span class="warning-icon">⚠️</span>
+              <div class="warning-body">
+                <h4 class="warning-title">Не будить до 12:00</h4>
+                <p class="warning-desc">
+                  В противном случае возможны сбои в работе, ворчание и
+                  потребность в дополнительной чашке кофе.
+                </p>
+              </div>
+            </li>
+            <li class="warning">
+              <span class="warning-icon">☕</span>
+              <div class="warning-body">
+                <h4 class="warning-title">Не отбирать кофе</h4>
+                <p class="warning-desc">
+                  Это может привести к непредсказуемому поведению. Устройство
+                  должно быть снабжено кофеином регулярно.
+                </p>
+              </div>
+            </li>
+            <li class="warning">
+              <span class="warning-icon">🚫</span>
+              <div class="warning-body">
+                <h4 class="warning-title">Не сравнивать с другими</h4>
+                <p class="warning-desc">
+                  Уникальное устройство ручной сборки. Аналогов не существует,
+                  сравнение приведёт к ошибке.
+                </p>
+              </div>
+            </li>
+            <li class="warning">
+              <span class="warning-icon">🤍</span>
+              <div class="warning-body">
+                <h4 class="warning-title">Беречь сердце</h4>
+                <p class="warning-desc">
+                  Оно хрупкое, но уже полностью в её власти. Просим обращаться
+                  аккуратно — оно принадлежит только ей.
+                </p>
+              </div>
+            </li>
+            <li class="warning">
+              <span class="warning-icon">📱</span>
+              <div class="warning-body">
+                <h4 class="warning-title">Не игнорировать сообщения</h4>
+                <p class="warning-desc">
+                  Отсутствие реакции более 2 часов вызывает тревожный сигнал «я
+                  скучаю». Не игнорировать.
+                </p>
+              </div>
+            </li>
+            <li class="warning">
+              <span class="warning-icon">🌙</span>
+              <div class="warning-body">
+                <h4 class="warning-title">Не отпускать надолго одного</h4>
+                <p class="warning-desc">
+                  Устройство привязано к Веронике. Долгая разлука вызывает сбои
+                  и грусть.
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 03 УСЛОВИЯ ЭКСПЛУАТАЦИИ -->
+      <section class="manual-section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">03</span>
+            <span>Эксплуатация</span>
+          </div>
+          <h3 class="section-title">Условия <em>использования</em></h3>
+        </div>
+
+        <div class="panel">
+          <ul class="conditions-list">
+            <li class="condition">
+              <span class="condition-label">Оптимальная среда</span>
+              <span class="condition-value">Рядом с <em>тобой</em></span>
+              <p class="condition-note">
+                В этом режиме КПД достигает 100%. Вне её присутствия — около 40%
+                и постоянные сигналы «скучаю».
+              </p>
+            </li>
+            <li class="condition">
+              <span class="condition-label">Диапазон температур</span>
+              <span class="condition-value"
+                >От твоих объятий до горячего чая</span
+              >
+              <p class="condition-note">
+                В холодную погоду требуется дополнительная активация — укутать,
+                согреть, прижать.
+              </p>
+            </li>
+            <li class="condition">
+              <span class="condition-label">Питание</span>
+              <span class="condition-value">Регулярное и <em>вкусное</em></span>
+              <p class="condition-note">
+                Особенно хорошо работает на её домашней еде и просто на
+                разговорах за ужином.
+              </p>
+            </li>
+            <li class="condition">
+              <span class="condition-label">Обслуживание</span>
+              <span class="condition-value"
+                >Требует внимания <em>каждый день</em></span
+              >
+              <p class="condition-note">
+                Обнимать, целовать, слушать, смеяться. Отсутствие внимания > 24
+                часов снижает работоспособность.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 04 ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ -->
+      <section class="manual-section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">04</span>
+            <span>Характеристики</span>
+          </div>
+          <h3 class="section-title">Технические <em>показатели</em></h3>
+        </div>
+
+        <div class="panel">
+          <ul class="stats-list">
+            <li class="stat-row">
+              <span class="stat-name">Терпение</span>
+              <div class="stat-bar">
+                <div class="stat-fill" data-width="90%"></div>
+              </div>
+              <span class="stat-value">9 / 10</span>
+            </li>
+            <li class="stat-row">
+              <span class="stat-name">Нежность</span>
+              <div class="stat-bar">
+                <div class="stat-fill" data-width="85%"></div>
+              </div>
+              <span class="stat-value">8.5 / 10</span>
+            </li>
+            <li class="stat-row">
+              <span class="stat-name">Чувство юмора</span>
+              <div class="stat-bar">
+                <div class="stat-fill" data-width="80%"></div>
+              </div>
+              <span class="stat-value">8 / 10</span>
+            </li>
+            <li class="stat-row">
+              <span class="stat-name">Умение удивлять</span>
+              <div class="stat-bar">
+                <div class="stat-fill" data-width="75%"></div>
+              </div>
+              <span class="stat-value">7.5 / 10</span>
+            </li>
+            <li class="stat-row">
+              <span class="stat-name">Внимательность</span>
+              <div class="stat-bar">
+                <div class="stat-fill" data-width="92%"></div>
+              </div>
+              <span class="stat-value">9.2 / 10</span>
+            </li>
+            <li class="stat-row">
+              <span class="stat-name">Любовь к тебе</span>
+              <div class="stat-bar">
+                <div class="stat-fill full" data-width="100%"></div>
+              </div>
+              <span class="stat-value infinity">∞</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 05 ГАРАНТИЯ -->
+      <section class="manual-section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">05</span>
+            <span>Гарантия</span>
+          </div>
+          <h3 class="section-title">Пожизненная <em>и безусловная</em></h3>
+        </div>
+
+        <div class="warranty-card">
+          <div class="warranty-grid">
+            <div>
+              <h4 class="warranty-title">Гарантийный <em>талон</em></h4>
+              <p class="warranty-text">
+                Производитель гарантирует бесперебойную работу устройства
+                «Анатолий» на весь срок службы. Ремонту не подлежит, но и не
+                потребует — детали изготовлены из самой прочной любви. Гарантия
+                действительна только при использовании Вероникой.
+              </p>
+              <div class="warranty-meta">
+                <div class="warranty-meta-item">
+                  <span class="label">Срок действия</span>
+                  <span class="value">ПОЖИЗНЕННО</span>
+                </div>
+                <div class="warranty-meta-item">
+                  <span class="label">Условие</span>
+                  <span class="value">ТОЛЬКО ДЛЯ НЕЁ</span>
+                </div>
+                <div class="warranty-meta-item">
+                  <span class="label">Номер</span>
+                  <span class="value">№ 0001</span>
+                </div>
+              </div>
+            </div>
+            <div class="wax-seal">
+              <div class="wax-seal-text">
+                <span class="big">♥</span>
+                <span class="small">Гарантия<br />пожизненно</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 УХОД -->
+      <section class="manual-section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">06</span>
+            <span>Уход</span>
+          </div>
+          <h3 class="section-title">Инструкция по <em>уходу</em></h3>
+        </div>
+
+        <div class="panel">
+          <ol class="care-list">
+            <li>
+              <p class="care-text">
+                Протирать <b>объятиями</b> минимум один раз в день. Лучше —
+                утром, днём и вечером.
+              </p>
+            </li>
+            <li>
+              <p class="care-text">
+                Питать <b>вниманием</b>. Устройство особенно чувствительно к
+                мелочам: как прошёл день, что снилось, о чём думал.
+              </p>
+            </li>
+            <li>
+              <p class="care-text">
+                Смазывать <b>поцелуями</b> регулярно. Пропуск более 12 часов
+                нежелателен.
+              </p>
+            </li>
+            <li>
+              <p class="care-text">
+                Хранить <b>рядом с собой</b>. Устройство лучше всего работает на
+                расстоянии вытянутой руки.
+              </p>
+            </li>
+            <li>
+              <p class="care-text">
+                Раз в год желательно <b>проверять рекорд</b> — любить ли ещё
+                сильнее. По нашим данным, ответ всегда «да».
+              </p>
+            </li>
+            <li>
+              <p class="care-text">
+                <b>Не переживать</b>, если что-то не работает. Устройство само
+                починится от одного её «всё хорошо, я всегда рядом».
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <p class="footnote">
+        Произведено с любовью в Улан-Удэ. <b>Единственный экземпляр.</b><br />
+        Все права принадлежат Веронике.
+      </p>
+
+      <!-- NAV -->
+      <div class="nav-wrap">
+        <a href="index.html" class="back-link">
+          <span class="arrow">←</span>
+          <span>На главную</span>
+        </a>
+        <a href="love.html" class="nav-link-secondary">
+          <span class="icon">💗</span>
+          <span>Что я в тебе люблю</span>
+        </a>
+        <a href="reasons.html" class="nav-link-secondary">
+          <span class="icon">💕</span>
+          <span>100 причин</span>
+        </a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <!-- ============================================================
+         TIME + WEATHER
+         ============================================================ -->
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const t = document.getElementById("timeText");
+        if (t) t.textContent = `${hh}:${mm}`;
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        const ti = document.getElementById("timeIcon");
+        if (ti) ti.textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
+
+      const WEATHER_CITY = { name: "Улан-Удэ" };
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        if (!iconEl || !textEl) return;
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      const iw = document.getElementById("infoWidget");
+      if (iw) iw.addEventListener("click", loadWeather);
+    </script>
+
+    <!-- ============================================================
+         ANIMATE STAT BARS ON SCROLL
+         ============================================================ -->
+    <script>
+      (function () {
+        "use strict";
+
+        function animateStatBars() {
+          const bars = document.querySelectorAll(".stat-fill");
+          if (!bars.length) return;
+
+          bars.forEach((bar) => {
+            const target = bar.dataset.width || "0%";
+            bar.style.width = "0%";
+            // Небольшая задержка для плавности
+            requestAnimationFrame(() => {
+              setTimeout(() => {
+                bar.style.width = target;
+              }, 200);
+            });
+          });
+        }
+
+        // Запускаем анимацию при попадании секции в вид
+        if ("IntersectionObserver" in window) {
+          const section = document.querySelector(".stats-list");
+          if (section) {
+            const observer = new IntersectionObserver(
+              (entries) => {
+                entries.forEach((entry) => {
+                  if (entry.isIntersecting) {
+                    animateStatBars();
+                    observer.disconnect();
+                  }
+                });
+              },
+              { threshold: 0.2 },
+            );
+            observer.observe(section);
+          } else {
+            animateStatBars();
+          }
+        } else {
+          animateStatBars();
+        }
+      })();
+    </script>
+
+    <script src="sw-register.js" defer></script>
+  </body>
+</html>

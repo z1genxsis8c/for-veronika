@@ -1,710 +1,1455 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Собери моё сердце ❤️</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Собери моё сердце · Для Вероники</title>
+
     <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ff4d6d">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Вероника">
-  <link rel="apple-touch-icon" href="photos/icon-192.png">
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      overflow-x: hidden;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
 
-    body {
-      background: linear-gradient(135deg, #ffe5ec, #ffc2d1, #fba3b7);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 20px;
-      padding-bottom: 40px;
-      box-sizing: border-box;
-      position: relative;
-      touch-action: manipulation;
-    }
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
-    #hearts-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
-    }
+    <style>
+      /* ============================================================
+       TOKENS
+       ============================================================ */
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
 
-    .heart {
-      position: absolute;
-      top: -30px;
-      color: #ffb3c1;
-      font-size: 20px;
-      pointer-events: none;
-      animation: fall linear infinite;
-    }
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
 
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-    }
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
 
-    .container {
-      position: relative;
-      z-index: 10;
-      width: 100%;
-      max-width: 600px;
-      text-align: center;
-    }
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
 
-    h1 {
-      color: #ff4d6d;
-      font-size: 22px;
-      margin: 0 0 6px;
-      font-weight: 800;
-      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
-    }
+        --sand: #cfb8a3;
 
-    .subtitle {
-      color: #c71585;
-      font-size: 13px;
-      margin: 0 0 16px;
-      font-weight: 600;
-      opacity: 0.9;
-    }
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
 
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
+      * {
+        box-sizing: border-box;
+      }
 
-    .stat-chip {
-      background: rgba(255, 255, 255, 0.95);
-      border: 2px solid #ffc2d1;
-      border-radius: 50px;
-      padding: 8px 16px;
-      color: #c71585;
-      font-size: 13px;
-      font-weight: 700;
-      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.15);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
-    .stat-chip b {
-      color: #ff4d6d;
-      font-size: 15px;
-    }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
 
-    .puzzle-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+      }
 
-    .board {
-      position: relative;
-      background: rgba(255, 255, 255, 0.5);
-      border: 3px dashed #ffc2d1;
-      border-radius: 20px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      gap: 0;
-      padding: 0;
-      box-sizing: content-box;
-      box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2);
-      transition: all 0.3s;
-      overflow: hidden;
-    }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
 
-    .slot {
-      position: relative;
-      background: rgba(255, 229, 236, 0.6);
-      transition: all 0.2s;
-      border: 1px solid rgba(255, 194, 209, 0.4);
-      box-sizing: border-box;
-    }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
 
-    .slot.over {
-      background: rgba(255, 143, 163, 0.6);
-      box-shadow: inset 0 0 0 3px #ff4d6d;
-    }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
 
-    .slot.correct {
-      background: transparent;
-      border-color: transparent;
-    }
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
 
-    .piece {
-      position: relative;
-      background-repeat: no-repeat;
-      cursor: grab;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      transition: transform 0.15s, box-shadow 0.15s;
-      touch-action: none;
-      z-index: 20;
-      border: 2px solid #fff;
-      box-sizing: border-box;
-      flex-shrink: 0;
-      border-radius: 10px;
-    }
+      /* ============================================================
+       TOPBAR
+       ============================================================ */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.78);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
 
-    .piece:hover {
-      transform: scale(1.06);
-      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
-      z-index: 30;
-    }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
 
-    .piece.dragging {
-      cursor: grabbing;
-      opacity: 0.9;
-      transform: scale(1.1) rotate(3deg);
-      box-shadow: 0 12px 28px rgba(255, 77, 109, 0.6);
-      z-index: 100;
-    }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
 
-    /* Кусочек, поставленный в слот — сохраняет свою часть картинки */
-    .slot .piece {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100% !important;
-      height: 100% !important;
-      /* background-size и background-position задаются inline через JS */
-      border-radius: 0;
-      border: none;
-      box-shadow: none;
-      pointer-events: none;
-      cursor: default;
-      transition: none;
-    }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
 
-    .tray {
-      position: relative;
-      width: 100%;
-      max-width: 400px;
-      min-height: 130px;
-      background: rgba(255, 255, 255, 0.75);
-      border: 3px dashed #ffc2d1;
-      border-radius: 20px;
-      padding: 12px;
-      box-sizing: border-box;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 10px 30px rgba(255, 77, 109, 0.15);
-    }
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
 
-    .tray-empty {
-      color: #c71585;
-      font-size: 14px;
-      font-weight: 700;
-      opacity: 0.7;
-      padding: 20px;
-    }
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
 
-    .controls {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
+      .topbar-meta:hover {
+        color: var(--ink);
+      }
 
-    .btn {
-      background: rgba(255, 255, 255, 0.95);
-      color: #c71585;
-      border: 2px solid #ffc2d1;
-      font-size: 14px;
-      padding: 12px 22px;
-      text-decoration: none;
-      border-radius: 50px;
-      font-weight: 700;
-      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
-      transition: all 0.25s;
-      cursor: pointer;
-      font-family: inherit;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
 
-    .btn:hover {
-      background: #ff4d6d;
-      color: white;
-      border-color: #ff4d6d;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(255, 77, 109, 0.5);
-    }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
 
-    .btn.primary {
-      background: linear-gradient(135deg, #ff4d6d, #c71585);
-      color: white;
-      border-color: #ff4d6d;
-    }
+      /* ============================================================
+       LAYOUT
+       ============================================================ */
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
 
-    .btn.primary:hover {
-      background: linear-gradient(135deg, #ff758f, #ff4d6d);
-    }
+      /* ============================================================
+       HERO
+       ============================================================ */
+      .hero {
+        padding: 20px 0 40px;
+        text-align: center;
+      }
 
-    .victory-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(43, 10, 31, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 5000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      box-sizing: border-box;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.6s;
-    }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+      }
 
-    .victory-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
 
-    .victory-card {
-      background: #fff;
-      border-radius: 28px;
-      padding: 32px 26px 26px;
-      max-width: 440px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(255, 77, 109, 0.4);
-      border: 3px solid #ffc2d1;
-      transform: scale(0.7) translateY(50px);
-      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      max-height: 90vh;
-      overflow-y: auto;
-      box-sizing: border-box;
-    }
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 68px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+        max-width: 16ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
 
-    .victory-overlay.show .victory-card {
-      transform: scale(1) translateY(0);
-    }
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
 
-    .victory-emoji {
-      font-size: 64px;
-      display: block;
-      margin-bottom: 8px;
-      animation: heartBeat 1.4s ease-in-out infinite;
-    }
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 44ch;
+        font-weight: 400;
+      }
 
-    @keyframes heartBeat {
-      0%, 100% { transform: scale(1); }
-      15% { transform: scale(1.2); }
-      30% { transform: scale(1); }
-      45% { transform: scale(1.15); }
-      60% { transform: scale(1); }
-    }
+      /* ============================================================
+       STATS
+       ============================================================ */
+      .stats {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 32px;
+        margin: 56px 0 40px;
+        padding: 0;
+        flex-wrap: wrap;
+      }
 
-    .victory-title {
-      color: #ff4d6d;
-      font-size: 24px;
-      font-weight: 800;
-      margin: 0 0 14px;
-      line-height: 1.3;
-    }
+      .stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        min-width: 96px;
+        position: relative;
+      }
 
-    .victory-text {
-      color: #4a2a3a;
-      font-size: 16px;
-      line-height: 1.6;
-      margin: 0 0 22px;
-      font-style: italic;
-    }
+      .stat + .stat::before {
+        content: "";
+        position: absolute;
+        left: -17px;
+        top: 20%;
+        bottom: 20%;
+        width: 1px;
+        background: var(--line);
+      }
 
-    .victory-photo {
-      width: 200px;
-      height: 200px;
-      border-radius: 20px;
-      object-fit: cover;
-      border: 4px solid #fff;
-      box-shadow: 0 10px 30px rgba(255, 77, 109, 0.4);
-      margin: 0 auto 20px;
-      display: block;
-      animation: photoGlow 2s ease-in-out infinite;
-    }
+      .stat-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: clamp(32px, 4vw, 46px);
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+        display: inline-flex;
+        align-items: baseline;
+        gap: 4px;
+      }
 
-    @keyframes photoGlow {
-      0%, 100% { box-shadow: 0 10px 30px rgba(255, 77, 109, 0.4); }
-      50% { box-shadow: 0 10px 40px rgba(255, 77, 109, 0.8); }
-    }
+      .stat-value .stat-of {
+        font-size: 0.5em;
+        color: var(--ink-3);
+        font-style: italic;
+      }
 
-    .victory-signature {
-      color: #c71585;
-      font-size: 15px;
-      font-style: italic;
-      font-weight: 700;
-      margin-bottom: 20px;
-    }
+      .stat-label {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
 
-    .victory-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+      /* ============================================================
+       PUZZLE ZONE
+       ============================================================ */
+      .puzzle-zone {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+        margin-bottom: 56px;
+      }
 
-    .confetti {
-      position: fixed;
-      font-size: 20px;
-      pointer-events: none;
-      z-index: 4000;
-      animation: confettiFall linear forwards;
-    }
+      /* ---- BOARD ---- */
+      .board-wrap {
+        position: relative;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 24px 50px rgba(30, 26, 22, 0.1),
+          0 6px 16px rgba(30, 26, 22, 0.05);
+      }
 
-    @keyframes confettiFall {
-      0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-    }
+      /* Corner ticks — like a photo-frame */
+      .board-wrap::before,
+      .board-wrap::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--rose-deep);
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .board-wrap::before {
+        top: 6px;
+        left: 6px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .board-wrap::after {
+        bottom: 6px;
+        right: 6px;
+        border-left: none;
+        border-top: none;
+      }
 
-    @media (max-width: 480px) {
-      h1 { font-size: 18px; }
-      .victory-card { padding: 26px 20px 20px; }
-      .victory-title { font-size: 20px; }
-      .victory-text { font-size: 14px; }
-      .victory-photo { width: 160px; height: 160px; }
-      .btn { font-size: 13px; padding: 10px 18px; }
-    }
-  </style>
-</head>
-  <!-- PWA Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then((reg) => console.log('✅ Service Worker зарегистрирован'))
-          .catch((err) => console.log('❌ Ошибка SW:', err));
-      });
-    }
-  </script>
-<body>
+      .board {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 0;
+        padding: 0;
+        background: var(--surface-2);
+        border-radius: 6px;
+        overflow: hidden;
+        transition: all 0.3s var(--ease);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+      }
 
-  <div id="hearts-container"></div>
+      .slot {
+        position: relative;
+        background: var(--surface-2);
+        transition: all 0.25s var(--ease);
+        border: 1px solid var(--line);
+        box-sizing: border-box;
+        overflow: hidden;
+      }
 
-  <div class="container">
-    <h1>💖 Собери моё сердце</h1>
-    <p class="subtitle">Перетащи все кусочки на свои места</p>
+      .slot::before {
+        /* Faint monogram in empty slots */
+        content: "V";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 26px;
+        color: rgba(30, 26, 22, 0.06);
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity 0.4s var(--ease);
+      }
 
-    <div class="stats">
-      <div class="stat-chip">🧩 Собрано: <b><span id="score">0</span>/9</b></div>
-      <div class="stat-chip">⏱️ Время: <b><span id="timer">0:00</span></b></div>
-    </div>
+      .slot.filled::before {
+        opacity: 0;
+      }
 
-    <div class="puzzle-area">
-      <div class="board" id="board"></div>
-      <div class="tray" id="tray"></div>
-    </div>
+      .slot.over {
+        background: var(--rose-tint);
+        box-shadow: inset 0 0 0 2px var(--rose-deep);
+      }
 
-    <div class="controls">
-      <button class="btn" onclick="restartGame()">🔄 Заново</button>
-      <a href="index.html" class="btn primary">← На главную</a>
-    </div>
-  </div>
+      .slot.correct {
+        background: transparent;
+        border-color: transparent;
+      }
 
-  <div class="victory-overlay" id="victoryOverlay">
-    <div class="victory-card">
-      <span class="victory-emoji">💖</span>
-      <h2 class="victory-title">Ты собрала моё сердце!</h2>
+      .slot.correct::before {
+        opacity: 0;
+      }
 
-      <img class="victory-photo" src="photos/puzzle.jpeg" alt="Мы"
-           onerror="this.style.display='none'">
+      /* ---- PIECE ---- */
+      .piece {
+        position: relative;
+        background-repeat: no-repeat;
+        cursor: grab;
+        transition:
+          transform 0.25s var(--ease),
+          box-shadow 0.25s var(--ease);
+        touch-action: none;
+        z-index: 20;
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 6px 14px rgba(30, 26, 22, 0.18),
+          0 2px 4px rgba(30, 26, 22, 0.08);
+        outline: 1px solid rgba(255, 255, 255, 0.7);
+        outline-offset: -1px;
+        flex-shrink: 0;
+        will-change: transform;
+      }
 
-      <p class="victory-text">
-        Как ты собрала этот пазл — так ты собрала и меня.
-        По кусочку, по кусочку — и вот я целый.
-        <br><br>
-        Ты — моя самая красивая половинка. 💕
-      </p>
+      .piece:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 10px 22px rgba(30, 26, 22, 0.22),
+          0 3px 6px rgba(30, 26, 22, 0.1);
+        z-index: 30;
+      }
 
-      <div class="victory-signature">— твой навсегда ❤️</div>
+      .piece.dragging {
+        cursor: grabbing;
+        opacity: 0.92;
+        transform: scale(1.08) rotate(2deg);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 18px 36px rgba(30, 26, 22, 0.28),
+          0 4px 8px rgba(30, 26, 22, 0.14);
+        z-index: 100;
+      }
 
-      <div class="victory-buttons">
-        <button class="btn" onclick="restartGame()">🔄 Ещё раз</button>
-        <a href="index.html" class="btn primary">На главную →</a>
+      /* Piece inside a slot */
+      .slot .piece {
+        position: absolute;
+        inset: 0;
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0;
+        box-shadow: none;
+        outline: none;
+        pointer-events: none;
+        cursor: default;
+        transition: none;
+        transform: none !important;
+      }
+
+      /* ---- TRAY ---- */
+      .tray-wrap {
+        position: relative;
+        width: 100%;
+        max-width: 480px;
+      }
+
+      .tray-label {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        text-align: center;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+      }
+
+      .tray-label::before,
+      .tray-label::after {
+        content: "";
+        flex: 1;
+        max-width: 60px;
+        height: 1px;
+        background: var(--line);
+      }
+
+      .tray {
+        position: relative;
+        width: 100%;
+        min-height: 130px;
+        padding: 16px;
+        background: var(--surface-2);
+        border: 1px dashed var(--line-2);
+        border-radius: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.35s var(--ease);
+      }
+
+      .tray-empty {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 15px;
+        color: var(--ink-3);
+        letter-spacing: 0.01em;
+        padding: 20px;
+        text-align: center;
+      }
+
+      /* ---- CONTROLS ---- */
+      .controls {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 30px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: all 0.35s var(--ease);
+        text-decoration: none;
+      }
+
+      .btn:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+
+      .btn.primary {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 8px 20px rgba(30, 26, 22, 0.2);
+      }
+
+      .btn.primary:hover {
+        background: #000;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 14px 32px rgba(30, 26, 22, 0.26);
+      }
+
+      .btn .btn-arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 15px;
+      }
+
+      .btn.primary:hover .btn-arrow {
+        transform: translateX(-4px);
+      }
+
+      /* ============================================================
+       VICTORY OVERLAY
+       ============================================================ */
+      .victory-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: rgba(30, 26, 22, 0.42);
+        backdrop-filter: blur(20px) saturate(140%);
+        -webkit-backdrop-filter: blur(20px) saturate(140%);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s var(--ease);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .victory-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .victory-card {
+        position: relative;
+        width: 100%;
+        max-width: 460px;
+        margin: auto;
+        padding: 52px 44px 40px;
+        background: var(--letter, #faf6ee);
+        border-radius: 4px;
+        text-align: center;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 50px 100px rgba(30, 26, 22, 0.28),
+          0 12px 30px rgba(30, 26, 22, 0.14);
+        transform: translateY(40px) scale(0.94) rotate(-1deg);
+        transition: transform 0.9s var(--ease-spring);
+        max-height: calc(100vh - 48px);
+        overflow-y: auto;
+      }
+
+      .victory-overlay.show .victory-card {
+        transform: translateY(0) scale(1) rotate(0deg);
+      }
+
+      /* Inner frame — same as letter page */
+      .victory-card::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border: 1px solid rgba(30, 26, 22, 0.06);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      .victory-emoji {
+        display: block;
+        font-size: 54px;
+        line-height: 1;
+        margin-bottom: 20px;
+        filter: saturate(0.85);
+        animation: heartbeat 2.4s ease infinite;
+      }
+
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        15% {
+          transform: scale(1.12);
+        }
+        30% {
+          transform: scale(1);
+        }
+        45% {
+          transform: scale(1.08);
+        }
+        60% {
+          transform: scale(1);
+        }
+      }
+
+      .victory-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 18px;
+        margin-bottom: 26px;
+        border-bottom: 1px solid var(--line);
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        position: relative;
+        z-index: 1;
+      }
+
+      .victory-head .num {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--rose-deep);
+      }
+
+      .victory-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(26px, 3.4vw, 34px);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .victory-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .victory-photo {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin: 0 auto 26px;
+        display: block;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 20px 40px rgba(30, 26, 22, 0.2),
+          0 6px 14px rgba(30, 26, 22, 0.1);
+        position: relative;
+        z-index: 1;
+      }
+
+      .victory-text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 17px;
+        line-height: 1.65;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+        margin: 0 0 26px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .victory-signature {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 22px;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        padding-top: 22px;
+        margin-bottom: 28px;
+        border-top: 1px solid var(--line);
+        position: relative;
+        z-index: 1;
+      }
+
+      .victory-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ============================================================
+       FOOTER
+       ============================================================ */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+      }
+
+      /* ============================================================
+       CONFETTI
+       ============================================================ */
+      .confetti {
+        position: fixed;
+        font-size: 20px;
+        pointer-events: none;
+        z-index: 4000;
+        animation: confettiFall linear forwards;
+        filter: saturate(0.85);
+      }
+
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(-20vh) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(110vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(30px, 8vw, 44px);
+        }
+
+        .stats {
+          gap: 22px;
+          margin: 44px 0 32px;
+        }
+        .stat {
+          min-width: 74px;
+        }
+        .stat + .stat::before {
+          left: -12px;
+        }
+        .stat-label {
+          font-size: 9.5px;
+          letter-spacing: 0.16em;
+        }
+
+        .puzzle-zone {
+          gap: 28px;
+        }
+        .board-wrap {
+          padding: 12px;
+        }
+        .tray {
+          padding: 12px;
+          gap: 8px;
+          min-height: 110px;
+        }
+
+        .controls {
+          gap: 8px;
+          margin-top: 0;
+        }
+        .btn {
+          padding: 14px 22px;
+          font-size: 13.5px;
+        }
+
+        .victory-card {
+          padding: 40px 26px 30px;
+        }
+        .victory-photo {
+          width: 160px;
+          height: 160px;
+        }
+        .victory-text {
+          font-size: 15.5px;
+        }
+        .victory-signature {
+          font-size: 19px;
+        }
+        .victory-buttons {
+          gap: 8px;
+        }
+        .victory-buttons .btn {
+          padding: 13px 20px;
+          font-size: 13px;
+        }
+
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <!-- ============================================================
+       TOP BAR
+       ============================================================ -->
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
+      </div>
+    </header>
+
+    <main>
+      <!-- ============================================================
+         HERO
+         ============================================================ -->
+      <section class="hero">
+        <span class="eyebrow">06 · Пазл</span>
+        <h1>Собери моё <em>сердце</em></h1>
+        <p class="hero-sub">
+          Девять кусочков, каждая — своя история. Собери их вместе, и увидишь
+          нас.
+        </p>
+      </section>
+
+      <!-- ============================================================
+         STATS
+         ============================================================ -->
+      <section class="stats">
+        <div class="stat">
+          <span class="stat-value">
+            <span id="score">0</span><span class="stat-of">/9</span>
+          </span>
+          <span class="stat-label">Собрано</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="timer">0:00</span>
+          <span class="stat-label">Время</span>
+        </div>
+      </section>
+
+      <!-- ============================================================
+         PUZZLE
+         ============================================================ -->
+      <section class="puzzle-zone">
+        <div class="board-wrap">
+          <div class="board" id="board"></div>
+        </div>
+
+        <div class="tray-wrap">
+          <div class="tray-label">Кусочки</div>
+          <div class="tray" id="tray"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" onclick="restartGame()">↻ Заново</button>
+          <a href="index.html" class="btn primary">
+            <span class="btn-arrow">←</span>
+            <span>На главную</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============================================================
+       VICTORY OVERLAY
+       ============================================================ -->
+    <div class="victory-overlay" id="victoryOverlay">
+      <div class="victory-card">
+        <div class="victory-head">
+          <span>Готово</span>
+          <span class="num">№ 06 · от сердца</span>
+        </div>
+
+        <span class="victory-emoji">💖</span>
+
+        <h2 class="victory-title">Ты собрала моё <em>сердце</em></h2>
+
+        <img
+          class="victory-photo"
+          src="photos/puzzle.jpeg"
+          alt=""
+          onerror="this.style.display = 'none'"
+        />
+
+        <p class="victory-text">
+          Как ты собрала этот пазл — так ты собрала и меня.<br />
+          По кусочку, по кусочку — и вот я целый.<br /><br />
+          Ты — моя самая красивая половинка.
+        </p>
+
+        <div class="victory-signature">— твой навсегда</div>
+
+        <div class="victory-buttons">
+          <button class="btn" onclick="restartGame()">↻ Ещё раз</button>
+          <a href="index.html" class="btn primary">
+            <span>На главную</span>
+            <span class="btn-arrow">→</span>
+          </a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    // ============================================================
-    // ⚠️ НАСТРОЙКА — путь к фото для пазла
-    // ============================================================
-    const PUZZLE_IMAGE = 'photos/puzzle.jpeg';
-    // ============================================================
+    <!-- ============================================================
+       TIME + WEATHER
+       ============================================================ -->
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("timeText").textContent = `${hh}:${mm}`;
 
-    const board = document.getElementById('board');
-    const tray = document.getElementById('tray');
-    const scoreEl = document.getElementById('score');
-    const timerEl = document.getElementById('timer');
-    const victoryOverlay = document.getElementById('victoryOverlay');
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        document.getElementById("timeIcon").textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
 
-    const SIZE = 3;
-    let placedCount = 0;
-    let startTime = null;
-    let timerInterval = null;
-    let gameFinished = false;
+      const WEATHER_CITY = { name: "Улан-Удэ" };
 
-    // Размер ячейки в зависимости от ширины экрана
-    function getCellSize() {
-      const w = window.innerWidth;
-      if (w <= 360) return 80;
-      if (w <= 480) return 90;
-      return 100;
-    }
-
-    // ---------- ИНИЦИАЛИЗАЦИЯ ----------
-    function initGame() {
-      board.innerHTML = '';
-      tray.innerHTML = '';
-      placedCount = 0;
-      gameFinished = false;
-      scoreEl.textContent = '0';
-      timerEl.textContent = '0:00';
-      if (timerInterval) clearInterval(timerInterval);
-      startTime = null;
-
-      const cellSize = getCellSize();
-      const boardSize = cellSize * SIZE;
-
-      board.style.width = boardSize + 'px';
-      board.style.height = boardSize + 'px';
-
-      // 9 слотов
-      for (let i = 0; i < SIZE * SIZE; i++) {
-        const slot = document.createElement('div');
-        slot.className = 'slot';
-        slot.dataset.index = i;
-        slot.dataset.filled = 'false';
-        board.appendChild(slot);
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
       }
 
-      // Перемешиваем порядок кусочков для лотка
-      const pieceIndices = [];
-      for (let i = 0; i < SIZE * SIZE; i++) pieceIndices.push(i);
-      shuffleArray(pieceIndices);
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
 
-      // Создаём 9 кусочков в перемешанном порядке
-      pieceIndices.forEach((pieceIndex) => {
-        const piece = createPiece(pieceIndex, cellSize);
-        tray.appendChild(piece);
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      document
+        .getElementById("infoWidget")
+        .addEventListener("click", loadWeather);
+    </script>
+
+    <!-- ============================================================
+       PUZZLE SCRIPT
+       ============================================================ -->
+    <script>
+      // ============================================================
+      // ⚠️ НАСТРОЙКА — путь к фото для пазла
+      // ============================================================
+      const PUZZLE_IMAGE = "photos/puzzle.jpeg";
+      // ============================================================
+
+      const board = document.getElementById("board");
+      const tray = document.getElementById("tray");
+      const scoreEl = document.getElementById("score");
+      const timerEl = document.getElementById("timer");
+      const victoryOverlay = document.getElementById("victoryOverlay");
+
+      const SIZE = 3;
+      let placedCount = 0;
+      let startTime = null;
+      let timerInterval = null;
+      let gameFinished = false;
+
+      function getCellSize() {
+        const w = window.innerWidth;
+        if (w <= 360) return 78;
+        if (w <= 480) return 88;
+        if (w <= 640) return 96;
+        return 108;
+      }
+
+      // ---------- INIT ----------
+      function initGame() {
+        board.innerHTML = "";
+        tray.innerHTML = "";
+        placedCount = 0;
+        gameFinished = false;
+        scoreEl.textContent = "0";
+        timerEl.textContent = "0:00";
+        if (timerInterval) clearInterval(timerInterval);
+        startTime = null;
+
+        const cellSize = getCellSize();
+        const boardSize = cellSize * SIZE;
+
+        board.style.width = boardSize + "px";
+        board.style.height = boardSize + "px";
+
+        for (let i = 0; i < SIZE * SIZE; i++) {
+          const slot = document.createElement("div");
+          slot.className = "slot";
+          slot.dataset.index = i;
+          slot.dataset.filled = "false";
+          board.appendChild(slot);
+        }
+
+        const pieceIndices = [];
+        for (let i = 0; i < SIZE * SIZE; i++) pieceIndices.push(i);
+        shuffleArray(pieceIndices);
+
+        pieceIndices.forEach((pieceIndex) => {
+          const piece = createPiece(pieceIndex, cellSize);
+          tray.appendChild(piece);
+        });
+
+        updateTrayEmpty();
+      }
+
+      function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      // ---------- CREATE PIECE ----------
+      function createPiece(index, cellSize) {
+        const piece = document.createElement("div");
+        piece.className = "piece";
+        piece.dataset.correct = index;
+
+        const row = Math.floor(index / SIZE);
+        const col = index % SIZE;
+        const bgSize = cellSize * SIZE;
+
+        piece.style.width = cellSize + "px";
+        piece.style.height = cellSize + "px";
+        piece.style.backgroundImage = `url('${PUZZLE_IMAGE}')`;
+        piece.style.backgroundSize = `${bgSize}px ${bgSize}px`;
+        piece.style.backgroundPosition = `-${col * cellSize}px -${row * cellSize}px`;
+
+        piece.draggable = true;
+        piece.addEventListener("dragstart", handleDragStart);
+        piece.addEventListener("dragend", handleDragEnd);
+
+        piece.addEventListener("touchstart", handleTouchStart, {
+          passive: false,
+        });
+        piece.addEventListener("touchmove", handleTouchMove, {
+          passive: false,
+        });
+        piece.addEventListener("touchend", handleTouchEnd);
+
+        return piece;
+      }
+
+      // ---------- DRAG (mouse) ----------
+      let draggedPiece = null;
+
+      function handleDragStart(e) {
+        if (gameFinished) {
+          e.preventDefault();
+          return;
+        }
+        draggedPiece = e.currentTarget;
+        e.currentTarget.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        startTimerIfNeeded();
+      }
+
+      function handleDragEnd(e) {
+        e.currentTarget.classList.remove("dragging");
+        document
+          .querySelectorAll(".slot")
+          .forEach((s) => s.classList.remove("over"));
+      }
+
+      board.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        const slot = e.target.closest(".slot");
+        if (!slot || slot.dataset.filled === "true") return;
+        document
+          .querySelectorAll(".slot")
+          .forEach((s) => s.classList.remove("over"));
+        slot.classList.add("over");
       });
 
-      updateTrayEmpty();
-    }
+      board.addEventListener("dragleave", (e) => {
+        const slot = e.target.closest(".slot");
+        if (slot) slot.classList.remove("over");
+      });
 
-    // Перемешивание Фишера-Йетса
-    function shuffleArray(arr) {
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+      board.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const slot = e.target.closest(".slot");
+        if (!slot) return;
+        slot.classList.remove("over");
+        if (!draggedPiece) return;
+        if (slot.dataset.filled === "true") return;
+        tryPlacePiece(draggedPiece, slot);
+        draggedPiece = null;
+      });
+
+      // ---------- TOUCH ----------
+      let touchPiece = null;
+      let touchOffsetX = 0;
+      let touchOffsetY = 0;
+      let touchClone = null;
+
+      function handleTouchStart(e) {
+        if (gameFinished) return;
+        const piece = e.currentTarget;
+        if (piece.classList.contains("placed")) return;
+
+        e.preventDefault();
+        touchPiece = piece;
+
+        const rect = piece.getBoundingClientRect();
+        const touch = e.touches[0];
+        touchOffsetX = touch.clientX - rect.left;
+        touchOffsetY = touch.clientY - rect.top;
+
+        touchClone = piece.cloneNode(true);
+        touchClone.style.position = "fixed";
+        touchClone.style.pointerEvents = "none";
+        touchClone.style.zIndex = "9999";
+        touchClone.style.width = rect.width + "px";
+        touchClone.style.height = rect.height + "px";
+        touchClone.style.left = rect.left + "px";
+        touchClone.style.top = rect.top + "px";
+        touchClone.style.opacity = "0.92";
+        touchClone.style.transform = "scale(1.08) rotate(2deg)";
+        touchClone.style.boxShadow = "0 18px 36px rgba(30, 26, 22, 0.28)";
+        touchClone.style.borderRadius = "4px";
+        document.body.appendChild(touchClone);
+
+        piece.style.opacity = "0.3";
+        startTimerIfNeeded();
       }
-      return arr;
-    }
 
-    // ---------- СОЗДАНИЕ КУСОЧКА ----------
-    // index = правильная позиция кусочка в оригинале (0..8)
-    function createPiece(index, cellSize) {
-      const piece = document.createElement('div');
-      piece.className = 'piece';
-      piece.dataset.correct = index;
+      function handleTouchMove(e) {
+        if (!touchPiece || !touchClone) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        touchClone.style.left = touch.clientX - touchOffsetX + "px";
+        touchClone.style.top = touch.clientY - touchOffsetY + "px";
 
-      const row = Math.floor(index / SIZE);
-      const col = index % SIZE;
-      const bgSize = cellSize * SIZE;
-
-      // Размер для лотка
-      piece.style.width = cellSize + 'px';
-      piece.style.height = cellSize + 'px';
-      piece.style.backgroundImage = `url('${PUZZLE_IMAGE}')`;
-      piece.style.backgroundSize = `${bgSize}px ${bgSize}px`;
-      piece.style.backgroundPosition = `-${col * cellSize}px -${row * cellSize}px`;
-
-      // Drag & Drop для мыши
-      piece.draggable = true;
-      piece.addEventListener('dragstart', handleDragStart);
-      piece.addEventListener('dragend', handleDragEnd);
-
-      // Touch
-      piece.addEventListener('touchstart', handleTouchStart, { passive: false });
-      piece.addEventListener('touchmove', handleTouchMove, { passive: false });
-      piece.addEventListener('touchend', handleTouchEnd);
-
-      return piece;
-    }
-
-    // ---------- DRAG & DROP (мышь) ----------
-    let draggedPiece = null;
-
-    function handleDragStart(e) {
-      if (gameFinished) { e.preventDefault(); return; }
-      draggedPiece = e.currentTarget;
-      e.currentTarget.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-      startTimerIfNeeded();
-    }
-
-    function handleDragEnd(e) {
-      e.currentTarget.classList.remove('dragging');
-      document.querySelectorAll('.slot').forEach(s => s.classList.remove('over'));
-    }
-
-    board.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      const slot = e.target.closest('.slot');
-      if (!slot || slot.dataset.filled === 'true') return;
-      document.querySelectorAll('.slot').forEach(s => s.classList.remove('over'));
-      slot.classList.add('over');
-    });
-
-    board.addEventListener('dragleave', (e) => {
-      const slot = e.target.closest('.slot');
-      if (slot) slot.classList.remove('over');
-    });
-
-    board.addEventListener('drop', (e) => {
-      e.preventDefault();
-      const slot = e.target.closest('.slot');
-      if (!slot) return;
-      slot.classList.remove('over');
-      if (!draggedPiece) return;
-      if (slot.dataset.filled === 'true') return;
-      tryPlacePiece(draggedPiece, slot);
-      draggedPiece = null;
-    });
-
-    // ---------- TOUCH ----------
-    let touchPiece = null;
-    let touchOffsetX = 0;
-    let touchOffsetY = 0;
-    let touchClone = null;
-
-    function handleTouchStart(e) {
-      if (gameFinished) return;
-      const piece = e.currentTarget;
-      if (piece.classList.contains('placed')) return;
-
-      e.preventDefault();
-      touchPiece = piece;
-
-      const rect = piece.getBoundingClientRect();
-      const touch = e.touches[0];
-      touchOffsetX = touch.clientX - rect.left;
-      touchOffsetY = touch.clientY - rect.top;
-
-      touchClone = piece.cloneNode(true);
-      touchClone.style.position = 'fixed';
-      touchClone.style.pointerEvents = 'none';
-      touchClone.style.zIndex = '9999';
-      touchClone.style.width = rect.width + 'px';
-      touchClone.style.height = rect.height + 'px';
-      touchClone.style.left = rect.left + 'px';
-      touchClone.style.top = rect.top + 'px';
-      touchClone.style.opacity = '0.9';
-      touchClone.style.transform = 'scale(1.1)';
-      touchClone.style.boxShadow = '0 12px 28px rgba(255, 77, 109, 0.6)';
-      document.body.appendChild(touchClone);
-
-      piece.style.opacity = '0.3';
-      startTimerIfNeeded();
-    }
-
-    function handleTouchMove(e) {
-      if (!touchPiece || !touchClone) return;
-      e.preventDefault();
-      const touch = e.touches[0];
-      touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
-      touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
-
-      touchClone.style.display = 'none';
-      const el = document.elementFromPoint(touch.clientX, touch.clientY);
-      touchClone.style.display = '';
-      const slot = el ? el.closest('.slot') : null;
-      document.querySelectorAll('.slot').forEach(s => s.classList.remove('over'));
-      if (slot && slot.dataset.filled !== 'true') {
-        slot.classList.add('over');
-      }
-    }
-
-    function handleTouchEnd(e) {
-      if (!touchPiece || !touchClone) return;
-
-      const touch = e.changedTouches[0];
-      touchClone.style.display = 'none';
-      const el = document.elementFromPoint(touch.clientX, touch.clientY);
-      touchClone.style.display = '';
-      const slot = el ? el.closest('.slot') : null;
-
-      document.querySelectorAll('.slot').forEach(s => s.classList.remove('over'));
-
-      touchClone.remove();
-      touchClone = null;
-
-      const piece = touchPiece;
-      piece.style.opacity = '';
-      touchPiece = null;
-
-      if (slot && slot.dataset.filled !== 'true') {
-        tryPlacePiece(piece, slot);
-      }
-    }
-
-    // ---------- ПОПЫТКА ПОСТАВИТЬ КУСОЧЕК ----------
-    function tryPlacePiece(piece, slot) {
-      if (gameFinished) return;
-      if (slot.dataset.filled === 'true') return;
-
-      const correctIndex = parseInt(piece.dataset.correct);
-      const slotIndex = parseInt(slot.dataset.index);
-
-      if (correctIndex === slotIndex) {
-        placePiece(piece, slot);
-        placedCount++;
-        scoreEl.textContent = placedCount;
-        slot.dataset.filled = 'true';
-        slot.classList.add('correct');
-
-        if (placedCount === SIZE * SIZE) {
-          setTimeout(winGame, 500);
+        touchClone.style.display = "none";
+        const el = document.elementFromPoint(touch.clientX, touch.clientY);
+        touchClone.style.display = "";
+        const slot = el ? el.closest(".slot") : null;
+        document
+          .querySelectorAll(".slot")
+          .forEach((s) => s.classList.remove("over"));
+        if (slot && slot.dataset.filled !== "true") {
+          slot.classList.add("over");
         }
-      } else {
-        piece.style.animation = 'shake 0.4s';
-        setTimeout(() => { piece.style.animation = ''; }, 400);
       }
-    }
 
-    const shakeStyle = document.createElement('style');
-    shakeStyle.textContent = `
+      function handleTouchEnd(e) {
+        if (!touchPiece || !touchClone) return;
+
+        const touch = e.changedTouches[0];
+        touchClone.style.display = "none";
+        const el = document.elementFromPoint(touch.clientX, touch.clientY);
+        touchClone.style.display = "";
+        const slot = el ? el.closest(".slot") : null;
+
+        document
+          .querySelectorAll(".slot")
+          .forEach((s) => s.classList.remove("over"));
+
+        touchClone.remove();
+        touchClone = null;
+
+        const piece = touchPiece;
+        piece.style.opacity = "";
+        touchPiece = null;
+
+        if (slot && slot.dataset.filled !== "true") {
+          tryPlacePiece(piece, slot);
+        }
+      }
+
+      // ---------- TRY PLACE ----------
+      function tryPlacePiece(piece, slot) {
+        if (gameFinished) return;
+        if (slot.dataset.filled === "true") return;
+
+        const correctIndex = parseInt(piece.dataset.correct);
+        const slotIndex = parseInt(slot.dataset.index);
+
+        if (correctIndex === slotIndex) {
+          placePiece(piece, slot);
+          placedCount++;
+          scoreEl.textContent = placedCount;
+          slot.dataset.filled = "true";
+          slot.classList.add("correct");
+
+          if (placedCount === SIZE * SIZE) {
+            setTimeout(winGame, 500);
+          }
+        } else {
+          piece.style.animation = "shake 0.4s";
+          setTimeout(() => {
+            piece.style.animation = "";
+          }, 400);
+        }
+      }
+
+      // Shake animation
+      const shakeStyle = document.createElement("style");
+      shakeStyle.textContent = `
       @keyframes shake {
         0%, 100% { transform: translateX(0) rotate(0); }
         20% { transform: translateX(-6px) rotate(-3deg); }
@@ -713,158 +1458,117 @@
         80% { transform: translateX(4px) rotate(2deg); }
       }
     `;
-    document.head.appendChild(shakeStyle);
+      document.head.appendChild(shakeStyle);
 
-    // ---------- УСТАНОВКА КУСОЧКА В СЛОТ ----------
-    // ГЛАВНОЕ: используем проценты, чтобы кусочек показывал свою часть картинки
-    function placePiece(piece, slot) {
-      // Получаем координаты кусочка в оригинале
-      const index = parseInt(piece.dataset.correct);
-      const row = Math.floor(index / SIZE);
-      const col = index % SIZE;
+      // ---------- PLACE PIECE INTO SLOT ----------
+      function placePiece(piece, slot) {
+        const index = parseInt(piece.dataset.correct);
+        const row = Math.floor(index / SIZE);
+        const col = index % SIZE;
 
-      // Убираем из лотка
-      if (piece.parentNode) piece.parentNode.removeChild(piece);
+        if (piece.parentNode) piece.parentNode.removeChild(piece);
 
-      // Сначала обнуляем inline-размеры
-      piece.style.width = '';
-      piece.style.height = '';
-      piece.style.transform = '';
-      piece.style.animation = '';
+        piece.style.width = "";
+        piece.style.height = "";
+        piece.style.transform = "";
+        piece.style.animation = "";
+        piece.style.opacity = "";
 
-      // Затем задаём проценты — теперь кусочек покажет СВОЮ часть картинки
-      // при любом размере ячейки
-      piece.style.backgroundSize = `${SIZE * 100}% ${SIZE * 100}%`;
-      piece.style.backgroundPosition = `${(col / (SIZE - 1)) * 100}% ${(row / (SIZE - 1)) * 100}%`;
+        piece.style.backgroundSize = `${SIZE * 100}% ${SIZE * 100}%`;
+        piece.style.backgroundPosition = `${(col / (SIZE - 1)) * 100}% ${(row / (SIZE - 1)) * 100}%`;
 
-      piece.draggable = false;
-      piece.classList.add('placed');
-      piece.classList.remove('dragging');
+        piece.draggable = false;
+        piece.classList.add("placed");
+        piece.classList.remove("dragging");
 
-      piece.removeEventListener('dragstart', handleDragStart);
-      piece.removeEventListener('touchstart', handleTouchStart);
-      piece.removeEventListener('touchmove', handleTouchMove);
-      piece.removeEventListener('touchend', handleTouchEnd);
+        piece.removeEventListener("dragstart", handleDragStart);
+        piece.removeEventListener("touchstart", handleTouchStart);
+        piece.removeEventListener("touchmove", handleTouchMove);
+        piece.removeEventListener("touchend", handleTouchEnd);
 
-      slot.appendChild(piece);
-      slot.style.background = 'transparent';
+        slot.appendChild(piece);
+        slot.classList.add("filled");
 
-      updateTrayEmpty();
-    }
-
-    // ---------- ТАЙМЕР ----------
-    function startTimerIfNeeded() {
-      if (startTime || gameFinished) return;
-      startTime = Date.now();
-      timerInterval = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        const m = Math.floor(elapsed / 60);
-        const s = elapsed % 60;
-        timerEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
-      }, 1000);
-    }
-
-    // ---------- ПОБЕДА ----------
-    function winGame() {
-      if (gameFinished) return;
-      gameFinished = true;
-      if (timerInterval) clearInterval(timerInterval);
-
-      for (let i = 0; i < 60; i++) {
-        setTimeout(() => spawnConfetti(), i * 30);
+        updateTrayEmpty();
       }
 
-      const rect = board.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      for (let i = 0; i < 30; i++) {
-        setTimeout(() => spawnHeartAt(cx, cy), i * 30);
+      // ---------- TIMER ----------
+      function startTimerIfNeeded() {
+        if (startTime || gameFinished) return;
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+          const elapsed = Math.floor((Date.now() - startTime) / 1000);
+          const m = Math.floor(elapsed / 60);
+          const s = elapsed % 60;
+          timerEl.textContent = m + ":" + (s < 10 ? "0" : "") + s;
+        }, 1000);
       }
 
-      setTimeout(() => {
-        victoryOverlay.classList.add('show');
-      }, 700);
-    }
+      // ---------- WIN ----------
+      function winGame() {
+        if (gameFinished) return;
+        gameFinished = true;
+        if (timerInterval) clearInterval(timerInterval);
 
-    function spawnConfetti() {
-      const confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      confetti.textContent = ['💖', '❤️', '✨', '💕', '🎉', '💗', '🌸'][Math.floor(Math.random() * 7)];
-      confetti.style.left = Math.random() * 100 + 'vw';
-      confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
-      confetti.style.fontSize = (18 + Math.random() * 18) + 'px';
-      document.body.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 4500);
-    }
-
-    function spawnHeartAt(x, y) {
-      const heart = document.createElement('div');
-      heart.textContent = ['❤️', '💖', '💗', '💕', '✨'][Math.floor(Math.random() * 5)];
-      heart.style.cssText = `
-        position: fixed; left: ${x}px; top: ${y}px;
-        font-size: ${20 + Math.random() * 20}px;
-        pointer-events: none; z-index: 2000;
-        transition: all ${0.9 + Math.random() * 0.6}s cubic-bezier(0.34, 1.56, 0.64, 1);
-      `;
-      document.body.appendChild(heart);
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 150 + Math.random() * 250;
-      requestAnimationFrame(() => {
-        heart.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${Math.random() * 360}deg) scale(0.3)`;
-        heart.style.opacity = '0';
-      });
-      setTimeout(() => heart.remove(), 1500);
-    }
-
-    function updateTrayEmpty() {
-      const pieces = tray.querySelectorAll('.piece');
-      const existing = tray.querySelector('.tray-empty');
-      if (pieces.length === 0 && !existing) {
-        const div = document.createElement('div');
-        div.className = 'tray-empty';
-        div.textContent = '✨ Все кусочки на месте ✨';
-        tray.appendChild(div);
-      } else if (pieces.length > 0 && existing) {
-        existing.remove();
-      }
-    }
-
-    function restartGame() {
-      victoryOverlay.classList.remove('show');
-      initGame();
-    }
-
-    victoryOverlay.addEventListener('click', (e) => {
-      if (e.target === victoryOverlay) {
-        victoryOverlay.classList.remove('show');
-      }
-    });
-
-    const container = document.getElementById('hearts-container');
-    function createHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
-      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸'];
-      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
-      heart.style.left = Math.random() * 100 + "vw";
-      heart.style.animationDuration = Math.random() * 3 + 3 + "s";
-      heart.style.fontSize = Math.random() * 15 + 15 + "px";
-      container.appendChild(heart);
-      setTimeout(() => { heart.remove(); }, 6000);
-    }
-    setInterval(createHeart, 500);
-
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        if (!gameFinished && placedCount === 0) {
-          initGame();
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => spawnConfetti(), i * 40);
         }
-      }, 300);
-    });
 
-    initGame();
-  </script>
-</body>
+        setTimeout(() => {
+          victoryOverlay.classList.add("show");
+        }, 700);
+      }
+
+      function spawnConfetti() {
+        const confetti = document.createElement("div");
+        confetti.className = "confetti";
+        confetti.textContent = ["💖", "❤️", "✨", "💕", "💗", "🌸", "🤍"][
+          Math.floor(Math.random() * 7)
+        ];
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.animationDuration = 2.5 + Math.random() * 2 + "s";
+        confetti.style.fontSize = 16 + Math.random() * 16 + "px";
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 5000);
+      }
+
+      function updateTrayEmpty() {
+        const pieces = tray.querySelectorAll(".piece");
+        const existing = tray.querySelector(".tray-empty");
+        if (pieces.length === 0 && !existing) {
+          const div = document.createElement("div");
+          div.className = "tray-empty";
+          div.textContent = "Все кусочки на месте";
+          tray.appendChild(div);
+        } else if (pieces.length > 0 && existing) {
+          existing.remove();
+        }
+      }
+
+      function restartGame() {
+        victoryOverlay.classList.remove("show");
+        initGame();
+      }
+
+      victoryOverlay.addEventListener("click", (e) => {
+        if (e.target === victoryOverlay) {
+          victoryOverlay.classList.remove("show");
+        }
+      });
+
+      // ---------- RESIZE ----------
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          if (!gameFinished && placedCount === 0) {
+            initGame();
+          }
+        }, 300);
+      });
+
+      initGame();
+    </script>
+    <script src="sw-register.js" defer></script>
+  </body>
 </html>

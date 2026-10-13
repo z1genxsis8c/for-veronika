@@ -1,0 +1,1746 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Небо сегодня · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ⚡ SunCalc — точные астрономические расчёты (формулы Жана Меёса) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+
+    <style>
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
+        --sand: #cfb8a3;
+        --gold: #b89968;
+        --night: #1a1613;
+        --night-2: #2b2620;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+      }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
+
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.72);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+      }
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
+
+      .hero {
+        padding: 20px 0 40px;
+        text-align: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+      }
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 72px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+        max-width: 16ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 44ch;
+        font-weight: 400;
+      }
+
+      .sky-frame {
+        position: relative;
+        margin-top: 72px;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 8px 20px rgba(30, 26, 22, 0.05);
+      }
+      .sky-frame::before,
+      .sky-frame::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--ink-3);
+        opacity: 0.5;
+        pointer-events: none;
+        z-index: 5;
+      }
+      .sky-frame::before {
+        top: 6px;
+        left: 6px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .sky-frame::after {
+        bottom: 6px;
+        right: 6px;
+        border-left: none;
+        border-top: none;
+      }
+      .sky-inner {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 3 / 2;
+        max-height: 62vh;
+        background: linear-gradient(180deg, #1a1613 0%, #2b2620 100%);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      #skyCanvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .sky-label {
+        position: absolute;
+        top: 26px;
+        left: 28px;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        color: rgba(232, 212, 216, 0.5);
+        pointer-events: none;
+        z-index: 4;
+      }
+      .sky-location {
+        position: absolute;
+        top: 26px;
+        right: 28px;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(232, 212, 216, 0.5);
+        pointer-events: none;
+        z-index: 4;
+      }
+
+      .info-grid {
+        margin-top: 72px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+      }
+      .info-card {
+        position: relative;
+        padding: 40px 36px 32px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 20px 45px rgba(30, 26, 22, 0.08),
+          0 4px 12px rgba(30, 26, 22, 0.04);
+        transition:
+          box-shadow 0.4s var(--ease),
+          transform 0.4s var(--ease);
+      }
+      .info-card:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 28px 60px rgba(30, 26, 22, 0.12),
+          0 6px 16px rgba(30, 26, 22, 0.06);
+      }
+      .info-card::after {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(30, 26, 22, 0.05);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+      .info-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 16px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--line);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        position: relative;
+        z-index: 1;
+      }
+      .info-card-head .latin {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--rose-deep);
+      }
+      .info-card-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 22px;
+        line-height: 1.15;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0 0 20px;
+        position: relative;
+        z-index: 1;
+      }
+      .info-card-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+        position: relative;
+        z-index: 1;
+      }
+      .info-row:last-child {
+        border-bottom: none;
+      }
+      .info-row .label {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .info-row .value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 20px;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+      .info-row .value.rose {
+        color: var(--rose-deep);
+      }
+      .info-row .value.gold {
+        color: var(--gold);
+      }
+
+      .moon-visual {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 24px;
+        position: relative;
+        z-index: 1;
+      }
+      .moon-orb {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        position: relative;
+        background: radial-gradient(
+          circle at 35% 30%,
+          #fdfaf6 0%,
+          #e8d4d8 60%,
+          #b8aca1 100%
+        );
+        box-shadow:
+          inset -8px -6px 16px rgba(30, 26, 22, 0.25),
+          0 0 24px rgba(232, 212, 216, 0.3);
+        overflow: hidden;
+      }
+      .moon-info {
+        flex: 1;
+      }
+      .moon-phase-name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 20px;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin: 0 0 4px;
+      }
+      .moon-illum {
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        color: var(--ink-3);
+        text-transform: uppercase;
+      }
+
+      .planet-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
+        position: relative;
+        z-index: 1;
+      }
+      .planet-item:last-child {
+        border-bottom: none;
+      }
+      .planet-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+        filter: saturate(0.8);
+      }
+      .planet-name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 18px;
+        color: var(--ink);
+        flex: 1;
+      }
+      .planet-status {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 999px;
+      }
+      .planet-status.visible {
+        background: rgba(181, 135, 148, 0.15);
+        color: var(--rose-deep);
+      }
+      .planet-status.hidden {
+        background: rgba(30, 26, 22, 0.05);
+        color: var(--ink-4);
+      }
+
+      .iss-highlight {
+        grid-column: 1 / -1;
+        padding: 48px 48px 40px;
+        background: linear-gradient(
+          160deg,
+          var(--night) 0%,
+          var(--night-2) 100%
+        );
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        color: var(--paper);
+        position: relative;
+        overflow: hidden;
+        margin-top: 20px;
+      }
+      .iss-highlight::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n4'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n4)'/></svg>");
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .iss-highlight::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border: 1px solid rgba(232, 212, 216, 0.08);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+      .iss-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 18px;
+        margin-bottom: 28px;
+        border-bottom: 1px solid rgba(232, 212, 216, 0.12);
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(232, 212, 216, 0.55);
+        position: relative;
+        z-index: 1;
+      }
+      .iss-head .latin {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--rose);
+      }
+      .iss-quote {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(22px, 3vw, 32px);
+        line-height: 1.35;
+        letter-spacing: -0.015em;
+        color: var(--paper);
+        margin: 0 0 24px;
+        position: relative;
+        z-index: 1;
+        max-width: 34ch;
+      }
+      .iss-quote em {
+        font-style: italic;
+        color: var(--rose);
+      }
+      .iss-coords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px;
+        position: relative;
+        z-index: 1;
+      }
+      .iss-coord {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .iss-coord .label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(232, 212, 216, 0.5);
+      }
+      .iss-coord .value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 22px;
+        letter-spacing: -0.01em;
+        color: var(--paper);
+        font-variant-numeric: tabular-nums;
+      }
+      .iss-coord .value.rose {
+        color: var(--rose);
+      }
+
+      .sun-times {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        position: relative;
+        z-index: 1;
+        margin-top: 4px;
+      }
+      .sun-cell {
+        text-align: center;
+        padding: 16px 8px;
+        position: relative;
+      }
+      .sun-cell + .sun-cell::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 18%;
+        bottom: 18%;
+        width: 1px;
+        background: var(--line);
+      }
+      .sun-cell .sun-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 10px;
+        display: block;
+      }
+      .sun-cell .sun-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 28px;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .loading-state {
+        text-align: center;
+        padding: 40px 20px;
+        position: relative;
+        z-index: 1;
+      }
+      .loading-state .spinner {
+        width: 32px;
+        height: 32px;
+        margin: 0 auto 16px;
+        border: 2px solid var(--line-2);
+        border-top-color: var(--rose-deep);
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .loading-state .text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 15px;
+        color: var(--ink-3);
+      }
+
+      .nav-wrap {
+        margin-top: 96px;
+        padding-top: 40px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 32px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .back-link:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
+      }
+      .back-link .arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 15px;
+      }
+      .back-link:hover .arrow {
+        transform: translateX(-5px);
+      }
+      .nav-link-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 28px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+        cursor: pointer;
+      }
+      .nav-link-secondary:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+      .nav-link-secondary .icon {
+        font-size: 14px;
+        filter: saturate(0.75);
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .nav-link-secondary:hover .icon {
+        transform: scale(1.15);
+      }
+
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 32px;
+        transform: translateX(-50%) translateY(20px);
+        padding: 14px 22px;
+        background: var(--ink);
+        color: var(--paper);
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        box-shadow: 0 20px 40px rgba(30, 26, 22, 0.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.5s var(--ease);
+        z-index: 7000;
+        max-width: calc(100vw - 40px);
+        text-align: center;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(32px, 9vw, 46px);
+        }
+        .sky-frame {
+          padding: 12px;
+          margin-top: 56px;
+        }
+        .sky-inner {
+          aspect-ratio: 4 / 5;
+          max-height: 55vh;
+        }
+        .sky-label {
+          top: 18px;
+          left: 20px;
+          font-size: 10px;
+        }
+        .sky-location {
+          top: 18px;
+          right: 20px;
+          font-size: 9px;
+        }
+        .info-grid {
+          margin-top: 56px;
+          gap: 14px;
+        }
+        .info-card {
+          padding: 32px 22px 26px;
+        }
+        .info-card-title {
+          font-size: 19px;
+        }
+        .info-row .value {
+          font-size: 18px;
+        }
+        .iss-highlight {
+          padding: 36px 24px 32px;
+        }
+        .iss-quote {
+          font-size: 20px;
+        }
+        .iss-coord .value {
+          font-size: 18px;
+        }
+        .iss-coords {
+          gap: 20px;
+        }
+        .moon-orb {
+          width: 60px;
+          height: 60px;
+        }
+        .moon-phase-name {
+          font-size: 18px;
+        }
+        .nav-wrap {
+          margin-top: 72px;
+          padding-top: 32px;
+          gap: 10px;
+        }
+        .back-link,
+        .nav-link-secondary {
+          padding: 16px 24px;
+          font-size: 13.5px;
+        }
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item"
+          ><span class="icon" id="timeIcon">☀️</span
+          ><span id="timeText">--:--</span></span
+        >
+        <span class="meta-sep">·</span>
+        <span class="meta-item"
+          ><span class="icon" id="weatherIcon">🌤️</span
+          ><span id="weatherText">...</span></span
+        >
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="eyebrow">17 · Небо</span>
+        <h1>Небо сегодня <em>над тобой</em></h1>
+        <p class="hero-sub">
+          Реальные данные о том, что сейчас видно над твоим городом. Смотрю на
+          ту же точку, что и ты.
+        </p>
+      </section>
+
+      <div class="sky-frame">
+        <div class="sky-inner" id="skyInner">
+          <span class="sky-label">№ 17 · звёздный час</span>
+          <span class="sky-location" id="skyLocation"
+            >Улан-Удэ · 51.83°N 107.60°E</span
+          >
+          <canvas id="skyCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="info-grid" id="infoGrid">
+        <div class="info-card" id="moonCard">
+          <div class="info-card-head">
+            <span>Луна</span><span class="latin">Luna · hodie</span>
+          </div>
+          <h3 class="info-card-title">Фаза <em>Луны</em></h3>
+          <div class="moon-visual">
+            <div class="moon-orb" id="moonOrb"></div>
+            <div class="moon-info">
+              <p class="moon-phase-name" id="moonPhaseName">—</p>
+              <p class="moon-illum" id="moonIllum">—</p>
+            </div>
+          </div>
+          <div class="info-row">
+            <span class="label">Восход</span
+            ><span class="value" id="moonrise">—</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Закат</span
+            ><span class="value" id="moonset">—</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Возраст</span
+            ><span class="value" id="moonAge">—</span>
+          </div>
+        </div>
+
+        <div class="info-card" id="planetsCard">
+          <div class="info-card-head">
+            <span>Планеты</span><span class="latin">Planetae · visibiles</span>
+          </div>
+          <h3 class="info-card-title">Что видно <em>сегодня</em></h3>
+          <div id="planetsList">
+            <div class="loading-state">
+              <div class="spinner"></div>
+              <div class="text">Считаю положение планет…</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card" id="sunCard">
+          <div class="info-card-head">
+            <span>Солнце</span><span class="latin">Sol · ortus</span>
+          </div>
+          <h3 class="info-card-title">Восход и <em>закат</em></h3>
+          <div class="sun-times">
+            <div class="sun-cell">
+              <span class="sun-label">Восход</span>
+              <span class="sun-value" id="sunrise">—</span>
+            </div>
+            <div class="sun-cell">
+              <span class="sun-label">Закат</span>
+              <span class="sun-value" id="sunset">—</span>
+            </div>
+          </div>
+          <div class="info-row" style="margin-top: 16px">
+            <span class="label">Длительность дня</span
+            ><span class="value rose" id="dayLength">—</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Солнечный полдень</span
+            ><span class="value" id="solarNoon">—</span>
+          </div>
+        </div>
+
+        <div class="iss-highlight" id="issCard">
+          <div class="iss-head">
+            <span>МКС сейчас</span><span class="latin">Statio · caelestis</span>
+          </div>
+          <p class="iss-quote" id="issQuote">
+            Загружаю координаты Международной космической станции…
+          </p>
+          <div class="iss-coords">
+            <div class="iss-coord">
+              <span class="label">Широта</span
+              ><span class="value" id="issLat">—</span>
+            </div>
+            <div class="iss-coord">
+              <span class="label">Долгота</span
+              ><span class="value" id="issLng">—</span>
+            </div>
+            <div class="iss-coord">
+              <span class="label">Высота</span
+              ><span class="value rose">~408 км</span>
+            </div>
+            <div class="iss-coord">
+              <span class="label">Скорость</span
+              ><span class="value rose">~7.66 км/с</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-wrap">
+        <a href="index.html" class="back-link"
+          ><span class="arrow">←</span><span>На главную</span></a
+        >
+        <a href="stars.html" class="nav-link-secondary"
+          ><span class="icon">✨</span><span>Созвездие Вероники</span></a
+        >
+        <a href="movie.html" class="nav-link-secondary"
+          ><span class="icon">🎬</span><span>Наш фильм</span></a
+        >
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================================
+         TIME + WEATHER
+         ============================================================ -->
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const t = document.getElementById("timeText");
+        if (t) t.textContent = `${hh}:${mm}`;
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        const ti = document.getElementById("timeIcon");
+        if (ti) ti.textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
+
+      const WEATHER_CITY = { name: "Улан-Удэ" };
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        if (!iconEl || !textEl) return;
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      const iw = document.getElementById("infoWidget");
+      if (iw) iw.addEventListener("click", loadWeather);
+    </script>
+
+    <!-- ============================================================
+         SKY SCRIPT — точные астрономические расчёты через SunCalc
+         ============================================================ -->
+    <script>
+      (function () {
+        "use strict";
+
+        const LAT = 51.834809;
+        const LNG = 107.584547;
+
+        const HAS_SUNCALC =
+          typeof SunCalc !== "undefined" &&
+          typeof SunCalc.getMoonIllumination === "function";
+
+        /* ============================================================
+           ЛУНА — точный расчёт
+           ============================================================ */
+        function getMoonData(date) {
+          if (HAS_SUNCALC) {
+            try {
+              const illum = SunCalc.getMoonIllumination(date);
+              const times = SunCalc.getMoonTimes(date, LAT, LNG);
+
+              const phase = illum.phase; // 0..1 (0=новолуние, 0.5=полнолуние)
+              const fraction = illum.fraction; // 0..1 доля освещённости
+              const percent = Math.round(fraction * 100);
+              const age = Math.round(phase * 29.53);
+
+              return {
+                phase,
+                fraction,
+                percent,
+                age,
+                phaseName: getPhaseName(phase),
+                rise: times.rise || null,
+                set: times.set || null,
+                alwaysUp: times.alwaysUp || false,
+                alwaysDown: times.alwaysDown || false,
+                source: "suncalc",
+              };
+            } catch (e) {
+              console.warn("SunCalc failed, using fallback:", e);
+            }
+          }
+          // Fallback — упрощённый алгоритм
+          return getMoonDataFallback(date);
+        }
+
+        function getPhaseName(phase) {
+          // phase: 0..1
+          if (phase < 0.03 || phase > 0.97) return "Новолуние";
+          if (phase < 0.22) return "Молодой серп";
+          if (phase < 0.28) return "Первая четверть";
+          if (phase < 0.47) return "Растущая Луна";
+          if (phase < 0.53) return "Полнолуние";
+          if (phase < 0.72) return "Убывающая Луна";
+          if (phase < 0.78) return "Последняя четверть";
+          return "Старая Луна";
+        }
+
+        function getMoonDataFallback(date) {
+          let year = date.getFullYear();
+          let month = date.getMonth() + 1;
+          const day = date.getDate();
+          if (month < 3) {
+            year--;
+            month += 12;
+          }
+          month += 1;
+          const c = 365.25 * year;
+          const e = 30.6 * month;
+          let jd = c + e + day - 694039.09;
+          jd /= 29.5305882;
+          const b0 = parseInt(jd, 10);
+          jd -= b0;
+          const phase = jd;
+          const fraction = (1 - Math.cos(2 * Math.PI * jd)) / 2;
+          const age = Math.round(jd * 29.53);
+          return {
+            phase,
+            fraction,
+            percent: Math.round(fraction * 100),
+            age,
+            phaseName: getPhaseName(phase),
+            rise: null,
+            set: null,
+            source: "fallback",
+          };
+        }
+
+        function formatTime(date) {
+          if (!date) return "—";
+          try {
+            return date.toLocaleTimeString("ru-RU", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          } catch {
+            return "—";
+          }
+        }
+
+        function renderMoon() {
+          try {
+            const data = getMoonData(new Date());
+            const pn = document.getElementById("moonPhaseName");
+            const il = document.getElementById("moonIllum");
+            const ag = document.getElementById("moonAge");
+            const mr = document.getElementById("moonrise");
+            const ms = document.getElementById("moonset");
+
+            if (pn) pn.textContent = data.phaseName;
+            if (il) il.textContent = `Освещено ${data.percent}%`;
+            if (ag) ag.textContent = `${data.age} дн.`;
+
+            if (data.rise) {
+              if (mr) mr.textContent = formatTime(data.rise);
+            } else if (data.alwaysUp) {
+              if (mr) mr.textContent = "Всегда";
+            } else if (data.alwaysDown) {
+              if (mr) mr.textContent = "Скрыта";
+            } else {
+              if (mr) mr.textContent = "—";
+            }
+
+            if (data.set) {
+              if (ms) ms.textContent = formatTime(data.set);
+            } else if (data.alwaysUp) {
+              if (ms) ms.textContent = "Всегда";
+            } else if (data.alwaysDown) {
+              if (ms) ms.textContent = "Скрыта";
+            } else {
+              if (ms) ms.textContent = "—";
+            }
+
+            // Отрисовать мини-луну в карточке
+            renderMoonOrb(data.phase);
+
+            // Кэшируем фазу для canvas
+            cachedMoonPhase = data.phase;
+          } catch (e) {
+            console.warn("renderMoon:", e);
+          }
+        }
+
+        function renderMoonOrb(phase) {
+          const orb = document.getElementById("moonOrb");
+          if (!orb) return;
+          // Используем clip-path для CSS-маски
+          // phase 0 — новолуние, 0.5 — полнолуние, 1 — снова новолуние
+          const shadowEl = orb.querySelector(".moon-orb-shadow");
+          if (!shadowEl) {
+            const s = document.createElement("div");
+            s.className = "moon-orb-shadow";
+            s.style.cssText = `position:absolute;inset:0;border-radius:50%;background:var(--night);transition:clip-path 0.8s var(--ease);`;
+            orb.appendChild(s);
+          }
+          const shadow = orb.querySelector(".moon-orb-shadow");
+          const cosA = Math.cos(2 * Math.PI * phase);
+          const rx = Math.abs(cosA); // 0..1
+          let clip = "circle(0% at 100% 50%)";
+
+          if (phase < 0.25) {
+            // Waxing crescent — тёмная справа
+            // Тёмная часть = правый полукруг плюс/минус эллипс
+            // Свет слева
+            // Тень справа: линия от центра к правому краю круга
+            // При phase 0: shadow полностью закрывает (100%)
+            // При phase 0.25: shadow только правая половина (50%)
+            // Используем elliptical clip
+            const pct = (1 - rx) * 100; // для phase 0 → 0%, для phase 0.25 → 100%
+            // Упрощённо: shadow = правая часть с шириной, зависящей от phase
+            // Реальный путь: shadow покрывает правую половину + «выпуклость» эллипса
+            // Для визуального эффекта используем:
+            if (phase < 0.03) {
+              clip = "circle(100% at 50% 50%)";
+            } else {
+              // Правая половина с «выщербиной»
+              clip = `polygon(50% 0, 100% 0, 100% 100%, 50% 100%)`;
+            }
+          } else if (phase < 0.5) {
+            // Waxing gibbous — тень тонкая справа
+            // Используем круг с вырезом
+            const rxPct = rx * 100;
+            clip = `polygon(50% 0, ${50 - rxPct / 2}% 0, ${50 - rxPct / 2}% 100%, 50% 100%)`;
+            // Хм, это не то. Оставим как эллипс-маску
+            // Простой подход — тёмная тонкая полоса справа
+            clip = `polygon(100% 0, 100% 100%, ${50 + rxPct / 2}% 100%, ${50 + rxPct / 2}% 0)`;
+          } else if (phase < 0.75) {
+            // Waning gibbous — тень тонкая слева
+            const rxPct = rx * 100;
+            clip = `polygon(0 0, 0 100%, ${50 - rxPct / 2}% 100%, ${50 - rxPct / 2}% 0)`;
+          } else {
+            // Waning crescent — тёмная слева
+            if (phase > 0.97) {
+              clip = "circle(100% at 50% 50%)";
+            } else {
+              clip = `polygon(0 0, 50% 0, 50% 100%, 0 100%)`;
+            }
+          }
+          shadow.style.clipPath = clip;
+          shadow.style.webkitClipPath = clip;
+        }
+
+        /* ============================================================
+           ПЛАНЕТЫ
+           ============================================================ */
+        const PLANETS = [
+          { name: "Венера", icon: "🌕", period: 0.615, offset: 0.3 },
+          { name: "Марс", icon: "🔴", period: 1.88, offset: 0.7 },
+          { name: "Юпитер", icon: "🟠", period: 11.86, offset: 1.2 },
+          { name: "Сатурн", icon: "🪐", period: 29.46, offset: 2.1 },
+          { name: "Меркурий", icon: "⚪", period: 0.241, offset: 1.8 },
+        ];
+
+        function renderPlanets() {
+          try {
+            const list = document.getElementById("planetsList");
+            if (!list) return;
+            const now = new Date();
+            const hour = now.getHours();
+            const isNight = hour >= 20 || hour < 6;
+
+            if (!isNight) {
+              list.innerHTML = `<div class="loading-state"><div class="text" style="font-size:14px;">☀️ Планеты лучше видны после заката. Загляни вечером — здесь появятся данные.</div></div>`;
+              return;
+            }
+
+            let html = "";
+            PLANETS.forEach((p) => {
+              const days = Math.floor(
+                (now - new Date("2000-01-01")) / 86400000,
+              );
+              const angle =
+                ((360 * days) / (p.period * 365.25) + p.offset * 180) % 360;
+              const sunAngle = ((360 * days) / 365.25) % 360;
+              const elong = Math.abs(((angle - sunAngle + 180) % 360) - 180);
+              const visible = elong > 25 && elong < 160;
+              html += `
+                <div class="planet-item">
+                  <span class="planet-icon">${p.icon}</span>
+                  <span class="planet-name">${p.name}</span>
+                  <span class="planet-status ${visible ? "visible" : "hidden"}">${visible ? "Видна" : "Не видна"}</span>
+                </div>`;
+            });
+            list.innerHTML = html;
+          } catch (e) {
+            console.warn("renderPlanets:", e);
+          }
+        }
+
+        /* ============================================================
+           СОЛНЦЕ — реальные данные
+           ============================================================ */
+        async function loadSun() {
+          try {
+            const res = await fetch(
+              `https://api.sunrise-sunset.org/json?lat=${LAT}&lng=${LNG}&formatted=0`,
+              { cache: "no-store" },
+            );
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            const data = await res.json();
+            if (data.status !== "OK") throw new Error("API error");
+
+            const toLocal = (utcIso) => {
+              const d = new Date(utcIso);
+              return d.toLocaleTimeString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+            };
+
+            const sr = document.getElementById("sunrise");
+            const ss = document.getElementById("sunset");
+            const sn = document.getElementById("solarNoon");
+            const dl = document.getElementById("dayLength");
+
+            if (sr) sr.textContent = toLocal(data.results.sunrise);
+            if (ss) ss.textContent = toLocal(data.results.sunset);
+            if (sn) sn.textContent = toLocal(data.results.solar_noon);
+            if (dl) {
+              const sec = data.results.day_length;
+              const h = Math.floor(sec / 3600);
+              const m = Math.floor((sec % 3600) / 60);
+              dl.textContent = `${h} ч ${m} м`;
+            }
+          } catch (e) {
+            console.warn("loadSun:", e);
+            const month = new Date().getMonth();
+            const estimates = [
+              ["08:50", "17:15"],
+              ["08:20", "17:55"],
+              ["07:30", "18:40"],
+              ["06:30", "19:25"],
+              ["05:30", "20:15"],
+              ["04:50", "20:50"],
+              ["05:00", "20:55"],
+              ["05:30", "20:20"],
+              ["06:10", "19:25"],
+              ["06:50", "18:25"],
+              ["07:40", "17:30"],
+              ["08:30", "17:05"],
+            ];
+            const [sr, ss] = estimates[month];
+            const el1 = document.getElementById("sunrise");
+            const el2 = document.getElementById("sunset");
+            if (el1) el1.textContent = sr;
+            if (el2) el2.textContent = ss;
+          }
+        }
+
+        /* ============================================================
+           МКС — wheretheiss.at (HTTPS, без ключей)
+           ============================================================ */
+        async function loadISS() {
+          try {
+            const res = await fetch(
+              "https://api.wheretheiss.at/v1/satellites/25544",
+              { cache: "no-store" },
+            );
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            const data = await res.json();
+
+            const lat = parseFloat(data.latitude).toFixed(4);
+            const lng = parseFloat(data.longitude).toFixed(4);
+
+            const latEl = document.getElementById("issLat");
+            const lngEl = document.getElementById("issLng");
+            if (latEl) latEl.textContent = `${lat}°`;
+            if (lngEl) lngEl.textContent = `${lng}°`;
+
+            // Расстояние по формуле гаверсинуса
+            const R = 6371;
+            const dLat = ((data.latitude - LAT) * Math.PI) / 180;
+            const dLng = ((data.longitude - LNG) * Math.PI) / 180;
+            const a =
+              Math.sin(dLat / 2) ** 2 +
+              Math.cos((LAT * Math.PI) / 180) *
+                Math.cos((data.latitude * Math.PI) / 180) *
+                Math.sin(dLng / 2) ** 2;
+            const dist = Math.round(
+              R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)),
+            );
+
+            const quote = document.getElementById("issQuote");
+            if (quote) {
+              quote.innerHTML = `Сейчас МКС пролетает в <em>${dist.toLocaleString("ru-RU")} км</em> от тебя. Я смотрю на ту же точку, что и ты.`;
+            }
+          } catch (e) {
+            console.warn("loadISS:", e);
+            const quote = document.getElementById("issQuote");
+            if (quote) {
+              quote.innerHTML = `МКС сейчас на орбите на высоте <em>~408 км</em> и мчится со скоростью <em>7.66 км/с</em>. Я смотрю на ту же точку, что и ты.`;
+            }
+          }
+        }
+
+        /* ============================================================
+           CANVAS
+           ============================================================ */
+        let canvas, ctx;
+        let stars = [];
+        let rafActive = false;
+        let cachedMoonPhase = 0.5;
+
+        function generateStars(W, H) {
+          stars = [];
+          const count = Math.min(180, Math.max(80, Math.floor((W * H) / 6000)));
+          for (let i = 0; i < count; i++) {
+            stars.push({
+              x: Math.random() * W,
+              y: Math.random() * H,
+              r: Math.random() * 1.4 + 0.3,
+              opacity: Math.random() * 0.6 + 0.25,
+              twinkle: Math.random() * 0.02 + 0.005,
+              phase: Math.random() * Math.PI * 2,
+            });
+          }
+        }
+
+        function resizeCanvas() {
+          if (!canvas) return;
+          const wrap = canvas.parentElement;
+          if (!wrap) return;
+          const rect = wrap.getBoundingClientRect();
+          const W = rect.width || 600;
+          const H = rect.height || 400;
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.floor(W * dpr);
+          canvas.height = Math.floor(H * dpr);
+          canvas.style.width = W + "px";
+          canvas.style.height = H + "px";
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          generateStars(W, H);
+        }
+
+        // Точная отрисовка фазы Луны на canvas
+        function drawMoonPhase(ctx, cx, cy, r, phase) {
+          // Светлый диск
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.fillStyle = "#fdfaf6";
+          ctx.fill();
+
+          // Полнолуние — тень не нужна
+          if (Math.abs(phase - 0.5) < 0.005) return;
+          // Новолуние — весь диск тёмный
+          if (phase < 0.005 || phase > 0.995) {
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(20, 17, 14, 0.92)";
+            ctx.fill();
+            return;
+          }
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.clip();
+
+          const cosA = Math.cos(2 * Math.PI * phase);
+          const rx = Math.abs(cosA) * r;
+
+          ctx.fillStyle = "rgba(20, 17, 14, 0.92)";
+          ctx.beginPath();
+
+          if (phase < 0.25) {
+            // Молодой месяц — тёмная почти вся Луна
+            ctx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2, true);
+            ctx.ellipse(cx, cy, rx, r, 0, Math.PI / 2, -Math.PI / 2, true);
+          } else if (phase < 0.5) {
+            // Растущая — тёмная тонкая полоса слева
+            ctx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2, true);
+            ctx.ellipse(cx, cy, rx, r, 0, Math.PI / 2, -Math.PI / 2, false);
+          } else if (phase < 0.75) {
+            // Убывающая — тёмная тонкая полоса справа
+            ctx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2, false);
+            ctx.ellipse(cx, cy, rx, r, 0, Math.PI / 2, -Math.PI / 2, true);
+          } else {
+            // Старая Луна — тёмная почти вся
+            ctx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2, false);
+            ctx.ellipse(cx, cy, rx, r, 0, Math.PI / 2, -Math.PI / 2, false);
+          }
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.restore();
+        }
+
+        function drawSky() {
+          if (!canvas || !ctx) return;
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          const W = canvas.width / dpr;
+          const H = canvas.height / dpr;
+
+          if (W < 10 || H < 10) {
+            if (!rafActive) {
+              rafActive = true;
+              setTimeout(() => {
+                rafActive = false;
+                resizeCanvas();
+                drawSky();
+              }, 200);
+            }
+            return;
+          }
+
+          // Фон неба
+          const grad = ctx.createLinearGradient(0, 0, 0, H);
+          grad.addColorStop(0, "#14110e");
+          grad.addColorStop(0.5, "#1f1a16");
+          grad.addColorStop(1, "#2b2620");
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+
+          // Свечение горизонта
+          const horizon = ctx.createLinearGradient(0, H * 0.75, 0, H);
+          horizon.addColorStop(0, "rgba(0,0,0,0)");
+          horizon.addColorStop(1, "rgba(181, 135, 148, 0.14)");
+          ctx.fillStyle = horizon;
+          ctx.fillRect(0, H * 0.75, W, H * 0.25);
+
+          // Звёзды
+          const t = Date.now() / 1000;
+          for (let i = 0; i < stars.length; i++) {
+            const s = stars[i];
+            const op =
+              s.opacity * (0.7 + 0.3 * Math.sin(t * s.twinkle * 10 + s.phase));
+            ctx.globalAlpha = Math.max(0, Math.min(1, op));
+            ctx.fillStyle = "#fdfaf6";
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+
+          // Луна с точной фазой
+          const mx = W * 0.78;
+          const my = H * 0.22;
+          const mr = Math.min(W, H) * 0.06;
+
+          ctx.save();
+          ctx.shadowColor = "rgba(232, 212, 216, 0.6)";
+          ctx.shadowBlur = 30;
+          drawMoonPhase(ctx, mx, my, mr, cachedMoonPhase);
+          ctx.restore();
+
+          // Созвездие «V»
+          const pts = [
+            [W * 0.14, H * 0.35],
+            [W * 0.3, H * 0.55],
+            [W * 0.45, H * 0.75],
+            [W * 0.6, H * 0.55],
+            [W * 0.74, H * 0.35],
+          ];
+          ctx.strokeStyle = "rgba(232, 212, 216, 0.28)";
+          ctx.lineWidth = 0.8;
+          ctx.setLineDash([2, 5]);
+          ctx.beginPath();
+          ctx.moveTo(pts[0][0], pts[0][1]);
+          for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          for (let i = 0; i < pts.length; i++) {
+            const [x, y] = pts[i];
+            ctx.beginPath();
+            ctx.arc(x, y, 8, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(181, 135, 148, 0.12)";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = "#fdfaf6";
+            ctx.fill();
+          }
+
+          requestAnimationFrame(drawSky);
+        }
+
+        /* ============================================================
+           INIT
+           ============================================================ */
+        function initSkyPage() {
+          try {
+            canvas = document.getElementById("skyCanvas");
+            if (!canvas) {
+              console.warn("skyCanvas не найден");
+              return;
+            }
+            ctx = canvas.getContext("2d");
+
+            requestAnimationFrame(() => {
+              resizeCanvas();
+              drawSky();
+            });
+
+            renderMoon();
+            renderPlanets();
+            loadSun();
+            loadISS();
+
+            setInterval(renderPlanets, 60000);
+            setInterval(loadISS, 10000);
+            setInterval(renderMoon, 60 * 60 * 1000); // раз в час — точность достаточная
+
+            let resizeTimer;
+            window.addEventListener("resize", () => {
+              clearTimeout(resizeTimer);
+              resizeTimer = setTimeout(() => resizeCanvas(), 200);
+            });
+
+            window.addEventListener("orientationchange", () => {
+              setTimeout(() => resizeCanvas(), 300);
+            });
+          } catch (e) {
+            console.error("initSkyPage:", e);
+          }
+        }
+
+        if (document.readyState === "complete") {
+          initSkyPage();
+        } else {
+          window.addEventListener("load", initSkyPage);
+        }
+      })();
+    </script>
+
+    <script src="sw-register.js" defer></script>
+  </body>
+</html>

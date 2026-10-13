@@ -1,970 +1,1804 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Нарисуй мне что-нибудь 🎨</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Нарисуй мне · Для Вероники</title>
+
     <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ff4d6d">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Вероника">
-  <link rel="apple-touch-icon" href="photos/icon-192.png">
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      overflow-x: hidden;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: none;
-    }
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
 
-    body {
-      background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 50%, #fba3b7 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
-      padding-bottom: 30px;
-      box-sizing: border-box;
-      position: relative;
-      overflow-x: hidden;
-    }
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
-    /* ---------- ДОЖДЬ ИЗ СЕРДЕЧЕК ---------- */
-    #hearts-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
-    }
+    <style>
+      /* ============================================================
+       TOKENS
+       ============================================================ */
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
 
-    .heart {
-      position: absolute;
-      top: -30px;
-      color: #ffb3c1;
-      font-size: 20px;
-      pointer-events: none;
-      animation: fall linear infinite;
-    }
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
 
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-    }
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
 
-    .container {
-      position: relative;
-      z-index: 10;
-      width: 100%;
-      max-width: 700px;
-      text-align: center;
-    }
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
 
-    h1 {
-      color: #ff4d6d;
-      font-size: 22px;
-      margin: 0 0 6px;
-      font-weight: 800;
-      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
-    }
+        --sand: #cfb8a3;
 
-    .subtitle {
-      color: #c71585;
-      font-size: 13px;
-      margin: 0 0 14px;
-      font-weight: 600;
-      opacity: 0.9;
-      font-style: italic;
-    }
-
-    /* ---------- ХОЛСТ ---------- */
-    .canvas-wrap {
-      position: relative;
-      width: 100%;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(255, 77, 109, 0.25);
-      overflow: hidden;
-      margin-bottom: 12px;
-      border: 3px solid #fff;
-      aspect-ratio: 1 / 1;
-      max-height: 70vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    @media (max-width: 600px) {
-      .canvas-wrap {
-        aspect-ratio: 4 / 5;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
       }
-    }
 
-    #drawCanvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-      cursor: crosshair;
-      touch-action: none;
-      background: #fffafc;
-    }
+      * {
+        box-sizing: border-box;
+      }
 
-    /* ---------- ПАЛИТРА ЦВЕТОВ ---------- */
-    .palette {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      padding: 12px 14px;
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 18px;
-      box-shadow: 0 6px 20px rgba(255, 77, 109, 0.15);
-      margin-bottom: 10px;
-      border: 2px solid #ffc2d1;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
-    .color-swatch {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 3px solid #fff;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      position: relative;
-      flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
 
-    .color-swatch:hover {
-      transform: scale(1.15);
-    }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+      }
 
-    .color-swatch.active {
-      transform: scale(1.2);
-      border-color: #ff4d6d;
-      box-shadow: 0 0 0 3px #fff, 0 0 20px rgba(255, 77, 109, 0.6);
-    }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
 
-    .color-swatch.active::after {
-      content: '✓';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #fff;
-      font-size: 14px;
-      font-weight: bold;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
 
-    /* ---------- ИНСТРУМЕНТЫ ---------- */
-    .tools-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
 
-    .tools-block {
-      display: flex;
-      gap: 6px;
-      padding: 8px 12px;
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 50px;
-      box-shadow: 0 4px 14px rgba(255, 77, 109, 0.15);
-      border: 2px solid #ffc2d1;
-      align-items: center;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
 
-    .tools-label {
-      color: #c71585;
-      font-size: 12px;
-      font-weight: 700;
-      margin-right: 4px;
-      white-space: nowrap;
-    }
+      /* ============================================================
+       TOP BAR
+       ============================================================ */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.78);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
 
-    .brush-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 2px solid #ffc2d1;
-      background: #fff;
-      color: #c71585;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      transition: all 0.25s;
-      font-family: inherit;
-      -webkit-tap-highlight-color: transparent;
-      position: relative;
-    }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
 
-    .brush-btn:hover {
-      background: #ffe5ec;
-      border-color: #ff4d6d;
-      transform: scale(1.1);
-    }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
 
-    .brush-btn.active {
-      background: linear-gradient(135deg, #ff4d6d, #c71585);
-      color: white;
-      border-color: #ff4d6d;
-      box-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
-    }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
 
-    /* Точки внутри кнопок размера */
-    .brush-dot {
-      display: block;
-      border-radius: 50%;
-      background: currentColor;
-    }
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
 
-    .brush-btn.active .brush-dot {
-      background: #fff;
-    }
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
 
-    /* ---------- ОСНОВНЫЕ КНОПКИ ---------- */
-    .actions {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
+      .topbar-meta:hover {
+        color: var(--ink);
+      }
 
-    .btn {
-      background: rgba(255, 255, 255, 0.95);
-      color: #c71585;
-      border: 2px solid #ffc2d1;
-      font-size: 14px;
-      padding: 11px 20px;
-      text-decoration: none;
-      border-radius: 50px;
-      font-weight: 700;
-      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
-      transition: all 0.25s;
-      cursor: pointer;
-      font-family: inherit;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      -webkit-tap-highlight-color: transparent;
-    }
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
 
-    .btn:hover {
-      background: #ff4d6d;
-      color: white;
-      border-color: #ff4d6d;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(255, 77, 109, 0.5);
-    }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
 
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
+      /* ============================================================
+       LAYOUT
+       ============================================================ */
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
 
-    .btn.primary {
-      background: linear-gradient(135deg, #ff4d6d, #c71585);
-      color: white;
-      border-color: #ff4d6d;
-    }
+      /* ============================================================
+       HERO
+       ============================================================ */
+      .hero {
+        padding: 20px 0 40px;
+        text-align: center;
+      }
 
-    .btn.primary:hover {
-      background: linear-gradient(135deg, #ff758f, #ff4d6d);
-    }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+      }
 
-    /* ---------- МОДАЛЬНОЕ ОКНО ДЛЯ EMAIL ---------- */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(43, 10, 31, 0.85);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
 
-    .modal-overlay.active {
-      display: flex;
-    }
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 68px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+      }
 
-    .modal {
-      background: #fff;
-      border-radius: 24px;
-      padding: 26px 24px 22px;
-      max-width: 420px;
-      width: 100%;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(255, 77, 109, 0.4);
-      border: 3px solid #ffc2d1;
-      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      text-align: center;
-    }
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
 
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 44ch;
+        font-weight: 400;
+      }
 
-    .modal h2 {
-      color: #ff4d6d;
-      font-size: 20px;
-      font-weight: 800;
-      margin: 0 0 8px;
-    }
+      /* ============================================================
+       STUDIO
+       ============================================================ */
+      .studio {
+        max-width: 780px;
+        margin: 72px auto 0;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
 
-    .modal p {
-      color: #c71585;
-      font-size: 13px;
-      margin: 0 0 16px;
-      opacity: 0.85;
-    }
+      /* --- Paper-canvas --- */
+      .canvas-wrap {
+        position: relative;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 8px 20px rgba(30, 26, 22, 0.05);
+      }
 
-    .modal input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 2px solid #ffc2d1;
-      border-radius: 14px;
-      font-size: 15px;
-      font-family: inherit;
-      color: #333;
-      box-sizing: border-box;
-      background: #fff7f9;
-      margin-bottom: 16px;
-      text-align: center;
-    }
+      /* Corner ticks */
+      .canvas-wrap::before,
+      .canvas-wrap::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--ink-3);
+        opacity: 0.5;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .canvas-wrap::before {
+        top: 6px;
+        left: 6px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .canvas-wrap::after {
+        bottom: 6px;
+        right: 6px;
+        border-left: none;
+        border-top: none;
+      }
 
-    .modal input:focus {
-      outline: none;
-      border-color: #ff4d6d;
-      background: #fff;
-    }
+      .canvas-inner {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        max-height: 72vh;
+        background: #fdfaf4;
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+      }
 
-    .modal-buttons {
-      display: flex;
-      gap: 8px;
-    }
+      @media (max-width: 640px) {
+        .canvas-inner {
+          aspect-ratio: 4 / 5;
+        }
+      }
 
-    .modal-buttons .btn {
-      flex: 1;
-      justify-content: center;
-    }
+      #drawCanvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        cursor: crosshair;
+        touch-action: none;
+        background: #fdfaf4;
+      }
 
-    /* ---------- УВЕДОМЛЕНИЕ ---------- */
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: linear-gradient(135deg, #ff4d6d, #c71585);
-      color: #fff;
-      padding: 14px 24px;
-      border-radius: 50px;
-      font-size: 14px;
-      font-weight: 700;
-      box-shadow: 0 12px 32px rgba(199, 21, 133, 0.5);
-      z-index: 3000;
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none;
-      max-width: 90vw;
-      text-align: center;
-    }
+      /* Small chart label in the corner of the canvas */
+      .canvas-meta {
+        position: absolute;
+        top: 12px;
+        left: 14px;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 11px;
+        color: var(--ink-3);
+        opacity: 0.6;
+        pointer-events: none;
+        z-index: 1;
+        letter-spacing: 0.02em;
+      }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+      /* ============================================================
+       TOOLS & PALETTE
+       ============================================================ */
+      .tool-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+      }
 
-    /* ---------- КОНФЕТТИ ---------- */
-    .confetti {
-      position: fixed;
-      font-size: 20px;
-      pointer-events: none;
-      z-index: 4000;
-      animation: confettiFall linear forwards;
-    }
+      .tool-block {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 999px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 6px 16px rgba(30, 26, 22, 0.06);
+      }
 
-    @keyframes confettiFall {
-      0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-    }
+      .tool-block-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        padding-right: 6px;
+        border-right: 1px solid var(--line);
+        margin-right: -2px;
+      }
 
-    /* ---------- АДАПТИВ ---------- */
-    @media (max-width: 480px) {
-      h1 { font-size: 18px; }
-      .color-swatch { width: 28px; height: 28px; }
-      .brush-btn { width: 32px; height: 32px; }
-      .btn { font-size: 13px; padding: 10px 16px; }
-      .tools-block { padding: 6px 10px; }
-      .tools-label { font-size: 11px; }
-    }
-  </style>
-</head>
-  <!-- PWA Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then((reg) => console.log('✅ Service Worker зарегистрирован'))
-          .catch((err) => console.log('❌ Ошибка SW:', err));
-      });
-    }
-  </script>
-<body>
+      /* Palette swatches */
+      .palette {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
 
-  <div id="hearts-container"></div>
+      .swatch {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 1px solid rgba(30, 26, 22, 0.1);
+        position: relative;
+        transition: transform 0.3s var(--ease-spring);
+        -webkit-tap-highlight-color: transparent;
+        padding: 0;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset;
+        flex-shrink: 0;
+      }
 
-  <div class="container">
-    <h1>🎨 Нарисуй мне что-нибудь</h1>
-    <p class="subtitle">Нарисуй что угодно и отправь мне 💕</p>
+      .swatch:hover {
+        transform: scale(1.12);
+      }
 
-    <!-- ХОЛСТ -->
-    <div class="canvas-wrap">
-      <canvas id="drawCanvas"></canvas>
-    </div>
+      .swatch.active {
+        transform: scale(1.15);
+        box-shadow:
+          0 0 0 2px var(--surface),
+          0 0 0 3px var(--ink);
+      }
 
-    <!-- ПАЛИТРА -->
-    <div class="palette" id="palette"></div>
+      /* Brush-size buttons */
+      .size-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: transparent;
+        border: 1px solid transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        -webkit-tap-highlight-color: transparent;
+        padding: 0;
+        flex-shrink: 0;
+      }
 
-    <!-- ИНСТРУМЕНТЫ -->
-    <div class="tools-row">
-      <div class="tools-block">
-        <span class="tools-label">Кисть:</span>
-        <button class="brush-btn" data-size="2" title="Тонкая">
-          <span class="brush-dot" style="width:4px;height:4px;"></span>
-        </button>
-        <button class="brush-btn active" data-size="5" title="Средняя">
-          <span class="brush-dot" style="width:8px;height:8px;"></span>
-        </button>
-        <button class="brush-btn" data-size="12" title="Толстая">
-          <span class="brush-dot" style="width:14px;height:14px;"></span>
-        </button>
-        <button class="brush-btn" data-size="24" title="Очень толстая">
-          <span class="brush-dot" style="width:20px;height:20px;"></span>
-        </button>
+      .size-btn:hover {
+        background: var(--surface-2);
+      }
+
+      .size-btn.active {
+        border-color: var(--ink);
+        background: var(--surface-2);
+      }
+
+      .size-dot {
+        display: block;
+        border-radius: 50%;
+        background: var(--ink);
+        transition: background 0.3s;
+      }
+
+      .size-btn.active .size-dot {
+        background: var(--rose-deep);
+      }
+
+      /* Tool toggle (brush / eraser) */
+      .tool-toggle {
+        display: inline-flex;
+        background: var(--surface-2);
+        border-radius: 999px;
+        padding: 3px;
+        position: relative;
+      }
+
+      .tool-toggle button {
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--ink-3);
+        transition: all 0.35s var(--ease);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.01em;
+      }
+
+      .tool-toggle button.active {
+        background: var(--ink);
+        color: var(--paper);
+        box-shadow: 0 4px 10px rgba(30, 26, 22, 0.2);
+      }
+
+      .tool-toggle button .tool-icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+
+      /* ============================================================
+       ACTIONS
+       ============================================================ */
+      .actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 26px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: all 0.35s var(--ease);
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .btn:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn:disabled:hover {
+        background: transparent;
+        color: var(--ink-2);
+        border-color: var(--line-2);
+      }
+
+      .btn.primary {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 8px 20px rgba(30, 26, 22, 0.2);
+      }
+
+      .btn.primary:hover {
+        background: #000;
+        color: var(--paper);
+        border-color: #000;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 14px 32px rgba(30, 26, 22, 0.26);
+      }
+
+      .btn .btn-icon {
+        font-size: 14px;
+        filter: saturate(0.7);
+      }
+
+      .btn .btn-arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 14px;
+      }
+
+      .btn:hover .btn-arrow {
+        transform: translateX(-4px);
+      }
+
+      /* ============================================================
+       MODAL — editorial letter
+       ============================================================ */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        padding: 24px;
+        background: rgba(30, 26, 22, 0.42);
+        backdrop-filter: blur(20px) saturate(140%);
+        -webkit-backdrop-filter: blur(20px) saturate(140%);
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s var(--ease);
+        overflow-y: auto;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal {
+        position: relative;
+        width: 100%;
+        max-width: 460px;
+        margin: auto;
+        padding: 52px 44px 40px;
+        background: var(--letter, #faf6ee);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 50px 100px rgba(30, 26, 22, 0.28),
+          0 12px 30px rgba(30, 26, 22, 0.14);
+        transform: translateY(30px) scale(0.95) rotate(-0.8deg);
+        transition: transform 0.8s var(--ease-spring);
+        max-height: calc(100vh - 48px);
+        overflow-y: auto;
+      }
+
+      .modal-overlay.active .modal {
+        transform: translateY(0) scale(1) rotate(0deg);
+      }
+
+      .modal::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border: 1px solid rgba(30, 26, 22, 0.06);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--ink-3);
+        border: none;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        z-index: 10;
+      }
+
+      .modal-close:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        transform: rotate(90deg);
+      }
+
+      .modal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 18px;
+        margin-bottom: 28px;
+        border-bottom: 1px solid var(--line);
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        position: relative;
+        z-index: 1;
+      }
+
+      .modal-head .latin {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--rose-deep);
+      }
+
+      .modal-emoji {
+        display: block;
+        font-size: 44px;
+        line-height: 1;
+        margin-bottom: 20px;
+        filter: saturate(0.8);
+        text-align: center;
+        animation: heartbeat 2.4s ease infinite;
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        15% {
+          transform: scale(1.1);
+        }
+        30% {
+          transform: scale(1);
+        }
+        45% {
+          transform: scale(1.06);
+        }
+        60% {
+          transform: scale(1);
+        }
+      }
+
+      .modal-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(24px, 3vw, 30px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 12px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .modal-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .modal-sub {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 1.55;
+        color: var(--ink-2);
+        margin: 0 0 28px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .modal-field {
+        position: relative;
+        z-index: 1;
+        margin-bottom: 24px;
+      }
+
+      .modal-field label {
+        display: block;
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 10px;
+      }
+
+      .modal-field input {
+        width: 100%;
+        padding: 14px 16px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 12px;
+        font-family: "Inter", sans-serif;
+        font-size: 15px;
+        color: var(--ink);
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        -webkit-appearance: none;
+        appearance: none;
+        box-sizing: border-box;
+      }
+
+      .modal-field input:focus {
+        outline: none;
+        border-color: var(--rose-deep);
+        box-shadow: 0 0 0 4px rgba(143, 100, 114, 0.1);
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .modal-actions .btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      /* ============================================================
+       TOAST
+       ============================================================ */
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 32px;
+        transform: translateX(-50%) translateY(20px);
+        padding: 14px 22px;
+        background: var(--ink);
+        color: var(--paper);
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        box-shadow: 0 20px 40px rgba(30, 26, 22, 0.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.5s var(--ease);
+        z-index: 6000;
+        max-width: calc(100vw - 40px);
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* ============================================================
+       SPARKLES
+       ============================================================ */
+      .sparkle {
+        position: fixed;
+        pointer-events: none;
+        z-index: 6000;
+        filter: saturate(0.65);
+      }
+
+      /* ============================================================
+       FOOTER
+       ============================================================ */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+      }
+
+      /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(30px, 8vw, 44px);
+        }
+
+        .studio {
+          margin-top: 56px;
+          gap: 16px;
+        }
+
+        .canvas-wrap {
+          padding: 12px;
+        }
+        .canvas-inner {
+          max-height: 60vh;
+        }
+        .canvas-meta {
+          font-size: 10px;
+          top: 10px;
+          left: 12px;
+        }
+
+        .tool-row {
+          gap: 8px;
+        }
+        .tool-block {
+          padding: 8px 12px;
+          gap: 8px;
+        }
+        .tool-block-label {
+          font-size: 9px;
+          padding-right: 5px;
+          letter-spacing: 0.14em;
+        }
+
+        .swatch {
+          width: 22px;
+          height: 22px;
+        }
+        .size-btn {
+          width: 30px;
+          height: 30px;
+        }
+
+        .tool-toggle button {
+          padding: 6px 11px;
+          font-size: 11px;
+        }
+
+        .actions {
+          gap: 8px;
+          margin-top: 4px;
+        }
+        .btn {
+          padding: 13px 20px;
+          font-size: 13px;
+        }
+
+        .modal {
+          padding: 40px 26px 30px;
+          border-radius: 3px;
+        }
+        .modal-emoji {
+          font-size: 38px;
+        }
+        .modal-title {
+          font-size: 22px;
+        }
+        .modal-sub {
+          font-size: 13.5px;
+        }
+
+        .toast {
+          bottom: 20px;
+          font-size: 12px;
+          padding: 12px 18px;
+          white-space: normal;
+        }
+
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <!-- ============================================================
+       TOP BAR
+       ============================================================ -->
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
       </div>
+    </header>
 
-      <div class="tools-block">
-        <span class="tools-label">Инстр.:</span>
-        <button class="brush-btn active" id="brushTool" title="Кисть">🖌️</button>
-        <button class="brush-btn" id="eraserTool" title="Ластик">🧽</button>
+    <main>
+      <!-- ============================================================
+         HERO
+         ============================================================ -->
+      <section class="hero">
+        <span class="eyebrow">09 · Творчество</span>
+        <h1>Нарисуй мне <em>что-нибудь</em></h1>
+        <p class="hero-sub">
+          Что угодно — домик, сердце, котика или просто карлючку. Отправь — и я
+          увижу.
+        </p>
+      </section>
+
+      <!-- ============================================================
+         STUDIO
+         ============================================================ -->
+      <section class="studio">
+        <!-- Canvas -->
+        <div class="canvas-wrap">
+          <div class="canvas-inner">
+            <span class="canvas-meta" id="canvasMeta">№ 09 · рисунок</span>
+            <canvas id="drawCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Palette + sizes -->
+        <div class="tool-row">
+          <div class="tool-block">
+            <span class="tool-block-label">Цвет</span>
+            <div class="palette" id="palette"></div>
+          </div>
+        </div>
+
+        <div class="tool-row">
+          <div class="tool-block">
+            <span class="tool-block-label">Кисть</span>
+            <button
+              class="size-btn"
+              data-size="2"
+              title="Тонкая"
+              aria-label="Тонкая"
+            >
+              <span class="size-dot" style="width: 4px; height: 4px"></span>
+            </button>
+            <button
+              class="size-btn active"
+              data-size="5"
+              title="Средняя"
+              aria-label="Средняя"
+            >
+              <span class="size-dot" style="width: 8px; height: 8px"></span>
+            </button>
+            <button
+              class="size-btn"
+              data-size="12"
+              title="Толстая"
+              aria-label="Толстая"
+            >
+              <span class="size-dot" style="width: 14px; height: 14px"></span>
+            </button>
+            <button
+              class="size-btn"
+              data-size="24"
+              title="Очень толстая"
+              aria-label="Очень толстая"
+            >
+              <span class="size-dot" style="width: 20px; height: 20px"></span>
+            </button>
+          </div>
+
+          <div class="tool-block">
+            <span class="tool-block-label">Инструмент</span>
+            <div class="tool-toggle">
+              <button class="active" id="brushTool" aria-label="Кисть">
+                <span class="tool-icon">🖌️</span>
+                <span>Кисть</span>
+              </button>
+              <button id="eraserTool" aria-label="Ластик">
+                <span class="tool-icon">🧽</span>
+                <span>Ластик</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button class="btn" onclick="undoLast()" id="undoBtn" disabled>
+            <span class="btn-icon">↩</span>
+            <span>Отменить</span>
+          </button>
+          <button class="btn" onclick="clearCanvas()">
+            <span class="btn-icon">✕</span>
+            <span>Очистить</span>
+          </button>
+          <button class="btn primary" onclick="openSendModal()">
+            <span class="btn-icon">💌</span>
+            <span>Отправить мне</span>
+          </button>
+        </div>
+
+        <div class="actions">
+          <a href="index.html" class="btn">
+            <span class="btn-arrow">←</span>
+            <span>На главную</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <!-- ============================================================
+       MODAL
+       ============================================================ -->
+    <div class="modal-overlay" id="sendModal">
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="closeSendModal()"
+          aria-label="Закрыть"
+        >
+          ✕
+        </button>
+
+        <div class="modal-head">
+          <span>Отправка рисунка</span>
+          <span class="latin">Veronica · pictura</span>
+        </div>
+
+        <span class="modal-emoji">💌</span>
+
+        <h2 class="modal-title">Куда прислать <em>рисунок</em>?</h2>
+        <p class="modal-sub">
+          Оставь свой email — и твой рисунок долетит до меня в тот же миг.
+        </p>
+
+        <div class="modal-field">
+          <label for="userEmail">Твоя почта</label>
+          <input
+            type="email"
+            id="userEmail"
+            placeholder="example@mail.ru"
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn" onclick="closeSendModal()">Отмена</button>
+          <button class="btn primary" onclick="sendDrawing()" id="sendBtn">
+            <span class="btn-icon">✦</span>
+            <span>Отправить</span>
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- КНОПКИ ДЕЙСТВИЙ -->
-    <div class="actions">
-      <button class="btn" onclick="undoLast()" id="undoBtn" disabled>↩️ Отменить</button>
-      <button class="btn" onclick="clearCanvas()">🗑️ Очистить</button>
-      <button class="btn primary" onclick="openSendModal()">💌 Отправить мне</button>
-    </div>
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
-    <div class="actions" style="margin-top:12px;">
-      <a href="index.html" class="btn">← На главную</a>
-    </div>
-  </div>
+    <!-- Hidden form -->
+    <form
+      id="drawForm"
+      style="display: none"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <input
+        type="hidden"
+        name="_subject"
+        value="🎨 Вероника прислала мне рисунок!"
+      />
+      <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_cc" id="ccField" value="" />
+      <input type="hidden" name="От кого" id="f_from" />
+      <input type="hidden" name="Дата" id="f_date" />
+      <input type="hidden" name="Ссылка на рисунок" id="f_link" />
+    </form>
 
-  <!-- МОДАЛЬНОЕ ОКНО ДЛЯ EMAIL -->
-  <div class="modal-overlay" id="sendModal">
-    <div class="modal">
-      <h2>💌 Куда прислать рисунок?</h2>
-      <p>Напиши свой email — и я сразу получу твой рисунок 💕</p>
-      <input type="email" id="userEmail" placeholder="example@mail.ru">
-      <div class="modal-buttons">
-        <button class="btn" onclick="closeSendModal()">Отмена</button>
-        <button class="btn primary" onclick="sendDrawing()" id="sendBtn">Отправить</button>
-      </div>
-    </div>
-  </div>
+    <!-- ============================================================
+       TIME + WEATHER
+       ============================================================ -->
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("timeText").textContent = `${hh}:${mm}`;
 
-  <!-- УВЕДОМЛЕНИЕ -->
-  <div class="toast" id="toast"></div>
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        document.getElementById("timeIcon").textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
 
-  <!-- СКРЫТАЯ ФОРМА ДЛЯ ОТПРАВКИ -->
-  <form id="drawForm" style="display:none;" method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="_subject" value="🎨 Вероника прислала мне рисунок!">
-    <input type="hidden" name="_template" value="table">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_cc" id="ccField" value="">
-    <input type="hidden" name="От кого" id="f_from">
-    <input type="hidden" name="Дата" id="f_date">
-    <input type="hidden" name="Ссылка на рисунок" id="f_link">
-  </form>
+      const WEATHER_CITY = { name: "Улан-Удэ" };
 
-  <script>
-    // ============================================================
-    // ⚠️ ЗАМЕНИ НА СВОЮ ПОЧТУ
-    // ============================================================
-    const MY_EMAIL = "vilya51aura@gmail.com";
-    // ============================================================
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
 
-    const canvas = document.getElementById('drawCanvas');
-    const ctx = canvas.getContext('2d');
-    const palette = document.getElementById('palette');
-    const undoBtn = document.getElementById('undoBtn');
-    const sendModal = document.getElementById('sendModal');
-    const userEmail = document.getElementById('userEmail');
-    const toast = document.getElementById('toast');
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
 
-    // ---------- ЦВЕТА ПАЛИТРЫ (розово-красные оттенки) ----------
-    const COLORS = [
-      '#ff4d6d', // основной розовый
-      '#c71585', // малиновый
-      '#ff8fa3', // светло-розовый
-      '#ffb3c1', // нежно-розовый
-      '#8b0f5c', // тёмно-бордовый
-      '#ff758f', // коралловый
-      '#e91e63', // розовый
-      '#d81b60', // насыщенный розовый
-      '#ff1493', // deep pink
-      '#ff69b4', // hot pink
-      '#ffffff', // белый
-      '#000000', // чёрный
-      '#ff006e', // ярко-розовый
-      '#ff5e78'  // тёплый розовый
-    ];
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
 
-    // ---------- СОСТОЯНИЕ ----------
-    let currentColor = '#ff4d6d';
-    let currentSize = 5;
-    let isEraser = false;
-    let isDrawing = false;
-    let lastX = 0;
-    let lastY = 0;
-    let strokes = []; // история для отмены
-    let currentStroke = null;
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
 
-    // ---------- ИНИЦИАЛИЗАЦИЯ ----------
-    function initPalette() {
-      COLORS.forEach((color, i) => {
-        const swatch = document.createElement('div');
-        swatch.className = 'color-swatch' + (i === 0 ? ' active' : '');
-        swatch.style.background = color;
-        swatch.dataset.color = color;
-        swatch.addEventListener('click', () => {
-          document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-          swatch.classList.add('active');
-          currentColor = color;
-          // Если был ластик — включаем кисть обратно
-          if (isEraser) {
-            setEraser(false);
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      document
+        .getElementById("infoWidget")
+        .addEventListener("click", loadWeather);
+    </script>
+
+    <!-- ============================================================
+       DRAW SCRIPT
+       ============================================================ -->
+    <script>
+      // ============================================================
+      // ⚠️ ПОЧТА
+      // ============================================================
+      const MY_EMAIL = "vilya51aura@gmail.com";
+      // ============================================================
+
+      const canvas = document.getElementById("drawCanvas");
+      const ctx = canvas.getContext("2d");
+      const palette = document.getElementById("palette");
+      const undoBtn = document.getElementById("undoBtn");
+      const sendModal = document.getElementById("sendModal");
+      const userEmail = document.getElementById("userEmail");
+      const toast = document.getElementById("toast");
+      const brushTool = document.getElementById("brushTool");
+      const eraserTool = document.getElementById("eraserTool");
+
+      // ============================================================
+      // Палитра — приглушённые, «бумажные» оттенки в тон сайту
+      // ============================================================
+      const COLORS = [
+        // Core neutrals
+        "#1e1a16", // ink
+        "#4a423c", // soft charcoal
+        "#8a7f75", // stone
+        "#b8aca1", // dove
+        "#fdfaf4", // paper white
+
+        // Roses / mauve
+        "#8f6472", // rose deep
+        "#b58794", // rose
+        "#d8b5bd", // rose soft
+        "#e8d4d8", // rose tint
+
+        // Warm sands
+        "#cfb8a3", // sand
+        "#b89968", // gold
+        "#9b7d5a", // bronze
+
+        // Earthy accents
+        "#7a6f5c", // olive smoke
+        "#5f6b58", // sage
+        "#7d5a4a", // clay
+        "#b8724b", // terracotta
+      ];
+
+      // ============================================================
+      // STATE
+      // ============================================================
+      let currentColor = COLORS[0];
+      let currentSize = 5;
+      let isEraser = false;
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+      let strokes = [];
+      let currentStroke = null;
+
+      // ============================================================
+      // PALETTE
+      // ============================================================
+      function initPalette() {
+        COLORS.forEach((color, i) => {
+          const swatch = document.createElement("button");
+          swatch.type = "button";
+          swatch.className = "swatch" + (i === 0 ? " active" : "");
+          swatch.style.background = color;
+          swatch.dataset.color = color;
+          swatch.setAttribute("aria-label", `Цвет ${color}`);
+          swatch.addEventListener("click", () => {
+            palette
+              .querySelectorAll(".swatch")
+              .forEach((s) => s.classList.remove("active"));
+            swatch.classList.add("active");
+            currentColor = color;
+            if (isEraser) setEraser(false);
+          });
+          palette.appendChild(swatch);
+        });
+      }
+
+      // ============================================================
+      // CANVAS SIZE
+      // ============================================================
+      function resizeCanvas() {
+        const wrap = canvas.parentElement;
+        const rect = wrap.getBoundingClientRect();
+
+        // Preserve current drawing
+        const savedData =
+          canvas.width > 0 && canvas.height > 0 ? canvas.toDataURL() : null;
+
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
+        canvas.style.width = rect.width + "px";
+        canvas.style.height = rect.height + "px";
+
+        // Scale context for crisp rendering
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        // Paper tint
+        ctx.fillStyle = "#fdfaf4";
+        ctx.fillRect(0, 0, rect.width, rect.height);
+
+        // Restore drawing
+        if (savedData && savedData !== "data:,") {
+          const img = new Image();
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, rect.width, rect.height);
+          };
+          img.src = savedData;
+        }
+
+        // Redraw vector strokes on top
+        redrawAll(true);
+      }
+
+      // ============================================================
+      // POSITION
+      // ============================================================
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        let clientX, clientY;
+
+        if (e.touches && e.touches.length > 0) {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+        } else if (e.changedTouches && e.changedTouches.length > 0) {
+          clientX = e.changedTouches[0].clientX;
+          clientY = e.changedTouches[0].clientY;
+        } else {
+          clientX = e.clientX;
+          clientY = e.clientY;
+        }
+
+        return {
+          x: clientX - rect.left,
+          y: clientY - rect.top,
+        };
+      }
+
+      // ============================================================
+      // DRAW
+      // ============================================================
+      function startDraw(e) {
+        e.preventDefault();
+        isDrawing = true;
+        const pos = getPos(e);
+        lastX = pos.x;
+        lastY = pos.y;
+
+        currentStroke = {
+          color: isEraser ? "#fdfaf4" : currentColor,
+          size: isEraser ? currentSize * 3 : currentSize,
+          points: [{ x: pos.x, y: pos.y }],
+        };
+        strokes.push(currentStroke);
+        undoBtn.disabled = false;
+
+        // Draw initial dot
+        ctx.fillStyle = currentStroke.color;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, currentStroke.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+
+        const pos = getPos(e);
+        const color = isEraser ? "#fdfaf4" : currentColor;
+        const size = isEraser ? currentSize * 3 : currentSize;
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = size;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+
+        if (currentStroke) currentStroke.points.push({ x: pos.x, y: pos.y });
+
+        lastX = pos.x;
+        lastY = pos.y;
+      }
+
+      function endDraw() {
+        isDrawing = false;
+        currentStroke = null;
+      }
+
+      // ============================================================
+      // REDRAW
+      // ============================================================
+      function redrawAll(skipFill) {
+        const rect = canvas.getBoundingClientRect();
+        if (!skipFill) {
+          ctx.fillStyle = "#fdfaf4";
+          ctx.fillRect(0, 0, rect.width, rect.height);
+        }
+
+        strokes.forEach((stroke) => {
+          if (stroke.points.length === 0) return;
+
+          if (stroke.points.length === 1) {
+            ctx.fillStyle = stroke.color;
+            ctx.beginPath();
+            ctx.arc(
+              stroke.points[0].x,
+              stroke.points[0].y,
+              stroke.size / 2,
+              0,
+              Math.PI * 2,
+            );
+            ctx.fill();
+          } else {
+            ctx.strokeStyle = stroke.color;
+            ctx.lineWidth = stroke.size;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.beginPath();
+            ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+            for (let i = 1; i < stroke.points.length; i++) {
+              ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+            }
+            ctx.stroke();
           }
         });
-        palette.appendChild(swatch);
+      }
+
+      // ============================================================
+      // UNDO / CLEAR
+      // ============================================================
+      function undoLast() {
+        if (strokes.length === 0) return;
+        strokes.pop();
+        redrawAll();
+        if (strokes.length === 0) undoBtn.disabled = true;
+        showToast("Штрих удалён");
+      }
+
+      function clearCanvas() {
+        if (strokes.length === 0) {
+          showToast("Нечего очищать");
+          return;
+        }
+        const rect = canvas.getBoundingClientRect();
+        ctx.fillStyle = "#fdfaf4";
+        ctx.fillRect(0, 0, rect.width, rect.height);
+        strokes = [];
+        undoBtn.disabled = true;
+        showToast("Рисунок очищен");
+      }
+
+      // ============================================================
+      // SIZES
+      // ============================================================
+      document.querySelectorAll("[data-size]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll("[data-size]")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentSize = parseInt(btn.dataset.size, 10);
+        });
       });
-    }
 
-    // ---------- РАЗМЕР ХОЛСТА ----------
-    function resizeCanvas() {
-      const wrap = canvas.parentElement;
-      const rect = wrap.getBoundingClientRect();
-
-      // Сохраняем текущий рисунок
-      const savedData = canvas.toDataURL();
-
-      // Устанавливаем размер
-      canvas.width = rect.width;
-      canvas.height = rect.height;
-
-      // Заливаем белым
-      ctx.fillStyle = '#fffafc';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Восстанавливаем рисунок (если был)
-      if (savedData && savedData !== 'data:,') {
-        const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        };
-        img.src = savedData;
-      }
-    }
-
-    // ---------- РИСОВАНИЕ ----------
-    function getPos(e) {
-      const rect = canvas.getBoundingClientRect();
-      let clientX, clientY;
-
-      if (e.touches && e.touches.length > 0) {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-      } else if (e.changedTouches && e.changedTouches.length > 0) {
-        clientX = e.changedTouches[0].clientX;
-        clientY = e.changedTouches[0].clientY;
-      } else {
-        clientX = e.clientX;
-        clientY = e.clientY;
-      }
-
-      return {
-        x: clientX - rect.left,
-        y: clientY - rect.top
-      };
-    }
-
-    function startDraw(e) {
-      e.preventDefault();
-      isDrawing = true;
-      const pos = getPos(e);
-      lastX = pos.x;
-      lastY = pos.y;
-
-      // Начинаем новый штрих для истории
-      currentStroke = {
-        color: isEraser ? '#fffafc' : currentColor,
-        size: isEraser ? currentSize * 3 : currentSize,
-        points: [{ x: pos.x, y: pos.y }]
-      };
-      strokes.push(currentStroke);
-      undoBtn.disabled = false;
-
-      // Рисуем точку
-      ctx.fillStyle = currentStroke.color;
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, currentStroke.size / 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Звук карандаша? Не обязательно
-    }
-
-    function draw(e) {
-      if (!isDrawing) return;
-      e.preventDefault();
-
-      const pos = getPos(e);
-      const color = isEraser ? '#fffafc' : currentColor;
-      const size = isEraser ? currentSize * 3 : currentSize;
-
-      // Линия
-      ctx.strokeStyle = color;
-      ctx.lineWidth = size;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      ctx.moveTo(lastX, lastY);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
-
-      // Сохраняем точку
-      if (currentStroke) {
-        currentStroke.points.push({ x: pos.x, y: pos.y });
-      }
-
-      lastX = pos.x;
-      lastY = pos.y;
-    }
-
-    function endDraw(e) {
-      isDrawing = false;
-      currentStroke = null;
-    }
-
-    // ---------- ОТМЕНА ----------
-    function undoLast() {
-      if (strokes.length === 0) return;
-      strokes.pop(); // Удаляем последний штрих
-      redrawAll();
-      if (strokes.length === 0) undoBtn.disabled = true;
-      showToast('↩️ Отменено');
-    }
-
-    function redrawAll() {
-      // Очищаем и заливаем белым
-      ctx.fillStyle = '#fffafc';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Рисуем все штрихи заново
-      strokes.forEach(stroke => {
-        if (stroke.points.length === 0) return;
-
-        if (stroke.points.length === 1) {
-          // Одна точка — рисуем кружок
-          ctx.fillStyle = stroke.color;
-          ctx.beginPath();
-          ctx.arc(stroke.points[0].x, stroke.points[0].y, stroke.size / 2, 0, Math.PI * 2);
-          ctx.fill();
+      // ============================================================
+      // TOOLS
+      // ============================================================
+      function setEraser(value) {
+        isEraser = value;
+        if (value) {
+          eraserTool.classList.add("active");
+          brushTool.classList.remove("active");
         } else {
-          // Линия из точек
-          ctx.strokeStyle = stroke.color;
-          ctx.lineWidth = stroke.size;
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
-          ctx.beginPath();
-          ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-          for (let i = 1; i < stroke.points.length; i++) {
-            ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
-          }
-          ctx.stroke();
+          brushTool.classList.add("active");
+          eraserTool.classList.remove("active");
+        }
+      }
+
+      brushTool.addEventListener("click", () => setEraser(false));
+      eraserTool.addEventListener("click", () => setEraser(true));
+
+      // ============================================================
+      // MODAL
+      // ============================================================
+      function openSendModal() {
+        if (strokes.length === 0) {
+          showToast("Сначала нарисуй что-нибудь");
+          return;
+        }
+        sendModal.classList.add("active");
+        document.body.style.overflow = "hidden";
+        setTimeout(() => userEmail.focus(), 400);
+      }
+
+      function closeSendModal() {
+        sendModal.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+
+      sendModal.addEventListener("click", (e) => {
+        if (e.target === sendModal) closeSendModal();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && sendModal.classList.contains("active")) {
+          closeSendModal();
+        }
+        if (
+          (e.ctrlKey || e.metaKey) &&
+          e.key.toLowerCase() === "z" &&
+          !sendModal.classList.contains("active")
+        ) {
+          e.preventDefault();
+          undoLast();
         }
       });
-    }
 
-    // ---------- ОЧИСТКА ----------
-    function clearCanvas() {
-      if (strokes.length === 0) {
-        showToast('🤷 Нечего очищать');
-        return;
-      }
-      if (!confirm('Очистить весь рисунок?')) return;
+      // ============================================================
+      // SEND
+      // ============================================================
+      function sendDrawing() {
+        const email = userEmail.value.trim();
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      strokes = [];
-      ctx.fillStyle = '#fffafc';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      undoBtn.disabled = true;
-      showToast('🗑️ Очищено');
-    }
+        if (!re.test(email)) {
+          showToast("Введи правильный email");
+          userEmail.focus();
+          return;
+        }
 
-    // ---------- ИНСТРУМЕНТЫ ----------
-    // Размер кисти
-    document.querySelectorAll('[data-size]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-size]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentSize = parseInt(btn.dataset.size);
-      });
-    });
+        const sendBtn = document.getElementById("sendBtn");
+        sendBtn.disabled = true;
+        sendBtn.querySelector("span:last-child").textContent = "Отправляю...";
 
-    // Кисть / ластик
-    const brushTool = document.getElementById('brushTool');
-    const eraserTool = document.getElementById('eraserTool');
+        try {
+          const drawingData = canvas.toDataURL("image/png");
 
-    function setEraser(value) {
-      isEraser = value;
-      if (value) {
-        eraserTool.classList.add('active');
-        brushTool.classList.remove('active');
-      } else {
-        brushTool.classList.add('active');
-        eraserTool.classList.remove('active');
-      }
-    }
+          // Hidden form submit
+          document.getElementById("f_from").value = email;
+          document.getElementById("f_date").value = new Date().toLocaleString(
+            "ru-RU",
+          );
+          document.getElementById("ccField").value = email;
 
-    brushTool.addEventListener('click', () => setEraser(false));
-    eraserTool.addEventListener('click', () => setEraser(true));
+          const form = document.getElementById("drawForm");
+          form.action = `https://formsubmit.co/${MY_EMAIL}`;
+          const formData = new FormData(form);
+          formData.append("_replyto", email);
 
-    // ---------- МОДАЛЬНОЕ ОКНО ОТПРАВКИ ----------
-    function openSendModal() {
-      // Проверяем, нарисовано ли что-то
-      if (strokes.length === 0) {
-        showToast('🎨 Сначала нарисуй что-нибудь!');
-        return;
-      }
-      sendModal.classList.add('active');
-      userEmail.focus();
-    }
+          fetch(form.action, {
+            method: "POST",
+            body: formData,
+            headers: { Accept: "application/json" },
+          }).catch(() => {});
 
-    function closeSendModal() {
-      sendModal.classList.remove('active');
-    }
+          // Download fallback
+          downloadCanvas(drawingData);
 
-    // Клик по фону — закрыть
-    sendModal.addEventListener('click', (e) => {
-      if (e.target === sendModal) closeSendModal();
-    });
-
-    // ---------- ОТПРАВКА РИСУНКА ----------
-    function sendDrawing() {
-      const email = userEmail.value.trim();
-
-      // Проверка email
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!re.test(email)) {
-        showToast('⚠️ Введи правильный email');
-        userEmail.focus();
-        return;
-      }
-
-      const sendBtn = document.getElementById('sendBtn');
-      sendBtn.disabled = true;
-      sendBtn.textContent = '💌 Отправляю...';
-
-      try {
-        // 1. Получаем рисунок как base64
-        const drawingData = canvas.toDataURL('image/png');
-
-        // 2. Показываем успех
-        setTimeout(() => {
-          closeSendModal();
-          celebrateSuccess();
-          showToast('💖 Рисунок отправлен! Я его скоро увижу 🥰');
-
-          // Сбрасываем кнопку
           setTimeout(() => {
-            sendBtn.disabled = false;
-            sendBtn.textContent = 'Отправить';
-          }, 1500);
-        }, 800);
+            closeSendModal();
+            celebrate();
+            showToast("Рисунок отправлен");
 
-        // 3. Отправляем через сервис — используем webhook или mailto
-        // Вариант: открываем почтовый клиент с готовым письмом
-        // Но лучше — отправить данные через форму
+            setTimeout(() => {
+              sendBtn.disabled = false;
+              sendBtn.querySelector("span:last-child").textContent =
+                "Отправить";
+            }, 1200);
+          }, 700);
+        } catch (err) {
+          console.error(err);
+          showToast("Что-то пошло не так");
+          sendBtn.disabled = false;
+          sendBtn.querySelector("span:last-child").textContent = "Отправить";
+        }
+      }
 
-        // Формируем ссылку-напоминание
-        document.getElementById('f_from').value = email;
-        document.getElementById('f_date').value = new Date().toLocaleString('ru-RU');
+      function downloadCanvas(dataUrl) {
+        const link = document.createElement("a");
+        link.download = "risunok-veroniki-" + Date.now() + ".png";
+        link.href = dataUrl;
+        link.click();
+      }
 
-        // Отправляем метаданные (без картинки — она большая)
-        const form = document.getElementById('drawForm');
-        form.action = `https://formsubmit.co/${MY_EMAIL}`;
-        const formData = new FormData(form);
-        formData.append('_replyto', email);
+      // ============================================================
+      // CELEBRATION
+      // ============================================================
+      function celebrate() {
+        const rect = canvas.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
 
-        fetch(form.action, {
-          method: 'POST',
-          body: formData,
-          headers: { 'Accept': 'application/json' }
-        }).then(r => {
-          console.log('OK', r.status);
-        }).catch(err => {
-          console.error('Ошибка отправки:', err);
+        for (let i = 0; i < 30; i++) {
+          setTimeout(
+            () =>
+              spawnSparkle(
+                cx + (Math.random() - 0.5) * 200,
+                cy + (Math.random() - 0.5) * 200,
+              ),
+            i * 40,
+          );
+        }
+      }
+
+      function spawnSparkle(x, y) {
+        const sparkle = document.createElement("div");
+        sparkle.className = "sparkle";
+        sparkle.textContent = ["✦", "✧", "·", "·", "✺"][
+          Math.floor(Math.random() * 5)
+        ];
+        sparkle.style.left = x + "px";
+        sparkle.style.top = y + "px";
+        sparkle.style.color = Math.random() > 0.5 ? "#8f6472" : "#b58794";
+        sparkle.style.fontSize = 10 + Math.random() * 12 + "px";
+        sparkle.style.transition = `all ${0.9 + Math.random() * 0.6}s cubic-bezier(0.16, 1, 0.3, 1)`;
+        document.body.appendChild(sparkle);
+
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 80 + Math.random() * 180;
+        requestAnimationFrame(() => {
+          sparkle.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(0.4) rotate(${Math.random() * 360}deg)`;
+          sparkle.style.opacity = "0";
         });
-
-        // 4. Скачиваем рисунок автоматически (как резерв)
-        downloadCanvas(drawingData);
-
-      } catch (err) {
-        console.error(err);
-        showToast('😔 Что-то пошло не так');
-        sendBtn.disabled = false;
-        sendBtn.textContent = 'Отправить';
+        setTimeout(() => sparkle.remove(), 1600);
       }
-    }
 
-    // ---------- СКАЧИВАНИЕ РИСУНКА ----------
-    function downloadCanvas(dataUrl) {
-      const link = document.createElement('a');
-      link.download = 'risunok-veroniki-' + Date.now() + '.png';
-      link.href = dataUrl;
-      link.click();
-    }
-
-    // ---------- ПРАЗДНИК ПОСЛЕ ОТПРАВКИ ----------
-    function celebrateSuccess() {
-      // Конфетти
-      for (let i = 0; i < 50; i++) {
-        setTimeout(() => spawnConfetti(), i * 30);
+      // ============================================================
+      // TOAST
+      // ============================================================
+      let toastTimer = null;
+      function showToast(text) {
+        toast.textContent = text;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
       }
-      // Салют сердечек
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      for (let i = 0; i < 25; i++) {
-        setTimeout(() => spawnHeart(cx, cy), i * 40);
-      }
-    }
 
-    function spawnConfetti() {
-      const confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      confetti.textContent = ['💖', '❤️', '✨', '💕', '🎉', '💗', '🌸', '🎨'][Math.floor(Math.random() * 8)];
-      confetti.style.left = Math.random() * 100 + 'vw';
-      confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
-      confetti.style.fontSize = (18 + Math.random() * 18) + 'px';
-      document.body.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 4500);
-    }
+      // ============================================================
+      // EVENTS
+      // ============================================================
+      canvas.addEventListener("mousedown", startDraw);
+      canvas.addEventListener("mousemove", draw);
+      canvas.addEventListener("mouseup", endDraw);
+      canvas.addEventListener("mouseleave", endDraw);
 
-    function spawnHeart(x, y) {
-      const heart = document.createElement('div');
-      heart.textContent = ['❤️', '💖', '💗', '💕', '✨'][Math.floor(Math.random() * 5)];
-      heart.style.cssText = `
-        position: fixed; left: ${x}px; top: ${y}px;
-        font-size: ${20 + Math.random() * 20}px;
-        pointer-events: none; z-index: 5000;
-        transition: all ${0.9 + Math.random() * 0.6}s cubic-bezier(0.34, 1.56, 0.64, 1);
-      `;
-      document.body.appendChild(heart);
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 100 + Math.random() * 200;
-      requestAnimationFrame(() => {
-        heart.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${Math.random() * 360}deg) scale(0.3)`;
-        heart.style.opacity = '0';
+      canvas.addEventListener("touchstart", startDraw, { passive: false });
+      canvas.addEventListener("touchmove", draw, { passive: false });
+      canvas.addEventListener("touchend", endDraw);
+
+      // ============================================================
+      // RESIZE
+      // ============================================================
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resizeCanvas, 200);
       });
-      setTimeout(() => heart.remove(), 1500);
-    }
 
-    // ---------- УВЕДОМЛЕНИЕ ----------
-    let toastTimer = null;
-    function showToast(text) {
-      toast.textContent = text;
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2500);
-    }
-
-    // ---------- ДОЖДЬ СЕРДЕЧЕК ----------
-    const container = document.getElementById('hearts-container');
-    function createHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
-      const heartTypes = ['❤️', '💖', '💗', '💕', '🌸'];
-      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
-      heart.style.left = Math.random() * 100 + "vw";
-      heart.style.animationDuration = Math.random() * 3 + 3 + "s";
-      heart.style.fontSize = Math.random() * 15 + 15 + "px";
-      container.appendChild(heart);
-      setTimeout(() => { heart.remove(); }, 6000);
-    }
-    setInterval(createHeart, 500);
-
-    // ---------- СОБЫТИЯ РИСОВАНИЯ ----------
-    // Мышь
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', endDraw);
-    canvas.addEventListener('mouseleave', endDraw);
-
-    // Touch
-    canvas.addEventListener('touchstart', startDraw, { passive: false });
-    canvas.addEventListener('touchmove', draw, { passive: false });
-    canvas.addEventListener('touchend', endDraw);
-
-    // ---------- ЗАПУСК ----------
-    initPalette();
-    setTimeout(() => {
-      resizeCanvas();
-    }, 100);
-    window.addEventListener('resize', () => {
-      clearTimeout(window._resizeTimer);
-      window._resizeTimer = setTimeout(resizeCanvas, 200);
-    });
-
-    // ---------- КЛАВИШИ ----------
-    document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-        e.preventDefault();
-        undoLast();
-      }
-      if (e.key === 'Escape') {
-        closeSendModal();
-      }
-    });
-  </script>
-</body>
+      // ============================================================
+      // START
+      // ============================================================
+      initPalette();
+      requestAnimationFrame(resizeCanvas);
+    </script>
+    <script src="sw-register.js" defer></script>
+  </body>
 </html>

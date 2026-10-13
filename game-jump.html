@@ -1,794 +1,2251 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>🎮 Котик-прыгун</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ff4d6d">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Котик-прыгун">
-  <link rel="apple-touch-icon" href="photos/icon-192.png">
-  <style>
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0; padding: 0; width: 100%; min-height: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      user-select: none; -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      overflow: hidden;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Котик-прыгун · Для Вероники</title>
 
-    body {
-      background: linear-gradient(135deg, #ffe5ec, #ffc2d1);
-      display: flex; flex-direction: column; align-items: center;
-      padding: 12px; height: 100vh;
-    }
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
 
-    body.night {
-      background: linear-gradient(135deg, #1a0a2e, #2b0a1f);
-    }
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
-    .game-container {
-      width: 100%; max-width: 620px;
-      text-align: center;
-      display: flex; flex-direction: column;
-      height: 100%;
-    }
+    <style>
+      /* ============================================================
+       TOKENS
+       ============================================================ */
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
 
-    .game-title {
-      color: #ff4d6d; font-size: 22px; font-weight: 800;
-      margin: 0 0 4px;
-      text-shadow: 0 2px 10px rgba(255,255,255,0.9);
-    }
-    body.night .game-title { color: #ffb3c1; }
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
 
-    .game-subtitle {
-      color: #c71585; font-size: 13px; font-weight: 600;
-      margin: 0 0 10px; font-style: italic;
-    }
-    body.night .game-subtitle { color: #ff8fa3; }
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
 
-    .game-score-row {
-      display: flex; justify-content: center;
-      gap: 8px; margin-bottom: 8px; flex-wrap: wrap;
-    }
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
 
-    .game-score-chip {
-      background: rgba(255,255,255,0.95);
-      border: 2px solid #ffc2d1; border-radius: 50px;
-      padding: 6px 14px; font-size: 12px; font-weight: 700;
-      color: #c71585;
-      box-shadow: 0 4px 12px rgba(255,77,109,0.2);
-    }
-    .game-score-chip b { color: #ff4d6d; }
+        --sand: #cfb8a3;
+        --gold: #b89968;
 
-    .game-canvas-wrap {
-      position: relative; width: 100%;
-      flex: 1;
-      background: linear-gradient(180deg, #fff5f8, #ffe5ec);
-      border-radius: 20px; border: 3px solid #fff;
-      box-shadow: 0 10px 40px rgba(255,77,109,0.3);
-      overflow: hidden; margin-bottom: 10px;
-      min-height: 300px;
-    }
+        --sky-top: #b8c8d4;
+        --sky-bot: #e8d4d8;
 
-    #gameCanvas { display: block; width: 100%; height: 100%; touch-action: none; }
+        --night-bg: #2b2620;
+        --night-bg-2: #1a1613;
+        --night-ink: #e8d4d8;
 
-    .powerup-indicator {
-      position: absolute; top: 12px; right: 12px;
-      background: linear-gradient(135deg, #ffd700, #ffa500);
-      color: #fff; padding: 6px 14px; border-radius: 50px;
-      font-size: 13px; font-weight: 800;
-      box-shadow: 0 4px 15px rgba(255,165,0,0.6);
-      display: none; align-items: center; gap: 4px;
-      animation: pulsePowerup 0.7s ease-in-out infinite;
-      z-index: 10;
-    }
-    .powerup-indicator.active { display: flex; }
-    @keyframes pulsePowerup {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-    }
-
-    .game-pause-box {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(255,255,255,0.95);
-      display: none; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 5; padding: 20px;
-      border-radius: 17px;
-    }
-    .game-pause-box.show { display: flex; }
-    .game-pause-box h3 { color: #ff4d6d; font-size: 20px; margin: 0 0 12px; }
-    .pause-emoji {
-      font-size: 50px; margin-bottom: 8px;
-      animation: heartbeat 1.5s infinite;
-    }
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      15% { transform: scale(1.2); }
-      30% { transform: scale(1); }
-    }
-
-    .game-controls {
-      display: flex; gap: 10px;
-      justify-content: center; flex-wrap: wrap;
-    }
-
-    .game-hint {
-      color: #c71585; font-size: 12px;
-      font-weight: 700; margin-top: 6px; opacity: 0.8;
-    }
-    body.night .game-hint { color: #ff8fa3; }
-
-    .btn {
-      background: rgba(255,255,255,0.95);
-      color: #c71585; border: 2px solid #ffc2d1;
-      font-size: 14px; padding: 10px 20px;
-      text-decoration: none; border-radius: 50px;
-      font-weight: 700;
-      box-shadow: 0 6px 18px rgba(255,77,109,0.2);
-      transition: all 0.25s; cursor: pointer;
-      font-family: inherit;
-      display: inline-flex; align-items: center; gap: 6px;
-    }
-    .btn:hover { background: #ff4d6d; color: white; border-color: #ff4d6d; transform: translateY(-2px); }
-    .btn.primary { background: linear-gradient(135deg, #ff4d6d, #c71585); color: white; border-color: #ff4d6d; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    @keyframes floatUpScore {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-40px) scale(1.3); opacity: 0; }
-    }
-
-    .toast {
-      position: fixed; bottom: 30px; left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: linear-gradient(135deg, #ff4d6d, #c71585);
-      color: #fff; padding: 12px 22px;
-      border-radius: 50px; font-size: 14px; font-weight: 700;
-      box-shadow: 0 12px 32px rgba(199,21,133,0.5);
-      z-index: 3000; opacity: 0;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none; max-width: 90vw; text-align: center;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    .float-heart {
-      position: fixed; font-size: 20px;
-      pointer-events: none; z-index: 5000;
-      animation: floatUp 1.5s ease-out forwards;
-    }
-    @keyframes floatUp {
-      0% { transform: translateY(0) scale(0.5); opacity: 1; }
-      100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="game-container">
-    <h2 class="game-title">🎮 Котик-прыгун</h2>
-    <p class="game-subtitle" id="gameSubtitle">Прыгай через препятствия и собирай рыбки! 🐟</p>
-
-    <div class="game-score-row">
-      <div class="game-score-chip">Очки: <b id="gameScore">0</b></div>
-      <div class="game-score-chip">Рекорд: <b id="gameRecord">0</b></div>
-      <div class="game-score-chip">🪙 +<b id="gameCoins">0</b></div>
-      <div class="game-score-chip">🐟 +<b id="gameFishes">0</b></div>
-    </div>
-
-    <div class="game-canvas-wrap" id="gameCanvasWrap">
-      <div class="powerup-indicator" id="powerupIndicator">
-        ⚡ ×2 ×<span id="powerupTimer">10</span>с
-      </div>
-      <canvas id="gameCanvas"></canvas>
-      <div class="game-pause-box" id="gameOverBox">
-        <div class="pause-emoji" id="goEmoji">😿</div>
-        <h3 id="goTitle">Ой, котик упал!</h3>
-        <p style="color:#c71585; font-size:14px; font-weight:700; margin:4px 0;">Результат:</p>
-        <div style="font-size:32px; font-weight:900; color:#ff4d6d; margin:4px 0 12px;" id="goScore">0</div>
-        <div style="color:#c71585; font-size:12px; font-weight:700; margin-bottom:14px;" id="goRecord">Рекорд: 0</div>
-        <div style="color:#ffa500; font-size:13px; font-weight:800; margin-bottom:6px;" id="goCoins">+0 монеток</div>
-        <div style="color:#4caf50; font-size:13px; font-weight:800; margin-bottom:14px;" id="goFish">+0 🐟</div>
-        <button class="btn primary" onclick="restartGame()">🔄 Играть снова</button>
-      </div>
-    </div>
-
-    <div class="game-controls">
-      <button class="btn primary" onclick="startGame()" id="startBtn">▶ Начать</button>
-      <a href="cat.html" class="btn">← К котику</a>
-    </div>
-
-    <div class="game-hint">
-      💡 ПРОБЕЛ или тапни, чтобы прыгнуть • Собирай 🐟 • Лови ⚡ ×2
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-  <script>
-    // ═══════════════════════════════════════════
-    // ЗВУКИ
-    // ═══════════════════════════════════════════
-    let audioCtx = null;
-    function initAudio() {
-      if (!audioCtx) {
-        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
       }
-    }
-    function playTone(frequency, duration, type = 'sine', volume = 0.15) {
-      if (!audioCtx) return;
-      try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = frequency;
-        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + duration);
-      } catch {}
-    }
-    const Sound = {
-      jump: () => { playTone(440, 0.1, 'square', 0.1); setTimeout(() => playTone(660, 0.1, 'square', 0.08), 50); },
-      fish: () => { playTone(880, 0.12, 'sine', 0.15); setTimeout(() => playTone(1320, 0.15, 'sine', 0.12), 60); },
-      hurt: () => { playTone(220, 0.3, 'sawtooth', 0.15); setTimeout(() => playTone(140, 0.4, 'sawtooth', 0.12), 100); },
-      powerup: () => { playTone(660, 0.1, 'sine', 0.15); setTimeout(() => playTone(880, 0.1, 'sine', 0.15), 80); setTimeout(() => playTone(1320, 0.2, 'sine', 0.15), 160); },
-      coin: () => { playTone(1200, 0.08, 'sine', 0.12); setTimeout(() => playTone(1600, 0.12, 'sine', 0.1), 50); },
-      ach: () => { playTone(660, 0.15, 'sine', 0.15); setTimeout(() => playTone(880, 0.15, 'sine', 0.15), 100); setTimeout(() => playTone(1100, 0.25, 'sine', 0.15), 200); }
-    };
 
-    // ═══════════════════════════════════════════
-    // СОСТОЯНИЕ (общее с cat.html)
-    // ═══════════════════════════════════════════
-    const DEFAULT_STATE = {
-      hunger: 50, mood: 60, affection: 50,
-      sleeping: false, coins: 0,
-      ownedHats: [], ownedFood: {},
-      fishCollected: 0, equippedHat: null,
-      achievements: [], totalFishCollected: 0,
-      lastUpdate: Date.now()
-    };
+      * {
+        box-sizing: border-box;
+      }
 
-    let catState = loadState();
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
-    function loadState() {
-      try {
-        const saved = localStorage.getItem('catState');
-        if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
-        const raw = JSON.parse(saved);
-        const state = { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), ...raw };
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+        transition:
+          background 0.8s var(--ease),
+          color 0.8s var(--ease);
+      }
 
-        if (raw.ownedItems && !raw.ownedHats) {
-          state.ownedHats = raw.ownedItems.filter(id => typeof id === 'string' && id.startsWith('hat_'));
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+        transition: opacity 0.8s var(--ease);
+      }
+
+      body.night {
+        background: var(--night-bg);
+        color: var(--night-ink);
+      }
+      body.night::before {
+        opacity: 0;
+      }
+
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
+
+      /* ============================================================
+       TOPBAR
+       ============================================================ */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.78);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+        transition:
+          background 0.8s var(--ease),
+          border-color 0.8s var(--ease);
+      }
+
+      body.night .topbar {
+        background: rgba(43, 38, 32, 0.78);
+        border-bottom-color: rgba(232, 212, 216, 0.12);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition:
+          transform 0.4s var(--ease-spring),
+          border-color 0.8s,
+          color 0.8s;
+      }
+
+      body.night .brand-mark {
+        border-color: var(--night-ink);
+        color: var(--night-ink);
+      }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+        transition: color 0.8s;
+      }
+
+      body.night .brand-label {
+        color: rgba(232, 212, 216, 0.7);
+      }
+
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .topbar-meta:hover {
+        color: var(--ink);
+      }
+      body.night .topbar-meta {
+        color: rgba(232, 212, 216, 0.85);
+      }
+
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      /* ============================================================
+       LAYOUT
+       ============================================================ */
+      main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 140px 32px 60px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ============================================================
+       HERO
+       ============================================================ */
+      .hero {
+        padding: 10px 0 24px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 20px;
+        transition: color 0.8s;
+      }
+
+      body.night .eyebrow {
+        color: var(--rose);
+      }
+
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: currentColor;
+      }
+
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(32px, 4.8vw, 52px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 12px;
+        transition: color 0.8s;
+      }
+
+      body.night h1 {
+        color: var(--night-ink);
+      }
+
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+        transition: color 0.8s;
+      }
+      body.night h1 em {
+        color: var(--rose);
+      }
+
+      .hero-sub {
+        font-size: 15px;
+        line-height: 1.55;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 44ch;
+        font-weight: 400;
+        transition: color 0.8s;
+      }
+
+      body.night .hero-sub {
+        color: rgba(232, 212, 216, 0.7);
+      }
+
+      /* ============================================================
+       STATS ROW
+       ============================================================ */
+      .stats-row {
+        margin: 32px 0 20px;
+        padding: 20px 8px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 8px 20px rgba(30, 26, 22, 0.05);
+        transition:
+          background 0.8s,
+          border-color 0.8s,
+          box-shadow 0.8s;
+      }
+
+      body.night .stats-row {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.14);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.04) inset,
+          0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .stat-cell {
+        text-align: center;
+        padding: 0 10px;
+        position: relative;
+      }
+
+      .stat-cell + .stat-cell::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 18%;
+        bottom: 18%;
+        width: 1px;
+        background: var(--line);
+        transition: background 0.8s;
+      }
+
+      body.night .stat-cell + .stat-cell::before {
+        background: rgba(232, 212, 216, 0.1);
+      }
+
+      .stat-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 8px;
+        transition: color 0.8s;
+      }
+
+      body.night .stat-label {
+        color: rgba(232, 212, 216, 0.55);
+      }
+
+      .stat-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(22px, 3vw, 30px);
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+        display: inline-flex;
+        align-items: baseline;
+        gap: 5px;
+        transition: color 0.8s;
+      }
+
+      body.night .stat-value {
+        color: var(--night-ink);
+      }
+
+      .stat-value .plus {
+        font-size: 0.55em;
+        color: var(--gold);
+        font-style: italic;
+      }
+
+      .stat-value .fish-icon {
+        font-size: 0.65em;
+        filter: saturate(0.75);
+      }
+
+      /* ============================================================
+       CANVAS
+       ============================================================ */
+      .canvas-frame {
+        position: relative;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 8px 20px rgba(30, 26, 22, 0.05);
+        transition:
+          background 0.8s,
+          border-color 0.8s,
+          box-shadow 0.8s;
+      }
+
+      body.night .canvas-frame {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.14);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.04) inset,
+          0 30px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Corner ticks */
+      .canvas-frame::before,
+      .canvas-frame::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--ink-3);
+        opacity: 0.5;
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      .canvas-frame::before {
+        top: 6px;
+        left: 6px;
+        border-right: none;
+        border-bottom: none;
+      }
+
+      .canvas-frame::after {
+        bottom: 6px;
+        right: 6px;
+        border-left: none;
+        border-top: none;
+      }
+
+      .canvas-inner {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 3 / 2;
+        max-height: 62vh;
+        background: linear-gradient(
+          180deg,
+          var(--sky-top) 0%,
+          var(--sky-bot) 100%
+        );
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+        transition: background 0.8s;
+      }
+
+      body.night .canvas-inner {
+        background: linear-gradient(180deg, #1a1613 0%, #241f1b 100%);
+      }
+
+      #gameCanvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+
+      /* Plate label */
+      .canvas-label {
+        position: absolute;
+        top: 26px;
+        left: 28px;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        color: var(--ink-3);
+        opacity: 0.65;
+        pointer-events: none;
+        z-index: 4;
+        transition: color 0.8s;
+      }
+
+      body.night .canvas-label {
+        color: rgba(232, 212, 216, 0.5);
+      }
+
+      /* Level tag */
+      .level-tag {
+        position: absolute;
+        top: 26px;
+        right: 28px;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        opacity: 0.75;
+        pointer-events: none;
+        z-index: 4;
+        transition: color 0.8s;
+      }
+
+      body.night .level-tag {
+        color: rgba(232, 212, 216, 0.6);
+      }
+
+      /* Powerup indicator */
+      .powerup-indicator {
+        position: absolute;
+        top: 56px;
+        right: 28px;
+        display: none;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: var(--ink);
+        color: var(--gold);
+        border-radius: 999px;
+        font-family: "Inter", sans-serif;
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        z-index: 10;
+        box-shadow: 0 6px 16px rgba(30, 26, 22, 0.2);
+        transition: all 0.4s var(--ease);
+      }
+
+      .powerup-indicator.active {
+        display: inline-flex;
+      }
+
+      .powerup-indicator .timer {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
+      /* ============================================================
+       GAME OVER OVERLAY
+       ============================================================ */
+      .game-over {
+        position: absolute;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(30, 26, 22, 0.45);
+        backdrop-filter: blur(16px) saturate(140%);
+        -webkit-backdrop-filter: blur(16px) saturate(140%);
+        z-index: 10;
+        animation: overlayIn 0.4s var(--ease);
+      }
+
+      @keyframes overlayIn {
+        from {
+          opacity: 0;
         }
-        if (raw.equipped && raw.equipped.hat && !raw.equippedHat) {
-          state.equippedHat = raw.equipped.hat;
+        to {
+          opacity: 1;
+        }
+      }
+
+      .game-over.show {
+        display: flex;
+      }
+
+      .game-over-card {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+        padding: 32px 28px 26px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        text-align: center;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 40px 80px rgba(30, 26, 22, 0.3);
+        animation: cardIn 0.5s var(--ease-spring);
+        transition:
+          background 0.8s,
+          border-color 0.8s;
+      }
+
+      @keyframes cardIn {
+        from {
+          transform: translateY(20px) scale(0.94);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .game-over-card::after {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: 1px solid rgba(30, 26, 22, 0.05);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      body.night .game-over-card {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.14);
+      }
+
+      .go-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 12px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid var(--line);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        position: relative;
+        z-index: 1;
+      }
+
+      body.night .go-head {
+        color: rgba(232, 212, 216, 0.5);
+        border-bottom-color: rgba(232, 212, 216, 0.1);
+      }
+
+      .go-head .latin {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--rose-deep);
+      }
+
+      body.night .go-head .latin {
+        color: var(--rose);
+      }
+
+      .go-emoji {
+        font-size: 40px;
+        line-height: 1;
+        margin-bottom: 12px;
+        filter: saturate(0.85);
+        display: block;
+      }
+
+      .go-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 22px;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 18px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .go-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      body.night .go-title {
+        color: var(--night-ink);
+      }
+      body.night .go-title em {
+        color: var(--rose);
+      }
+
+      .go-score {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 42px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 4px;
+        font-variant-numeric: tabular-nums;
+        position: relative;
+        z-index: 1;
+      }
+
+      body.night .go-score {
+        color: var(--night-ink);
+      }
+
+      .go-score-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 1;
+      }
+
+      body.night .go-score-label {
+        color: rgba(232, 212, 216, 0.5);
+      }
+
+      .go-meta-row {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+      }
+
+      .go-meta-item {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        color: var(--ink-2);
+        transition: color 0.8s;
+      }
+
+      body.night .go-meta-item {
+        color: rgba(232, 212, 216, 0.75);
+      }
+
+      .go-meta-item.gold {
+        color: var(--gold);
+      }
+
+      .go-meta-item.rose {
+        color: var(--rose-deep);
+      }
+
+      /* ============================================================
+       CONTROLS
+       ============================================================ */
+      .controls {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 24px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 28px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: all 0.35s var(--ease);
+        text-decoration: none;
+      }
+
+      .btn:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn.primary {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 8px 20px rgba(30, 26, 22, 0.2);
+      }
+
+      .btn.primary:hover {
+        background: #000;
+        color: var(--paper);
+        border-color: #000;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 14px 32px rgba(30, 26, 22, 0.26);
+      }
+
+      body.night .btn {
+        color: rgba(232, 212, 216, 0.85);
+        border-color: rgba(232, 212, 216, 0.15);
+      }
+      body.night .btn:hover {
+        background: rgba(232, 212, 216, 0.08);
+        color: var(--night-ink);
+        border-color: rgba(232, 212, 216, 0.3);
+      }
+      body.night .btn.primary {
+        background: var(--night-ink);
+        color: var(--night-bg-2);
+        border-color: var(--night-ink);
+      }
+      body.night .btn.primary:hover {
+        background: #fff;
+        border-color: #fff;
+      }
+
+      .btn .btn-arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 14px;
+      }
+      .btn:hover .btn-arrow {
+        transform: translateX(-4px);
+      }
+
+      /* ============================================================
+       HINT
+       ============================================================ */
+      .hint {
+        margin-top: 24px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        transition: color 0.8s;
+      }
+
+      body.night .hint {
+        color: rgba(232, 212, 216, 0.5);
+      }
+
+      .hint-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .hint-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .hint-key {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 8px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 5px;
+        font-family: "Inter", sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0;
+        color: var(--ink-2);
+        text-transform: none;
+        transition: all 0.8s;
+      }
+
+      body.night .hint-key {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.15);
+        color: rgba(232, 212, 216, 0.75);
+      }
+
+      /* ============================================================
+       FOOTER
+       ============================================================ */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+        transition:
+          color 0.8s,
+          border-color 0.8s;
+      }
+
+      body.night .footer {
+        color: rgba(232, 212, 216, 0.45);
+        border-top-color: rgba(232, 212, 216, 0.1);
+      }
+
+      /* ============================================================
+       FLOATING HEARTS
+       ============================================================ */
+      .float-heart {
+        position: fixed;
+        pointer-events: none;
+        z-index: 5000;
+        filter: saturate(0.7);
+        animation: floatUp 1.6s var(--ease) forwards;
+      }
+
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) scale(0.5);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100px) scale(1.1);
+          opacity: 0;
+        }
+      }
+
+      /* ============================================================
+       FLOATING SCORE
+       ============================================================ */
+      @keyframes floatUpScore {
+        0% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-40px) scale(1.3);
+          opacity: 0;
+        }
+      }
+
+      .float-score {
+        position: absolute;
+        pointer-events: none;
+        z-index: 100;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-weight: 400;
+        letter-spacing: -0.01em;
+        animation: floatUpScore 0.9s var(--ease) forwards;
+      }
+
+      /* ============================================================
+       TOAST
+       ============================================================ */
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 32px;
+        transform: translateX(-50%) translateY(20px);
+        padding: 14px 22px;
+        background: var(--ink);
+        color: var(--paper);
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        box-shadow: 0 20px 40px rgba(30, 26, 22, 0.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.5s var(--ease);
+        z-index: 6000;
+        max-width: calc(100vw - 40px);
+        text-align: center;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 40px;
+        }
+        h1 {
+          font-size: clamp(28px, 8vw, 40px);
         }
 
-        state.ownedHats = Array.isArray(state.ownedHats) ? state.ownedHats : [];
-        state.ownedFood = (typeof state.ownedFood === 'object' && state.ownedFood) ? state.ownedFood : {};
-        state.achievements = Array.isArray(state.achievements) ? state.achievements : [];
+        .stats-row {
+          margin: 24px 0 16px;
+          padding: 16px 4px;
+        }
+        .stat-cell {
+          padding: 0 4px;
+        }
+        .stat-label {
+          font-size: 9px;
+          letter-spacing: 0.14em;
+          margin-bottom: 6px;
+        }
 
-        if (state.equippedHat && !state.ownedHats.includes(state.equippedHat)) {
-          state.equippedHat = null;
+        .canvas-frame {
+          padding: 12px;
+        }
+        .canvas-inner {
+          aspect-ratio: 4 / 5;
+          max-height: 55vh;
+        }
+        .canvas-label {
+          top: 18px;
+          left: 20px;
+          font-size: 10px;
+        }
+        .level-tag {
+          top: 18px;
+          right: 20px;
+          font-size: 9px;
+        }
+        .powerup-indicator {
+          top: 42px;
+          right: 20px;
+          font-size: 10px;
+          padding: 5px 10px;
+        }
+        .powerup-indicator .timer {
+          font-size: 12px;
+        }
+
+        .game-over-card {
+          padding: 26px 22px 22px;
+          border-radius: 3px;
+        }
+        .go-emoji {
+          font-size: 34px;
+        }
+        .go-title {
+          font-size: 20px;
+          margin-bottom: 14px;
+        }
+        .go-score {
+          font-size: 36px;
+        }
+        .go-meta-item {
+          font-size: 13px;
+        }
+
+        .controls {
+          margin-top: 18px;
+          gap: 8px;
+        }
+        .btn {
+          padding: 14px 22px;
+          font-size: 13px;
+        }
+
+        .hint {
+          font-size: 10px;
+          letter-spacing: 0.12em;
+        }
+        .hint-row {
+          gap: 10px;
+        }
+        .hint-key {
+          min-width: 20px;
+          height: 20px;
+          font-size: 9px;
+          padding: 0 6px;
+        }
+
+        .toast {
+          bottom: 20px;
+          font-size: 12px;
+          padding: 12px 18px;
+        }
+
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <!-- ============================================================
+       TOPBAR
+       ============================================================ -->
+    <header class="topbar">
+      <a href="cat.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
+      </div>
+    </header>
+
+    <main>
+      <!-- ============================================================
+         HERO
+         ============================================================ -->
+      <section class="hero">
+        <span class="eyebrow">13 · Игра</span>
+        <h1>Котик-<em>прыгун</em></h1>
+        <p class="hero-sub">
+          Прыгай через препятствия, собирай рыбок и лови ускорение ×2.
+        </p>
+      </section>
+
+      <!-- ============================================================
+         STATS
+         ============================================================ -->
+      <div class="stats-row">
+        <div class="stat-cell">
+          <div class="stat-label">Очки</div>
+          <div class="stat-value" id="gameScore">0</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Рекорд</div>
+          <div class="stat-value" id="gameRecord">0</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Монеты</div>
+          <div class="stat-value">
+            <span class="plus">+</span><span id="gameCoins">0</span>
+          </div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Рыбки</div>
+          <div class="stat-value">
+            <span class="plus">+</span><span id="gameFishes">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+         CANVAS
+         ============================================================ -->
+      <div class="canvas-frame">
+        <div class="canvas-inner" id="gameCanvasWrap">
+          <span class="canvas-label">№ 13 · забег</span>
+          <span class="level-tag" id="levelTag">🌳 Лес</span>
+          <div class="powerup-indicator" id="powerupIndicator">
+            <span>⚡ ×2</span>
+            <span class="timer">×<span id="powerupTimer">10</span>с</span>
+          </div>
+
+          <canvas id="gameCanvas"></canvas>
+
+          <!-- Game Over overlay -->
+          <div class="game-over" id="gameOverBox">
+            <div class="game-over-card">
+              <div class="go-head">
+                <span>Финиш</span>
+                <span class="latin">Feles · currit</span>
+              </div>
+              <span class="go-emoji" id="goEmoji">😿</span>
+              <h3 class="go-title" id="goTitle">Ой, котик упал</h3>
+              <div class="go-score" id="goScore">0</div>
+              <div class="go-score-label">очков</div>
+              <div class="go-meta-row">
+                <span class="go-meta-item" id="goRecord">Рекорд: 0</span>
+                <span class="go-meta-item gold" id="goCoins">+0 монет</span>
+                <span class="go-meta-item rose" id="goFish">+0 🐟</span>
+              </div>
+              <button
+                class="btn primary"
+                onclick="restartGame()"
+                style="width: 100%; justify-content: center"
+              >
+                <span>Играть снова</span>
+                <span class="btn-arrow">→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+         CONTROLS
+         ============================================================ -->
+      <div class="controls">
+        <button class="btn primary" onclick="startGame()" id="startBtn">
+          <span>Начать</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <a href="cat.html" class="btn">
+          <span class="btn-arrow">←</span>
+          <span>К котику</span>
+        </a>
+      </div>
+
+      <!-- ============================================================
+         HINT
+         ============================================================ -->
+      <div class="hint">
+        <div class="hint-row">
+          <span class="hint-item"
+            ><span class="hint-key">SPACE</span> или тап — прыжок</span
+          >
+          <span class="hint-item">Собирай 🐟</span>
+          <span class="hint-item">Лови ⚡</span>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================================
+       TIME + WEATHER
+       ============================================================ -->
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("timeText").textContent = `${hh}:${mm}`;
+
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        document.getElementById("timeIcon").textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
+
+      const WEATHER_CITY = { name: "Улан-Удэ" };
+
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
+
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
+
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      document
+        .getElementById("infoWidget")
+        .addEventListener("click", loadWeather);
+    </script>
+
+    <!-- ============================================================
+       GAME SCRIPT
+       ============================================================ -->
+    <script>
+      // ============================================================
+      // SOUNDS
+      // ============================================================
+      let audioCtx = null;
+      function initAudio() {
+        if (!audioCtx) {
+          try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          } catch {}
+        }
+      }
+      function playTone(frequency, duration, type = "sine", volume = 0.15) {
+        if (!audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.value = frequency;
+          gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioCtx.currentTime + duration,
+          );
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch {}
+      }
+
+      const Sound = {
+        jump: () => {
+          playTone(440, 0.1, "square", 0.1);
+          setTimeout(() => playTone(660, 0.1, "square", 0.08), 50);
+        },
+        fish: () => {
+          playTone(880, 0.12, "sine", 0.15);
+          setTimeout(() => playTone(1320, 0.15, "sine", 0.12), 60);
+        },
+        hurt: () => {
+          playTone(220, 0.3, "sawtooth", 0.15);
+          setTimeout(() => playTone(140, 0.4, "sawtooth", 0.12), 100);
+        },
+        powerup: () => {
+          playTone(660, 0.1, "sine", 0.15);
+          setTimeout(() => playTone(880, 0.1, "sine", 0.15), 80);
+          setTimeout(() => playTone(1320, 0.2, "sine", 0.15), 160);
+        },
+        coin: () => {
+          playTone(1200, 0.08, "sine", 0.12);
+          setTimeout(() => playTone(1600, 0.12, "sine", 0.1), 50);
+        },
+        ach: () => {
+          playTone(660, 0.15, "sine", 0.15);
+          setTimeout(() => playTone(880, 0.15, "sine", 0.15), 100);
+          setTimeout(() => playTone(1100, 0.25, "sine", 0.15), 200);
+        },
+      };
+
+      // ============================================================
+      // STATE (shared with cat.html)
+      // ============================================================
+      const DEFAULT_STATE = {
+        hunger: 50,
+        mood: 60,
+        affection: 50,
+        sleeping: false,
+        coins: 0,
+        ownedHats: [],
+        ownedFood: {},
+        fishCollected: 0,
+        equippedHat: null,
+        achievements: [],
+        totalFishCollected: 0,
+        lastUpdate: Date.now(),
+      };
+
+      let catState = loadState();
+
+      function loadState() {
+        try {
+          const saved = localStorage.getItem("catState");
+          if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+          const raw = JSON.parse(saved);
+          const state = {
+            ...JSON.parse(JSON.stringify(DEFAULT_STATE)),
+            ...raw,
+          };
+
+          if (raw.ownedItems && !raw.ownedHats) {
+            state.ownedHats = raw.ownedItems.filter(
+              (id) => typeof id === "string" && id.startsWith("hat_"),
+            );
+          }
+          if (raw.equipped && raw.equipped.hat && !raw.equippedHat) {
+            state.equippedHat = raw.equipped.hat;
+          }
+
+          state.ownedHats = Array.isArray(state.ownedHats)
+            ? state.ownedHats
+            : [];
+          state.ownedFood =
+            typeof state.ownedFood === "object" && state.ownedFood
+              ? state.ownedFood
+              : {};
+          state.achievements = Array.isArray(state.achievements)
+            ? state.achievements
+            : [];
+
+          if (
+            state.equippedHat &&
+            !state.ownedHats.includes(state.equippedHat)
+          ) {
+            state.equippedHat = null;
+          }
+
+          const now = Date.now();
+          const elapsed = Math.floor(
+            (now - (state.lastUpdate || now)) / 1000 / 30,
+          );
+          state.hunger = Math.max(0, state.hunger - elapsed * 2);
+          state.mood = Math.max(0, state.mood - elapsed * 1);
+          state.lastUpdate = now;
+          return state;
+        } catch (e) {
+          console.error("loadState error:", e);
+          return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        }
+      }
+
+      function saveState() {
+        catState.lastUpdate = Date.now();
+        try {
+          localStorage.setItem("catState", JSON.stringify(catState));
+        } catch {}
+      }
+
+      const ACHIEVEMENTS = [
+        { id: "first_record", icon: "🥇", title: "Первый рекорд" },
+        { id: "hundred", icon: "💯", title: "100 очков" },
+        { id: "ten_fish", icon: "🐟", title: "Собрал 10 рыбок" },
+        { id: "first_buy", icon: "🛍️", title: "Первая покупка" },
+        { id: "max_hunger", icon: "🍖", title: "Сыт по горло" },
+        { id: "level_master", icon: "🌈", title: "Путешественник" },
+        { id: "sky_high", icon: "☁️", title: "Небесный кот" },
+      ];
+
+      function unlockAchievement(id) {
+        if (catState.achievements.includes(id)) return;
+        catState.achievements.push(id);
+        saveState();
+        const ach = ACHIEVEMENTS.find((a) => a.id === id);
+        if (ach) {
+          showToast(`🏆 ${ach.title}`);
+          Sound.ach();
+          spawnHearts(10);
+        }
+      }
+
+      let toastTimer = null;
+      function showToast(text) {
+        const toast = document.getElementById("toast");
+        toast.textContent = text;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+      }
+
+      function spawnHearts(count) {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        for (let i = 0; i < count; i++) {
+          setTimeout(() => {
+            const heart = document.createElement("div");
+            heart.className = "float-heart";
+            heart.textContent = ["💗", "💖", "❤️", "💕", "✦"][
+              Math.floor(Math.random() * 5)
+            ];
+            heart.style.left = cx + (Math.random() * 60 - 30) + "px";
+            heart.style.top = cy + "px";
+            heart.style.fontSize = 16 + Math.random() * 12 + "px";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1500);
+          }, i * 80);
+        }
+      }
+
+      function applyNightMode() {
+        const hour = new Date().getHours();
+        const isRealNight = hour >= 22 || hour < 7;
+        document.body.classList.toggle("night", isRealNight);
+      }
+      applyNightMode();
+
+      // ============================================================
+      // GAME
+      // ============================================================
+      const gameCanvas = document.getElementById("gameCanvas");
+      const gameCanvasWrap = document.getElementById("gameCanvasWrap");
+      const gctx = gameCanvas.getContext("2d");
+      const gameScoreEl = document.getElementById("gameScore");
+      const gameRecordEl = document.getElementById("gameRecord");
+      const gameCoinsEl = document.getElementById("gameCoins");
+      const gameFishesEl = document.getElementById("gameFishes");
+      const gameOverBox = document.getElementById("gameOverBox");
+      const goScoreEl = document.getElementById("goScore");
+      const goRecordEl = document.getElementById("goRecord");
+      const goCoinsEl = document.getElementById("goCoins");
+      const goFishEl = document.getElementById("goFish");
+      const goTitleEl = document.getElementById("goTitle");
+      const goEmojiEl = document.getElementById("goEmoji");
+      const startBtn = document.getElementById("startBtn");
+      const powerupIndicator = document.getElementById("powerupIndicator");
+      const powerupTimerEl = document.getElementById("powerupTimer");
+      const levelTag = document.getElementById("levelTag");
+
+      // Editorial levels — muted, warm palettes
+      const LEVELS = [
+        {
+          name: "🌳 Лес",
+          sky: ["#e8dfd0", "#d4c9b6"],
+          ground: "#a8917a",
+          groundEdge: "#8a6f4d",
+          obstacle: ["🌲", "🌳", "🍄", "🌿"],
+          cloud: true,
+          stars: false,
+          moon: false,
+        },
+        {
+          name: "🌃 Город",
+          sky: ["#3a3542", "#5f5360"],
+          ground: "#4a423c",
+          groundEdge: "#2b2620",
+          obstacle: ["🏢", "🚗", "🚦", "🛢️"],
+          cloud: false,
+          stars: true,
+          moon: true,
+        },
+        {
+          name: "🏖️ Пляж",
+          sky: ["#e8d4c0", "#d4b894"],
+          ground: "#d4b894",
+          groundEdge: "#a8917a",
+          obstacle: ["🌴", "🐚", "⛱️", "🦀"],
+          cloud: true,
+          stars: false,
+          moon: false,
+        },
+      ];
+
+      let currentLevel = 0;
+      function getLevelIndexByScore(score) {
+        return Math.min(LEVELS.length - 1, Math.floor(score / 200));
+      }
+
+      let game = {
+        running: false,
+        finished: false,
+        score: 0,
+        record: parseInt(localStorage.getItem("catGameRecord") || "0"),
+        speed: 4,
+        gravity: 0.7,
+        jumpPower: -13,
+        groundY: 0,
+        cat: null,
+        obstacles: [],
+        fishes: [],
+        powerups: [],
+        clouds: [],
+        stars: [],
+        lastObstacleTime: 0,
+        lastPowerupTime: 0,
+        frame: 0,
+        doubleScore: false,
+        doubleScoreEndTime: 0,
+        coinsThisRun: 0,
+        fishThisRun: 0,
+        nextCoinScore: 100,
+        levelsSeen: new Set(),
+      };
+
+      gameRecordEl.textContent = game.record;
+
+      function resizeGameCanvas() {
+        const wrap = gameCanvas.parentElement;
+        const rect = wrap.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const oldGroundY = game.groundY;
+
+        gameCanvas.width = Math.floor(rect.width * dpr);
+        gameCanvas.height = Math.floor(rect.height * dpr);
+        gameCanvas.style.width = rect.width + "px";
+        gameCanvas.style.height = rect.height + "px";
+        gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        game.groundY = rect.height - 40;
+
+        if (game.cat) {
+          if (game.cat.onGround) {
+            game.cat.y = game.groundY - game.cat.height;
+          } else if (oldGroundY) {
+            game.cat.y += game.groundY - oldGroundY;
+          }
+        }
+      }
+
+      function initGameObjects() {
+        const W = gameCanvas.width / Math.min(window.devicePixelRatio || 1, 2);
+        game.cat = {
+          x: 60,
+          y: game.groundY - 40,
+          width: 44,
+          height: 44,
+          vy: 0,
+          onGround: true,
+        };
+        game.obstacles = [];
+        game.fishes = [];
+        game.powerups = [];
+        game.clouds = [];
+        game.stars = [];
+
+        for (let i = 0; i < 4; i++) {
+          game.clouds.push({
+            x: Math.random() * W,
+            y: 20 + Math.random() * 60,
+            speed: 0.3 + Math.random() * 0.4,
+            size: 30 + Math.random() * 20,
+          });
+        }
+
+        for (let i = 0; i < 30; i++) {
+          game.stars.push({
+            x: Math.random() * W,
+            y: Math.random() * (game.groundY - 20),
+            size: Math.random() * 1.5 + 0.5,
+          });
+        }
+
+        game.lastObstacleTime = Date.now();
+        game.lastPowerupTime = Date.now();
+        game.frame = 0;
+        game.doubleScore = false;
+        powerupIndicator.classList.remove("active");
+        game.nextCoinScore = 100;
+        game.levelsSeen = new Set([0]);
+        currentLevel = 0;
+        levelTag.textContent = LEVELS[0].name;
+      }
+
+      function jump() {
+        if (!game.running || !game.cat) return;
+        if (game.cat.onGround) {
+          game.cat.vy = game.jumpPower;
+          game.cat.onGround = false;
+          Sound.jump();
+        }
+      }
+
+      function updateGame() {
+        if (!game.running || !game.cat) return;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const W = gameCanvas.width / dpr;
+
+        game.cat.vy += game.gravity;
+        game.cat.y += game.cat.vy;
+        if (game.cat.y >= game.groundY - game.cat.height) {
+          game.cat.y = game.groundY - game.cat.height;
+          game.cat.vy = 0;
+          game.cat.onGround = true;
+        }
+
+        game.clouds.forEach((c) => {
+          c.x -= c.speed;
+          if (c.x + c.size < 0) {
+            c.x = W + c.size;
+            c.y = 20 + Math.random() * 60;
+          }
+        });
+
+        if (game.doubleScore && Date.now() > game.doubleScoreEndTime) {
+          game.doubleScore = false;
+          powerupIndicator.classList.remove("active");
+        }
+        if (game.doubleScore) {
+          const left = Math.max(
+            0,
+            Math.ceil((game.doubleScoreEndTime - Date.now()) / 1000),
+          );
+          powerupTimerEl.textContent = left;
         }
 
         const now = Date.now();
-        const elapsed = Math.floor((now - (state.lastUpdate || now)) / 1000 / 30);
-        state.hunger = Math.max(0, state.hunger - elapsed * 2);
-        state.mood = Math.max(0, state.mood - elapsed * 1);
-        state.lastUpdate = now;
-        return state;
-      } catch (e) {
-        console.error('loadState error:', e);
-        return JSON.parse(JSON.stringify(DEFAULT_STATE));
-      }
-    }
+        const obstacleDelay = Math.max(1300, 1800 - game.score * 6);
+        if (now - game.lastObstacleTime > obstacleDelay) {
+          game.lastObstacleTime = now;
+          const level = LEVELS[currentLevel];
+          const type =
+            level.obstacle[Math.floor(Math.random() * level.obstacle.length)];
+          const h = 30 + Math.random() * 20;
 
-    function saveState() {
-      catState.lastUpdate = Date.now();
-      try { localStorage.setItem('catState', JSON.stringify(catState)); } catch {}
-    }
-
-    const ACHIEVEMENTS = [
-      { id: 'first_record', icon: '🥇', title: 'Первый рекорд', desc: 'Поставь свой первый рекорд в игре' },
-      { id: 'hundred', icon: '💯', title: '100 очков', desc: 'Набери 100 очков в мини-игре' },
-      { id: 'ten_fish', icon: '🐟', title: 'Собрал 10 рыбок', desc: 'Поймай 10 рыбок за всё время' },
-      { id: 'first_buy', icon: '🛍️', title: 'Первая покупка', desc: 'Купи что-нибудь в магазине' },
-      { id: 'max_hunger', icon: '🍖', title: 'Сыт по горло', desc: 'Покорми котика до 100% сытости' },
-      { id: 'level_master', icon: '🌈', title: 'Путешественник', desc: 'Пройди через 3 разных уровня' },
-      { id: 'sky_high', icon: '☁️', title: 'Небесный кот', desc: 'Набери 500 высоты в Doodle' }
-    ];
-
-    function unlockAchievement(id) {
-      if (catState.achievements.includes(id)) return;
-      catState.achievements.push(id);
-      saveState();
-      const ach = ACHIEVEMENTS.find(a => a.id === id);
-      if (ach) {
-        showToast(`🏆 Достижение: ${ach.title}!`);
-        Sound.ach();
-        spawnHearts(10);
-      }
-    }
-
-    let toastTimer = null;
-    function showToast(text) {
-      const toast = document.getElementById('toast');
-      toast.textContent = text;
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-    }
-
-    function spawnHearts(count) {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-          const heart = document.createElement('div');
-          heart.className = 'float-heart';
-          heart.textContent = ['💗','💖','❤️','💕','✨'][Math.floor(Math.random()*5)];
-          heart.style.left = (cx + (Math.random()*60 - 30)) + 'px';
-          heart.style.top = cy + 'px';
-          heart.style.fontSize = (16 + Math.random()*12) + 'px';
-          document.body.appendChild(heart);
-          setTimeout(() => heart.remove(), 1500);
-        }, i * 80);
-      }
-    }
-
-    function applyNightMode() {
-      const hour = new Date().getHours();
-      const isRealNight = hour >= 22 || hour < 7;
-      document.body.classList.toggle('night', isRealNight);
-    }
-    applyNightMode();
-
-    // ═══════════════════════════════════════════
-    // ИГРА
-    // ═══════════════════════════════════════════
-    const gameCanvas = document.getElementById('gameCanvas');
-    const gameCanvasWrap = document.getElementById('gameCanvasWrap');
-    const gctx = gameCanvas.getContext('2d');
-    const gameScoreEl = document.getElementById('gameScore');
-    const gameRecordEl = document.getElementById('gameRecord');
-    const gameCoinsEl = document.getElementById('gameCoins');
-    const gameFishesEl = document.getElementById('gameFishes');
-    const gameOverBox = document.getElementById('gameOverBox');
-    const goScoreEl = document.getElementById('goScore');
-    const goRecordEl = document.getElementById('goRecord');
-    const goCoinsEl = document.getElementById('goCoins');
-    const goFishEl = document.getElementById('goFish');
-    const goTitleEl = document.getElementById('goTitle');
-    const goEmojiEl = document.getElementById('goEmoji');
-    const startBtn = document.getElementById('startBtn');
-    const powerupIndicator = document.getElementById('powerupIndicator');
-    const powerupTimerEl = document.getElementById('powerupTimer');
-    const gameSubtitle = document.getElementById('gameSubtitle');
-
-    const LEVELS = [
-      { name: '🌳 Лес', sky: ['#e8f5e9','#c8e6c9'], ground: '#8bc34a', obstacle: ['🌵','🌳','🌲','🍄'], cloud: true, stars: false },
-      { name: '🌃 Ночной город', sky: ['#1a1a3e','#2a1a5e'], ground: '#4a4a6a', obstacle: ['🏢','🚗','🚦','🛢️'], cloud: false, stars: true },
-      { name: '🏖️ Пляж', sky: ['#fff9c4','#ffe082'], ground: '#f4d58d', obstacle: ['🐚','🌴','⛱️','🦀'], cloud: true, stars: false }
-    ];
-
-    let currentLevel = 0;
-    function getLevelIndexByScore(score) { return Math.min(LEVELS.length - 1, Math.floor(score / 200)); }
-
-    let game = {
-      running: false, finished: false,
-      score: 0,
-      record: parseInt(localStorage.getItem('catGameRecord') || '0'),
-      speed: 4, gravity: 0.7, jumpPower: -13,
-      groundY: 0,
-      cat: null,
-      obstacles: [], fishes: [], powerups: [], clouds: [], stars: [],
-      lastObstacleTime: 0, lastPowerupTime: 0,
-      frame: 0,
-      doubleScore: false, doubleScoreEndTime: 0,
-      coinsThisRun: 0, fishThisRun: 0,
-      nextCoinScore: 100,
-      levelsSeen: new Set()
-    };
-
-    gameRecordEl.textContent = game.record;
-
-    function resizeGameCanvas() {
-      const wrap = gameCanvas.parentElement;
-      const rect = wrap.getBoundingClientRect();
-      const oldGroundY = game.groundY;
-      gameCanvas.width = rect.width;
-      gameCanvas.height = rect.height;
-      game.groundY = rect.height - 40;
-
-      if (game.cat) {
-        if (game.cat.onGround) {
-          game.cat.y = game.groundY - game.cat.height;
-        } else if (oldGroundY) {
-          game.cat.y += (game.groundY - oldGroundY);
+          const lastObs = game.obstacles[game.obstacles.length - 1];
+          if (!(lastObs && W + 20 - lastObs.x < 250)) {
+            const obsX = W + 20;
+            game.obstacles.push({
+              x: obsX,
+              y: game.groundY - h,
+              width: 30,
+              height: h,
+              emoji: type,
+            });
+            if (Math.random() < 0.6) {
+              game.fishes.push({
+                x: obsX + 10,
+                y: game.groundY - h - 60,
+                size: 26,
+                collected: false,
+                bobPhase: Math.random() * Math.PI * 2,
+              });
+            }
+          }
         }
+
+        if (now - game.lastPowerupTime > 15000 + Math.random() * 15000) {
+          game.lastPowerupTime = now;
+          game.powerups.push({
+            x: W + 20,
+            y: game.groundY - 80 - Math.random() * 30,
+            size: 30,
+            collected: false,
+            bobPhase: 0,
+          });
+        }
+
+        game.obstacles.forEach((o) => (o.x -= game.speed));
+        game.obstacles = game.obstacles.filter((o) => o.x + o.width > -20);
+        game.fishes.forEach((f) => {
+          f.x -= game.speed;
+          f.bobPhase += 0.15;
+        });
+        game.fishes = game.fishes.filter((f) => f.x + f.size > -20);
+        game.powerups.forEach((p) => {
+          p.x -= game.speed;
+          p.bobPhase += 0.2;
+        });
+        game.powerups = game.powerups.filter((p) => p.x + p.size > -20);
+
+        const catBox = {
+          x: game.cat.x + 6,
+          y: game.cat.y + 6,
+          w: game.cat.width - 12,
+          h: game.cat.height - 8,
+        };
+        for (const o of game.obstacles) {
+          if (
+            catBox.x < o.x + o.width &&
+            catBox.x + catBox.w > o.x &&
+            catBox.y < o.y + o.height &&
+            catBox.y + catBox.h > o.y
+          ) {
+            endGame();
+            return;
+          }
+        }
+
+        for (const f of game.fishes) {
+          if (!f.collected) {
+            const dx = game.cat.x + game.cat.width / 2 - (f.x + f.size / 2);
+            const dy = game.cat.y + game.cat.height / 2 - (f.y + f.size / 2);
+            if (Math.sqrt(dx * dx + dy * dy) < 38) {
+              f.collected = true;
+              const points = game.doubleScore ? 10 : 5;
+              game.score += points;
+              game.fishThisRun++;
+              gameScoreEl.textContent = game.score;
+              gameFishesEl.textContent = game.fishThisRun;
+              catState.totalFishCollected++;
+              showFloatingScore(f.x, f.y, `+${points}`, "#8f6472");
+              Sound.fish();
+              if (catState.totalFishCollected >= 10)
+                unlockAchievement("ten_fish");
+            }
+          }
+        }
+        game.fishes = game.fishes.filter((f) => !f.collected);
+
+        for (const p of game.powerups) {
+          if (!p.collected) {
+            const dx = game.cat.x + game.cat.width / 2 - (p.x + p.size / 2);
+            const dy = game.cat.y + game.cat.height / 2 - (p.y + p.size / 2);
+            if (Math.sqrt(dx * dx + dy * dy) < 38) {
+              p.collected = true;
+              game.doubleScore = true;
+              game.doubleScoreEndTime = Date.now() + 10000;
+              powerupIndicator.classList.add("active");
+              powerupTimerEl.textContent = "10";
+              showFloatingScore(p.x, p.y, "×2", "#b89968");
+              Sound.powerup();
+              spawnHearts(8);
+            }
+          }
+        }
+        game.powerups = game.powerups.filter((p) => !p.collected);
+
+        game.frame++;
+        if (game.frame % 6 === 0) {
+          const points = game.doubleScore ? 2 : 1;
+          game.score += points;
+          gameScoreEl.textContent = game.score;
+          while (game.score >= game.nextCoinScore) {
+            game.nextCoinScore += 100;
+            game.coinsThisRun += 10;
+            gameCoinsEl.textContent = game.coinsThisRun;
+            Sound.coin();
+            showFloatingScore(W - 80, 40, "+10", "#b89968");
+          }
+        }
+
+        const newLevel = getLevelIndexByScore(game.score);
+        if (newLevel !== currentLevel) {
+          currentLevel = newLevel;
+          game.levelsSeen.add(newLevel);
+          levelTag.textContent = LEVELS[currentLevel].name;
+          showToast(`Новый уровень: ${LEVELS[currentLevel].name}`);
+          if (game.levelsSeen.size >= 3) unlockAchievement("level_master");
+        }
+
+        game.speed = 4 + Math.min(6, game.score * 0.03);
       }
-    }
 
-    function initGameObjects() {
-      const W = gameCanvas.width;
-      game.cat = { x: 60, y: game.groundY - 40, width: 44, height: 44, vy: 0, onGround: true };
-      game.obstacles = [];
-      game.fishes = [];
-      game.powerups = [];
-      game.clouds = [];
-      game.stars = [];
-
-      for (let i = 0; i < 4; i++) {
-        game.clouds.push({ x: Math.random()*W, y: 20 + Math.random()*60, speed: 0.3 + Math.random()*0.4, size: 30 + Math.random()*20 });
-      }
-      for (let i = 0; i < 30; i++) {
-        game.stars.push({ x: Math.random()*W, y: Math.random()*(game.groundY - 20), size: Math.random()*1.5 + 0.5 });
+      function showFloatingScore(x, y, text, color) {
+        if (!gameCanvasWrap) return;
+        const el = document.createElement("div");
+        el.className = "float-score";
+        el.textContent = text;
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+        el.style.color = color;
+        el.style.fontSize = "17px";
+        gameCanvasWrap.appendChild(el);
+        setTimeout(() => el.remove(), 900);
       }
 
-      game.lastObstacleTime = Date.now();
-      game.lastPowerupTime = Date.now();
-      game.frame = 0;
-      game.doubleScore = false;
-      powerupIndicator.classList.remove('active');
-      game.nextCoinScore = 100;
-      game.levelsSeen = new Set([0]);
-      currentLevel = 0;
-    }
-
-    function jump() {
-      if (!game.running || !game.cat) return;
-      if (game.cat.onGround) {
-        game.cat.vy = game.jumpPower;
-        game.cat.onGround = false;
-        Sound.jump();
-      }
-    }
-
-    function updateGame() {
-      if (!game.running || !game.cat) return;
-      const W = gameCanvas.width;
-
-      game.cat.vy += game.gravity;
-      game.cat.y += game.cat.vy;
-      if (game.cat.y >= game.groundY - game.cat.height) {
-        game.cat.y = game.groundY - game.cat.height;
-        game.cat.vy = 0;
-        game.cat.onGround = true;
-      }
-
-      game.clouds.forEach(c => {
-        c.x -= c.speed;
-        if (c.x + c.size < 0) { c.x = W + c.size; c.y = 20 + Math.random()*60; }
-      });
-
-      if (game.doubleScore && Date.now() > game.doubleScoreEndTime) {
-        game.doubleScore = false;
-        powerupIndicator.classList.remove('active');
-      }
-      if (game.doubleScore) {
-        const left = Math.max(0, Math.ceil((game.doubleScoreEndTime - Date.now()) / 1000));
-        powerupTimerEl.textContent = left;
-      }
-
-      const now = Date.now();
-      const obstacleDelay = Math.max(1300, 1800 - game.score * 6);
-      if (now - game.lastObstacleTime > obstacleDelay) {
-        game.lastObstacleTime = now;
+      function drawGame() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const W = gameCanvas.width / dpr;
+        const H = gameCanvas.height / dpr;
         const level = LEVELS[currentLevel];
-        const type = level.obstacle[Math.floor(Math.random() * level.obstacle.length)];
-        const h = 30 + Math.random() * 20;
 
-        const lastObs = game.obstacles[game.obstacles.length - 1];
-        if (!(lastObs && (W + 20 - lastObs.x) < 250)) {
-          const obsX = W + 20;
-          game.obstacles.push({ x: obsX, y: game.groundY - h, width: 30, height: h, emoji: type });
-          if (Math.random() < 0.6) {
-            game.fishes.push({ x: obsX + 10, y: game.groundY - h - 60, size: 26, collected: false, bobPhase: Math.random()*Math.PI*2 });
-          }
-        }
-      }
+        // Sky
+        const grad = gctx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, level.sky[0]);
+        grad.addColorStop(1, level.sky[1]);
+        gctx.fillStyle = grad;
+        gctx.fillRect(0, 0, W, H);
 
-      if (now - game.lastPowerupTime > 15000 + Math.random()*15000) {
-        game.lastPowerupTime = now;
-        game.powerups.push({ x: W + 20, y: game.groundY - 80 - Math.random()*30, size: 30, collected: false, bobPhase: 0 });
-      }
-
-      game.obstacles.forEach(o => o.x -= game.speed);
-      game.obstacles = game.obstacles.filter(o => o.x + o.width > -20);
-      game.fishes.forEach(f => { f.x -= game.speed; f.bobPhase += 0.15; });
-      game.fishes = game.fishes.filter(f => f.x + f.size > -20);
-      game.powerups.forEach(p => { p.x -= game.speed; p.bobPhase += 0.2; });
-      game.powerups = game.powerups.filter(p => p.x + p.size > -20);
-
-      const catBox = { x: game.cat.x + 6, y: game.cat.y + 6, w: game.cat.width - 12, h: game.cat.height - 8 };
-      for (const o of game.obstacles) {
-        if (catBox.x < o.x + o.width && catBox.x + catBox.w > o.x && catBox.y < o.y + o.height && catBox.y + catBox.h > o.y) {
-          endGame(); return;
-        }
-      }
-
-      for (const f of game.fishes) {
-        if (!f.collected) {
-          const dx = (game.cat.x + game.cat.width/2) - (f.x + f.size/2);
-          const dy = (game.cat.y + game.cat.height/2) - (f.y + f.size/2);
-          if (Math.sqrt(dx*dx + dy*dy) < 38) {
-            f.collected = true;
-            const points = game.doubleScore ? 10 : 5;
-            game.score += points;
-            game.fishThisRun++;
-            gameScoreEl.textContent = game.score;
-            gameFishesEl.textContent = game.fishThisRun;
-            catState.totalFishCollected++;
-            showFloatingScore(f.x, f.y, `+${points}`, '#ff4d6d');
-            Sound.fish();
-            if (catState.totalFishCollected >= 10) unlockAchievement('ten_fish');
-          }
-        }
-      }
-      game.fishes = game.fishes.filter(f => !f.collected);
-
-      for (const p of game.powerups) {
-        if (!p.collected) {
-          const dx = (game.cat.x + game.cat.width/2) - (p.x + p.size/2);
-          const dy = (game.cat.y + game.cat.height/2) - (p.y + p.size/2);
-          if (Math.sqrt(dx*dx + dy*dy) < 38) {
-            p.collected = true;
-            game.doubleScore = true;
-            game.doubleScoreEndTime = Date.now() + 10000;
-            powerupIndicator.classList.add('active');
-            powerupTimerEl.textContent = '10';
-            showFloatingScore(p.x, p.y, '⚡ ×2!', '#ffa500');
-            Sound.powerup();
-            spawnHearts(8);
-          }
-        }
-      }
-      game.powerups = game.powerups.filter(p => !p.collected);
-
-      game.frame++;
-      if (game.frame % 6 === 0) {
-        const points = game.doubleScore ? 2 : 1;
-        game.score += points;
-        gameScoreEl.textContent = game.score;
-        while (game.score >= game.nextCoinScore) {
-          game.nextCoinScore += 100;
-          game.coinsThisRun += 10;
-          gameCoinsEl.textContent = game.coinsThisRun;
-          Sound.coin();
-          showFloatingScore(gameCanvas.width - 80, 40, '🪙 +10', '#ffa500');
-        }
-      }
-
-      const newLevel = getLevelIndexByScore(game.score);
-      if (newLevel !== currentLevel) {
-        currentLevel = newLevel;
-        game.levelsSeen.add(newLevel);
-        gameSubtitle.textContent = `Достигнут уровень: ${LEVELS[currentLevel].name}`;
-        showToast(`🌈 Новый уровень: ${LEVELS[currentLevel].name}`);
-        setTimeout(() => { gameSubtitle.textContent = 'Прыгай через препятствия и собирай рыбки! 🐟'; }, 3000);
-        if (game.levelsSeen.size >= 3) unlockAchievement('level_master');
-      }
-
-      game.speed = 4 + Math.min(6, game.score * 0.03);
-    }
-
-    function showFloatingScore(x, y, text, color) {
-      if (!gameCanvasWrap) return;
-      const el = document.createElement('div');
-      el.textContent = text;
-      el.style.cssText = `position:absolute;left:${x}px;top:${y}px;color:${color};font-weight:800;font-size:18px;pointer-events:none;z-index:100;animation:floatUpScore 0.9s ease-out forwards;`;
-      gameCanvasWrap.appendChild(el);
-      setTimeout(() => el.remove(), 900);
-    }
-
-    function drawGame() {
-      const W = gameCanvas.width;
-      const H = gameCanvas.height;
-      const level = LEVELS[currentLevel];
-
-      const grad = gctx.createLinearGradient(0, 0, 0, H);
-      grad.addColorStop(0, level.sky[0]);
-      grad.addColorStop(1, level.sky[1]);
-      gctx.fillStyle = grad;
-      gctx.fillRect(0, 0, W, H);
-
-      if (currentLevel === 1) {
-        gctx.fillStyle = '#fff';
-        gctx.beginPath(); gctx.arc(W - 60, 50, 22, 0, Math.PI*2); gctx.fill();
-        gctx.fillStyle = level.sky[0];
-        gctx.beginPath(); gctx.arc(W - 68, 45, 20, 0, Math.PI*2); gctx.fill();
-      } else {
-        gctx.fillStyle = '#ffeb3b';
-        gctx.beginPath(); gctx.arc(W - 60, 50, 22, 0, Math.PI*2); gctx.fill();
-      }
-
-      if (level.stars) {
-        gctx.fillStyle = '#fff';
-        game.stars.forEach(s => {
-          gctx.globalAlpha = 0.5 + Math.sin(game.frame*0.05 + s.x)*0.5;
-          gctx.beginPath(); gctx.arc(s.x, s.y, s.size, 0, Math.PI*2); gctx.fill();
-        });
-        gctx.globalAlpha = 1;
-      }
-
-      if (level.cloud) {
-        gctx.fillStyle = 'rgba(255,255,255,0.85)';
-        game.clouds.forEach(c => {
+        // Sun / Moon
+        if (level.moon) {
+          // Moon
+          gctx.fillStyle = "rgba(232, 212, 216, 0.9)";
           gctx.beginPath();
-          gctx.arc(c.x, c.y, c.size*0.6, 0, Math.PI*2);
-          gctx.arc(c.x + c.size*0.5, c.y - c.size*0.2, c.size*0.5, 0, Math.PI*2);
-          gctx.arc(c.x + c.size, c.y, c.size*0.55, 0, Math.PI*2);
+          gctx.arc(W - 60, 50, 18, 0, Math.PI * 2);
           gctx.fill();
+          gctx.fillStyle = level.sky[0];
+          gctx.beginPath();
+          gctx.arc(W - 68, 45, 16, 0, Math.PI * 2);
+          gctx.fill();
+        } else {
+          // Sun
+          gctx.fillStyle = "rgba(207, 184, 163, 0.55)";
+          gctx.beginPath();
+          gctx.arc(W - 60, 50, 20, 0, Math.PI * 2);
+          gctx.fill();
+        }
+
+        // Stars
+        if (level.stars) {
+          gctx.fillStyle = "#fdfaf6";
+          game.stars.forEach((s) => {
+            gctx.globalAlpha = 0.4 + Math.sin(game.frame * 0.05 + s.x) * 0.4;
+            gctx.beginPath();
+            gctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+            gctx.fill();
+          });
+          gctx.globalAlpha = 1;
+        }
+
+        // Clouds
+        if (level.cloud) {
+          gctx.fillStyle = "rgba(253, 250, 246, 0.75)";
+          game.clouds.forEach((c) => {
+            gctx.beginPath();
+            gctx.arc(c.x, c.y, c.size * 0.6, 0, Math.PI * 2);
+            gctx.arc(
+              c.x + c.size * 0.5,
+              c.y - c.size * 0.2,
+              c.size * 0.5,
+              0,
+              Math.PI * 2,
+            );
+            gctx.arc(c.x + c.size, c.y, c.size * 0.55, 0, Math.PI * 2);
+            gctx.fill();
+          });
+        }
+
+        // Ground
+        gctx.fillStyle = level.ground;
+        gctx.fillRect(0, game.groundY, W, H - game.groundY);
+
+        // Ground edge
+        gctx.strokeStyle = level.groundEdge;
+        gctx.lineWidth = 1;
+        gctx.beginPath();
+        gctx.moveTo(0, game.groundY + 0.5);
+        gctx.lineTo(W, game.groundY + 0.5);
+        gctx.stroke();
+
+        // Obstacles
+        gctx.font = "30px serif";
+        gctx.textAlign = "center";
+        gctx.textBaseline = "bottom";
+        game.obstacles.forEach((o) =>
+          gctx.fillText(o.emoji, o.x + o.width / 2, o.y + o.height),
+        );
+
+        // Fishes
+        gctx.font = "24px serif";
+        game.fishes.forEach((f) => {
+          const bob = Math.sin(f.bobPhase) * 4;
+          gctx.fillText("🐟", f.x + f.size / 2, f.y + f.size + bob);
         });
+
+        // Powerups
+        gctx.font = "26px serif";
+        game.powerups.forEach((p) => {
+          const bob = Math.sin(p.bobPhase) * 5;
+          gctx.fillText("⚡", p.x + p.size / 2, p.y + p.size + bob);
+        });
+
+        // Cat
+        const cat = game.cat;
+        if (!cat) return;
+
+        // Shadow
+        gctx.save();
+        gctx.fillStyle = "rgba(30, 26, 22, 0.15)";
+        gctx.beginPath();
+        gctx.ellipse(
+          cat.x + cat.width / 2,
+          game.groundY + 3,
+          cat.width / 2.5,
+          5,
+          0,
+          0,
+          Math.PI * 2,
+        );
+        gctx.fill();
+        gctx.restore();
+
+        // Cat emoji
+        gctx.save();
+        gctx.font = "44px serif";
+        gctx.textAlign = "left";
+        gctx.textBaseline = "top";
+        gctx.fillText(cat.onGround ? "🐱" : "😸", cat.x, cat.y);
+        gctx.restore();
       }
 
-      gctx.fillStyle = level.ground;
-      gctx.fillRect(0, game.groundY, W, H - game.groundY);
-
-      gctx.strokeStyle = 'rgba(0,0,0,0.2)';
-      gctx.lineWidth = 2;
-      gctx.beginPath(); gctx.moveTo(0, game.groundY); gctx.lineTo(W, game.groundY); gctx.stroke();
-
-      gctx.font = '30px serif';
-      gctx.textAlign = 'center';
-      gctx.textBaseline = 'bottom';
-      game.obstacles.forEach(o => gctx.fillText(o.emoji, o.x + o.width/2, o.y + o.height));
-
-      gctx.font = '26px serif';
-      game.fishes.forEach(f => {
-        const bob = Math.sin(f.bobPhase) * 4;
-        gctx.fillText('🐟', f.x + f.size/2, f.y + f.size + bob);
-      });
-
-      gctx.font = '28px serif';
-      game.powerups.forEach(p => {
-        const bob = Math.sin(p.bobPhase) * 5;
-        gctx.fillText('⚡', p.x + p.size/2, p.y + p.size + bob);
-      });
-
-      const cat = game.cat;
-      if (!cat) return;
-
-      gctx.save();
-      gctx.fillStyle = 'rgba(0,0,0,0.15)';
-      gctx.beginPath();
-      gctx.ellipse(cat.x + cat.width/2, game.groundY + 3, cat.width/2.5, 5, 0, 0, Math.PI*2);
-      gctx.fill();
-      gctx.restore();
-
-      gctx.save();
-      gctx.fillStyle = '#000';
-      gctx.font = '44px serif';
-      gctx.textAlign = 'left';
-      gctx.textBaseline = 'top';
-      gctx.fillText(cat.onGround ? '🐱' : '😸', cat.x, cat.y);
-      gctx.restore();
-    }
-
-    function gameLoop() {
-      if (!game.running && !game.finished) return;
-      if (!game.cat || !gameCanvas) return;
-      updateGame();
-      drawGame();
-      if (game.running) requestAnimationFrame(gameLoop);
-    }
-
-    function startGame() {
-      initAudio();
-      resizeGameCanvas();
-      initGameObjects();
-      game.running = true;
-      game.finished = false;
-      game.score = 0;
-      game.speed = 4;
-      game.coinsThisRun = 0;
-      game.fishThisRun = 0;
-      game.nextCoinScore = 100;
-      gameScoreEl.textContent = '0';
-      gameCoinsEl.textContent = '0';
-      gameFishesEl.textContent = '0';
-      gameRecordEl.textContent = game.record;
-      gameOverBox.classList.remove('show');
-      startBtn.disabled = true;
-      startBtn.textContent = '🎮 Играем...';
-      gameLoop();
-    }
-
-    function endGame() {
-      game.running = false;
-      game.finished = true;
-      Sound.hurt();
-
-      catState.coins += game.coinsThisRun;
-      catState.fishCollected += game.fishThisRun;
-      saveState();
-
-      let isNewRecord = false;
-      if (game.score > game.record) {
-        game.record = game.score;
-        localStorage.setItem('catGameRecord', game.record);
-        gameRecordEl.textContent = game.record;
-        isNewRecord = true;
+      function gameLoop() {
+        if (!game.running && !game.finished) return;
+        if (!game.cat || !gameCanvas) return;
+        updateGame();
+        drawGame();
+        if (game.running) requestAnimationFrame(gameLoop);
       }
 
-      if (game.score > 0) unlockAchievement('first_record');
-      if (game.score >= 100) unlockAchievement('hundred');
-
-      goScoreEl.textContent = game.score;
-      goRecordEl.textContent = 'Рекорд: ' + game.record;
-      goCoinsEl.textContent = `+${game.coinsThisRun} 🪙 заработано`;
-      goFishEl.textContent = `+${game.fishThisRun} 🐟 поймано (всего ${catState.fishCollected})`;
-
-      if (isNewRecord) {
-        goEmojiEl.textContent = '🏆';
-        goTitleEl.textContent = 'Новый рекорд!';
-      } else {
-        goEmojiEl.textContent = '😿';
-        goTitleEl.textContent = 'Ой, котик упал!';
-      }
-
-      gameOverBox.classList.add('show');
-      startBtn.disabled = false;
-      startBtn.textContent = '▶ Начать';
-      if (isNewRecord && game.score > 0) spawnHearts(20);
-    }
-
-    function restartGame() {
-      gameOverBox.classList.remove('show');
-      game.finished = false;
-      startGame();
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' || e.code === 'ArrowUp') {
-        e.preventDefault();
-        if (game.running) jump();
-        else if (!game.finished) startGame();
-      }
-    });
-
-    gameCanvas.addEventListener('click', () => { if (game.running) jump(); });
-    gameCanvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      if (game.running) jump();
-    }, { passive: false });
-
-    window.addEventListener('resize', () => resizeGameCanvas());
-
-    // Стартуем автоматически при загрузке
-    window.addEventListener('load', () => {
-      setTimeout(() => {
+      function startGame() {
+        initAudio();
         resizeGameCanvas();
         initGameObjects();
-        drawGame();
-      }, 50);
-    });
+        game.running = true;
+        game.finished = false;
+        game.score = 0;
+        game.speed = 4;
+        game.coinsThisRun = 0;
+        game.fishThisRun = 0;
+        game.nextCoinScore = 100;
+        gameScoreEl.textContent = "0";
+        gameCoinsEl.textContent = "0";
+        gameFishesEl.textContent = "0";
+        gameRecordEl.textContent = game.record;
+        gameOverBox.classList.remove("show");
+        startBtn.disabled = true;
+        startBtn.querySelector("span:first-child").textContent = "Играем…";
+        gameLoop();
+      }
 
-    // Сохранение при уходе со страницы
-window.addEventListener('beforeunload', () => {
-  if (game.coinsThisRun > 0 || game.fishThisRun > 0) {
-    catState.coins += game.coinsThisRun;
-    catState.fishCollected += game.fishThisRun;
-    saveState();
-  }
-});
+      function endGame() {
+        game.running = false;
+        game.finished = true;
+        Sound.hurt();
 
-// Также сохраняем при переходе по ссылке "К котику"
-document.querySelectorAll('a[href="cat.html"]').forEach(a => {
-  a.addEventListener('click', () => {
-    if (game.coinsThisRun > 0 || game.fishThisRun > 0) {
-      catState.coins += game.coinsThisRun;
-      catState.fishCollected += game.fishThisRun;
-      saveState();
-    }
-  });
-});
-  </script>
-</body>
+        catState.coins += game.coinsThisRun;
+        catState.fishCollected += game.fishThisRun;
+        saveState();
+
+        let isNewRecord = false;
+        if (game.score > game.record) {
+          game.record = game.score;
+          localStorage.setItem("catGameRecord", game.record);
+          gameRecordEl.textContent = game.record;
+          isNewRecord = true;
+        }
+
+        if (game.score > 0) unlockAchievement("first_record");
+        if (game.score >= 100) unlockAchievement("hundred");
+
+        goScoreEl.textContent = game.score;
+        goRecordEl.textContent = "Рекорд: " + game.record;
+        goCoinsEl.textContent = `+${game.coinsThisRun} монет`;
+        goFishEl.textContent = `+${game.fishThisRun} 🐟`;
+
+        if (isNewRecord) {
+          goEmojiEl.textContent = "🏆";
+          goTitleEl.innerHTML = "Новый <em>рекорд</em>";
+        } else {
+          goEmojiEl.textContent = "😿";
+          goTitleEl.innerHTML = "Ой, котик <em>упал</em>";
+        }
+
+        gameOverBox.classList.add("show");
+        startBtn.disabled = false;
+        startBtn.querySelector("span:first-child").textContent = "Начать";
+        if (isNewRecord && game.score > 0) spawnHearts(20);
+      }
+
+      function restartGame() {
+        gameOverBox.classList.remove("show");
+        game.finished = false;
+        startGame();
+      }
+
+      // ============================================================
+      // INPUT
+      // ============================================================
+      document.addEventListener("keydown", (e) => {
+        if (e.code === "Space" || e.code === "ArrowUp") {
+          e.preventDefault();
+          if (game.running) jump();
+          else if (!game.finished) startGame();
+        }
+      });
+
+      gameCanvas.addEventListener("click", () => {
+        if (game.running) jump();
+      });
+      gameCanvas.addEventListener(
+        "touchstart",
+        (e) => {
+          e.preventDefault();
+          if (game.running) jump();
+        },
+        { passive: false },
+      );
+
+      window.addEventListener("resize", () => resizeGameCanvas());
+
+      // ============================================================
+      // INIT
+      // ============================================================
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          resizeGameCanvas();
+          initGameObjects();
+          drawGame();
+        }, 50);
+      });
+
+      // Flush coins on exit
+      function flushCoins() {
+        if (game.coinsThisRun > 0 || game.fishThisRun > 0) {
+          catState.coins += game.coinsThisRun;
+          catState.fishCollected += game.fishThisRun;
+          saveState();
+          game.coinsThisRun = 0;
+          game.fishThisRun = 0;
+        }
+      }
+
+      window.addEventListener("beforeunload", flushCoins);
+
+      document.querySelectorAll('a[href="cat.html"]').forEach((a) => {
+        a.addEventListener("click", flushCoins);
+      });
+
+      // Init audio on first interaction
+      ["click", "touchstart", "keydown"].forEach((evt) => {
+        document.addEventListener(evt, initAudio, {
+          once: true,
+          passive: true,
+        });
+      });
+    </script>
+    <script src="sw-register.js" defer></script>
+  </body>
 </html>

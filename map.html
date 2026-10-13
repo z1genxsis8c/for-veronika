@@ -1,1033 +1,1183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Карта наших мест · Для Вероники</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Карта наших мест · Для Вероники</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f3ede4">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Вероника">
-  <link rel="apple-touch-icon" href="photos/icon-192.png">
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""/>
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
 
-  <style>
-    /* ============================================================
+    <style>
+      /* ============================================================
        TOKENS
        ============================================================ */
-    :root {
-      --paper:     #f3ede4;
-      --paper-2:   #ece4d8;
-      --surface:   #fdfaf6;
-      --surface-2: #f7f0e6;
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
 
-      --ink:   #1e1a16;
-      --ink-2: #4a423c;
-      --ink-3: #8a7f75;
-      --ink-4: #b8aca1;
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
 
-      --line:   rgba(30, 26, 22, 0.08);
-      --line-2: rgba(30, 26, 22, 0.16);
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
 
-      --rose:      #b58794;
-      --rose-deep: #8f6472;
-      --rose-soft: #e8d4d8;
-      --rose-tint: #f2e4e7;
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
 
-      --sand: #cfb8a3;
+        --sand: #cfb8a3;
 
-      --ease: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
 
-    * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--paper);
-      color: var(--ink);
-      font-size: 16px;
-      line-height: 1.5;
-      position: relative;
-    }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        position: relative;
+      }
 
-    a { color: inherit; text-decoration: none; }
-    button { font-family: inherit; cursor: pointer; border: none; background: none; }
-    img { max-width: 100%; display: block; }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
 
-    ::selection { background: var(--rose-soft); color: var(--rose-deep); }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
 
-    /* ============================================================
+      /* ============================================================
        MAP
        ============================================================ */
-    #map {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      background: var(--paper);
-    }
+      #map {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: var(--paper);
+      }
 
-    /* Warm, desaturated tiles — премиальная тонировка для OSM */
-    .leaflet-tile-pane {
-      filter:
-        grayscale(0.65)
-        sepia(0.35)
-        saturate(0.85)
-        brightness(1.02)
-        contrast(0.94);
-    }
+      /* Warm, desaturated tiles — премиальная тонировка для OSM */
+      .leaflet-tile-pane {
+        filter: grayscale(0.65) sepia(0.35) saturate(0.85) brightness(1.02)
+          contrast(0.94);
+      }
 
-    /* ============================================================
+      /* ============================================================
        GRAIN + VIGNETTE OVERLAYS
        ============================================================ */
-    .grain {
-      position: fixed;
-      inset: 0;
-      z-index: 900;
-      pointer-events: none;
-      opacity: 0.28;
-      mix-blend-mode: multiply;
-      background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-    }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 900;
+        pointer-events: none;
+        opacity: 0.28;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
 
-    .vignette {
-      position: fixed;
-      inset: 0;
-      z-index: 899;
-      pointer-events: none;
-      background:
-        radial-gradient(ellipse 90% 70% at 50% 50%, transparent 45%, rgba(60, 45, 40, 0.10) 100%);
-    }
+      .vignette {
+        position: fixed;
+        inset: 0;
+        z-index: 899;
+        pointer-events: none;
+        background: radial-gradient(
+          ellipse 90% 70% at 50% 50%,
+          transparent 45%,
+          rgba(60, 45, 40, 0.1) 100%
+        );
+      }
 
-    /* ============================================================
+      /* ============================================================
        TOP BAR
        ============================================================ */
-    .topbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 32px;
-      background: rgba(243, 237, 228, 0.78);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      border-bottom: 1px solid var(--line);
-      font-size: 12.5px;
-      letter-spacing: 0.02em;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .brand-mark {
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--ink);
-      border-radius: 50%;
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-style: italic;
-      font-size: 17px;
-      line-height: 1;
-      color: var(--ink);
-      padding-bottom: 2px;
-      transition: transform 0.4s var(--ease-spring);
-    }
-
-    .brand:hover .brand-mark { transform: rotate(-12deg) scale(1.05); }
-
-    .brand-label {
-      color: var(--ink-2);
-      font-weight: 500;
-    }
-
-    .topbar-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--ink-2);
-      cursor: pointer;
-      font-variant-numeric: tabular-nums;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    .topbar-meta:hover { color: var(--ink); }
-
-    .meta-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .meta-item .icon { font-size: 13px; filter: saturate(0.7); }
-    .meta-sep { color: var(--ink-4); }
-
-    /* ============================================================
-       HERO PANEL
-       ============================================================ */
-    .hero-panel {
-      position: fixed;
-      top: 104px;
-      left: 32px;
-      z-index: 900;
-      max-width: 400px;
-      padding: 28px 32px 26px;
-      background: rgba(253, 250, 246, 0.88);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      border-radius: 20px;
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.9) inset,
-        0 30px 60px rgba(30, 26, 22, 0.14),
-        0 6px 16px rgba(30, 26, 22, 0.06);
-      animation: panelFadeIn 0.9s var(--ease) 0.15s both;
-    }
-
-    @keyframes panelFadeIn {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 10.5px;
-      font-weight: 500;
-      letter-spacing: 0.20em;
-      text-transform: uppercase;
-      color: var(--rose-deep);
-      margin-bottom: 14px;
-    }
-
-    .eyebrow::before {
-      content: '';
-      width: 20px;
-      height: 1px;
-      background: var(--rose-deep);
-    }
-
-    .hero-title {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-weight: 400;
-      font-size: 38px;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-      margin: 0 0 12px;
-    }
-
-    .hero-title em {
-      font-style: italic;
-      color: var(--rose-deep);
-    }
-
-    .hero-sub {
-      font-size: 13.5px;
-      line-height: 1.55;
-      color: var(--ink-2);
-      margin: 0;
-      max-width: 34ch;
-      font-weight: 400;
-    }
-
-    .hero-stats {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-top: 20px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--ink-3);
-    }
-
-    .hero-stats .stat {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 6px;
-    }
-
-    .hero-stats .stat b {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-style: italic;
-      font-weight: 400;
-      font-size: 20px;
-      color: var(--ink);
-      letter-spacing: 0;
-      text-transform: none;
-    }
-
-    .hero-stats .stat-dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--rose);
-      flex-shrink: 0;
-    }
-
-    /* ============================================================
-       BOTTOM CHIPS BAR
-       ============================================================ */
-    .chips-bar {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px;
-      background: rgba(253, 250, 246, 0.88);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      border-radius: 999px;
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.9) inset,
-        0 20px 40px rgba(30, 26, 22, 0.14),
-        0 4px 12px rgba(30, 26, 22, 0.06);
-      max-width: calc(100vw - 32px);
-      overflow-x: auto;
-      overflow-y: hidden;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-      animation: panelFadeIn 0.9s var(--ease) 0.3s both;
-    }
-
-    .chips-bar::-webkit-scrollbar { display: none; }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: transparent;
-      color: var(--ink-2);
-      font-family: 'Inter', sans-serif;
-      font-size: 12.5px;
-      font-weight: 500;
-      letter-spacing: 0.01em;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: all 0.3s var(--ease);
-      border: none;
-      -webkit-tap-highlight-color: transparent;
-      flex-shrink: 0;
-    }
-
-    .chip:hover {
-      background: var(--surface-2);
-      color: var(--ink);
-    }
-
-    .chip.active {
-      background: var(--ink);
-      color: var(--paper);
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.12) inset,
-        0 6px 16px rgba(30, 26, 22, 0.20);
-    }
-
-    .chip .chip-emoji {
-      font-size: 14px;
-      filter: saturate(0.7);
-      transition: filter 0.3s;
-    }
-
-    .chip.active .chip-emoji { filter: saturate(1); }
-
-    /* ============================================================
-       ZOOM CONTROL
-       ============================================================ */
-    .leaflet-control-zoom {
-      border: 1px solid rgba(255, 255, 255, 0.7) !important;
-      border-radius: 14px !important;
-      overflow: hidden;
-      background: rgba(253, 250, 246, 0.88) !important;
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.9) inset,
-        0 16px 32px rgba(30, 26, 22, 0.12),
-        0 3px 8px rgba(30, 26, 22, 0.05) !important;
-      margin-top: 0 !important;
-      margin-right: 20px !important;
-    }
-
-    .leaflet-control-zoom a {
-      background: transparent !important;
-      color: var(--ink-2) !important;
-      border: none !important;
-      width: 42px !important;
-      height: 42px !important;
-      line-height: 42px !important;
-      font-size: 18px !important;
-      font-weight: 400 !important;
-      transition: all 0.25s var(--ease);
-    }
-
-    .leaflet-control-zoom a:hover {
-      background: var(--ink) !important;
-      color: var(--paper) !important;
-    }
-
-    .leaflet-control-zoom-in {
-      border-bottom: 1px solid var(--line) !important;
-    }
-
-    /* ============================================================
-       ATTRIBUTION
-       ============================================================ */
-    .leaflet-control-attribution {
-      background: rgba(253, 250, 246, 0.85) !important;
-      color: var(--ink-3) !important;
-      font-size: 10px !important;
-      font-family: 'Inter', sans-serif !important;
-      letter-spacing: 0.02em !important;
-      border-top-left-radius: 8px !important;
-      padding: 3px 8px !important;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-
-    .leaflet-control-attribution a {
-      color: var(--rose-deep) !important;
-      text-decoration: none;
-    }
-
-    /* ============================================================
-       CUSTOM MARKERS
-       ============================================================ */
-    .custom-marker { background: transparent; border: none; }
-
-    .marker-pin {
-      position: relative;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--surface);
-      border: 2px solid var(--rose-deep);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.9) inset,
-        0 6px 14px rgba(30, 26, 22, 0.22),
-        0 2px 4px rgba(30, 26, 22, 0.10);
-      transition: transform 0.3s var(--ease-spring);
-      cursor: pointer;
-    }
-
-    .marker-pin::before {
-      content: '';
-      position: absolute;
-      inset: -6px;
-      border-radius: 50%;
-      border: 1px solid var(--rose);
-      opacity: 0;
-      animation: pinRing 2.8s ease-out infinite;
-    }
-
-    @keyframes pinRing {
-      0%   { transform: scale(0.7); opacity: 0.7; }
-      100% { transform: scale(1.6); opacity: 0; }
-    }
-
-    .marker-pin .emoji {
-      font-size: 13px;
-      line-height: 1;
-      filter: saturate(0.75);
-      transform: translateZ(0);
-    }
-
-    .marker-pin:hover {
-      transform: scale(1.15);
-      border-color: var(--ink);
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.9) inset,
-        0 10px 22px rgba(30, 26, 22, 0.28),
-        0 3px 6px rgba(30, 26, 22, 0.12);
-    }
-
-    /* ============================================================
-       POPUP
-       ============================================================ */
-    .leaflet-popup-content-wrapper {
-      background: var(--surface) !important;
-      border-radius: 4px !important;
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.9) inset,
-        0 24px 50px rgba(30, 26, 22, 0.22),
-        0 8px 18px rgba(30, 26, 22, 0.10) !important;
-      border: 1px solid var(--line-2) !important;
-      padding: 0 !important;
-      overflow: hidden;
-    }
-
-    .leaflet-popup-content {
-      margin: 0 !important;
-      width: 300px !important;
-      font-family: 'Inter', sans-serif;
-      line-height: 1.5;
-    }
-
-    .leaflet-popup-tip {
-      background: var(--surface) !important;
-      border: 1px solid var(--line-2) !important;
-      box-shadow: none !important;
-    }
-
-    .leaflet-popup-close-button {
-      top: 12px !important;
-      right: 12px !important;
-      width: 28px !important;
-      height: 28px !important;
-      border-radius: 50% !important;
-      background: rgba(253, 250, 246, 0.9) !important;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      color: var(--ink-2) !important;
-      font-size: 14px !important;
-      line-height: 28px !important;
-      text-align: center !important;
-      font-weight: 400 !important;
-      border: 1px solid rgba(255, 255, 255, 0.9) !important;
-      transition: all 0.35s var(--ease) !important;
-      z-index: 10;
-      padding: 0 !important;
-    }
-
-    .leaflet-popup-close-button:hover {
-      background: var(--ink) !important;
-      color: var(--paper) !important;
-      transform: rotate(90deg);
-    }
-
-    .popup-inner {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .popup-photo-wrap {
-      position: relative;
-      width: 100%;
-      height: 160px;
-      background:
-        linear-gradient(135deg, var(--rose-tint) 0%, var(--rose-soft) 55%, #cbb0b6 100%);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .popup-photo-wrap::before {
-      content: 'V';
-      position: absolute;
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-style: italic;
-      font-size: 76px;
-      line-height: 1;
-      color: rgba(30, 26, 22, 0.14);
-      padding-bottom: 4px;
-      z-index: 0;
-    }
-
-    .popup-photo {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 1;
-    }
-
-    .popup-photo-wrap .popup-index {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      padding: 4px 10px;
-      background: rgba(253, 250, 246, 0.85);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      border-radius: 999px;
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-style: italic;
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      color: var(--ink-2);
-      z-index: 2;
-    }
-
-    .popup-body {
-      padding: 20px 22px 22px;
-    }
-
-    .popup-title {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-weight: 400;
-      font-size: 22px;
-      line-height: 1.15;
-      letter-spacing: -0.015em;
-      color: var(--ink);
-      margin: 0 0 8px;
-    }
-
-    .popup-date {
-      display: inline-block;
-      font-size: 10.5px;
-      font-weight: 500;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--rose-deep);
-      margin-bottom: 14px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--line);
-      width: 100%;
-    }
-
-    .popup-text {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-style: italic;
-      font-weight: 400;
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--ink-2);
-      margin: 0;
-      letter-spacing: -0.005em;
-    }
-
-    /* ============================================================
-       INTRO HINT
-       ============================================================ */
-    .intro-hint {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) scale(0.94);
-      z-index: 1500;
-      padding: 22px 30px;
-      background: rgba(253, 250, 246, 0.95);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      border-radius: 20px;
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.9) inset,
-        0 30px 60px rgba(30, 26, 22, 0.22);
-      text-align: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.6s var(--ease);
-      max-width: 320px;
-      line-height: 1.5;
-    }
-
-    .intro-hint.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    .intro-hint .hint-emoji {
-      display: block;
-      font-size: 34px;
-      margin-bottom: 12px;
-      filter: saturate(0.7);
-    }
-
-    .intro-hint .hint-title {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-style: italic;
-      font-size: 20px;
-      color: var(--ink);
-      margin-bottom: 6px;
-      line-height: 1.2;
-    }
-
-    .intro-hint .hint-text {
-      font-size: 13px;
-      color: var(--ink-3);
-      letter-spacing: 0.01em;
-    }
-
-    /* ============================================================
-       RESPONSIVE
-       ============================================================ */
-    @media (max-width: 900px) {
-      .hero-panel {
-        top: 88px;
-        left: 20px;
-        right: 20px;
-        max-width: none;
-        padding: 22px 24px 22px;
-      }
-      .hero-title { font-size: 30px; }
-      .hero-sub { font-size: 13px; max-width: none; }
-      .hero-stats { font-size: 10px; gap: 12px; }
-      .hero-stats .stat b { font-size: 17px; }
-
-      .leaflet-control-zoom {
-        margin-right: 14px !important;
-      }
-    }
-
-    @media (max-width: 560px) {
       .topbar {
-        padding: 16px 20px;
-        font-size: 11.5px;
-      }
-      .brand-label { display: none; }
-      .brand-mark { width: 26px; height: 26px; font-size: 15px; }
-      .meta-sep { display: none; }
-      .topbar-meta { gap: 10px; font-size: 11.5px; }
-
-      .hero-panel {
-        top: 76px;
-        left: 14px;
-        right: 14px;
-        padding: 18px 20px 18px;
-        border-radius: 16px;
-      }
-
-      .eyebrow { font-size: 9.5px; margin-bottom: 10px; }
-      .hero-title { font-size: 24px; margin-bottom: 8px; }
-      .hero-sub { font-size: 12.5px; }
-      .hero-stats { margin-top: 14px; padding-top: 14px; gap: 10px; font-size: 9.5px; }
-      .hero-stats .stat b { font-size: 15px; }
-
-      .chips-bar {
-        bottom: 16px;
-        padding: 6px;
-        gap: 4px;
-        border-radius: 999px;
-        max-width: calc(100vw - 24px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.78);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
       }
 
-      .chip {
-        padding: 9px 13px;
-        font-size: 12px;
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
+
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+
+      .topbar-meta:hover {
+        color: var(--ink);
+      }
+
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
         gap: 6px;
       }
 
-      .chip .chip-emoji { font-size: 13px; }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
 
-      .leaflet-control-zoom { margin-right: 12px !important; }
+      /* ============================================================
+       HERO PANEL
+       ============================================================ */
+      .hero-panel {
+        position: fixed;
+        top: 104px;
+        left: 32px;
+        z-index: 900;
+        max-width: 400px;
+        padding: 28px 32px 26px;
+        background: rgba(253, 250, 246, 0.88);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        border-radius: 20px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.14),
+          0 6px 16px rgba(30, 26, 22, 0.06);
+        animation: panelFadeIn 0.9s var(--ease) 0.15s both;
+      }
+
+      @keyframes panelFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 14px;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 20px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
+
+      .hero-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 38px;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 12px;
+      }
+
+      .hero-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .hero-sub {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--ink-2);
+        margin: 0;
+        max-width: 34ch;
+        font-weight: 400;
+      }
+
+      .hero-stats {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      .hero-stats .stat {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 6px;
+      }
+
+      .hero-stats .stat b {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 20px;
+        color: var(--ink);
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
+      .hero-stats .stat-dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--rose);
+        flex-shrink: 0;
+      }
+
+      /* ============================================================
+       BOTTOM CHIPS BAR
+       ============================================================ */
+      .chips-bar {
+        position: fixed;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px;
+        background: rgba(253, 250, 246, 0.88);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        border-radius: 999px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 20px 40px rgba(30, 26, 22, 0.14),
+          0 4px 12px rgba(30, 26, 22, 0.06);
+        max-width: calc(100vw - 32px);
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        animation: panelFadeIn 0.9s var(--ease) 0.3s both;
+      }
+
+      .chips-bar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        font-family: "Inter", sans-serif;
+        font-size: 12.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        border: none;
+        -webkit-tap-highlight-color: transparent;
+        flex-shrink: 0;
+      }
+
+      .chip:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+      }
+
+      .chip.active {
+        background: var(--ink);
+        color: var(--paper);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 6px 16px rgba(30, 26, 22, 0.2);
+      }
+
+      .chip .chip-emoji {
+        font-size: 14px;
+        filter: saturate(0.7);
+        transition: filter 0.3s;
+      }
+
+      .chip.active .chip-emoji {
+        filter: saturate(1);
+      }
+
+      /* ============================================================
+       ZOOM CONTROL
+       ============================================================ */
+      .leaflet-control-zoom {
+        border: 1px solid rgba(255, 255, 255, 0.7) !important;
+        border-radius: 14px !important;
+        overflow: hidden;
+        background: rgba(253, 250, 246, 0.88) !important;
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 16px 32px rgba(30, 26, 22, 0.12),
+          0 3px 8px rgba(30, 26, 22, 0.05) !important;
+        margin-top: 0 !important;
+        margin-right: 20px !important;
+      }
+
       .leaflet-control-zoom a {
-        width: 38px !important;
-        height: 38px !important;
-        line-height: 38px !important;
-        font-size: 16px !important;
+        background: transparent !important;
+        color: var(--ink-2) !important;
+        border: none !important;
+        width: 42px !important;
+        height: 42px !important;
+        line-height: 42px !important;
+        font-size: 18px !important;
+        font-weight: 400 !important;
+        transition: all 0.25s var(--ease);
       }
 
-      .leaflet-popup-content { width: 260px !important; }
-      .popup-photo-wrap { height: 140px; }
-      .popup-body { padding: 16px 18px 18px; }
-      .popup-title { font-size: 19px; }
-      .popup-text { font-size: 14px; }
-      .popup-date { font-size: 10px; margin-bottom: 12px; padding-bottom: 12px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+      .leaflet-control-zoom a:hover {
+        background: var(--ink) !important;
+        color: var(--paper) !important;
       }
-    }
-  </style>
-</head>
 
-<body>
+      .leaflet-control-zoom-in {
+        border-bottom: 1px solid var(--line) !important;
+      }
 
-  <!-- MAP -->
-  <div id="map"></div>
+      /* ============================================================
+       ATTRIBUTION
+       ============================================================ */
+      .leaflet-control-attribution {
+        background: rgba(253, 250, 246, 0.85) !important;
+        color: var(--ink-3) !important;
+        font-size: 10px !important;
+        font-family: "Inter", sans-serif !important;
+        letter-spacing: 0.02em !important;
+        border-top-left-radius: 8px !important;
+        padding: 3px 8px !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
 
-  <div class="vignette"></div>
-  <div class="grain"></div>
+      .leaflet-control-attribution a {
+        color: var(--rose-deep) !important;
+        text-decoration: none;
+      }
 
-  <!-- ============================================================
+      /* ============================================================
+       CUSTOM MARKERS
+       ============================================================ */
+      .custom-marker {
+        background: transparent;
+        border: none;
+      }
+
+      .marker-pin {
+        position: relative;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 2px solid var(--rose-deep);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 6px 14px rgba(30, 26, 22, 0.22),
+          0 2px 4px rgba(30, 26, 22, 0.1);
+        transition: transform 0.3s var(--ease-spring);
+        cursor: pointer;
+      }
+
+      .marker-pin::before {
+        content: "";
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 1px solid var(--rose);
+        opacity: 0;
+        animation: pinRing 2.8s ease-out infinite;
+      }
+
+      @keyframes pinRing {
+        0% {
+          transform: scale(0.7);
+          opacity: 0.7;
+        }
+        100% {
+          transform: scale(1.6);
+          opacity: 0;
+        }
+      }
+
+      .marker-pin .emoji {
+        font-size: 13px;
+        line-height: 1;
+        filter: saturate(0.75);
+        transform: translateZ(0);
+      }
+
+      .marker-pin:hover {
+        transform: scale(1.15);
+        border-color: var(--ink);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 10px 22px rgba(30, 26, 22, 0.28),
+          0 3px 6px rgba(30, 26, 22, 0.12);
+      }
+
+      /* ============================================================
+       POPUP
+       ============================================================ */
+      .leaflet-popup-content-wrapper {
+        background: var(--surface) !important;
+        border-radius: 4px !important;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 24px 50px rgba(30, 26, 22, 0.22),
+          0 8px 18px rgba(30, 26, 22, 0.1) !important;
+        border: 1px solid var(--line-2) !important;
+        padding: 0 !important;
+        overflow: hidden;
+      }
+
+      .leaflet-popup-content {
+        margin: 0 !important;
+        width: 300px !important;
+        font-family: "Inter", sans-serif;
+        line-height: 1.5;
+      }
+
+      .leaflet-popup-tip {
+        background: var(--surface) !important;
+        border: 1px solid var(--line-2) !important;
+        box-shadow: none !important;
+      }
+
+      .leaflet-popup-close-button {
+        top: 12px !important;
+        right: 12px !important;
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 50% !important;
+        background: rgba(253, 250, 246, 0.9) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: var(--ink-2) !important;
+        font-size: 14px !important;
+        line-height: 28px !important;
+        text-align: center !important;
+        font-weight: 400 !important;
+        border: 1px solid rgba(255, 255, 255, 0.9) !important;
+        transition: all 0.35s var(--ease) !important;
+        z-index: 10;
+        padding: 0 !important;
+      }
+
+      .leaflet-popup-close-button:hover {
+        background: var(--ink) !important;
+        color: var(--paper) !important;
+        transform: rotate(90deg);
+      }
+
+      .popup-inner {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .popup-photo-wrap {
+        position: relative;
+        width: 100%;
+        height: 160px;
+        background: linear-gradient(
+          135deg,
+          var(--rose-tint) 0%,
+          var(--rose-soft) 55%,
+          #cbb0b6 100%
+        );
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .popup-photo-wrap::before {
+        content: "V";
+        position: absolute;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 76px;
+        line-height: 1;
+        color: rgba(30, 26, 22, 0.14);
+        padding-bottom: 4px;
+        z-index: 0;
+      }
+
+      .popup-photo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+      }
+
+      .popup-photo-wrap .popup-index {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 4px 10px;
+        background: rgba(253, 250, 246, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        border-radius: 999px;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        color: var(--ink-2);
+        z-index: 2;
+      }
+
+      .popup-body {
+        padding: 20px 22px 22px;
+      }
+
+      .popup-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 22px;
+        line-height: 1.15;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0 0 8px;
+      }
+
+      .popup-date {
+        display: inline-block;
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--line);
+        width: 100%;
+      }
+
+      .popup-text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0;
+        letter-spacing: -0.005em;
+      }
+
+      /* ============================================================
+       INTRO HINT
+       ============================================================ */
+      .intro-hint {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(0.94);
+        z-index: 1500;
+        padding: 22px 30px;
+        background: rgba(253, 250, 246, 0.95);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.22);
+        text-align: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.6s var(--ease);
+        max-width: 320px;
+        line-height: 1.5;
+      }
+
+      .intro-hint.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .intro-hint .hint-emoji {
+        display: block;
+        font-size: 34px;
+        margin-bottom: 12px;
+        filter: saturate(0.7);
+      }
+
+      .intro-hint .hint-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 20px;
+        color: var(--ink);
+        margin-bottom: 6px;
+        line-height: 1.2;
+      }
+
+      .intro-hint .hint-text {
+        font-size: 13px;
+        color: var(--ink-3);
+        letter-spacing: 0.01em;
+      }
+
+      /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+      @media (max-width: 900px) {
+        .hero-panel {
+          top: 88px;
+          left: 20px;
+          right: 20px;
+          max-width: none;
+          padding: 22px 24px 22px;
+        }
+        .hero-title {
+          font-size: 30px;
+        }
+        .hero-sub {
+          font-size: 13px;
+          max-width: none;
+        }
+        .hero-stats {
+          font-size: 10px;
+          gap: 12px;
+        }
+        .hero-stats .stat b {
+          font-size: 17px;
+        }
+
+        .leaflet-control-zoom {
+          margin-right: 14px !important;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+
+        .hero-panel {
+          top: 76px;
+          left: 14px;
+          right: 14px;
+          padding: 18px 20px 18px;
+          border-radius: 16px;
+        }
+
+        .eyebrow {
+          font-size: 9.5px;
+          margin-bottom: 10px;
+        }
+        .hero-title {
+          font-size: 24px;
+          margin-bottom: 8px;
+        }
+        .hero-sub {
+          font-size: 12.5px;
+        }
+        .hero-stats {
+          margin-top: 14px;
+          padding-top: 14px;
+          gap: 10px;
+          font-size: 9.5px;
+        }
+        .hero-stats .stat b {
+          font-size: 15px;
+        }
+
+        .chips-bar {
+          bottom: 16px;
+          padding: 6px;
+          gap: 4px;
+          border-radius: 999px;
+          max-width: calc(100vw - 24px);
+        }
+
+        .chip {
+          padding: 9px 13px;
+          font-size: 12px;
+          gap: 6px;
+        }
+
+        .chip .chip-emoji {
+          font-size: 13px;
+        }
+
+        .leaflet-control-zoom {
+          margin-right: 12px !important;
+        }
+        .leaflet-control-zoom a {
+          width: 38px !important;
+          height: 38px !important;
+          line-height: 38px !important;
+          font-size: 16px !important;
+        }
+
+        .leaflet-popup-content {
+          width: 260px !important;
+        }
+        .popup-photo-wrap {
+          height: 140px;
+        }
+        .popup-body {
+          padding: 16px 18px 18px;
+        }
+        .popup-title {
+          font-size: 19px;
+        }
+        .popup-text {
+          font-size: 14px;
+        }
+        .popup-date {
+          font-size: 10px;
+          margin-bottom: 12px;
+          padding-bottom: 12px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- MAP -->
+    <div id="map"></div>
+
+    <div class="vignette"></div>
+    <div class="grain"></div>
+
+    <!-- ============================================================
        TOP BAR
        ============================================================ -->
-  <header class="topbar">
-    <a href="index.html" class="brand">
-      <span class="brand-mark">V</span>
-      <span class="brand-label">Для Вероники</span>
-    </a>
-    <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
-      <span class="meta-item">
-        <span class="icon" id="timeIcon">☀️</span>
-        <span id="timeText">--:--</span>
-      </span>
-      <span class="meta-sep">·</span>
-      <span class="meta-item">
-        <span class="icon" id="weatherIcon">🌤️</span>
-        <span id="weatherText">...</span>
-      </span>
-    </div>
-  </header>
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
+      </div>
+    </header>
 
-  <!-- ============================================================
+    <!-- ============================================================
        HERO PANEL
        ============================================================ -->
-  <aside class="hero-panel">
-    <span class="eyebrow">05 · География</span>
-    <h1 class="hero-title">Карта <em>наших мест</em></h1>
-    <p class="hero-sub">
-      Каждая точка — отдельная история. Нажми на маркер или выбери место, чтобы вспомнить.
-    </p>
-    <div class="hero-stats" id="heroStats">
-      <span class="stat">
-        <b id="statCount">0</b>
-        <span>мест</span>
-      </span>
-      <span class="stat-dot"></span>
-      <span class="stat">
-        <span>нажми, чтобы открыть</span>
-      </span>
-    </div>
-  </aside>
+    <aside class="hero-panel">
+      <span class="eyebrow">05 · География</span>
+      <h1 class="hero-title">Карта <em>наших мест</em></h1>
+      <p class="hero-sub">
+        Каждая точка — отдельная история. Нажми на маркер или выбери место,
+        чтобы вспомнить.
+      </p>
+      <div class="hero-stats" id="heroStats">
+        <span class="stat">
+          <b id="statCount">0</b>
+          <span>мест</span>
+        </span>
+        <span class="stat-dot"></span>
+        <span class="stat">
+          <span>нажми, чтобы открыть</span>
+        </span>
+      </div>
+    </aside>
 
-  <!-- ============================================================
+    <!-- ============================================================
        CHIPS BAR
        ============================================================ -->
-  <nav class="chips-bar" id="chipsBar">
-    <!-- Генерируется JS -->
-  </nav>
+    <nav class="chips-bar" id="chipsBar">
+      <!-- Генерируется JS -->
+    </nav>
 
-  <!-- ============================================================
+    <!-- ============================================================
        INTRO HINT
        ============================================================ -->
-  <div class="intro-hint" id="introHint">
-    <span class="hint-emoji">📍</span>
-    <div class="hint-title">Наши точки на карте</div>
-    <div class="hint-text">Нажми на маркер или выбери место снизу</div>
-  </div>
+    <div class="intro-hint" id="introHint">
+      <span class="hint-emoji">📍</span>
+      <div class="hint-title">Наши точки на карте</div>
+      <div class="hint-text">Нажми на маркер или выбери место снизу</div>
+    </div>
 
-  <!-- ============================================================
+    <!-- ============================================================
        TIME + WEATHER
        ============================================================ -->
-  <script>
-    function updateTimeWidget() {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, '0');
-      const mm = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('timeText').textContent = `${hh}:${mm}`;
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("timeText").textContent = `${hh}:${mm}`;
 
-      const h = now.getHours();
-      let icon = '🌙';
-      if      (h >= 5  && h < 12) icon = '🌅';
-      else if (h >= 12 && h < 18) icon = '☀️';
-      else if (h >= 18 && h < 23) icon = '🌆';
-      document.getElementById('timeIcon').textContent = icon;
-    }
-    updateTimeWidget();
-    setInterval(updateTimeWidget, 1000);
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        document.getElementById("timeIcon").textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
 
-    const WEATHER_CITY = { name: 'Улан-Удэ' };
+      const WEATHER_CITY = { name: "Улан-Удэ" };
 
-    function pickIconFromDesc(desc) {
-      desc = (desc || '').toLowerCase();
-      if (desc.includes('sun') || desc.includes('clear')) return '☀️';
-      if (desc.includes('partly') || desc.includes('mostly sun')) return '🌤️';
-      if (desc.includes('cloud') || desc.includes('overcast')) return '☁️';
-      if (desc.includes('rain') || desc.includes('drizzle')) return '🌧️';
-      if (desc.includes('snow') || desc.includes('sleet')) return '❄️';
-      if (desc.includes('thunder') || desc.includes('storm')) return '⛈️';
-      if (desc.includes('fog') || desc.includes('mist')) return '🌫️';
-      return '🌤️';
-    }
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
 
-    function seasonalWeather() {
-      const m = new Date().getMonth();
-      let icon, temp;
-      if (m === 11 || m === 0 || m === 1) { icon = '❄️'; temp = -18; }
-      else if (m === 2 || m === 3) { icon = '🌨️'; temp = -5; }
-      else if (m === 4) { icon = '🌱'; temp = 8; }
-      else if (m >= 5 && m <= 7) { icon = '☀️'; temp = 24; }
-      else if (m === 8) { icon = '🍂'; temp = 12; }
-      else { icon = '🌧️'; temp = 2; }
-      return { icon, temp };
-    }
-
-    async function loadWeather() {
-      const iconEl = document.getElementById('weatherIcon');
-      const textEl = document.getElementById('weatherText');
-      iconEl.textContent = '⛅';
-      textEl.textContent = '...';
-
-      try {
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 5000);
-        const res = await fetch(
-          `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-          { signal: ctrl.signal, cache: 'no-store' }
-        );
-        clearTimeout(timer);
-
-        if (res.ok) {
-          const data = await res.json();
-          const cur = data.current_condition && data.current_condition[0];
-          if (cur && cur.temp_C !== undefined) {
-            const temp = parseInt(cur.temp_C, 10);
-            const desc = cur.weatherDesc && cur.weatherDesc[0] ? cur.weatherDesc[0].value : '';
-            iconEl.textContent = pickIconFromDesc(desc);
-            textEl.textContent = `${temp > 0 ? '+' : ''}${temp}°C`;
-            return;
-          }
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
         }
-      } catch (e) {}
+        return { icon, temp };
+      }
 
-      const w = seasonalWeather();
-      iconEl.textContent = w.icon;
-      textEl.textContent = `${w.temp > 0 ? '+' : ''}${w.temp}°C`;
-    }
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
 
-    loadWeather();
-    setInterval(loadWeather, 30 * 60 * 1000);
-    document.getElementById('infoWidget').addEventListener('click', loadWeather);
-  </script>
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
 
-  <!-- ============================================================
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      document
+        .getElementById("infoWidget")
+        .addEventListener("click", loadWeather);
+    </script>
+
+    <!-- ============================================================
        Leaflet
        ============================================================ -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-          crossorigin=""></script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
 
-  <script>
-    // ============================================================
-    // ⚠️ НАСТРОЙКИ — МЕСТА
-    // ============================================================
-    const PLACES = [
-      {
-        lat: 51.822655, lng: 107.646394,
-        emoji: "💘",
-        title: "Где познакомились",
-        date: "9 сентября 2025",
-        text: "Здесь всё началось. Я помню этот день, как будто он был вчера. Ты улыбнулась — и моё сердце остановилось.",
-        photo: "photos/place1.jpg"
-      },
-      {
-        lat: 51.861235, lng: 107.725499,
-        emoji: "🌹",
-        title: "Первое свидание",
-        date: "27 сентября 2025",
-        text: "Я так волновался. И я не мог отвести глаз. Мы гуляли до самого вечера и не заметили, как пролетело время.",
-        photo: "photos/place2.jpg"
-      },
-      {
-        lat: 51.860439, lng: 107.725965,
-        emoji: "💋",
-        title: "Первый поцелуй",
-        date: "25 сентября 2025",
-        text: "Мы были у меня, и в этот момент я понял — это навсегда. Ты была самой красивой на свете.",
-        photo: "photos/place3.jpg"
-      },
-      {
-        lat: 51.830640, lng: 107.583728,
-        emoji: "🍽️",
-        title: "Наш любимый ресторан",
-        date: "24 октября 2025",
-        text: "Наш уютный уголок. Здесь мы заказываем одно и то же и никогда не устаём. Просто так или по праздникам.",
-        photo: "photos/place4.jpg"
-      },
-      {
-        lat: 51.869779, lng: 107.729454,
-        emoji: "🌳",
-        title: "Наш парк",
-        date: "Каждая прогулка",
-        text: "Где мы гуляли, держась за руки, и говорили обо всём на свете. Наша скамейка — наше всё.",
-        photo: "photos/place5.jpg"
-      }
-    ];
+    <script>
+      // ============================================================
+      // ⚠️ НАСТРОЙКИ — МЕСТА
+      // ============================================================
+      const PLACES = [
+        {
+          lat: 51.822655,
+          lng: 107.646394,
+          emoji: "💘",
+          title: "Где познакомились",
+          date: "9 сентября 2025",
+          text: "Здесь всё началось. Я помню этот день, как будто он был вчера. Ты улыбнулась — и моё сердце остановилось.",
+          photo: "photos/place1.jpg",
+        },
+        {
+          lat: 51.861235,
+          lng: 107.725499,
+          emoji: "🌹",
+          title: "Первое свидание",
+          date: "27 сентября 2025",
+          text: "Я так волновался. И я не мог отвести глаз. Мы гуляли до самого вечера и не заметили, как пролетело время.",
+          photo: "photos/place2.jpg",
+        },
+        {
+          lat: 51.860439,
+          lng: 107.725965,
+          emoji: "💋",
+          title: "Первый поцелуй",
+          date: "18 октября 2025",
+          text: "Мы были у меня, и в этот момент я понял — это навсегда. Ты была самой красивой на свете.",
+          photo: "photos/place3.jpg",
+        },
+        {
+          lat: 51.83064,
+          lng: 107.583728,
+          emoji: "🍽️",
+          title: "Наш любимый ресторан",
+          date: "24 октября 2025",
+          text: "Наш уютный уголок. Здесь мы заказываем одно и то же и никогда не устаём. Просто так или по праздникам.",
+          photo: "photos/place4.jpg",
+        },
+        {
+          lat: 51.869779,
+          lng: 107.729454,
+          emoji: "🌳",
+          title: "Наш парк",
+          date: "Каждая прогулка",
+          text: "Где мы гуляли, держась за руки, и говорили обо всём на свете. Наша скамейка — наше всё.",
+          photo: "photos/place5.jpg",
+        },
+      ];
 
-    const MAP_CENTER = [51.829198, 107.657113];
-    const MAP_ZOOM = 13;
+      const MAP_CENTER = [51.829198, 107.657113];
+      const MAP_ZOOM = 13;
 
-    // ============================================================
-    // INIT MAP
-    // ============================================================
-    const map = L.map('map', {
-      center: MAP_CENTER,
-      zoom: MAP_ZOOM,
-      zoomControl: true,
-      scrollWheelZoom: true,
-      attributionControl: true,
-      zoomAnimation: true,
-      fadeAnimation: true
-    });
-
-    // OpenStreetMap — работает всегда, без ключей
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19,
-      subdomains: 'abc',
-      detectRetina: true
-    }).addTo(map);
-
-    // ============================================================
-    // MARKER ICON
-    // ============================================================
-    function createMarkerIcon(emoji) {
-      return L.divIcon({
-        html: `<div class="marker-pin"><span class="emoji">${emoji}</span></div>`,
-        className: 'custom-marker',
-        iconSize: [26, 26],
-        iconAnchor: [13, 13],
-        popupAnchor: [0, -18]
+      // ============================================================
+      // INIT MAP
+      // ============================================================
+      const map = L.map("map", {
+        center: MAP_CENTER,
+        zoom: MAP_ZOOM,
+        zoomControl: true,
+        scrollWheelZoom: true,
+        attributionControl: true,
+        zoomAnimation: true,
+        fadeAnimation: true,
       });
-    }
 
-    // ============================================================
-    // BUILD MARKERS + CHIPS
-    // ============================================================
-    const markers = [];
-    const chipsBar = document.getElementById('chipsBar');
-    const pad2 = (n) => String(n + 1).padStart(2, '0');
-
-    PLACES.forEach((place, index) => {
-      const marker = L.marker([place.lat, place.lng], {
-        icon: createMarkerIcon(place.emoji),
-        riseOnHover: true
+      // OpenStreetMap — работает всегда, без ключей
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+        maxZoom: 19,
+        subdomains: "abc",
+        detectRetina: true,
       }).addTo(map);
 
-      const popupHTML = `
+      // ============================================================
+      // MARKER ICON
+      // ============================================================
+      function createMarkerIcon(emoji) {
+        return L.divIcon({
+          html: `<div class="marker-pin"><span class="emoji">${emoji}</span></div>`,
+          className: "custom-marker",
+          iconSize: [26, 26],
+          iconAnchor: [13, 13],
+          popupAnchor: [0, -18],
+        });
+      }
+
+      // ============================================================
+      // BUILD MARKERS + CHIPS
+      // ============================================================
+      const markers = [];
+      const chipsBar = document.getElementById("chipsBar");
+      const pad2 = (n) => String(n + 1).padStart(2, "0");
+
+      PLACES.forEach((place, index) => {
+        const marker = L.marker([place.lat, place.lng], {
+          icon: createMarkerIcon(place.emoji),
+          riseOnHover: true,
+        }).addTo(map);
+
+        const popupHTML = `
         <div class="popup-inner">
           <div class="popup-photo-wrap">
             <img class="popup-photo" src="${place.photo}" alt=""
@@ -1042,78 +1192,70 @@
         </div>
       `;
 
-      marker.bindPopup(popupHTML, {
-        maxWidth: 320,
-        minWidth: 260,
-        closeButton: true,
-        autoPan: true,
-        autoPanPadding: [60, 100],
-        offset: [0, 0]
-      });
-
-      markers.push(marker);
-
-      // --- Chip ---
-      const chip = document.createElement('button');
-      chip.type = 'button';
-      chip.className = 'chip';
-      chip.dataset.index = index;
-      chip.innerHTML = `<span class="chip-emoji">${place.emoji}</span> <span>${place.title}</span>`;
-
-      chip.addEventListener('click', () => {
-        map.flyTo([place.lat, place.lng], 16, {
-          duration: 1.2,
-          easeLinearity: 0.25
+        marker.bindPopup(popupHTML, {
+          maxWidth: 320,
+          minWidth: 260,
+          closeButton: true,
+          autoPan: true,
+          autoPanPadding: [60, 100],
+          offset: [0, 0],
         });
-        setTimeout(() => marker.openPopup(), 720);
 
-        chipsBar.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        setTimeout(() => chip.classList.remove('active'), 3400);
+        markers.push(marker);
+
+        // --- Chip ---
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "chip";
+        chip.dataset.index = index;
+        chip.innerHTML = `<span class="chip-emoji">${place.emoji}</span> <span>${place.title}</span>`;
+
+        chip.addEventListener("click", () => {
+          map.flyTo([place.lat, place.lng], 16, {
+            duration: 1.2,
+            easeLinearity: 0.25,
+          });
+          setTimeout(() => marker.openPopup(), 720);
+
+          chipsBar
+            .querySelectorAll(".chip")
+            .forEach((c) => c.classList.remove("active"));
+          chip.classList.add("active");
+          setTimeout(() => chip.classList.remove("active"), 3400);
+        });
+
+        chipsBar.appendChild(chip);
       });
 
-      chipsBar.appendChild(chip);
-    });
+      // ============================================================
+      // FIT BOUNDS
+      // ============================================================
+      if (markers.length > 0) {
+        const group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.22), {
+          animate: true,
+          duration: 1,
+        });
+      }
 
-    // ============================================================
-    // FIT BOUNDS
-    // ============================================================
-    if (markers.length > 0) {
-      const group = new L.featureGroup(markers);
-      map.fitBounds(group.getBounds().pad(0.22), {
-        animate: true,
-        duration: 1
-      });
-    }
+      // ============================================================
+      // STATS
+      // ============================================================
+      document.getElementById("statCount").textContent = PLACES.length;
 
-    // ============================================================
-    // STATS
-    // ============================================================
-    document.getElementById('statCount').textContent = PLACES.length;
-
-    // ============================================================
-    // INTRO HINT (только раз за сессию)
-    // ============================================================
-    const introHint = document.getElementById('introHint');
-    const HINT_KEY = 'map_hint_shown_v1';
-    if (!sessionStorage.getItem(HINT_KEY)) {
-      setTimeout(() => {
-        introHint.classList.add('show');
-        sessionStorage.setItem(HINT_KEY, '1');
-        setTimeout(() => introHint.classList.remove('show'), 3400);
-      }, 900);
-    }
-
-    // ============================================================
-    // SERVICE WORKER
-    // ============================================================
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .catch(() => {});
-      });
-    }
-  </script>
-
-</body>
+      // ============================================================
+      // INTRO HINT (только раз за сессию)
+      // ============================================================
+      const introHint = document.getElementById("introHint");
+      const HINT_KEY = "map_hint_shown_v1";
+      if (!sessionStorage.getItem(HINT_KEY)) {
+        setTimeout(() => {
+          introHint.classList.add("show");
+          sessionStorage.setItem(HINT_KEY, "1");
+          setTimeout(() => introHint.classList.remove("show"), 3400);
+        }, 900);
+      }
+    </script>
+    <script src="sw-register.js" defer></script>
+  </body>
 </html>

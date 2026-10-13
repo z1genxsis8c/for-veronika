@@ -1,0 +1,1549 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Суд над моим сердцем · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
+        --sand: #cfb8a3;
+        --gold: #b89968;
+        --gold-deep: #8a6f4d;
+        --night: #1a1613;
+        --night-2: #2b2620;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+      }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
+
+      /* TOPBAR */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.72);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+      }
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      /* LAYOUT */
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
+
+      /* HERO */
+      .hero {
+        padding: 20px 0 40px;
+        text-align: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+      }
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 72px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+        max-width: 16ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 48ch;
+        font-weight: 400;
+      }
+
+      /* ============================================================
+         COURT HEADER (case file)
+         ============================================================ */
+      .case-file {
+        position: relative;
+        margin-top: 72px;
+        padding: 48px 48px 44px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 8px 20px rgba(30, 26, 22, 0.05);
+      }
+      .case-file::before {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(30, 26, 22, 0.05);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      .case-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 24px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid var(--line);
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .case-court {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .court-mark {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--rose) 0%,
+          var(--rose-deep) 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fdfaf6;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 26px;
+        line-height: 1;
+        padding-bottom: 4px;
+        box-shadow:
+          inset 0 0 12px rgba(0, 0, 0, 0.18),
+          0 8px 20px rgba(143, 100, 114, 0.28);
+        flex-shrink: 0;
+      }
+      .court-name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 24px;
+        line-height: 1.1;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0;
+      }
+      .court-sub {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-top: 4px;
+      }
+      .case-number {
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .case-number .label {
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+        display: block;
+        margin-bottom: 4px;
+      }
+      .case-number .value {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 17px;
+        font-weight: 500;
+        color: var(--ink);
+        letter-spacing: 0.04em;
+      }
+
+      /* Participants grid */
+      .participants {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 1;
+      }
+      .participant {
+        padding: 22px 22px 20px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+      }
+      .participant-role {
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+        display: block;
+        margin-bottom: 10px;
+      }
+      .participant-icon {
+        font-size: 26px;
+        line-height: 1;
+        margin-bottom: 8px;
+        display: block;
+        filter: saturate(0.75);
+      }
+      .participant-name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 19px;
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin: 0 0 4px;
+      }
+      .participant-note {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--ink-3);
+        margin: 0;
+        font-style: italic;
+      }
+
+      /* Verdict banner */
+      .verdict-banner {
+        position: relative;
+        padding: 40px 44px;
+        background: linear-gradient(
+          160deg,
+          var(--night) 0%,
+          var(--night-2) 100%
+        );
+        border-radius: 4px;
+        color: var(--paper);
+        overflow: hidden;
+      }
+      .verdict-banner::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='nv'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23nv)'/></svg>");
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .verdict-banner::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border: 1px solid rgba(232, 212, 216, 0.1);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+      .verdict-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 16px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid rgba(232, 212, 216, 0.12);
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: rgba(232, 212, 216, 0.55);
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .verdict-head .latin {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--rose);
+      }
+      .verdict-text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(24px, 3.4vw, 38px);
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+        color: var(--paper);
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        max-width: 38ch;
+      }
+      .verdict-text em {
+        font-style: italic;
+        color: var(--rose);
+      }
+
+      /* ============================================================
+         TRANSCRIPT SECTIONS
+         ============================================================ */
+      .section {
+        margin-top: 72px;
+      }
+      .section-head {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 60px;
+        margin-bottom: 40px;
+        align-items: baseline;
+      }
+      .section-label {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .section-label .num {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 20px;
+        color: var(--rose-deep);
+        letter-spacing: 0;
+        text-transform: none;
+      }
+      .section-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(26px, 3.4vw, 40px);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        margin: 0;
+        color: var(--ink);
+      }
+      .section-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      /* Charge block */
+      .charge {
+        position: relative;
+        padding: 36px 40px 32px;
+        background: linear-gradient(
+          135deg,
+          var(--rose-tint) 0%,
+          var(--surface-2) 100%
+        );
+        border: 1px solid rgba(143, 100, 114, 0.22);
+        border-left: 2px solid var(--rose-deep);
+        border-radius: 3px;
+      }
+      .charge-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 14px;
+        display: block;
+      }
+      .charge-text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(22px, 2.8vw, 30px);
+        line-height: 1.35;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0;
+      }
+      .charge-text em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      /* Witness list */
+      .witnesses-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .witness {
+        display: grid;
+        grid-template-columns: 60px 1fr;
+        gap: 22px;
+        padding: 24px 26px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 3px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 6px 16px rgba(30, 26, 22, 0.04);
+        transition:
+          transform 0.35s var(--ease),
+          box-shadow 0.35s var(--ease);
+      }
+      .witness:hover {
+        transform: translateX(4px);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 12px 28px rgba(30, 26, 22, 0.08);
+      }
+      .witness-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--rose-tint) 0%,
+          var(--rose-soft) 100%
+        );
+        border: 1px solid rgba(143, 100, 114, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        line-height: 1;
+        flex-shrink: 0;
+        filter: saturate(0.75);
+      }
+      .witness-body {
+        min-width: 0;
+      }
+      .witness-name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 18px;
+        font-weight: 400;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin: 0 0 4px;
+      }
+      .witness-role {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        display: block;
+        margin-bottom: 12px;
+      }
+      .witness-testimony {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 16px;
+        line-height: 1.6;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+        margin: 0;
+        padding-left: 14px;
+        border-left: 1px solid var(--rose-deep);
+      }
+
+      /* Speeches (prosecution / defence) */
+      .speech {
+        position: relative;
+        padding: 32px 36px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 3px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 12px 32px rgba(30, 26, 22, 0.06);
+      }
+      .speech + .speech {
+        margin-top: 16px;
+      }
+      .speech-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 14px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .speech-who {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        color: var(--ink);
+        letter-spacing: -0.005em;
+      }
+      .speech-role {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .speech-body {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 16.5px;
+        line-height: 1.7;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+        margin: 0;
+      }
+      .speech-body p {
+        margin: 0 0 14px;
+      }
+      .speech-body p:last-child {
+        margin-bottom: 0;
+      }
+      .speech-body b {
+        font-weight: 400;
+        font-style: italic;
+        color: var(--ink);
+      }
+
+      /* Last word */
+      .last-word {
+        position: relative;
+        padding: 36px 40px;
+        background: linear-gradient(
+          135deg,
+          var(--rose-tint) 0%,
+          var(--surface-2) 100%
+        );
+        border: 1px dashed var(--rose-deep);
+        border-radius: 3px;
+      }
+      .last-word-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 16px;
+        display: block;
+      }
+      .last-word-text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: clamp(20px, 2.4vw, 26px);
+        line-height: 1.5;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0;
+      }
+
+      /* Final verdict */
+      .final-verdict {
+        position: relative;
+        padding: 56px 48px 48px;
+        background: linear-gradient(
+          160deg,
+          var(--night) 0%,
+          var(--night-2) 100%
+        );
+        border-radius: 4px;
+        color: var(--paper);
+        overflow: hidden;
+      }
+      .final-verdict::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='nf'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23nf)'/></svg>");
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .final-verdict::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border: 1px solid rgba(232, 212, 216, 0.1);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+      .final-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 18px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid rgba(232, 212, 216, 0.12);
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: rgba(232, 212, 216, 0.55);
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .final-head .latin {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--rose);
+      }
+      .final-quote {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(24px, 3.2vw, 34px);
+        line-height: 1.35;
+        letter-spacing: -0.02em;
+        color: var(--paper);
+        margin: 0 0 32px;
+        position: relative;
+        z-index: 1;
+        max-width: 44ch;
+      }
+      .final-quote em {
+        font-style: italic;
+        color: var(--rose);
+      }
+
+      .final-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        position: relative;
+        z-index: 1;
+        align-items: flex-end;
+      }
+      .signatures {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .signature {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .signature .label {
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: rgba(232, 212, 216, 0.5);
+      }
+      .signature .value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 20px;
+        letter-spacing: -0.005em;
+        color: var(--rose);
+      }
+      .signature .line {
+        width: 100%;
+        max-width: 220px;
+        height: 1px;
+        background: rgba(232, 212, 216, 0.25);
+        margin-top: 6px;
+      }
+      .stamp-final {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        border: 2px solid var(--rose);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 14px;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 12px;
+        line-height: 1.15;
+        color: var(--rose);
+        opacity: 0.9;
+        transform: rotate(-8deg);
+        position: relative;
+        margin-left: auto;
+      }
+      .stamp-final::before {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 50%;
+        border: 1px dashed rgba(181, 135, 148, 0.5);
+      }
+
+      /* NAV */
+      .nav-wrap {
+        margin-top: 96px;
+        padding-top: 40px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 32px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .back-link:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
+      }
+      .back-link .arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 15px;
+      }
+      .back-link:hover .arrow {
+        transform: translateX(-5px);
+      }
+      .nav-link-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 28px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .nav-link-secondary:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+      .nav-link-secondary .icon {
+        font-size: 14px;
+        filter: saturate(0.75);
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .nav-link-secondary:hover .icon {
+        transform: scale(1.15);
+      }
+
+      /* FOOTER */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 900px) {
+        .section-head {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          margin-bottom: 28px;
+        }
+        .participants {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .witness {
+          grid-template-columns: 48px 1fr;
+          gap: 16px;
+          padding: 18px 18px;
+        }
+        .witness-icon {
+          width: 48px;
+          height: 48px;
+          font-size: 22px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(32px, 9vw, 46px);
+        }
+        .case-file {
+          padding: 32px 22px 28px;
+          margin-top: 56px;
+        }
+        .case-head {
+          padding-bottom: 18px;
+          margin-bottom: 24px;
+        }
+        .court-name {
+          font-size: 20px;
+        }
+        .court-mark {
+          width: 44px;
+          height: 44px;
+          font-size: 20px;
+        }
+        .participant {
+          padding: 18px 18px 16px;
+        }
+        .participant-name {
+          font-size: 17px;
+        }
+        .verdict-banner {
+          padding: 32px 22px 28px;
+        }
+        .verdict-text {
+          font-size: 22px;
+        }
+        .charge {
+          padding: 26px 22px 22px;
+        }
+        .charge-text {
+          font-size: 20px;
+        }
+        .witness-testimony {
+          font-size: 15px;
+          padding-left: 12px;
+        }
+        .speech {
+          padding: 24px 22px;
+        }
+        .speech-body {
+          font-size: 15.5px;
+        }
+        .last-word {
+          padding: 26px 22px;
+        }
+        .last-word-text {
+          font-size: 19px;
+        }
+        .final-verdict {
+          padding: 36px 22px 32px;
+        }
+        .final-quote {
+          font-size: 22px;
+          margin-bottom: 24px;
+        }
+        .final-meta {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+        .stamp-final {
+          margin-left: 0;
+          width: 110px;
+          height: 110px;
+          font-size: 11px;
+        }
+        .signature .value {
+          font-size: 18px;
+        }
+        .nav-wrap {
+          margin-top: 72px;
+          padding-top: 32px;
+          gap: 10px;
+        }
+        .back-link,
+        .nav-link-secondary {
+          padding: 16px 24px;
+          font-size: 13.5px;
+        }
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item"
+          ><span class="icon" id="timeIcon">☀️</span
+          ><span id="timeText">--:--</span></span
+        >
+        <span class="meta-sep">·</span>
+        <span class="meta-item"
+          ><span class="icon" id="weatherIcon">🌤️</span
+          ><span id="weatherText">...</span></span
+        >
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <span class="eyebrow">23 · Протокол</span>
+        <h1>Суд над <em>моим сердцем</em></h1>
+        <p class="hero-sub">
+          Официальная стенограмма судебного заседания. Дело рассмотрено в
+          закрытом порядке, но вам повезло — вы в списке свидетелей.
+        </p>
+      </section>
+
+      <!-- CASE FILE HEADER -->
+      <article class="case-file">
+        <header class="case-head">
+          <div class="case-court">
+            <div class="court-mark">⚖</div>
+            <div>
+              <h2 class="court-name">Суд совести и чувств</h2>
+              <div class="court-sub">
+                Отдел по делам сердечных правонарушений
+              </div>
+            </div>
+          </div>
+          <div class="case-number">
+            <span class="label">Дело №</span>
+            <span class="value">001-ЛЮБОВЬ/25</span>
+          </div>
+        </header>
+
+        <div class="participants">
+          <div class="participant">
+            <span class="participant-role">Судья</span>
+            <span class="participant-icon">🧑‍⚖️</span>
+            <h3 class="participant-name">Совесть Анатолия</h3>
+            <p class="participant-note">
+              Беспристрастна. Знает всё. Ведёт дело со дня знакомства.
+            </p>
+          </div>
+          <div class="participant">
+            <span class="participant-role">Секретарь</span>
+            <span class="participant-icon">📝</span>
+            <h3 class="participant-name">Память</h3>
+            <p class="participant-note">
+              Записывает каждую секунду рядом. Архив неисчерпаем.
+            </p>
+          </div>
+          <div class="participant">
+            <span class="participant-role">Обвиняемый</span>
+            <span class="participant-icon">❤️</span>
+            <h3 class="participant-name">Моё сердце</h3>
+            <p class="participant-note">
+              Сознательно не признаёт вину. Признаёт любовь.
+            </p>
+          </div>
+          <div class="participant">
+            <span class="participant-role">Прокурор</span>
+            <span class="participant-icon">🎩</span>
+            <h3 class="participant-name">Здравый смысл</h3>
+            <p class="participant-note">
+              Опаздывает. Не в силах переубедить обвиняемого.
+            </p>
+          </div>
+          <div class="participant">
+            <span class="participant-role">Защитник</span>
+            <span class="participant-icon">🕊️</span>
+            <h3 class="participant-name">Надежда</h3>
+            <p class="participant-note">
+              Работает 24/7 без выходных. Никогда не сдаётся.
+            </p>
+          </div>
+          <div class="participant">
+            <span class="participant-role">Потерпевшая</span>
+            <span class="participant-icon">💐</span>
+            <h3 class="participant-name">Вероника</h3>
+            <p class="participant-note">
+              Улыбается. Всё знала заранее. Мирно наблюдает с места для особых
+              гостей.
+            </p>
+          </div>
+        </div>
+
+        <!-- QUICK VERDICT PREVIEW -->
+        <div class="verdict-banner">
+          <div class="verdict-head">
+            <span>Приговор (оглашён)</span>
+            <span class="latin">Sententia · finalis</span>
+          </div>
+          <p class="verdict-text">
+            Признать виновным по всем пунктам. Приговор —
+            <em>пожизненное заключение в её объятиях</em>. Обжалованию не
+            подлежит.
+          </p>
+        </div>
+      </article>
+
+      <!-- 01 ОБВИНЕНИЕ -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">01</span>
+            <span>Обвинение</span>
+          </div>
+          <h2 class="section-title">В чём именно <em>обвиняется</em></h2>
+        </div>
+
+        <div class="charge">
+          <span class="charge-label">Формулировка обвинения</span>
+          <p class="charge-text">
+            Обвиняемый <em>систематически и сознательно</em> испытывает
+            повышенную нежность к Веронике. Улики: участившийся пульс, потеря
+            концентрации, привычка улыбаться без причины. Повторяется ежедневно.
+            Признавать вину отказывается.
+          </p>
+        </div>
+      </section>
+
+      <!-- 02 СВИДЕТЕЛИ -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">02</span>
+            <span>Свидетели</span>
+          </div>
+          <h2 class="section-title">Показания <em>очевидцев</em></h2>
+        </div>
+
+        <div class="witnesses-list">
+          <div class="witness">
+            <div class="witness-icon">👀</div>
+            <div class="witness-body">
+              <h3 class="witness-name">Глаза</h3>
+              <span class="witness-role">Свидетель № 1 · видел всё первым</span>
+              <p class="witness-testimony">
+                «Мы заметили её первыми — 9 сентября, примерно в обед. С тех пор
+                не можем отвести взгляд. Признаём: смотрим чаще, чем положено.
+                Не жалеем.»
+              </p>
+            </div>
+          </div>
+
+          <div class="witness">
+            <div class="witness-icon">🤲</div>
+            <div class="witness-body">
+              <h3 class="witness-name">Руки</h3>
+              <span class="witness-role"
+                >Свидетель № 2 · держат её постоянно</span
+              >
+              <p class="witness-testimony">
+                «Обвиняемый требует держать её руку при каждой возможности. Мы
+                не сопротивляемся. По нашим подсчётам, суммарно это уже тысячи
+                часов. Не жалуемся.»
+              </p>
+            </div>
+          </div>
+
+          <div class="witness">
+            <div class="witness-icon">💭</div>
+            <div class="witness-body">
+              <h3 class="witness-name">Мысли</h3>
+              <span class="witness-role"
+                >Свидетель № 3 · думают только о ней</span
+              >
+              <p class="witness-testimony">
+                «Мы пытались думать о работе, учёбе, делах. Ничего не вышло —
+                всё сводится к Веронике. По нашим данным, 47 раз в час. Иногда
+                чаще.»
+              </p>
+            </div>
+          </div>
+
+          <div class="witness">
+            <div class="witness-icon">🫀</div>
+            <div class="witness-body">
+              <h3 class="witness-name">Пульс</h3>
+              <span class="witness-role">Свидетель № 4 · данные измеримы</span>
+              <p class="witness-testimony">
+                «Показания фиксируем честно: в её присутствии — 120–140. Когда
+                она улыбается — до 180. Когда смеётся — вообще без
+                комментариев.»
+              </p>
+            </div>
+          </div>
+
+          <div class="witness">
+            <div class="witness-icon">👂</div>
+            <div class="witness-body">
+              <h3 class="witness-name">Слух</h3>
+              <span class="witness-role"
+                >Свидетель № 5 · ловит её голос издалека</span
+              >
+              <p class="witness-testimony">
+                «Мы слышим её шаги за два этажа. Узнаём «привет» из тысячи.
+                Утверждаем: её голос — лучшее, что мы когда-либо слышали.»
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 РЕЧИ -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">03</span>
+            <span>Речи сторон</span>
+          </div>
+          <h2 class="section-title">Прения <em>и аргументы</em></h2>
+        </div>
+
+        <div class="speech">
+          <div class="speech-head">
+            <span class="speech-who">— Речь прокурора —</span>
+            <span class="speech-role">Здравый смысл</span>
+          </div>
+          <div class="speech-body">
+            <p>
+              Уважаемый суд. Мы имеем дело с вопиющим случаем. Обвиняемый
+              <b>полностью утратил способность рассуждать холодно</b>. Он
+              постоянно думает о Веронике, улыбается без повода и не может
+              спать, не пожелав ей сладких снов.
+            </p>
+            <p>
+              Сторона обвинения просит применить максимально суровое наказание,
+              предусмотренное кодексом чувств. <b>Пожизненное</b>.
+            </p>
+          </div>
+        </div>
+
+        <div class="speech">
+          <div class="speech-head">
+            <span class="speech-who">— Речь защитника —</span>
+            <span class="speech-role">Надежда</span>
+          </div>
+          <div class="speech-body">
+            <p>
+              Уважаемый суд. Защита не отрицает фактов, но
+              <b>просит заметить их причину</b>. Обвиняемый не может быть
+              осуждён за любовь — это не преступление, а лучшее, что с ним
+              случилось.
+            </p>
+            <p>
+              Прошу применить статью 1 — «Всё, что делается из любви, не
+              подлежит наказанию». Прошу оставить как есть. Навсегда.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 ПОСЛЕДНЕЕ СЛОВО -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">04</span>
+            <span>Последнее слово</span>
+          </div>
+          <h2 class="section-title">Слово <em>обвиняемому</em></h2>
+        </div>
+
+        <div class="last-word">
+          <span class="last-word-label">Обвиняемый · моё сердце</span>
+          <p class="last-word-text">
+            «Ваша честь, я знал, на что шёл. Я видел её — и выбрал любить. Я не
+            прошу снисхождения. Я не хочу исправляться. Приговорите меня к ней —
+            и я приму это с радостью.»
+          </p>
+        </div>
+      </section>
+
+      <!-- 05 ПРИГОВОР -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">05</span>
+            <span>Приговор</span>
+          </div>
+          <h2 class="section-title">Окончательное <em>решение суда</em></h2>
+        </div>
+
+        <div class="final-verdict">
+          <div class="final-head">
+            <span>Резолютивная часть</span>
+            <span class="latin">Sententia · ultima</span>
+          </div>
+          <p class="final-quote">
+            Признать обвиняемого виновным по всем пунктам. Назначить
+            <em>пожизненное заключение в её объятиях</em>. Обжалованию не
+            подлежит. Приведение в исполнение — немедленно.
+          </p>
+
+          <div class="final-meta">
+            <div class="signatures">
+              <div class="signature">
+                <span class="label">Судья</span>
+                <span class="value">Совесть Анатолия</span>
+                <span class="line"></span>
+              </div>
+              <div class="signature">
+                <span class="label">Секретарь</span>
+                <span class="value">Память</span>
+                <span class="line"></span>
+              </div>
+            </div>
+            <div class="stamp-final">
+              <span>Суд совести<br />Приговор окончательный<br />♥</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NAV -->
+      <div class="nav-wrap">
+        <a href="index.html" class="back-link">
+          <span class="arrow">←</span>
+          <span>На главную</span>
+        </a>
+        <a href="medcard.html" class="nav-link-secondary">
+          <span class="icon">🩺</span>
+          <span>История болезни</span>
+        </a>
+        <a href="manual.html" class="nav-link-secondary">
+          <span class="icon">📖</span>
+          <span>Инструкция</span>
+        </a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <!-- TIME + WEATHER -->
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const t = document.getElementById("timeText");
+        if (t) t.textContent = `${hh}:${mm}`;
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        const ti = document.getElementById("timeIcon");
+        if (ti) ti.textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
+
+      const WEATHER_CITY = { name: "Улан-Удэ" };
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        if (!iconEl || !textEl) return;
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      const iw = document.getElementById("infoWidget");
+      if (iw) iw.addEventListener("click", loadWeather);
+    </script>
+
+    <script src="sw-register.js" defer></script>
+  </body>
+</html>

@@ -1,733 +1,2055 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>🎨 Doodle-кот</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#9b59b6">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Doodle-кот">
-  <link rel="apple-touch-icon" href="photos/icon-192.png">
-  <style>
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0; padding: 0; width: 100%; min-height: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      user-select: none; -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      overflow: hidden;
-    }
-    body {
-      background: linear-gradient(180deg, #ffd6e5 0%, #a8d8ff 100%);
-      display: flex; flex-direction: column; align-items: center;
-      padding: 12px; height: 100vh;
-    }
-    body.night { background: linear-gradient(180deg, #1a0a2e 0%, #0d0518 100%); }
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Doodle-кот · Для Вероники</title>
 
-    .game-container {
-      width: 100%; max-width: 480px;
-      text-align: center;
-      display: flex; flex-direction: column;
-      height: 100%;
-    }
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
 
-    .game-title {
-      color: #8e44ad; font-size: 22px; font-weight: 800;
-      margin: 0 0 4px;
-      text-shadow: 0 2px 10px rgba(255,255,255,0.9);
-    }
-    body.night .game-title { color: #d7b8e8; }
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
-    .game-subtitle {
-      color: #9b59b6; font-size: 13px; font-weight: 600;
-      margin: 0 0 10px; font-style: italic;
-    }
-    body.night .game-subtitle { color: #c8a6e0; }
+    <style>
+      /* ============================================================
+       TOKENS
+       ============================================================ */
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
 
-    .game-score-row {
-      display: flex; justify-content: center;
-      gap: 8px; margin-bottom: 8px; flex-wrap: wrap;
-    }
-    .game-score-chip {
-      background: rgba(255,255,255,0.95);
-      border: 2px solid #d7b8e8; border-radius: 50px;
-      padding: 6px 14px; font-size: 12px; font-weight: 700;
-      color: #8e44ad;
-      box-shadow: 0 4px 12px rgba(155,89,182,0.2);
-    }
-    .game-score-chip b { color: #9b59b6; }
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
 
-    .doodle-canvas-wrap {
-      position: relative; width: 100%;
-      flex: 1;
-      background: linear-gradient(180deg, #a8d8ff 0%, #ffd6e5 100%);
-      border-radius: 20px; border: 3px solid #fff;
-      box-shadow: 0 10px 40px rgba(155,89,182,0.3);
-      overflow: hidden; margin-bottom: 10px;
-      min-height: 300px;
-    }
-    body.night .doodle-canvas-wrap {
-      background: linear-gradient(180deg, #1a0a2e 0%, #2b0a1f 100%);
-    }
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
 
-    #doodleCanvas { display: block; width: 100%; height: 100%; touch-action: none; }
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
 
-    .game-pause-box {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(255,255,255,0.95);
-      display: none; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 5; padding: 20px;
-      border-radius: 17px;
-    }
-    .game-pause-box.show { display: flex; }
-    .game-pause-box h3 { color: #9b59b6; font-size: 20px; margin: 0 0 12px; }
-    .pause-emoji {
-      font-size: 50px; margin-bottom: 8px;
-      animation: heartbeat 1.5s infinite;
-    }
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      15% { transform: scale(1.2); }
-      30% { transform: scale(1); }
-    }
+        --sand: #cfb8a3;
+        --gold: #b89968;
 
-    .game-controls {
-      display: flex; gap: 10px;
-      justify-content: center; flex-wrap: wrap;
-    }
+        --sky-top: #b8c8d4;
+        --sky-bot: #e8d4d8;
 
-    .game-hint {
-      color: #9b59b6; font-size: 12px;
-      font-weight: 700; margin-top: 6px; opacity: 0.8;
-    }
-    body.night .game-hint { color: #c8a6e0; }
+        --night-bg: #2b2620;
+        --night-bg-2: #1a1613;
+        --night-ink: #e8d4d8;
 
-    .btn {
-      background: rgba(255,255,255,0.95);
-      color: #9b59b6; border: 2px solid #d7b8e8;
-      font-size: 14px; padding: 10px 20px;
-      text-decoration: none; border-radius: 50px;
-      font-weight: 700;
-      box-shadow: 0 6px 18px rgba(155,89,182,0.2);
-      transition: all 0.25s; cursor: pointer;
-      font-family: inherit;
-      display: inline-flex; align-items: center; gap: 6px;
-    }
-    .btn:hover { background: #9b59b6; color: white; border-color: #9b59b6; transform: translateY(-2px); }
-    .btn.primary { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; border-color: #9b59b6; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
 
-    @keyframes floatUpScore {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-40px) scale(1.3); opacity: 0; }
-    }
+      * {
+        box-sizing: border-box;
+      }
 
-    .toast {
-      position: fixed; bottom: 30px; left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: linear-gradient(135deg, #9b59b6, #8e44ad);
-      color: #fff; padding: 12px 22px;
-      border-radius: 50px; font-size: 14px; font-weight: 700;
-      box-shadow: 0 12px 32px rgba(142,68,173,0.5);
-      z-index: 3000; opacity: 0;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none; max-width: 90vw; text-align: center;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
-    .float-heart {
-      position: fixed; font-size: 20px;
-      pointer-events: none; z-index: 5000;
-      animation: floatUp 1.5s ease-out forwards;
-    }
-    @keyframes floatUp {
-      0% { transform: translateY(0) scale(0.5); opacity: 1; }
-      100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
-    }
-  </style>
-</head>
-<body>
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+        transition:
+          background 0.8s var(--ease),
+          color 0.8s var(--ease);
+      }
 
-  <div class="game-container">
-    <h2 class="game-title">🎨 Doodle-кот</h2>
-    <p class="game-subtitle" id="doodleSubtitle">Прыгай по платформам выше и выше! ☁️</p>
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+        transition: opacity 0.8s var(--ease);
+      }
 
-    <div class="game-score-row">
-      <div class="game-score-chip">Высота: <b id="doodleScore">0</b></div>
-      <div class="game-score-chip">Рекорд: <b id="doodleRecord">0</b></div>
-      <div class="game-score-chip">🪙 +<b id="doodleCoins">0</b></div>
-    </div>
+      body.night {
+        background: var(--night-bg);
+        color: var(--night-ink);
+      }
+      body.night::before {
+        opacity: 0;
+      }
 
-    <div class="doodle-canvas-wrap" id="doodleCanvasWrap">
-      <canvas id="doodleCanvas"></canvas>
-      <div class="game-pause-box" id="doodleOverBox">
-        <div class="pause-emoji" id="doodleGoEmoji">😿</div>
-        <h3 id="doodleGoTitle">Котик упал!</h3>
-        <p style="color:#9b59b6; font-size:14px; font-weight:700; margin:4px 0;">Высота:</p>
-        <div style="font-size:32px; font-weight:900; color:#9b59b6; margin:4px 0 12px;" id="doodleGoScore">0</div>
-        <div style="color:#9b59b6; font-size:12px; font-weight:700; margin-bottom:14px;" id="doodleGoRecord">Рекорд: 0</div>
-        <div style="color:#ffa500; font-size:13px; font-weight:800; margin-bottom:14px;" id="doodleGoCoins">+0 монеток</div>
-        <button class="btn primary" onclick="restartDoodle()">🔄 Играть снова</button>
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
+
+      /* ============================================================
+       TOPBAR
+       ============================================================ */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.78);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+        transition:
+          background 0.8s var(--ease),
+          border-color 0.8s var(--ease);
+      }
+
+      body.night .topbar {
+        background: rgba(43, 38, 32, 0.78);
+        border-bottom-color: rgba(232, 212, 216, 0.12);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition:
+          transform 0.4s var(--ease-spring),
+          border-color 0.8s,
+          color 0.8s;
+      }
+
+      body.night .brand-mark {
+        border-color: var(--night-ink);
+        color: var(--night-ink);
+      }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+        transition: color 0.8s;
+      }
+
+      body.night .brand-label {
+        color: rgba(232, 212, 216, 0.7);
+      }
+
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .topbar-meta:hover {
+        color: var(--ink);
+      }
+      body.night .topbar-meta {
+        color: rgba(232, 212, 216, 0.85);
+      }
+
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      /* ============================================================
+       LAYOUT
+       ============================================================ */
+      main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 140px 32px 60px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ============================================================
+       HERO (compact — just eyebrow + title)
+       ============================================================ */
+      .hero {
+        padding: 10px 0 24px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 20px;
+        transition: color 0.8s;
+      }
+
+      body.night .eyebrow {
+        color: var(--rose);
+      }
+
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: currentColor;
+      }
+
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(32px, 4.8vw, 52px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 12px;
+        transition: color 0.8s;
+      }
+
+      body.night h1 {
+        color: var(--night-ink);
+      }
+
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+        transition: color 0.8s;
+      }
+      body.night h1 em {
+        color: var(--rose);
+      }
+
+      .hero-sub {
+        font-size: 15px;
+        line-height: 1.55;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 44ch;
+        font-weight: 400;
+        transition: color 0.8s;
+      }
+
+      body.night .hero-sub {
+        color: rgba(232, 212, 216, 0.7);
+      }
+
+      /* ============================================================
+       GAME STATS ROW
+       ============================================================ */
+      .stats-row {
+        margin: 32px 0 20px;
+        padding: 20px 8px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 8px 20px rgba(30, 26, 22, 0.05);
+        transition:
+          background 0.8s,
+          border-color 0.8s,
+          box-shadow 0.8s;
+      }
+
+      body.night .stats-row {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.14);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.04) inset,
+          0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .stat-cell {
+        text-align: center;
+        padding: 0 12px;
+        position: relative;
+      }
+
+      .stat-cell + .stat-cell::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 18%;
+        bottom: 18%;
+        width: 1px;
+        background: var(--line);
+        transition: background 0.8s;
+      }
+
+      body.night .stat-cell + .stat-cell::before {
+        background: rgba(232, 212, 216, 0.1);
+      }
+
+      .stat-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 8px;
+        transition: color 0.8s;
+      }
+
+      body.night .stat-label {
+        color: rgba(232, 212, 216, 0.55);
+      }
+
+      .stat-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(26px, 3.4vw, 34px);
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+        display: inline-flex;
+        align-items: baseline;
+        gap: 6px;
+        transition: color 0.8s;
+      }
+
+      body.night .stat-value {
+        color: var(--night-ink);
+      }
+
+      .stat-value .plus {
+        font-size: 0.55em;
+        color: var(--gold);
+        font-style: italic;
+      }
+
+      /* ============================================================
+       CANVAS
+       ============================================================ */
+      .canvas-frame {
+        position: relative;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 8px 20px rgba(30, 26, 22, 0.05);
+        transition:
+          background 0.8s,
+          border-color 0.8s,
+          box-shadow 0.8s;
+      }
+
+      body.night .canvas-frame {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.14);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.04) inset,
+          0 30px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Corner ticks */
+      .canvas-frame::before,
+      .canvas-frame::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--ink-3);
+        opacity: 0.5;
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      .canvas-frame::before {
+        top: 6px;
+        left: 6px;
+        border-right: none;
+        border-bottom: none;
+      }
+
+      .canvas-frame::after {
+        bottom: 6px;
+        right: 6px;
+        border-left: none;
+        border-top: none;
+      }
+
+      .canvas-inner {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        max-height: 70vh;
+        background: linear-gradient(
+          180deg,
+          var(--sky-top) 0%,
+          var(--sky-bot) 100%
+        );
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+        transition: background 0.8s;
+      }
+
+      body.night .canvas-inner {
+        background: linear-gradient(180deg, #1a1613 0%, #241f1b 100%);
+      }
+
+      #doodleCanvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+
+      /* Plate label */
+      .canvas-label {
+        position: absolute;
+        top: 26px;
+        left: 28px;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        color: var(--ink-3);
+        opacity: 0.65;
+        pointer-events: none;
+        z-index: 4;
+        transition: color 0.8s;
+      }
+
+      body.night .canvas-label {
+        color: rgba(232, 212, 216, 0.5);
+      }
+
+      /* ============================================================
+       GAME OVER OVERLAY
+       ============================================================ */
+      .game-over {
+        position: absolute;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(30, 26, 22, 0.45);
+        backdrop-filter: blur(16px) saturate(140%);
+        -webkit-backdrop-filter: blur(16px) saturate(140%);
+        z-index: 10;
+        animation: overlayIn 0.4s var(--ease);
+      }
+
+      @keyframes overlayIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .game-over.show {
+        display: flex;
+      }
+
+      .game-over-card {
+        position: relative;
+        width: 100%;
+        max-width: 340px;
+        padding: 32px 28px 26px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        text-align: center;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 40px 80px rgba(30, 26, 22, 0.3);
+        animation: cardIn 0.5s var(--ease-spring);
+        transition:
+          background 0.8s,
+          border-color 0.8s;
+      }
+
+      @keyframes cardIn {
+        from {
+          transform: translateY(20px) scale(0.94);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .game-over-card::after {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: 1px solid rgba(30, 26, 22, 0.05);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      body.night .game-over-card {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.14);
+      }
+
+      .go-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 12px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid var(--line);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        position: relative;
+        z-index: 1;
+      }
+
+      body.night .go-head {
+        color: rgba(232, 212, 216, 0.5);
+        border-bottom-color: rgba(232, 212, 216, 0.1);
+      }
+
+      .go-head .latin {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--rose-deep);
+      }
+
+      body.night .go-head .latin {
+        color: var(--rose);
+      }
+
+      .go-emoji {
+        font-size: 40px;
+        line-height: 1;
+        margin-bottom: 12px;
+        filter: saturate(0.85);
+        display: block;
+      }
+
+      .go-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 24px;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 18px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .go-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      body.night .go-title {
+        color: var(--night-ink);
+      }
+      body.night .go-title em {
+        color: var(--rose);
+      }
+
+      .go-score {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 44px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 4px;
+        font-variant-numeric: tabular-nums;
+        position: relative;
+        z-index: 1;
+      }
+
+      body.night .go-score {
+        color: var(--night-ink);
+      }
+
+      .go-score-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 1;
+      }
+
+      body.night .go-score-label {
+        color: rgba(232, 212, 216, 0.5);
+      }
+
+      .go-meta {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        color: var(--ink-2);
+        margin-bottom: 6px;
+        position: relative;
+        z-index: 1;
+      }
+
+      body.night .go-meta {
+        color: rgba(232, 212, 216, 0.75);
+      }
+
+      .go-coins {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 16px;
+        color: var(--gold);
+        margin-bottom: 22px;
+        position: relative;
+        z-index: 1;
+        letter-spacing: -0.01em;
+      }
+
+      /* ============================================================
+       CONTROLS
+       ============================================================ */
+      .controls {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 24px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 28px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: all 0.35s var(--ease);
+        text-decoration: none;
+      }
+
+      .btn:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn.primary {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 8px 20px rgba(30, 26, 22, 0.2);
+      }
+
+      .btn.primary:hover {
+        background: #000;
+        color: var(--paper);
+        border-color: #000;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 14px 32px rgba(30, 26, 22, 0.26);
+      }
+
+      body.night .btn {
+        color: rgba(232, 212, 216, 0.85);
+        border-color: rgba(232, 212, 216, 0.15);
+      }
+      body.night .btn:hover {
+        background: rgba(232, 212, 216, 0.08);
+        color: var(--night-ink);
+        border-color: rgba(232, 212, 216, 0.3);
+      }
+      body.night .btn.primary {
+        background: var(--night-ink);
+        color: var(--night-bg-2);
+        border-color: var(--night-ink);
+      }
+      body.night .btn.primary:hover {
+        background: #fff;
+        border-color: #fff;
+      }
+
+      .btn .btn-arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 14px;
+      }
+      .btn:hover .btn-arrow {
+        transform: translateX(-4px);
+      }
+
+      /* ============================================================
+       HINT
+       ============================================================ */
+      .hint {
+        margin-top: 24px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        transition: color 0.8s;
+      }
+
+      body.night .hint {
+        color: rgba(232, 212, 216, 0.5);
+      }
+
+      .hint-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .hint-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .hint-key {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 6px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 5px;
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0;
+        color: var(--ink-2);
+        text-transform: none;
+        transition: all 0.8s;
+      }
+
+      body.night .hint-key {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.15);
+        color: rgba(232, 212, 216, 0.75);
+      }
+
+      /* ============================================================
+       FOOTER
+       ============================================================ */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+        transition:
+          color 0.8s,
+          border-color 0.8s;
+      }
+
+      body.night .footer {
+        color: rgba(232, 212, 216, 0.45);
+        border-top-color: rgba(232, 212, 216, 0.1);
+      }
+
+      /* ============================================================
+       FLOATING HEARTS
+       ============================================================ */
+      .float-heart {
+        position: fixed;
+        pointer-events: none;
+        z-index: 5000;
+        filter: saturate(0.7);
+        animation: floatUp 1.6s var(--ease) forwards;
+      }
+
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) scale(0.5);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100px) scale(1.1);
+          opacity: 0;
+        }
+      }
+
+      /* ============================================================
+       FLOAT SCORE
+       ============================================================ */
+      @keyframes floatUpScore {
+        0% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-40px) scale(1.3);
+          opacity: 0;
+        }
+      }
+
+      .float-score {
+        position: absolute;
+        pointer-events: none;
+        z-index: 100;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-weight: 400;
+        letter-spacing: -0.01em;
+        animation: floatUpScore 0.9s var(--ease) forwards;
+      }
+
+      /* ============================================================
+       TOAST
+       ============================================================ */
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 32px;
+        transform: translateX(-50%) translateY(20px);
+        padding: 14px 22px;
+        background: var(--ink);
+        color: var(--paper);
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        box-shadow: 0 20px 40px rgba(30, 26, 22, 0.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.5s var(--ease);
+        z-index: 6000;
+        max-width: calc(100vw - 40px);
+        text-align: center;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 40px;
+        }
+        h1 {
+          font-size: clamp(28px, 8vw, 40px);
+        }
+
+        .stats-row {
+          margin: 24px 0 16px;
+          padding: 16px 4px;
+        }
+        .stat-cell {
+          padding: 0 6px;
+        }
+        .stat-label {
+          font-size: 9px;
+          letter-spacing: 0.14em;
+          margin-bottom: 6px;
+        }
+
+        .canvas-frame {
+          padding: 12px;
+        }
+        .canvas-inner {
+          aspect-ratio: 3 / 4;
+          max-height: 60vh;
+        }
+        .canvas-label {
+          top: 18px;
+          left: 20px;
+          font-size: 10px;
+        }
+
+        .game-over-card {
+          padding: 26px 22px 22px;
+          border-radius: 3px;
+        }
+        .go-emoji {
+          font-size: 34px;
+        }
+        .go-title {
+          font-size: 20px;
+          margin-bottom: 14px;
+        }
+        .go-score {
+          font-size: 36px;
+        }
+        .go-meta {
+          font-size: 13px;
+        }
+        .go-coins {
+          font-size: 14px;
+          margin-bottom: 18px;
+        }
+
+        .controls {
+          margin-top: 18px;
+          gap: 8px;
+        }
+        .btn {
+          padding: 14px 22px;
+          font-size: 13px;
+        }
+
+        .hint {
+          font-size: 10px;
+          letter-spacing: 0.12em;
+        }
+        .hint-row {
+          gap: 10px;
+        }
+        .hint-key {
+          min-width: 20px;
+          height: 20px;
+          font-size: 10px;
+        }
+
+        .toast {
+          bottom: 20px;
+          font-size: 12px;
+          padding: 12px 18px;
+        }
+
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <!-- ============================================================
+       TOPBAR
+       ============================================================ -->
+    <header class="topbar">
+      <a href="cat.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
       </div>
-    </div>
+    </header>
 
-    <div class="game-controls">
-      <button class="btn primary" onclick="startDoodle()" id="doodleStartBtn">▶ Начать</button>
-      <a href="cat.html" class="btn" id="backLink">← К котику</a>
-    </div>
+    <main>
+      <!-- ============================================================
+         HERO
+         ============================================================ -->
+      <section class="hero">
+        <span class="eyebrow">12 · Игра</span>
+        <h1>Doodle-<em>кот</em></h1>
+        <p class="hero-sub">
+          Прыгай по платформам выше и выше. Чем выше — тем больше монет для
+          котика.
+        </p>
+      </section>
 
-    <div class="game-hint">
-      💡 ← → или наклоняй телефон • Прыгай по платформам вверх 🚀
-    </div>
-  </div>
+      <!-- ============================================================
+         STATS
+         ============================================================ -->
+      <div class="stats-row">
+        <div class="stat-cell">
+          <div class="stat-label">Высота</div>
+          <div class="stat-value" id="doodleScore">0</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Рекорд</div>
+          <div class="stat-value" id="doodleRecord">0</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Монеты</div>
+          <div class="stat-value">
+            <span class="plus">+</span><span id="doodleCoins">0</span>
+          </div>
+        </div>
+      </div>
 
-  <div class="toast" id="toast"></div>
+      <!-- ============================================================
+         CANVAS
+         ============================================================ -->
+      <div class="canvas-frame">
+        <div class="canvas-inner" id="doodleCanvasWrap">
+          <span class="canvas-label">№ 12 · прыжок</span>
+          <canvas id="doodleCanvas"></canvas>
 
-  <script>
-    let audioCtx = null;
-    function initAudio() {
-      if (!audioCtx) {
-        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
+          <!-- Game Over overlay -->
+          <div class="game-over" id="doodleOverBox">
+            <div class="game-over-card">
+              <div class="go-head">
+                <span>Финиш</span>
+                <span class="latin">Feles · cadit</span>
+              </div>
+              <span class="go-emoji" id="doodleGoEmoji">😿</span>
+              <h3 class="go-title" id="doodleGoTitle">Котик упал</h3>
+              <div class="go-score" id="doodleGoScore">0</div>
+              <div class="go-score-label">высота</div>
+              <div class="go-meta" id="doodleGoRecord">Рекорд: 0</div>
+              <div class="go-coins" id="doodleGoCoins">+0 монет</div>
+              <button
+                class="btn primary"
+                onclick="restartDoodle()"
+                style="width: 100%; justify-content: center"
+              >
+                <span>Играть снова</span>
+                <span class="btn-arrow">→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+         CONTROLS
+         ============================================================ -->
+      <div class="controls">
+        <button class="btn primary" onclick="startDoodle()" id="doodleStartBtn">
+          <span>Начать</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <a href="cat.html" class="btn" id="backLink">
+          <span class="btn-arrow">←</span>
+          <span>К котику</span>
+        </a>
+      </div>
+
+      <!-- ============================================================
+         HINT
+         ============================================================ -->
+      <div class="hint">
+        <div class="hint-row">
+          <span class="hint-item"
+            ><span class="hint-key">←</span><span class="hint-key">→</span> или
+            наклоняй телефон</span
+          >
+          <span class="hint-item">Прыгай по платформам вверх</span>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================================
+       TIME + WEATHER
+       ============================================================ -->
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("timeText").textContent = `${hh}:${mm}`;
+
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        document.getElementById("timeIcon").textContent = icon;
       }
-    }
-    function playTone(frequency, duration, type = 'sine', volume = 0.15) {
-      if (!audioCtx) return;
-      try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = frequency;
-        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + duration);
-      } catch {}
-    }
-    const Sound = {
-      jump: () => { playTone(440, 0.1, 'square', 0.1); setTimeout(() => playTone(660, 0.1, 'square', 0.08), 50); },
-      fish: () => { playTone(880, 0.12, 'sine', 0.15); setTimeout(() => playTone(1320, 0.15, 'sine', 0.12), 60); },
-      hurt: () => { playTone(220, 0.3, 'sawtooth', 0.15); setTimeout(() => playTone(140, 0.4, 'sawtooth', 0.12), 100); },
-      coin: () => { playTone(1200, 0.08, 'sine', 0.12); setTimeout(() => playTone(1600, 0.12, 'sine', 0.1), 50); },
-      ach: () => { playTone(660, 0.15, 'sine', 0.15); setTimeout(() => playTone(880, 0.15, 'sine', 0.15), 100); setTimeout(() => playTone(1100, 0.25, 'sine', 0.15), 200); }
-    };
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
 
-    const DEFAULT_STATE = {
-      hunger: 50, mood: 60, affection: 50,
-      sleeping: false, coins: 0,
-      ownedHats: [], ownedFood: {},
-      fishCollected: 0, equippedHat: null,
-      achievements: [], totalFishCollected: 0,
-      lastUpdate: Date.now()
-    };
+      const WEATHER_CITY = { name: "Улан-Удэ" };
 
-    let catState = loadState();
-
-    function loadState() {
-      try {
-        const saved = localStorage.getItem('catState');
-        if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
-        const raw = JSON.parse(saved);
-        const state = { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), ...raw };
-        state.ownedHats = Array.isArray(state.ownedHats) ? state.ownedHats : [];
-        state.ownedFood = (typeof state.ownedFood === 'object' && state.ownedFood) ? state.ownedFood : {};
-        state.achievements = Array.isArray(state.achievements) ? state.achievements : [];
-        const now = Date.now();
-        const elapsed = Math.floor((now - (state.lastUpdate || now)) / 1000 / 30);
-        state.hunger = Math.max(0, state.hunger - elapsed * 2);
-        state.mood = Math.max(0, state.mood - elapsed * 1);
-        state.lastUpdate = now;
-        return state;
-      } catch (e) {
-        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
       }
-    }
 
-    function saveState() {
-      catState.lastUpdate = Date.now();
-      try { localStorage.setItem('catState', JSON.stringify(catState)); } catch {}
-    }
-
-    const ACHIEVEMENTS = [
-      { id: 'first_record', icon: '🥇', title: 'Первый рекорд' },
-      { id: 'hundred', icon: '💯', title: '100 очков' },
-      { id: 'ten_fish', icon: '🐟', title: 'Собрал 10 рыбок' },
-      { id: 'first_buy', icon: '🛍️', title: 'Первая покупка' },
-      { id: 'max_hunger', icon: '🍖', title: 'Сыт по горло' },
-      { id: 'level_master', icon: '🌈', title: 'Путешественник' },
-      { id: 'sky_high', icon: '☁️', title: 'Небесный кот' }
-    ];
-
-    function unlockAchievement(id) {
-      if (catState.achievements.includes(id)) return;
-      catState.achievements.push(id);
-      saveState();
-      const ach = ACHIEVEMENTS.find(a => a.id === id);
-      if (ach) {
-        showToast(`🏆 Достижение: ${ach.title}!`);
-        Sound.ach();
-        spawnHearts(10);
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
       }
-    }
 
-    let toastTimer = null;
-    function showToast(text) {
-      const toast = document.getElementById('toast');
-      toast.textContent = text;
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-    }
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
 
-    function spawnHearts(count) {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-          const heart = document.createElement('div');
-          heart.className = 'float-heart';
-          heart.textContent = ['💗','💖','❤️','💕','✨'][Math.floor(Math.random()*5)];
-          heart.style.left = (cx + (Math.random()*60 - 30)) + 'px';
-          heart.style.top = cy + 'px';
-          heart.style.fontSize = (16 + Math.random()*12) + 'px';
-          document.body.appendChild(heart);
-          setTimeout(() => heart.remove(), 1500);
-        }, i * 80);
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
       }
-    }
 
-    const hour = new Date().getHours();
-    if (hour >= 22 || hour < 7) document.body.classList.add('night');
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      document
+        .getElementById("infoWidget")
+        .addEventListener("click", loadWeather);
+    </script>
 
-    // ═══════════════════════════════════════════
-    // DOODLE-КОТ
-    // ═══════════════════════════════════════════
-    const doodleCanvas = document.getElementById('doodleCanvas');
-    const doodleCanvasWrap = document.getElementById('doodleCanvasWrap');
-    const dctx = doodleCanvas.getContext('2d');
-    const doodleScoreEl = document.getElementById('doodleScore');
-    const doodleRecordEl = document.getElementById('doodleRecord');
-    const doodleCoinsEl = document.getElementById('doodleCoins');
-    const doodleOverBox = document.getElementById('doodleOverBox');
-    const doodleGoScore = document.getElementById('doodleGoScore');
-    const doodleGoRecord = document.getElementById('doodleGoRecord');
-    const doodleGoCoins = document.getElementById('doodleGoCoins');
-    const doodleGoTitle = document.getElementById('doodleGoTitle');
-    const doodleGoEmoji = document.getElementById('doodleGoEmoji');
-    const doodleStartBtn = document.getElementById('doodleStartBtn');
-
-    let doodle = {
-      running: false, finished: false,
-      score: 0,
-      record: parseInt(localStorage.getItem('doodleCatRecord') || '0'),
-      coinsThisRun: 0, nextCoinScore: 100,
-      cat: null, platforms: [], fishes: [],
-      cameraY: 0, frame: 0,
-      moveLeft: false, moveRight: false, tiltX: 0
-    };
-
-    doodleRecordEl.textContent = doodle.record;
-
-    function resizeDoodleCanvas() {
-      const wrap = doodleCanvas.parentElement;
-      const rect = wrap.getBoundingClientRect();
-      doodleCanvas.width = rect.width;
-      doodleCanvas.height = rect.height;
-    }
-
-    const PLATFORM_STYLES = {
-      normal:  { color: '#8b5a2b', border: '#5d3a1a' },
-      moving:  { color: '#2196f3', border: '#1565c0' },
-      fragile: { color: '#fdd835', border: '#c6a700' },
-      spring:  { color: '#4caf50', border: '#2e7d32' }
-    };
-
-    function createPlatform(x, y, forceType) {
-      const rand = Math.random();
-      let type = forceType;
-      if (!type) {
-        if (rand < 0.7) type = 'normal';
-        else if (rand < 0.85) type = 'moving';
-        else if (rand < 0.95) type = 'fragile';
-        else type = 'spring';
+    <!-- ============================================================
+       GAME SCRIPT
+       ============================================================ -->
+    <script>
+      // ============================================================
+      // SOUNDS
+      // ============================================================
+      let audioCtx = null;
+      function initAudio() {
+        if (!audioCtx) {
+          try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          } catch {}
+        }
       }
-      return {
-        x, y, width: 100, height: 22, type,
-        vx: type === 'moving' ? (Math.random() < 0.5 ? -1.5 : 1.5) : 0,
-        broken: false, brokenTime: 0,
-        bouncePower: type === 'spring' ? -20 : -12
+      function playTone(frequency, duration, type = "sine", volume = 0.15) {
+        if (!audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.value = frequency;
+          gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioCtx.currentTime + duration,
+          );
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch {}
+      }
+
+      const Sound = {
+        jump: () => {
+          playTone(440, 0.1, "square", 0.1);
+          setTimeout(() => playTone(660, 0.1, "square", 0.08), 50);
+        },
+        fish: () => {
+          playTone(880, 0.12, "sine", 0.15);
+          setTimeout(() => playTone(1320, 0.15, "sine", 0.12), 60);
+        },
+        hurt: () => {
+          playTone(220, 0.3, "sawtooth", 0.15);
+          setTimeout(() => playTone(140, 0.4, "sawtooth", 0.12), 100);
+        },
+        coin: () => {
+          playTone(1200, 0.08, "sine", 0.12);
+          setTimeout(() => playTone(1600, 0.12, "sine", 0.1), 50);
+        },
+        ach: () => {
+          playTone(660, 0.15, "sine", 0.15);
+          setTimeout(() => playTone(880, 0.15, "sine", 0.15), 100);
+          setTimeout(() => playTone(1100, 0.25, "sine", 0.15), 200);
+        },
       };
-    }
 
-    function initDoodle() {
-      const W = doodleCanvas.width;
-      const H = doodleCanvas.height;
+      // ============================================================
+      // STATE
+      // ============================================================
+      const DEFAULT_STATE = {
+        hunger: 50,
+        mood: 60,
+        affection: 50,
+        sleeping: false,
+        coins: 0,
+        ownedHats: [],
+        ownedFood: {},
+        fishCollected: 0,
+        equippedHat: null,
+        achievements: [],
+        totalFishCollected: 0,
+        lastUpdate: Date.now(),
+      };
 
-      doodle.cat = { x: W/2 - 20, y: H - 120, width: 40, height: 40, vy: 0, vx: 0 };
-      doodle.platforms = [];
-      doodle.fishes = [];
-      doodle.cameraY = 0;
-      doodle.frame = 0;
-      doodle.score = 0;
-      doodle.coinsThisRun = 0;
-      doodle.nextCoinScore = 100;
+      let catState = loadState();
 
-      doodle.platforms.push(createPlatform(W/2 - 50, H - 80, 'normal'));
-
-      let y = H - 80;
-      while (y > -H * 2) {
-        y -= 60 + Math.random() * 40;
-        const x = 20 + Math.random() * Math.max(10, W - 140);
-        doodle.platforms.push(createPlatform(x, y));
-        if (Math.random() < 0.25) {
-          doodle.fishes.push({ x: x + 50 - 12, y: y - 40, size: 24, collected: false, bobPhase: Math.random()*Math.PI*2 });
+      function loadState() {
+        try {
+          const saved = localStorage.getItem("catState");
+          if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+          const raw = JSON.parse(saved);
+          const state = {
+            ...JSON.parse(JSON.stringify(DEFAULT_STATE)),
+            ...raw,
+          };
+          state.ownedHats = Array.isArray(state.ownedHats)
+            ? state.ownedHats
+            : [];
+          state.ownedFood =
+            typeof state.ownedFood === "object" && state.ownedFood
+              ? state.ownedFood
+              : {};
+          state.achievements = Array.isArray(state.achievements)
+            ? state.achievements
+            : [];
+          const now = Date.now();
+          const elapsed = Math.floor(
+            (now - (state.lastUpdate || now)) / 1000 / 30,
+          );
+          state.hunger = Math.max(0, state.hunger - elapsed * 2);
+          state.mood = Math.max(0, state.mood - elapsed * 1);
+          state.lastUpdate = now;
+          return state;
+        } catch (e) {
+          return JSON.parse(JSON.stringify(DEFAULT_STATE));
         }
       }
 
-      doodleScoreEl.textContent = '0';
-      doodleCoinsEl.textContent = '0';
-    }
-
-    function doodleUpdate() {
-      if (!doodle.running || !doodle.cat) return;
-      const W = doodleCanvas.width;
-      const H = doodleCanvas.height;
-      const cat = doodle.cat;
-
-      if (doodle.moveLeft) cat.vx = -5;
-      else if (doodle.moveRight) cat.vx = 5;
-      else if (doodle.tiltX !== 0) cat.vx = doodle.tiltX * 0.6;
-      else cat.vx *= 0.85;
-
-      cat.x += cat.vx;
-      cat.vy += 0.5;
-      cat.y += cat.vy;
-
-      if (cat.x + cat.width < 0) cat.x = W;
-      if (cat.x > W) cat.x = -cat.width;
-
-      const targetCameraY = cat.y - H * 0.4;
-      if (targetCameraY < doodle.cameraY) {
-        doodle.cameraY = targetCameraY;
-        doodle.score = Math.max(doodle.score, Math.floor((H - 80 - cat.y) / 10));
+      function saveState() {
+        catState.lastUpdate = Date.now();
+        try {
+          localStorage.setItem("catState", JSON.stringify(catState));
+        } catch {}
       }
 
-      for (const p of doodle.platforms) {
-        if (p.broken) continue;
-        if (p.type === 'moving') {
-          p.x += p.vx;
-          if (p.x < 0 || p.x + p.width > W) p.vx *= -1;
-        }
-        if (cat.vy > 0 && cat.x + cat.width > p.x && cat.x < p.x + p.width &&
-            cat.y + cat.height >= p.y && cat.y + cat.height <= p.y + p.height + 10) {
-          cat.vy = p.bouncePower;
-          if (p.type === 'fragile') { p.broken = true; p.brokenTime = Date.now(); }
-          Sound.jump();
+      const ACHIEVEMENTS = [
+        { id: "first_record", icon: "🥇", title: "Первый рекорд" },
+        { id: "hundred", icon: "💯", title: "100 очков" },
+        { id: "ten_fish", icon: "🐟", title: "Собрал 10 рыбок" },
+        { id: "first_buy", icon: "🛍️", title: "Первая покупка" },
+        { id: "max_hunger", icon: "🍖", title: "Сыт по горло" },
+        { id: "level_master", icon: "🌈", title: "Путешественник" },
+        { id: "sky_high", icon: "☁️", title: "Небесный кот" },
+      ];
+
+      function unlockAchievement(id) {
+        if (catState.achievements.includes(id)) return;
+        catState.achievements.push(id);
+        saveState();
+        const ach = ACHIEVEMENTS.find((a) => a.id === id);
+        if (ach) {
+          showToast(`🏆 ${ach.title}`);
+          Sound.ach();
+          spawnHearts(10);
         }
       }
 
-      for (const f of doodle.fishes) {
-        if (f.collected) continue;
-        f.bobPhase += 0.1;
-        const dx = (cat.x + cat.width/2) - (f.x + f.size/2);
-        const dy = (cat.y + cat.height/2) - (f.y + f.size/2);
-        if (Math.sqrt(dx*dx + dy*dy) < 32) {
-          f.collected = true;
-          doodle.score += 20;
-          Sound.fish();
-          showDoodleScore(f.x, f.y, '+20', '#ff4d6d');
+      let toastTimer = null;
+      function showToast(text) {
+        const toast = document.getElementById("toast");
+        toast.textContent = text;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+      }
+
+      function spawnHearts(count) {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        for (let i = 0; i < count; i++) {
+          setTimeout(() => {
+            const heart = document.createElement("div");
+            heart.className = "float-heart";
+            heart.textContent = ["💗", "💖", "❤️", "💕", "✦"][
+              Math.floor(Math.random() * 5)
+            ];
+            heart.style.left = cx + (Math.random() * 60 - 30) + "px";
+            heart.style.top = cy + "px";
+            heart.style.fontSize = 16 + Math.random() * 12 + "px";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1500);
+          }, i * 80);
         }
       }
 
-      while (doodle.score >= doodle.nextCoinScore) {
-        doodle.nextCoinScore += 100;
-        doodle.coinsThisRun += 10;
-        doodleCoinsEl.textContent = doodle.coinsThisRun;
-        Sound.coin();
-        showDoodleScore(W/2, 60, '🪙 +10', '#ffa500');
+      // Night mode based on real time
+      const hour = new Date().getHours();
+      if (hour >= 22 || hour < 7) document.body.classList.add("night");
+
+      // ============================================================
+      // DOODLE CAT — game
+      // ============================================================
+      const doodleCanvas = document.getElementById("doodleCanvas");
+      const doodleCanvasWrap = document.getElementById("doodleCanvasWrap");
+      const dctx = doodleCanvas.getContext("2d");
+      const doodleScoreEl = document.getElementById("doodleScore");
+      const doodleRecordEl = document.getElementById("doodleRecord");
+      const doodleCoinsEl = document.getElementById("doodleCoins");
+      const doodleOverBox = document.getElementById("doodleOverBox");
+      const doodleGoScore = document.getElementById("doodleGoScore");
+      const doodleGoRecord = document.getElementById("doodleGoRecord");
+      const doodleGoCoins = document.getElementById("doodleGoCoins");
+      const doodleGoTitle = document.getElementById("doodleGoTitle");
+      const doodleGoEmoji = document.getElementById("doodleGoEmoji");
+      const doodleStartBtn = document.getElementById("doodleStartBtn");
+
+      let doodle = {
+        running: false,
+        finished: false,
+        score: 0,
+        record: parseInt(localStorage.getItem("doodleCatRecord") || "0"),
+        coinsThisRun: 0,
+        nextCoinScore: 100,
+        cat: null,
+        platforms: [],
+        fishes: [],
+        cameraY: 0,
+        frame: 0,
+        moveLeft: false,
+        moveRight: false,
+        tiltX: 0,
+      };
+
+      doodleRecordEl.textContent = doodle.record;
+
+      function resizeDoodleCanvas() {
+        const wrap = doodleCanvas.parentElement;
+        const rect = wrap.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        doodleCanvas.width = Math.floor(rect.width * dpr);
+        doodleCanvas.height = Math.floor(rect.height * dpr);
+        doodleCanvas.style.width = rect.width + "px";
+        doodleCanvas.style.height = rect.height + "px";
+        dctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
 
-      doodleScoreEl.textContent = doodle.score;
+      // Platform styles in editorial palette
+      const PLATFORM_STYLES = {
+        normal: { color: "#a8917a", border: "#8a6f4d" },
+        moving: { color: "#8fa9b8", border: "#5f7d8c" },
+        fragile: { color: "#d4c2a0", border: "#a89070" },
+        spring: { color: "#b58794", border: "#8f6472" },
+      };
 
-      let generated = 0;
-      const maxGen = 5;
-      let highestY = Infinity;
-      for (const p of doodle.platforms) if (p.y < highestY) highestY = p.y;
-      if (highestY === Infinity) highestY = H;
-
-      while (highestY > doodle.cameraY - 200 && generated < maxGen) {
-        const newY = highestY - (60 + Math.random()*40);
-        const x = 20 + Math.random() * Math.max(10, W - 140);
-        doodle.platforms.push(createPlatform(x, newY));
-        if (Math.random() < 0.25) {
-          doodle.fishes.push({ x: x + 50 - 12, y: newY - 40, size: 24, collected: false, bobPhase: Math.random()*Math.PI*2 });
+      function createPlatform(x, y, forceType) {
+        const rand = Math.random();
+        let type = forceType;
+        if (!type) {
+          if (rand < 0.7) type = "normal";
+          else if (rand < 0.85) type = "moving";
+          else if (rand < 0.95) type = "fragile";
+          else type = "spring";
         }
-        highestY = newY;
-        generated++;
+        return {
+          x,
+          y,
+          width: 100,
+          height: 22,
+          type,
+          vx: type === "moving" ? (Math.random() < 0.5 ? -1.5 : 1.5) : 0,
+          broken: false,
+          brokenTime: 0,
+          bouncePower: type === "spring" ? -20 : -12,
+        };
       }
 
-      const bottomCutoff = doodle.cameraY + H + 200;
-      const topCutoff = doodle.cameraY - 400;
+      function initDoodle() {
+        const W = doodleCanvas.width;
+        const H = doodleCanvas.height;
 
-      doodle.platforms = doodle.platforms.filter(p => {
-        if (p.broken && Date.now() - p.brokenTime > 500) return false;
-        return p.y < bottomCutoff && p.y > topCutoff;
-      });
-      doodle.fishes = doodle.fishes.filter(f => !f.collected && f.y < bottomCutoff && f.y > topCutoff);
+        doodle.cat = {
+          x: W / 2 - 20,
+          y: H - 120,
+          width: 40,
+          height: 40,
+          vy: 0,
+          vx: 0,
+        };
+        doodle.platforms = [];
+        doodle.fishes = [];
+        doodle.cameraY = 0;
+        doodle.frame = 0;
+        doodle.score = 0;
+        doodle.coinsThisRun = 0;
+        doodle.nextCoinScore = 100;
 
-      if (cat.y > doodle.cameraY + H + 50) doodleEndGame();
-      doodle.frame++;
-    }
+        doodle.platforms.push(createPlatform(W / 2 - 50, H - 80, "normal"));
 
-    function showDoodleScore(x, y, text, color) {
-      if (!doodleCanvasWrap) return;
-      const rect = doodleCanvasWrap.getBoundingClientRect();
-      const scaleX = rect.width / doodleCanvas.width;
-      const scaleY = rect.height / doodleCanvas.height;
-      const screenX = x * scaleX;
-      const screenY = (y - doodle.cameraY) * scaleY;
+        let y = H - 80;
+        while (y > -H * 2) {
+          y -= 60 + Math.random() * 40;
+          const x = 20 + Math.random() * Math.max(10, W - 140);
+          doodle.platforms.push(createPlatform(x, y));
+          if (Math.random() < 0.25) {
+            doodle.fishes.push({
+              x: x + 50 - 12,
+              y: y - 40,
+              size: 24,
+              collected: false,
+              bobPhase: Math.random() * Math.PI * 2,
+            });
+          }
+        }
 
-      const el = document.createElement('div');
-      el.textContent = text;
-      el.style.cssText = `position:absolute;left:${screenX}px;top:${screenY}px;color:${color};font-weight:800;font-size:18px;pointer-events:none;z-index:100;animation:floatUpScore 0.9s ease-out forwards;`;
-      doodleCanvasWrap.appendChild(el);
-      setTimeout(() => el.remove(), 900);
-    }
+        doodleScoreEl.textContent = "0";
+        doodleCoinsEl.textContent = "0";
+      }
 
-    function drawPlatform(p) {
-      const style = PLATFORM_STYLES[p.type];
+      function doodleUpdate() {
+        if (!doodle.running || !doodle.cat) return;
+        const W = doodleCanvas.width;
+        const H = doodleCanvas.height;
+        const cat = doodle.cat;
 
-      dctx.fillStyle = 'rgba(0,0,0,0.15)';
-      dctx.beginPath();
-      if (dctx.roundRect) dctx.roundRect(p.x + 2, p.y + 3, p.width, p.height, 6);
-      else dctx.rect(p.x + 2, p.y + 3, p.width, p.height);
-      dctx.fill();
+        if (doodle.moveLeft) cat.vx = -5;
+        else if (doodle.moveRight) cat.vx = 5;
+        else if (doodle.tiltX !== 0) cat.vx = doodle.tiltX * 0.6;
+        else cat.vx *= 0.85;
 
-      dctx.fillStyle = style.color;
-      dctx.beginPath();
-      if (dctx.roundRect) dctx.roundRect(p.x, p.y, p.width, p.height, 6);
-      else dctx.rect(p.x, p.y, p.width, p.height);
-      dctx.fill();
+        cat.x += cat.vx;
+        cat.vy += 0.5;
+        cat.y += cat.vy;
 
-      dctx.strokeStyle = style.border;
-      dctx.lineWidth = 2;
-      dctx.beginPath();
-      if (dctx.roundRect) dctx.roundRect(p.x, p.y, p.width, p.height, 6);
-      else dctx.rect(p.x, p.y, p.width, p.height);
-      dctx.stroke();
+        if (cat.x + cat.width < 0) cat.x = W;
+        if (cat.x > W) cat.x = -cat.width;
 
-      dctx.fillStyle = 'rgba(255,255,255,0.3)';
-      dctx.beginPath();
-      if (dctx.roundRect) dctx.roundRect(p.x + 4, p.y + 3, p.width - 8, 5, 3);
-      else dctx.rect(p.x + 4, p.y + 3, p.width - 8, 5);
-      dctx.fill();
+        const targetCameraY = cat.y - H * 0.4;
+        if (targetCameraY < doodle.cameraY) {
+          doodle.cameraY = targetCameraY;
+          doodle.score = Math.max(
+            doodle.score,
+            Math.floor((H - 80 - cat.y) / 10),
+          );
+        }
 
-      if (p.type === 'spring') {
-        dctx.strokeStyle = '#fff';
-        dctx.lineWidth = 2;
-        for (let i = 0; i < 5; i++) {
-          const sx = p.x + 15 + i * 18;
+        for (const p of doodle.platforms) {
+          if (p.broken) continue;
+          if (p.type === "moving") {
+            p.x += p.vx;
+            if (p.x < 0 || p.x + p.width > W) p.vx *= -1;
+          }
+          if (
+            cat.vy > 0 &&
+            cat.x + cat.width > p.x &&
+            cat.x < p.x + p.width &&
+            cat.y + cat.height >= p.y &&
+            cat.y + cat.height <= p.y + p.height + 10
+          ) {
+            cat.vy = p.bouncePower;
+            if (p.type === "fragile") {
+              p.broken = true;
+              p.brokenTime = Date.now();
+            }
+            Sound.jump();
+          }
+        }
+
+        for (const f of doodle.fishes) {
+          if (f.collected) continue;
+          f.bobPhase += 0.1;
+          const dx = cat.x + cat.width / 2 - (f.x + f.size / 2);
+          const dy = cat.y + cat.height / 2 - (f.y + f.size / 2);
+          if (Math.sqrt(dx * dx + dy * dy) < 32) {
+            f.collected = true;
+            doodle.score += 20;
+            Sound.fish();
+            showDoodleScore(f.x, f.y, "+20", "#8f6472");
+          }
+        }
+
+        while (doodle.score >= doodle.nextCoinScore) {
+          doodle.nextCoinScore += 100;
+          doodle.coinsThisRun += 10;
+          doodleCoinsEl.textContent = doodle.coinsThisRun;
+          Sound.coin();
+          showDoodleScore(W / 2, 60, "+10", "#b89968");
+        }
+
+        doodleScoreEl.textContent = doodle.score;
+
+        let generated = 0;
+        const maxGen = 5;
+        let highestY = Infinity;
+        for (const p of doodle.platforms) if (p.y < highestY) highestY = p.y;
+        if (highestY === Infinity) highestY = H;
+
+        while (highestY > doodle.cameraY - 200 && generated < maxGen) {
+          const newY = highestY - (60 + Math.random() * 40);
+          const x = 20 + Math.random() * Math.max(10, W - 140);
+          doodle.platforms.push(createPlatform(x, newY));
+          if (Math.random() < 0.25) {
+            doodle.fishes.push({
+              x: x + 50 - 12,
+              y: newY - 40,
+              size: 24,
+              collected: false,
+              bobPhase: Math.random() * Math.PI * 2,
+            });
+          }
+          highestY = newY;
+          generated++;
+        }
+
+        const bottomCutoff = doodle.cameraY + H + 200;
+        const topCutoff = doodle.cameraY - 400;
+
+        doodle.platforms = doodle.platforms.filter((p) => {
+          if (p.broken && Date.now() - p.brokenTime > 500) return false;
+          return p.y < bottomCutoff && p.y > topCutoff;
+        });
+        doodle.fishes = doodle.fishes.filter(
+          (f) => !f.collected && f.y < bottomCutoff && f.y > topCutoff,
+        );
+
+        if (cat.y > doodle.cameraY + H + 50) doodleEndGame();
+        doodle.frame++;
+      }
+
+      function showDoodleScore(x, y, text, color) {
+        if (!doodleCanvasWrap) return;
+        const rect = doodleCanvasWrap.getBoundingClientRect();
+        const scaleX = rect.width / doodleCanvas.width;
+        const scaleY = rect.height / doodleCanvas.height;
+        const screenX = x * scaleX;
+        const screenY = (y - doodle.cameraY) * scaleY;
+
+        const el = document.createElement("div");
+        el.className = "float-score";
+        el.textContent = text;
+        el.style.left = screenX + "px";
+        el.style.top = screenY + "px";
+        el.style.color = color;
+        el.style.fontSize = "17px";
+        doodleCanvasWrap.appendChild(el);
+        setTimeout(() => el.remove(), 900);
+      }
+
+      function drawPlatform(p) {
+        const style = PLATFORM_STYLES[p.type];
+
+        // Shadow
+        dctx.fillStyle = "rgba(30, 26, 22, 0.10)";
+        dctx.beginPath();
+        if (dctx.roundRect)
+          dctx.roundRect(p.x + 2, p.y + 3, p.width, p.height, 5);
+        else dctx.rect(p.x + 2, p.y + 3, p.width, p.height);
+        dctx.fill();
+
+        // Body
+        dctx.fillStyle = style.color;
+        dctx.beginPath();
+        if (dctx.roundRect) dctx.roundRect(p.x, p.y, p.width, p.height, 5);
+        else dctx.rect(p.x, p.y, p.width, p.height);
+        dctx.fill();
+
+        // Border
+        dctx.strokeStyle = style.border;
+        dctx.lineWidth = 1.2;
+        dctx.beginPath();
+        if (dctx.roundRect) dctx.roundRect(p.x, p.y, p.width, p.height, 5);
+        else dctx.rect(p.x, p.y, p.width, p.height);
+        dctx.stroke();
+
+        // Top highlight
+        dctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+        dctx.beginPath();
+        if (dctx.roundRect) dctx.roundRect(p.x + 4, p.y + 3, p.width - 8, 4, 2);
+        else dctx.rect(p.x + 4, p.y + 3, p.width - 8, 4);
+        dctx.fill();
+
+        // Type details
+        if (p.type === "spring") {
+          dctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
+          dctx.lineWidth = 1;
+          for (let i = 0; i < 5; i++) {
+            const sx = p.x + 15 + i * 18;
+            dctx.beginPath();
+            dctx.moveTo(sx, p.y + 5);
+            dctx.lineTo(sx, p.y + p.height - 5);
+            dctx.stroke();
+          }
+        }
+
+        if (p.type === "fragile") {
+          dctx.strokeStyle = "rgba(143, 100, 114, 0.5)";
+          dctx.lineWidth = 1;
           dctx.beginPath();
-          dctx.moveTo(sx, p.y + 5);
-          dctx.lineTo(sx, p.y + p.height - 5);
+          dctx.moveTo(p.x + 25, p.y + 5);
+          dctx.lineTo(p.x + 30, p.y + 12);
+          dctx.lineTo(p.x + 35, p.y + 8);
+          dctx.moveTo(p.x + 60, p.y + 5);
+          dctx.lineTo(p.x + 65, p.y + 14);
           dctx.stroke();
         }
+
+        if (p.type === "moving") {
+          dctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+          dctx.font = "bold 12px Inter, sans-serif";
+          dctx.textAlign = "center";
+          dctx.textBaseline = "middle";
+          dctx.fillText("↔", p.x + p.width / 2, p.y + p.height / 2 + 1);
+        }
       }
-      if (p.type === 'fragile') {
-        dctx.strokeStyle = '#c6a700';
-        dctx.lineWidth = 1.5;
+
+      function doodleDraw() {
+        const W = doodleCanvas.width;
+        const H = doodleCanvas.height;
+        const cat = doodle.cat;
+
+        const grad = dctx.createLinearGradient(0, 0, 0, H);
+        if (document.body.classList.contains("night")) {
+          grad.addColorStop(0, "#1a1613");
+          grad.addColorStop(1, "#241f1b");
+        } else {
+          grad.addColorStop(0, "#b8c8d4");
+          grad.addColorStop(1, "#e8d4d8");
+        }
+        dctx.fillStyle = grad;
+        dctx.fillRect(0, 0, W, H);
+
+        // Subtle horizon line
+        dctx.strokeStyle = document.body.classList.contains("night")
+          ? "rgba(232, 212, 216, 0.06)"
+          : "rgba(30, 26, 22, 0.05)";
+        dctx.lineWidth = 1;
         dctx.beginPath();
-        dctx.moveTo(p.x + 25, p.y + 5);
-        dctx.lineTo(p.x + 30, p.y + 12);
-        dctx.lineTo(p.x + 35, p.y + 8);
-        dctx.moveTo(p.x + 60, p.y + 5);
-        dctx.lineTo(p.x + 65, p.y + 14);
+        dctx.moveTo(0, H * 0.5);
+        dctx.lineTo(W, H * 0.5);
         dctx.stroke();
-      }
-      if (p.type === 'moving') {
-        dctx.fillStyle = '#fff';
-        dctx.font = 'bold 14px sans-serif';
-        dctx.textAlign = 'center';
-        dctx.textBaseline = 'middle';
-        dctx.fillText('↔', p.x + p.width/2, p.y + p.height/2);
-      }
-    }
 
-    function doodleDraw() {
-      const W = doodleCanvas.width;
-      const H = doodleCanvas.height;
-      const cat = doodle.cat;
-
-      const grad = dctx.createLinearGradient(0, 0, 0, H);
-      if (document.body.classList.contains('night')) {
-        grad.addColorStop(0, '#1a0a2e');
-        grad.addColorStop(1, '#2b0a1f');
-      } else {
-        grad.addColorStop(0, '#a8d8ff');
-        grad.addColorStop(1, '#ffd6e5');
-      }
-      dctx.fillStyle = grad;
-      dctx.fillRect(0, 0, W, H);
-
-      dctx.save();
-      dctx.translate(0, -doodle.cameraY);
-
-      for (const p of doodle.platforms) {
-        if (p.broken) continue;
-        drawPlatform(p);
-      }
-      for (const f of doodle.fishes) {
-        if (f.collected) continue;
-        const bob = Math.sin(f.bobPhase) * 3;
-        dctx.font = '24px serif';
-        dctx.textAlign = 'left';
-        dctx.textBaseline = 'top';
-        dctx.fillText('🐟', f.x, f.y + bob);
-      }
-      if (cat) {
         dctx.save();
-        dctx.fillStyle = '#000';
-        dctx.font = '40px serif';
-        dctx.textAlign = 'left';
-        dctx.textBaseline = 'top';
-        dctx.fillText('🐱', cat.x, cat.y);
+        dctx.translate(0, -doodle.cameraY);
+
+        for (const p of doodle.platforms) {
+          if (p.broken) continue;
+          drawPlatform(p);
+        }
+
+        for (const f of doodle.fishes) {
+          if (f.collected) continue;
+          const bob = Math.sin(f.bobPhase) * 3;
+          dctx.font = "22px serif";
+          dctx.textAlign = "left";
+          dctx.textBaseline = "top";
+          dctx.fillText("🐟", f.x, f.y + bob);
+        }
+
+        if (cat) {
+          dctx.save();
+          dctx.font = "38px serif";
+          dctx.textAlign = "left";
+          dctx.textBaseline = "top";
+          dctx.fillText("🐱", cat.x, cat.y);
+          dctx.restore();
+        }
+
         dctx.restore();
       }
-      dctx.restore();
-    }
 
-    function doodleLoop() {
-      if (!doodle.running && !doodle.finished) return;
-      doodleUpdate();
-      doodleDraw();
-      if (doodle.running) requestAnimationFrame(doodleLoop);
-    }
-
-    function startDoodle() {
-      initAudio();
-      resizeDoodleCanvas();
-      initDoodle();
-      doodle.running = true;
-      doodle.finished = false;
-      doodleOverBox.classList.remove('show');
-      doodleStartBtn.disabled = true;
-      doodleStartBtn.textContent = '🎮 Играем...';
-      doodleLoop();
-    }
-
-    function doodleEndGame() {
-      doodle.running = false;
-      doodle.finished = true;
-      Sound.hurt();
-
-      // ⬇️ НАЧИСЛЯЕМ ЗДЕСЬ И СРАЗУ ОБНУЛЯЕМ, чтобы beforeunload не начислил повторно
-      const earned = doodle.coinsThisRun;
-      catState.coins += earned;
-      saveState();
-      doodle.coinsThisRun = 0;
-
-      let isNewRecord = false;
-      if (doodle.score > doodle.record) {
-        doodle.record = doodle.score;
-        localStorage.setItem('doodleCatRecord', doodle.record);
-        doodleRecordEl.textContent = doodle.record;
-        isNewRecord = true;
+      function doodleLoop() {
+        if (!doodle.running && !doodle.finished) return;
+        doodleUpdate();
+        doodleDraw();
+        if (doodle.running) requestAnimationFrame(doodleLoop);
       }
 
-      if (doodle.score >= 500) unlockAchievement('sky_high');
-      if (doodle.score > 0) unlockAchievement('first_record');
-
-      doodleGoScore.textContent = doodle.score;
-      doodleGoRecord.textContent = 'Рекорд: ' + doodle.record;
-      doodleGoCoins.textContent = `+${earned} 🪙 заработано`;
-
-      if (isNewRecord) {
-        doodleGoEmoji.textContent = '🏆';
-        doodleGoTitle.textContent = 'Новый рекорд!';
-      } else {
-        doodleGoEmoji.textContent = '😿';
-        doodleGoTitle.textContent = 'Котик упал!';
-      }
-
-      doodleOverBox.classList.add('show');
-      doodleStartBtn.disabled = false;
-      doodleStartBtn.textContent = '▶ Начать';
-    }
-
-    function restartDoodle() {
-      doodleOverBox.classList.remove('show');
-      doodle.finished = false;
-      startDoodle();
-    }
-
-    function setupDoodleControls() {
-      cleanupDoodleControls();
-      document.addEventListener('keydown', doodleKeyDown);
-      document.addEventListener('keyup', doodleKeyUp);
-      window.addEventListener('deviceorientation', doodleOrientation);
-    }
-
-    function cleanupDoodleControls() {
-      document.removeEventListener('keydown', doodleKeyDown);
-      document.removeEventListener('keyup', doodleKeyUp);
-      window.removeEventListener('deviceorientation', doodleOrientation);
-      doodle.moveLeft = false;
-      doodle.moveRight = false;
-      doodle.tiltX = 0;
-    }
-
-    function doodleKeyDown(e) {
-      if (e.code === 'ArrowLeft' || e.code === 'KeyA') { doodle.moveLeft = true; e.preventDefault(); }
-      else if (e.code === 'ArrowRight' || e.code === 'KeyD') { doodle.moveRight = true; e.preventDefault(); }
-    }
-    function doodleKeyUp(e) {
-      if (e.code === 'ArrowLeft' || e.code === 'KeyA') doodle.moveLeft = false;
-      if (e.code === 'ArrowRight' || e.code === 'KeyD') doodle.moveRight = false;
-    }
-    function doodleOrientation(e) {
-      doodle.tiltX = Math.max(-5, Math.min(5, e.gamma / 6));
-    }
-
-    doodleCanvas.addEventListener('touchstart', (e) => {
-      if (!doodle.running) return;
-      e.preventDefault();
-      const rect = doodleCanvas.getBoundingClientRect();
-      const touch = e.touches[0];
-      const x = touch.clientX - rect.left;
-      if (x < rect.width / 2) doodle.moveLeft = true;
-      else doodle.moveRight = true;
-    }, { passive: false });
-
-    doodleCanvas.addEventListener('touchend', () => {
-      doodle.moveLeft = false;
-      doodle.moveRight = false;
-    });
-
-    window.addEventListener('resize', () => resizeDoodleCanvas());
-
-    // ⬇️ ЕДИНАЯ ФУНКЦИЯ сохранения несохранённых монет
-    function flushCoins() {
-      if (doodle.coinsThisRun > 0) {
-        catState.coins += doodle.coinsThisRun;
-        saveState();
-        doodle.coinsThisRun = 0;
-      }
-    }
-
-    window.addEventListener('beforeunload', flushCoins);
-
-    document.getElementById('backLink').addEventListener('click', flushCoins);
-
-    window.addEventListener('load', () => {
-      setTimeout(() => {
+      function startDoodle() {
+        initAudio();
         resizeDoodleCanvas();
         initDoodle();
-        doodleDraw();
-        setupDoodleControls();
-      }, 50);
-    });
-  </script>
-</body>
+        doodle.running = true;
+        doodle.finished = false;
+        doodleOverBox.classList.remove("show");
+        doodleStartBtn.disabled = true;
+        doodleStartBtn.querySelector("span:first-child").textContent =
+          "Играем…";
+        doodleLoop();
+      }
+
+      function doodleEndGame() {
+        doodle.running = false;
+        doodle.finished = true;
+        Sound.hurt();
+
+        const earned = doodle.coinsThisRun;
+        catState.coins += earned;
+        saveState();
+        doodle.coinsThisRun = 0;
+
+        let isNewRecord = false;
+        if (doodle.score > doodle.record) {
+          doodle.record = doodle.score;
+          localStorage.setItem("doodleCatRecord", doodle.record);
+          doodleRecordEl.textContent = doodle.record;
+          isNewRecord = true;
+        }
+
+        if (doodle.score >= 500) unlockAchievement("sky_high");
+        if (doodle.score > 0) unlockAchievement("first_record");
+
+        doodleGoScore.textContent = doodle.score;
+        doodleGoRecord.textContent = "Рекорд: " + doodle.record;
+        doodleGoCoins.textContent = `+${earned} монет`;
+
+        if (isNewRecord) {
+          doodleGoEmoji.textContent = "🏆";
+          doodleGoTitle.innerHTML = "Новый <em>рекорд</em>";
+        } else {
+          doodleGoEmoji.textContent = "😿";
+          doodleGoTitle.innerHTML = "Котик <em>упал</em>";
+        }
+
+        doodleOverBox.classList.add("show");
+        doodleStartBtn.disabled = false;
+        doodleStartBtn.querySelector("span:first-child").textContent = "Начать";
+      }
+
+      function restartDoodle() {
+        doodleOverBox.classList.remove("show");
+        doodle.finished = false;
+        startDoodle();
+      }
+
+      // ============================================================
+      // CONTROLS
+      // ============================================================
+      function setupDoodleControls() {
+        cleanupDoodleControls();
+        document.addEventListener("keydown", doodleKeyDown);
+        document.addEventListener("keyup", doodleKeyUp);
+        window.addEventListener("deviceorientation", doodleOrientation);
+      }
+
+      function cleanupDoodleControls() {
+        document.removeEventListener("keydown", doodleKeyDown);
+        document.removeEventListener("keyup", doodleKeyUp);
+        window.removeEventListener("deviceorientation", doodleOrientation);
+        doodle.moveLeft = false;
+        doodle.moveRight = false;
+        doodle.tiltX = 0;
+      }
+
+      function doodleKeyDown(e) {
+        if (e.code === "ArrowLeft" || e.code === "KeyA") {
+          doodle.moveLeft = true;
+          e.preventDefault();
+        } else if (e.code === "ArrowRight" || e.code === "KeyD") {
+          doodle.moveRight = true;
+          e.preventDefault();
+        }
+      }
+
+      function doodleKeyUp(e) {
+        if (e.code === "ArrowLeft" || e.code === "KeyA")
+          doodle.moveLeft = false;
+        if (e.code === "ArrowRight" || e.code === "KeyD")
+          doodle.moveRight = false;
+      }
+
+      function doodleOrientation(e) {
+        doodle.tiltX = Math.max(-5, Math.min(5, e.gamma / 6));
+      }
+
+      doodleCanvas.addEventListener(
+        "touchstart",
+        (e) => {
+          if (!doodle.running) return;
+          e.preventDefault();
+          const rect = doodleCanvas.getBoundingClientRect();
+          const touch = e.touches[0];
+          const x = touch.clientX - rect.left;
+          if (x < rect.width / 2) doodle.moveLeft = true;
+          else doodle.moveRight = true;
+        },
+        { passive: false },
+      );
+
+      doodleCanvas.addEventListener("touchend", () => {
+        doodle.moveLeft = false;
+        doodle.moveRight = false;
+      });
+
+      window.addEventListener("resize", () => resizeDoodleCanvas());
+
+      // ============================================================
+      // COIN FLUSH
+      // ============================================================
+      function flushCoins() {
+        if (doodle.coinsThisRun > 0) {
+          catState.coins += doodle.coinsThisRun;
+          saveState();
+          doodle.coinsThisRun = 0;
+        }
+      }
+
+      window.addEventListener("beforeunload", flushCoins);
+      document.getElementById("backLink").addEventListener("click", flushCoins);
+
+      // ============================================================
+      // INIT
+      // ============================================================
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          resizeDoodleCanvas();
+          initDoodle();
+          doodleDraw();
+          setupDoodleControls();
+        }, 50);
+      });
+
+      // Init audio on first interaction
+      ["click", "touchstart", "keydown"].forEach((evt) => {
+        document.addEventListener(evt, initAudio, {
+          once: true,
+          passive: true,
+        });
+      });
+    </script>
+    <script src="sw-register.js" defer></script>
+  </body>
 </html>

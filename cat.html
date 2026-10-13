@@ -1,1574 +1,3145 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Домик котика 🏠🐱</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ff4d6d">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Вероника">
-  <link rel="apple-touch-icon" href="photos/icon-192.png">
-  <style>
-    html, body {
-      margin: 0; padding: 0; width: 100%; min-height: 100%;
-      overflow-x: hidden;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      user-select: none; -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      transition: background 1.5s ease;
-    }
-
-    body {
-      background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 50%, #fba3b7 100%);
-      min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center;
-      padding: 16px 16px 30px;
-      box-sizing: border-box;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    body.night {
-      background: linear-gradient(135deg, #1a0a2e 0%, #2b0a1f 50%, #0d0518 100%);
-    }
-
-    body.night h1 { color: #ffb3c1; text-shadow: 0 0 20px rgba(255, 179, 193, 0.6); }
-    body.night .subtitle { color: #ff8fa3; }
-    body.night .stat-card { background: rgba(43, 10, 31, 0.85); border-color: #8b0f5c; }
-    body.night .stat-label { color: #ffb3c1; }
-    body.night .stat-value { color: #ff8fa3; }
-    body.night .stat-bar { background: rgba(255, 179, 193, 0.2); }
-    body.night .action-btn { background: rgba(43, 10, 31, 0.85); border-color: #8b0f5c; color: #ffb3c1; }
-    body.night .action-btn:hover { background: rgba(139, 15, 92, 0.6); border-color: #ff4d6d; }
-    body.night .btn { background: rgba(43, 10, 31, 0.85); color: #ffb3c1; border-color: #8b0f5c; }
-    body.night .btn:hover { background: #c71585; color: #fff; border-color: #c71585; }
-    body.night .pet-bubble { background: #2b0a1f; color: #ffb3c1; border-color: #8b0f5c; }
-    body.night .toast { background: linear-gradient(135deg, #8b0f5c, #2b0a1f); }
-    body.night .shop-item { background: rgba(43, 10, 31, 0.85); border-color: #8b0f5c; }
-    body.night .shop-item .shop-name { color: #ffb3c1; }
-
-    #hearts-container {
-      position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none; z-index: 1; overflow: hidden;
-    }
-
-    .heart {
-      position: absolute; top: -30px;
-      color: #ffb3c1; font-size: 20px;
-      pointer-events: none;
-      animation: fall linear infinite;
-    }
-
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-    }
-
-    .container {
-      position: relative; z-index: 10;
-      width: 100%; max-width: 520px;
-      text-align: center;
-    }
-
-    h1 {
-      color: #ff4d6d; font-size: 22px; margin: 0 0 6px;
-      font-weight: 800;
-      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
-      transition: all 0.6s;
-    }
-
-    .subtitle {
-      color: #c71585; font-size: 13px; margin: 0 0 14px;
-      font-weight: 600; opacity: 0.9; font-style: italic;
-      transition: all 0.6s;
-    }
-
-    .top-panel {
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 8px; margin-bottom: 12px;
-    }
-
-    .coins-box {
-      background: linear-gradient(135deg, #ffd700, #ffa500);
-      color: #fff; padding: 8px 16px; border-radius: 50px;
-      font-size: 14px; font-weight: 800;
-      box-shadow: 0 6px 18px rgba(255, 165, 0, 0.5);
-      display: flex; align-items: center; gap: 6px;
-      border: 2px solid #fff;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    }
-
-    .achievements-btn {
-      background: rgba(255, 255, 255, 0.95);
-      border: 2px solid #ffc2d1; color: #c71585;
-      padding: 8px 16px; border-radius: 50px;
-      font-size: 13px; font-weight: 800;
-      cursor: pointer; transition: all 0.25s;
-      font-family: inherit;
-      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
-      display: flex; align-items: center; gap: 4px;
-    }
-
-    .achievements-btn:hover { transform: translateY(-2px); background: #ff4d6d; color: #fff; border-color: #ff4d6d; }
-    body.night .achievements-btn { background: rgba(43, 10, 31, 0.85); color: #ffb3c1; border-color: #8b0f5c; }
-
-    .room {
-      position: relative; width: 100%; aspect-ratio: 5 / 4;
-      background: linear-gradient(180deg, #fff5f8 0%, #ffe5ec 100%);
-      border-radius: 24px; overflow: hidden;
-      box-shadow: 0 12px 40px rgba(255, 77, 109, 0.3);
-      border: 3px solid #fff;
-      margin-bottom: 16px;
-      transition: all 1.5s ease;
-    }
-
-    body.night .room {
-      background: linear-gradient(180deg, #1a0a2e 0%, #0d0518 100%);
-      box-shadow: 0 12px 40px rgba(139, 15, 92, 0.6);
-      border-color: #4a1030;
-    }
-
-    .room::before {
-      content: ''; position: absolute; bottom: 0; left: 0;
-      width: 100%; height: 35%;
-      background: linear-gradient(180deg, #e8b48c 0%, #c68e60 100%);
-      transition: background 1.5s;
-    }
-
-    body.night .room::before { background: linear-gradient(180deg, #4a1030 0%, #2b0a1f 100%); }
-
-    .room::after {
-      content: ''; position: absolute; bottom: 35%; left: 0;
-      width: 100%; height: 6px; background: #a87752;
-      transition: background 1.5s;
-    }
-
-    body.night .room::after { background: #4a1030; }
-
-    .wallpaper {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 65%;
-      background-image:
-        radial-gradient(circle, #ffc2d1 1.5px, transparent 1.5px),
-        radial-gradient(circle, #ffb3c1 1px, transparent 1px);
-      background-size: 30px 30px, 45px 45px;
-      background-position: 0 0, 15px 15px;
-      opacity: 0.4;
-      transition: opacity 1.5s;
-    }
-
-    body.night .wallpaper { opacity: 0.1; }
-
-    .window {
-      position: absolute; top: 12%; left: 8%;
-      width: 26%; aspect-ratio: 3 / 4;
-      background: linear-gradient(180deg, #b3e5fc 0%, #e1f5fe 100%);
-      border: 6px solid #fff; border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      overflow: hidden;
-      transition: background 1.5s, border-color 1.5s;
-    }
-
-    body.night .window {
-      background: linear-gradient(180deg, #0d0518 0%, #1a0a2e 100%);
-      border-color: #4a1030;
-    }
-
-    .window::before, .window::after {
-      content: ''; position: absolute;
-      background: #fff;
-      transition: background 1.5s;
-    }
-
-    body.night .window::before, body.night .window::after { background: #4a1030; }
-
-    .window::before {
-      top: 50%; left: 0; width: 100%; height: 4px;
-      transform: translateY(-50%);
-    }
-
-    .window::after {
-      top: 0; left: 50%; width: 4px; height: 100%;
-      transform: translateX(-50%);
-    }
-
-    .sun {
-      position: absolute; top: 20%; right: 15%;
-      width: 40%; aspect-ratio: 1;
-      border-radius: 50%;
-      background: radial-gradient(circle, #fff59d 0%, #ffeb3b 70%);
-      animation: sunGlow 3s ease-in-out infinite;
-      transition: all 1.5s;
-    }
-
-    body.night .sun {
-      background: radial-gradient(circle, #f5f5dc 0%, #fff 70%);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-    }
-
-    @keyframes sunGlow {
-      0%, 100% { box-shadow: 0 0 20px rgba(255, 235, 59, 0.6); }
-      50% { box-shadow: 0 0 30px rgba(255, 235, 59, 1); }
-    }
-
-    .window-stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.5s; pointer-events: none; }
-    body.night .window-stars { opacity: 1; }
-    .window-star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; animation: twinkle 2s infinite; }
-
-    @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
-    .picture {
-      position: absolute; top: 14%; right: 12%;
-      width: 20%; aspect-ratio: 4 / 5;
-      background: linear-gradient(135deg, #ffb3c1, #ff8fa3);
-      border: 4px solid #8b5a2b; border-radius: 4px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; color: #fff;
-      transition: all 1.5s;
-    }
-
-    body.night .picture { background: linear-gradient(135deg, #4a1030, #2b0a1f); border-color: #1a0a2e; }
-
-    .rug {
-      position: absolute; bottom: 8%; left: 50%;
-      transform: translateX(-50%);
-      width: 45%; height: 12%;
-      background: radial-gradient(ellipse, #ff8fa3 0%, #c71585 100%);
-      border-radius: 50%; opacity: 0.6;
-      transition: all 1.5s;
-    }
-
-    body.night .rug { background: radial-gradient(ellipse, #4a1030 0%, #1a0a2e 100%); }
-
-    .cat-pet {
-      position: absolute; bottom: 18%; left: 50%;
-      transform: translateX(-50%);
-      font-size: 90px; cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 5; line-height: 1;
-      animation: catIdle 3s ease-in-out infinite;
-      filter: drop-shadow(0 6px 14px rgba(199, 21, 133, 0.3));
-    }
-
-    body.night .cat-pet { filter: drop-shadow(0 6px 20px rgba(255, 179, 193, 0.5)); }
-    .cat-pet:hover { transform: translateX(-50%) scale(1.08); }
-    .cat-pet.sleeping { animation: catSleep 3s ease-in-out infinite; font-size: 80px; }
-
-    @keyframes catIdle {
-      0%, 100% { transform: translateX(-50%) translateY(0) rotate(-2deg); }
-      50% { transform: translateX(-50%) translateY(-6px) rotate(2deg); }
-    }
-
-    @keyframes catSleep {
-      0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
-      50% { transform: translateX(-50%) translateY(-3px) scale(1.02); }
-    }
-
-    .zzz {
-      position: absolute; bottom: 65%; left: 55%;
-      font-size: 22px; color: #fff; opacity: 0;
-      pointer-events: none; font-weight: 800;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-    }
-
-    .zzz.active { animation: zzzFloat 2.5s ease-out infinite; }
-
-    @keyframes zzzFloat {
-      0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
-      20% { opacity: 1; }
-      100% { transform: translate(30px, -80px) scale(1.2); opacity: 0; }
-    }
-
-    .pet-bubble {
-      position: absolute; bottom: 62%; left: 50%;
-      transform: translateX(-50%) translateY(10px);
-      background: #fff; color: #c71585;
-      font-size: 13px; font-weight: 700;
-      padding: 10px 16px;
-      border-radius: 18px 18px 18px 4px;
-      box-shadow: 0 6px 20px rgba(255, 77, 109, 0.3);
-      border: 2px solid #ffc2d1;
-      opacity: 0;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none; max-width: 80%; z-index: 6;
-      white-space: normal; text-align: center; line-height: 1.3;
-    }
-
-    .pet-bubble.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    .stats-row { display: flex; gap: 8px; margin-bottom: 12px; }
-
-    .stat-card {
-      flex: 1; background: rgba(255, 255, 255, 0.92);
-      border: 2px solid #ffc2d1; border-radius: 16px;
-      padding: 10px 8px;
-      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.15);
-      transition: all 0.6s;
-    }
-
-    .stat-label {
-      font-size: 10px; font-weight: 800; color: #c71585;
-      text-transform: uppercase; letter-spacing: 0.5px;
-      margin-bottom: 5px; transition: all 0.6s;
-    }
-
-    .stat-emoji { font-size: 20px; margin-bottom: 4px; display: block; }
-
-    .stat-bar {
-      width: 100%; height: 6px; background: #ffe5ec;
-      border-radius: 4px; overflow: hidden; margin-top: 4px;
-      transition: background 0.6s;
-    }
-
-    .stat-fill { height: 100%; width: 50%; border-radius: 4px; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    .stat-fill.hunger { background: linear-gradient(90deg, #ff8fa3, #ff4d6d); }
-    .stat-fill.mood { background: linear-gradient(90deg, #ffd1dc, #ff8fa3); }
-    .stat-fill.affection { background: linear-gradient(90deg, #ffb3c1, #c71585); }
-
-    .stat-value { font-size: 11px; font-weight: 700; color: #ff4d6d; margin-top: 3px; transition: all 0.6s; }
-
-    .actions-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr);
-      gap: 6px; margin-bottom: 16px;
-    }
-
-    .action-btn {
-      background: rgba(255, 255, 255, 0.95);
-      border: 2px solid #ffc2d1; border-radius: 14px;
-      padding: 10px 3px 8px;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      font-family: inherit; color: #c71585;
-      display: flex; flex-direction: column; align-items: center; gap: 3px;
-      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.15);
-    }
-
-    .action-btn:hover { transform: translateY(-3px); border-color: #ff4d6d; }
-    .action-btn:active { transform: scale(0.95); }
-    .action-btn .icon { font-size: 22px; line-height: 1; }
-    .action-btn .label { font-size: 9px; font-weight: 800; text-transform: uppercase; }
-
-    .modal-overlay {
-      position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(43, 10, 31, 0.85);
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      z-index: 1000; display: none;
-      align-items: center; justify-content: center;
-      padding: 20px; box-sizing: border-box;
-    }
-
-    .modal-overlay.active { display: flex; }
-
-    .modal-inner {
-      background: #fff; border-radius: 24px;
-      padding: 24px 20px 20px;
-      max-width: 420px; width: 100%;
-      max-height: 85vh; overflow-y: auto;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-      border: 3px solid #ffc2d1;
-      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      text-align: center;
-      box-sizing: border-box;
-    }
-
-    body.night .modal-inner { background: #2b0a1f; border-color: #8b0f5c; }
-
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-inner h3 {
-      color: #ff4d6d; font-size: 18px; font-weight: 800;
-      margin: 0 0 16px;
-    }
-
-    body.night .modal-inner h3 { color: #ffb3c1; }
-
-    .shop-tabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 14px;
-      justify-content: center;
-    }
-
-    .shop-tab {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 50px;
-      border: 2px solid #ffc2d1;
-      background: #fff7f9;
-      color: #c71585;
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.25s;
-    }
-
-    .shop-tab.active {
-      background: linear-gradient(135deg, #ff4d6d, #c71585);
-      color: #fff;
-      border-color: #ff4d6d;
-      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.4);
-    }
-
-    body.night .shop-tab { background: #1a0a2e; color: #ffb3c1; border-color: #4a1030; }
-    body.night .shop-tab.active { background: linear-gradient(135deg, #ff4d6d, #c71585); color: #fff; }
-
-    .food-grid, .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-
-    .food-item, .shop-item {
-      background: #fff7f9; border: 2px solid #ffc2d1;
-      border-radius: 16px; padding: 12px 8px;
-      cursor: pointer; transition: all 0.3s;
-      font-family: inherit;
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      position: relative;
-    }
-
-    .food-item:hover, .shop-item:hover {
-      background: linear-gradient(135deg, #ffe5ec, #ffd1dc);
-      border-color: #ff4d6d; transform: translateY(-3px);
-    }
-
-    .shop-item.owned { background: linear-gradient(135deg, #d4f4d4, #a8e6a8); border-color: #4caf50; }
-    .shop-item.locked { opacity: 0.6; cursor: not-allowed; }
-    .shop-item.locked:hover { transform: none; background: #fff7f9; }
-
-    body.night .food-item, body.night .shop-item { background: #1a0a2e; border-color: #4a1030; }
-    body.night .food-item:hover, body.night .shop-item:hover { background: rgba(139, 15, 92, 0.4); }
-    body.night .shop-item.owned { background: rgba(76, 175, 80, 0.3); }
-
-    .food-emoji, .shop-emoji { font-size: 36px; }
-    .food-name, .shop-name { font-size: 11px; font-weight: 700; color: #c71585; }
-    body.night .food-name, body.night .shop-name { color: #ffb3c1; }
-    .food-bonus {
-      font-size: 10px; font-weight: 700; color: #ff4d6d;
-    }
-    body.night .food-bonus { color: #ff8fa3; }
-
-    .shop-price {
-      font-size: 11px; font-weight: 800; color: #ffa500;
-      background: rgba(255, 215, 0, 0.15);
-      padding: 3px 10px; border-radius: 20px;
-    }
-
-    .shop-count {
-      font-size: 11px; font-weight: 800; color: #4caf50;
-      background: rgba(76, 175, 80, 0.15);
-      padding: 3px 10px; border-radius: 20px;
-    }
-
-    .achievement-row {
-      display: flex; align-items: center; gap: 10px;
-      background: #fff7f9; border: 2px solid #ffc2d1;
-      border-radius: 14px; padding: 10px 14px;
-      margin-bottom: 8px; text-align: left;
-      transition: all 0.3s;
-    }
-
-    .achievement-row.unlocked { background: linear-gradient(135deg, #ffe5ec, #ffd1dc); border-color: #ff4d6d; }
-    body.night .achievement-row { background: #1a0a2e; border-color: #4a1030; }
-    body.night .achievement-row.unlocked { background: rgba(139, 15, 92, 0.4); border-color: #ff4d6d; }
-    .ach-icon { font-size: 28px; flex-shrink: 0; }
-    .ach-info { flex: 1; }
-    .ach-title { font-size: 13px; font-weight: 800; color: #c71585; margin-bottom: 2px; }
-    .ach-desc { font-size: 11px; font-weight: 600; color: #ff8fa3; }
-    body.night .ach-title { color: #ffb3c1; }
-    .ach-status { font-size: 18px; }
-    .achievement-row.unlocked .ach-status { animation: heartbeat 1.5s infinite; }
-
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      15% { transform: scale(1.2); }
-      30% { transform: scale(1); }
-    }
-
-    .bottom-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
-
-    .btn {
-      background: rgba(255, 255, 255, 0.95);
-      color: #c71585; border: 2px solid #ffc2d1;
-      font-size: 14px; padding: 12px 22px;
-      text-decoration: none; border-radius: 50px;
-      font-weight: 700;
-      box-shadow: 0 6px 18px rgba(255, 77, 109, 0.2);
-      transition: all 0.25s; cursor: pointer; font-family: inherit;
-      display: inline-flex; align-items: center; gap: 6px;
-    }
-
-    .btn:hover { background: #ff4d6d; color: white; border-color: #ff4d6d; transform: translateY(-2px); }
-    .btn.primary { background: linear-gradient(135deg, #ff4d6d, #c71585); color: white; border-color: #ff4d6d; }
-    .btn.doodle { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; border-color: #9b59b6; }
-    .btn.doodle:hover { background: linear-gradient(135deg, #a86cc4, #9b59b6); border-color: #a86cc4; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    .btn-buy {
-      margin-top: 4px;
-      padding: 6px 14px;
-      font-size: 11px;
-      border-radius: 50px;
-      background: linear-gradient(135deg, #ffd700, #ffa500);
-      color: white; border: none;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: inherit;
-      box-shadow: 0 3px 10px rgba(255, 165, 0, 0.4);
-      transition: all 0.2s;
-    }
-
-    .btn-buy:hover { transform: scale(1.05); }
-    .btn-buy:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    .btn-equip {
-      background: linear-gradient(135deg, #c71585, #ff4d6d) !important;
-    }
-
-    .btn-equipped {
-      background: #4caf50 !important;
-    }
-
-    .toast {
-      position: fixed; bottom: 30px; left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: linear-gradient(135deg, #ff4d6d, #c71585);
-      color: #fff; padding: 12px 22px;
-      border-radius: 50px; font-size: 14px; font-weight: 700;
-      box-shadow: 0 12px 32px rgba(199, 21, 133, 0.5);
-      z-index: 3000; opacity: 0;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none; max-width: 90vw; text-align: center;
-    }
-
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    .float-heart {
-      position: fixed; font-size: 20px;
-      pointer-events: none; z-index: 5000;
-      animation: floatUp 1.5s ease-out forwards;
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(0) scale(0.5); opacity: 1; }
-      100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
-    }
-
-    .admin-btn {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.7);
-      border: 2px solid rgba(255, 179, 193, 0.6);
-      color: #c71585;
-      font-size: 20px;
-      cursor: pointer;
-      z-index: 9999;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      opacity: 0.55;
-      box-shadow: 0 4px 12px rgba(199, 21, 133, 0.15);
-    }
-
-    .admin-btn:hover {
-      opacity: 1;
-      background: rgba(255, 77, 109, 0.2);
-      border-color: #ff4d6d;
-      color: #ff4d6d;
-      transform: rotate(90deg) scale(1.15);
-    }
-
-    .admin-btn.active {
-      opacity: 1;
-      background: linear-gradient(135deg, #ffd700, #ffa500);
-      color: #fff;
-      border-color: #fff;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-      transform: rotate(180deg);
-      animation: adminPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes adminPulse {
-      0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
-      50% { box-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 215, 0, 0.5); }
-    }
-
-    .admin-indicator {
-      position: fixed;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-100px);
-      background: linear-gradient(135deg, #ffd700, #ffa500);
-      color: #fff;
-      padding: 6px 18px;
-      border-radius: 50px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      box-shadow: 0 4px 20px rgba(255, 165, 0, 0.6);
-      z-index: 1000;
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none;
-      border: 2px solid #fff;
-    }
-
-    .admin-indicator.show { transform: translateX(-50%) translateY(0); }
-
-    body.admin-mode::after {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      pointer-events: none;
-      z-index: 998;
-      border: 6px solid #ffd700;
-      animation: adminBorderPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes adminBorderPulse {
-      0%, 100% {
-        border-color: #ffd700;
-        box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.4);
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Домик котика · Для Вероники</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ============================================================
+       TOKENS
+       ============================================================ */
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
+
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
+
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
+
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
+
+        --sand: #cfb8a3;
+        --sand-deep: #a8917a;
+        --wood: #b89968;
+        --wood-deep: #8a6f4d;
+
+        --gold: #b89968;
+
+        --night-bg: #2b2620;
+        --night-bg-2: #1a1613;
+        --night-ink: #e8d4d8;
+
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
       }
-      50% {
-        border-color: #ffa500;
-        box-shadow: inset 0 0 40px rgba(255, 215, 0, 0.7);
+
+      * {
+        box-sizing: border-box;
       }
-    }
 
-    body.admin-mode .coins-box {
-      background: linear-gradient(135deg, #ffd700, #ffa500, #ffd700);
-      background-size: 200% 200%;
-      animation: coinShine 3s ease infinite;
-      box-shadow: 0 6px 25px rgba(255, 215, 0, 0.8);
-    }
-
-    @keyframes coinShine {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-
-    .admin-confetti {
-      position: fixed;
-      font-size: 24px;
-      pointer-events: none;
-      z-index: 4000;
-      animation: adminConfettiFall linear forwards;
-    }
-
-    @keyframes adminConfettiFall {
-      0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-    }
-
-    @media (max-width: 480px) {
-      h1 { font-size: 18px; }
-      .cat-pet { font-size: 72px; }
-      .cat-pet.sleeping { font-size: 64px; }
-      .room { aspect-ratio: 1; }
-      .action-btn .icon { font-size: 18px; }
-      .action-btn .label { font-size: 8px; }
-      .btn { font-size: 13px; padding: 10px 16px; }
-    }
-  </style>
-</head>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then((reg) => console.log('✅ Service Worker зарегистрирован'))
-          .catch((err) => console.log('❌ Ошибка SW:', err));
-      });
-    }
-  </script>
-<body>
-
-  <div id="hearts-container"></div>
-
-  <div class="container">
-    <div class="top-panel">
-      <div class="coins-box">
-        🪙 <span id="coinsCount">0</span>
-      </div>
-      <button class="achievements-btn" onclick="openAchievements()">
-        🏆 Достижения
-      </button>
-    </div>
-
-    <h1 id="mainTitle">🏠 Домик котика</h1>
-    <p class="subtitle" id="mainSubtitle">Заботься о нём — и он будет счастлив 💕</p>
-
-    <div class="room">
-      <div class="wallpaper"></div>
-      <div class="window">
-        <div class="sun"></div>
-        <div class="window-stars" id="windowStars"></div>
-      </div>
-      <div class="picture">🐟</div>
-      <div class="rug"></div>
-
-      <div class="cat-pet" id="catPet">🐱</div>
-      <div class="zzz" id="zzz1">💤</div>
-      <div class="pet-bubble" id="petBubble">Мяу!</div>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-label">Сытость</div>
-        <span class="stat-emoji" id="hungerEmoji">😺</span>
-        <div class="stat-bar"><div class="stat-fill hunger" id="hungerFill"></div></div>
-        <div class="stat-value" id="hungerVal">50%</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Настроение</div>
-        <span class="stat-emoji" id="moodEmoji">😺</span>
-        <div class="stat-bar"><div class="stat-fill mood" id="moodFill"></div></div>
-        <div class="stat-value" id="moodVal">50%</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Ласка</div>
-        <span class="stat-emoji" id="affectionEmoji">💗</span>
-        <div class="stat-bar"><div class="stat-fill affection" id="affectionFill"></div></div>
-        <div class="stat-value" id="affectionVal">50%</div>
-      </div>
-    </div>
-
-    <div class="actions-grid">
-      <button class="action-btn" onclick="openFoodMenu()">
-        <span class="icon">🍖</span><span class="label">Корм</span>
-      </button>
-      <button class="action-btn" onclick="petCat()">
-        <span class="icon">💗</span><span class="label">Погладить</span>
-      </button>
-      <button class="action-btn" onclick="playWithCat()">
-        <span class="icon">🎾</span><span class="label">Играть</span>
-      </button>
-      <button class="action-btn" onclick="sleepCat()">
-        <span class="icon" id="sleepIcon">😴</span><span class="label" id="sleepLabel">Спать</span>
-      </button>
-      <button class="action-btn" onclick="openShop()">
-        <span class="icon">👗</span><span class="label">Магазин</span>
-      </button>
-    </div>
-
-    <div class="bottom-buttons">
-  <a href="index.html" class="btn">← На главную</a>
-  <a href="game-jump.html" class="btn primary">🎮 Котик-прыгун</a>
-  <a href="game-doodle.html" class="btn doodle">🎨 Doodle-кот</a>
-  <a href="game-lock.html" class="btn" style="background: linear-gradient(135deg, #ff4d6d, #c71585); color: #fff; border-color: #ff4d6d;">🔐 Взлом замка</a>
-  <a href="game-thorn.html" class="btn" style="background: linear-gradient(135deg, #8b0f5c, #4a1030); color: #ffb3c1; border-color: #8b0f5c;">🌹 Терновый Трон</a>
-</div>
-  </div>
-  <!-- ↑ здесь ОДИН </div> для .container, второго быть не должно -->
-
-  <!-- МЕНЮ ЕДЫ -->
-  <div class="modal-overlay" id="foodMenu">
-    <div class="modal-inner">
-      <h3>🍽️ Что будем кушать?</h3>
-      <div class="food-grid" id="foodGrid"></div>
-      <button class="btn" onclick="closeModal('foodMenu')">Отмена</button>
-    </div>
-  </div>
-
-  <!-- МАГАЗИН -->
-  <div class="modal-overlay" id="shopMenu">
-    <div class="modal-inner">
-      <h3>🛍️ Магазин котика</h3>
-      <p style="color: #c71585; font-size: 12px; margin: -8px 0 14px;">
-        У тебя: <b style="color: #ffa500;">🪙 <span id="shopCoins">0</span></b>
-      </p>
-
-      <div class="shop-tabs">
-        <button class="shop-tab active" id="tabHats" onclick="switchShopTab('hats')">🎩 Шапки</button>
-        <button class="shop-tab" id="tabFood" onclick="switchShopTab('food')">🍽️ Еда</button>
-      </div>
-
-      <div class="shop-grid" id="shopGrid"></div>
-      <button class="btn" onclick="closeModal('shopMenu')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- ДОСТИЖЕНИЯ -->
-  <div class="modal-overlay" id="achievementsMenu">
-    <div class="modal-inner">
-      <h3>🏆 Достижения</h3>
-      <div id="achievementsList"></div>
-      <button class="btn" onclick="closeModal('achievementsMenu')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- КНОПКА АДМИНА -->
-  <button class="admin-btn" id="adminBtn" onclick="toggleAdmin()" title="секрет">⚙️</button>
-
-  <!-- ИНДИКАТОР АДМИНА -->
-  <div class="admin-indicator" id="adminIndicator">
-    👑 АДМИН-РЕЖИМ АКТИВЕН
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-  <script>
-    // ═══════════════════════════════════════════
-    // ЗВУКИ
-    // ═══════════════════════════════════════════
-    let audioCtx = null;
-
-    function initAudio() {
-      if (!audioCtx) {
-        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
-    }
 
-    function playTone(frequency, duration, type = 'sine', volume = 0.15) {
-      if (!audioCtx) return;
-      try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = frequency;
-        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch {}
-    }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+        transition:
+          background 0.8s var(--ease),
+          color 0.8s var(--ease);
+      }
 
-    const Sound = {
-      jump: () => { playTone(440, 0.1, 'square', 0.1); setTimeout(() => playTone(660, 0.1, 'square', 0.08), 50); },
-      fish: () => { playTone(880, 0.12, 'sine', 0.15); setTimeout(() => playTone(1320, 0.15, 'sine', 0.12), 60); },
-      hurt: () => { playTone(220, 0.3, 'sawtooth', 0.15); setTimeout(() => playTone(140, 0.4, 'sawtooth', 0.12), 100); },
-      powerup: () => { playTone(660, 0.1, 'sine', 0.15); setTimeout(() => playTone(880, 0.1, 'sine', 0.15), 80); setTimeout(() => playTone(1320, 0.2, 'sine', 0.15), 160); },
-      coin: () => { playTone(1200, 0.08, 'sine', 0.12); setTimeout(() => playTone(1600, 0.12, 'sine', 0.1), 50); },
-      ach: () => { playTone(660, 0.15, 'sine', 0.15); setTimeout(() => playTone(880, 0.15, 'sine', 0.15), 100); setTimeout(() => playTone(1100, 0.25, 'sine', 0.15), 200); }
-    };
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+        transition: opacity 0.8s var(--ease);
+      }
 
-    // ═══════════════════════════════════════════
-    // СОСТОЯНИЕ
-    // ═══════════════════════════════════════════
-    const DEFAULT_STATE = {
-      hunger: 50, mood: 60, affection: 50,
-      sleeping: false,
-      coins: 0,
-      ownedHats: [],
-      ownedFood: {},
-      fishCollected: 0,
-      equippedHat: null,
-      achievements: [],
-      totalFishCollected: 0,
-      lastUpdate: Date.now()
-    };
+      /* Night mode background */
+      body.night {
+        background: var(--night-bg);
+        color: var(--night-ink);
+      }
 
-    let catState = loadState();
+      body.night::before {
+        opacity: 0;
+      }
 
-    function loadState() {
-      try {
-        const saved = localStorage.getItem('catState');
-        if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
-        const raw = JSON.parse(saved);
-        const state = { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), ...raw };
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
 
-        if (raw.ownedItems && !raw.ownedHats) {
-          state.ownedHats = raw.ownedItems.filter(id => typeof id === 'string' && id.startsWith('hat_'));
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
+
+      /* ============================================================
+       TOPBAR
+       ============================================================ */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.78);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+        transition:
+          background 0.8s var(--ease),
+          border-color 0.8s var(--ease);
+      }
+
+      body.night .topbar {
+        background: rgba(43, 38, 32, 0.78);
+        border-bottom-color: rgba(232, 212, 216, 0.12);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition:
+          transform 0.4s var(--ease-spring),
+          border-color 0.8s,
+          color 0.8s;
+      }
+
+      body.night .brand-mark {
+        border-color: var(--night-ink);
+        color: var(--night-ink);
+      }
+
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+        transition: color 0.8s;
+      }
+
+      body.night .brand-label {
+        color: rgba(232, 212, 216, 0.7);
+      }
+
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .topbar-meta:hover {
+        color: var(--ink);
+      }
+      body.night .topbar-meta {
+        color: rgba(232, 212, 216, 0.85);
+      }
+
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      /* ============================================================
+       LAYOUT
+       ============================================================ */
+      main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
+
+      /* ============================================================
+       HERO
+       ============================================================ */
+      .hero {
+        padding: 20px 0 40px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+        transition: color 0.8s;
+      }
+
+      body.night .eyebrow {
+        color: var(--rose);
+      }
+
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: currentColor;
+      }
+
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 68px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+        transition: color 0.8s;
+      }
+
+      body.night h1 {
+        color: var(--night-ink);
+      }
+
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+        transition: color 0.8s;
+      }
+      body.night h1 em {
+        color: var(--rose);
+      }
+
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 44ch;
+        font-weight: 400;
+        transition: color 0.8s;
+      }
+
+      body.night .hero-sub {
+        color: rgba(232, 212, 216, 0.7);
+      }
+
+      /* ============================================================
+       TOP PANEL (coins + achievements)
+       ============================================================ */
+      .top-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 48px 0 20px;
+        padding: 16px 22px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 8px 20px rgba(30, 26, 22, 0.05);
+        transition:
+          background 0.8s,
+          border-color 0.8s;
+      }
+
+      body.night .top-panel {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.14);
+      }
+
+      .coins-box {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        transition: color 0.8s;
+      }
+
+      body.night .coins-box {
+        color: rgba(232, 212, 216, 0.6);
+      }
+
+      .coins-box .coins-icon {
+        font-size: 16px;
+        filter: saturate(0.75);
+      }
+
+      .coins-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 30px;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+        text-transform: none;
+        transition: color 0.4s;
+      }
+
+      body.night .coins-value {
+        color: var(--gold);
+      }
+
+      .top-panel-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 22px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+
+      .top-panel-btn:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+
+      body.night .top-panel-btn {
+        color: rgba(232, 212, 216, 0.85);
+        border-color: rgba(232, 212, 216, 0.2);
+      }
+      body.night .top-panel-btn:hover {
+        background: rgba(232, 212, 216, 0.08);
+        color: var(--night-ink);
+      }
+
+      .top-panel-btn .icon {
+        font-size: 14px;
+        filter: saturate(0.75);
+      }
+
+      /* ============================================================
+       ROOM
+       ============================================================ */
+      .room-frame {
+        position: relative;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 8px 20px rgba(30, 26, 22, 0.05);
+        transition:
+          background 0.8s,
+          border-color 0.8s,
+          box-shadow 0.8s;
+      }
+
+      body.night .room-frame {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.14);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.04) inset,
+          0 30px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Corner ticks */
+      .room-frame::before,
+      .room-frame::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--ink-3);
+        opacity: 0.5;
+        pointer-events: none;
+        z-index: 5;
+      }
+      .room-frame::before {
+        top: 6px;
+        left: 6px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .room-frame::after {
+        bottom: 6px;
+        right: 6px;
+        border-left: none;
+        border-top: none;
+      }
+
+      .room {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 5 / 4;
+        overflow: hidden;
+        border-radius: 2px;
+        background: #f7f0e6;
+        transition: background 0.8s;
+      }
+
+      body.night .room {
+        background: #1a1613;
+      }
+
+      /* Wall */
+      .wall {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 65%;
+        background: linear-gradient(180deg, #f7f0e6 0%, #ece2d3 100%);
+        transition: background 0.8s;
+      }
+
+      body.night .wall {
+        background: linear-gradient(180deg, #241f1b 0%, #16130f 100%);
+      }
+
+      /* Wall subtle texture */
+      .wall::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          radial-gradient(
+            circle,
+            rgba(143, 100, 114, 0.06) 1px,
+            transparent 1px
+          ),
+          radial-gradient(
+            circle,
+            rgba(143, 100, 114, 0.04) 1px,
+            transparent 1px
+          );
+        background-size:
+          34px 34px,
+          52px 52px;
+        background-position:
+          0 0,
+          17px 17px;
+        opacity: 0.6;
+        transition: opacity 0.8s;
+      }
+
+      body.night .wall::before {
+        opacity: 0.15;
+      }
+
+      /* Floor */
+      .floor {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 35%;
+        background: linear-gradient(180deg, #d4b894 0%, #b0916a 100%);
+        transition: background 0.8s;
+      }
+
+      body.night .floor {
+        background: linear-gradient(180deg, #3a2a1e 0%, #1c1209 100%);
+      }
+
+      /* Floor board line */
+      .floor::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: #8a6f4d;
+        transition: background 0.8s;
+      }
+
+      body.night .floor::before {
+        background: #4a3624;
+      }
+
+      /* Floor vertical lines */
+      .floor::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(
+          90deg,
+          transparent 0,
+          transparent 18%,
+          rgba(90, 70, 45, 0.18) 18%,
+          rgba(90, 70, 45, 0.18) 18.3%,
+          transparent 18.3%,
+          transparent 38%,
+          rgba(90, 70, 45, 0.18) 38%,
+          rgba(90, 70, 45, 0.18) 38.3%,
+          transparent 38.3%,
+          transparent 60%,
+          rgba(90, 70, 45, 0.18) 60%,
+          rgba(90, 70, 45, 0.18) 60.3%,
+          transparent 60.3%,
+          transparent 82%,
+          rgba(90, 70, 45, 0.18) 82%,
+          rgba(90, 70, 45, 0.18) 82.3%,
+          transparent 82.3%
+        );
+        opacity: 0.6;
+      }
+
+      body.night .floor::after {
+        opacity: 0.4;
+      }
+
+      /* Window */
+      .window {
+        position: absolute;
+        top: 12%;
+        left: 8%;
+        width: 26%;
+        aspect-ratio: 3 / 4;
+        background: linear-gradient(180deg, #dbeaf0 0%, #eaf3f6 100%);
+        border: 5px solid #fdfaf6;
+        border-radius: 3px;
+        box-shadow:
+          0 1px 0 rgba(0, 0, 0, 0.05) inset,
+          0 8px 20px rgba(30, 26, 22, 0.08);
+        overflow: hidden;
+        transition:
+          background 0.8s,
+          border-color 0.8s;
+      }
+
+      body.night .window {
+        background: linear-gradient(180deg, #1a1613 0%, #0d0b09 100%);
+        border-color: #2b2620;
+      }
+
+      /* Window cross mullion */
+      .window::before,
+      .window::after {
+        content: "";
+        position: absolute;
+        background: #fdfaf6;
+        z-index: 3;
+        transition: background 0.8s;
+      }
+      body.night .window::before,
+      body.night .window::after {
+        background: #2b2620;
+      }
+
+      .window::before {
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        transform: translateY(-50%);
+      }
+
+      .window::after {
+        top: 0;
+        left: 50%;
+        width: 3px;
+        height: 100%;
+        transform: translateX(-50%);
+      }
+
+      /* Sun / Moon */
+      .sun {
+        position: absolute;
+        top: 18%;
+        right: 14%;
+        width: 34%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #fbe8c9 0%, #e8c893 70%);
+        box-shadow: 0 0 20px rgba(232, 200, 147, 0.5);
+        transition:
+          background 0.8s,
+          box-shadow 0.8s;
+        z-index: 2;
+      }
+
+      body.night .sun {
+        background: radial-gradient(circle at 35% 35%, #fdfaf6 0%, #d5cbbd 70%);
+        box-shadow: 0 0 24px rgba(232, 212, 216, 0.6);
+      }
+
+      /* Night stars in window */
+      .window-stars {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.8s;
+        pointer-events: none;
+        z-index: 1;
+      }
+      body.night .window-stars {
+        opacity: 1;
+      }
+
+      .window-star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: #fdfaf6;
+        border-radius: 50%;
+        animation: twinkle 2.4s ease-in-out infinite;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.3;
         }
-        if (raw.equipped && raw.equipped.hat && !raw.equippedHat) {
-          state.equippedHat = raw.equipped.hat;
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Picture frame */
+      .picture {
+        position: absolute;
+        top: 14%;
+        right: 12%;
+        width: 20%;
+        aspect-ratio: 4 / 5;
+        background: linear-gradient(135deg, #e8d4d8, #d5b8be);
+        border: 3px solid #8a6f4d;
+        border-radius: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: rgba(30, 26, 22, 0.35);
+        box-shadow: 0 4px 12px rgba(30, 26, 22, 0.1);
+        filter: saturate(0.7);
+        transition: all 0.8s;
+        transform: rotate(-1.5deg);
+      }
+
+      body.night .picture {
+        background: linear-gradient(135deg, #3a2a1e, #241f1b);
+        border-color: #4a3624;
+        color: rgba(232, 212, 216, 0.3);
+      }
+
+      /* Rug */
+      .rug {
+        position: absolute;
+        bottom: 8%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50%;
+        height: 14%;
+        background: radial-gradient(ellipse, #d5b8be 0%, #b58794 100%);
+        border-radius: 50%;
+        opacity: 0.55;
+        filter: saturate(0.8);
+        transition: all 0.8s;
+      }
+
+      body.night .rug {
+        background: radial-gradient(ellipse, #4a3624 0%, #2b2620 100%);
+        opacity: 0.7;
+      }
+
+      /* Cat */
+      .cat-pet {
+        position: absolute;
+        bottom: 16%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 90px;
+        cursor: pointer;
+        transition: transform 0.5s var(--ease-spring);
+        z-index: 5;
+        line-height: 1;
+        animation: catIdle 3.5s ease-in-out infinite;
+        filter: drop-shadow(0 6px 14px rgba(30, 26, 22, 0.25)) saturate(0.9);
+      }
+
+      .cat-pet:hover {
+        transform: translateX(-50%) scale(1.08);
+      }
+      .cat-pet.sleeping {
+        animation: catSleep 3.5s ease-in-out infinite;
+        font-size: 80px;
+      }
+
+      @keyframes catIdle {
+        0%,
+        100% {
+          transform: translateX(-50%) translateY(0) rotate(-2deg);
+        }
+        50% {
+          transform: translateX(-50%) translateY(-6px) rotate(2deg);
+        }
+      }
+
+      @keyframes catSleep {
+        0%,
+        100% {
+          transform: translateX(-50%) translateY(0) scale(1);
+        }
+        50% {
+          transform: translateX(-50%) translateY(-3px) scale(1.02);
+        }
+      }
+
+      /* Hat on cat */
+      .cat-hat {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 32px;
+        line-height: 1;
+        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+      }
+
+      /* ZZZ */
+      .zzz {
+        position: absolute;
+        bottom: 62%;
+        left: 55%;
+        font-size: 20px;
+        color: var(--ink-3);
+        opacity: 0;
+        pointer-events: none;
+        font-weight: 700;
+      }
+
+      body.night .zzz {
+        color: rgba(232, 212, 216, 0.7);
+      }
+
+      .zzz.active {
+        animation: zzzFloat 2.8s ease-out infinite;
+      }
+
+      @keyframes zzzFloat {
+        0% {
+          transform: translate(0, 0) scale(0.6);
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        100% {
+          transform: translate(30px, -80px) scale(1.2);
+          opacity: 0;
+        }
+      }
+
+      /* Pet bubble */
+      .pet-bubble {
+        position: absolute;
+        bottom: 62%;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        background: var(--surface);
+        color: var(--ink);
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        padding: 10px 16px;
+        border-radius: 14px 14px 14px 3px;
+        box-shadow: 0 8px 20px rgba(30, 26, 22, 0.15);
+        border: 1px solid var(--line);
+        opacity: 0;
+        transition: all 0.4s var(--ease-spring);
+        pointer-events: none;
+        max-width: 82%;
+        z-index: 6;
+        line-height: 1.35;
+        text-align: center;
+        transition-property: opacity, transform, background, color;
+      }
+
+      .pet-bubble.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      body.night .pet-bubble {
+        background: var(--night-bg-2);
+        color: var(--night-ink);
+        border-color: rgba(232, 212, 216, 0.14);
+      }
+
+      /* ============================================================
+       STATS ROW
+       ============================================================ */
+      .stats-row {
+        margin: 24px 0 20px;
+        padding: 24px 8px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 8px 20px rgba(30, 26, 22, 0.05);
+        transition:
+          background 0.8s,
+          border-color 0.8s;
+      }
+
+      body.night .stats-row {
+        background: var(--night-bg-2);
+        border-color: rgba(232, 212, 216, 0.14);
+      }
+
+      .stat-card {
+        text-align: center;
+        padding: 0 12px;
+        position: relative;
+      }
+
+      .stat-card + .stat-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 18%;
+        bottom: 18%;
+        width: 1px;
+        background: var(--line);
+        transition: background 0.8s;
+      }
+
+      body.night .stat-card + .stat-card::before {
+        background: rgba(232, 212, 216, 0.1);
+      }
+
+      .stat-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 10px;
+        transition: color 0.8s;
+      }
+
+      body.night .stat-label {
+        color: rgba(232, 212, 216, 0.55);
+      }
+
+      .stat-emoji {
+        display: block;
+        font-size: 22px;
+        margin-bottom: 8px;
+        filter: saturate(0.75);
+        transition: transform 0.3s var(--ease-spring);
+      }
+
+      .stat-bar {
+        height: 1px;
+        background: var(--line-2);
+        border-radius: 1px;
+        overflow: hidden;
+        margin: 8px auto 10px;
+        max-width: 120px;
+        transition: background 0.8s;
+      }
+
+      body.night .stat-bar {
+        background: rgba(232, 212, 216, 0.15);
+      }
+
+      .stat-fill {
+        height: 100%;
+        width: 50%;
+        border-radius: 1px;
+        background: var(--rose-deep);
+        transition: width 0.6s var(--ease);
+      }
+
+      body.night .stat-fill {
+        background: var(--rose);
+      }
+
+      .stat-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 20px;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+        transition: color 0.8s;
+      }
+
+      body.night .stat-value {
+        color: var(--night-ink);
+      }
+
+      /* ============================================================
+       ACTIONS
+       ============================================================ */
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 24px;
+      }
+
+      .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        border-radius: 999px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        color: var(--ink-2);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 4px 10px rgba(30, 26, 22, 0.04);
+      }
+
+      .action-btn:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+
+      .action-btn:active {
+        transform: translateY(0) scale(0.97);
+      }
+
+      body.night .action-btn {
+        background: var(--night-bg-2);
+        color: rgba(232, 212, 216, 0.85);
+        border-color: rgba(232, 212, 216, 0.15);
+      }
+      body.night .action-btn:hover {
+        background: rgba(232, 212, 216, 0.08);
+        color: var(--night-ink);
+        border-color: rgba(232, 212, 216, 0.3);
+      }
+
+      .action-btn .icon {
+        font-size: 16px;
+        filter: saturate(0.75);
+        transition: transform 0.3s var(--ease-spring);
+      }
+
+      .action-btn:hover .icon {
+        transform: scale(1.15);
+      }
+
+      /* ============================================================
+       BOTTOM LINKS
+       ============================================================ */
+      .bottom-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 12px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 26px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: all 0.35s var(--ease);
+        text-decoration: none;
+      }
+
+      .btn:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+
+      .btn.primary {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 8px 20px rgba(30, 26, 22, 0.2);
+      }
+
+      .btn.primary:hover {
+        background: #000;
+        color: var(--paper);
+        border-color: #000;
+      }
+
+      body.night .btn {
+        color: rgba(232, 212, 216, 0.85);
+        border-color: rgba(232, 212, 216, 0.15);
+      }
+      body.night .btn:hover {
+        background: rgba(232, 212, 216, 0.08);
+        color: var(--night-ink);
+        border-color: rgba(232, 212, 216, 0.3);
+      }
+      body.night .btn.primary {
+        background: var(--night-ink);
+        color: var(--night-bg-2);
+        border-color: var(--night-ink);
+      }
+      body.night .btn.primary:hover {
+        background: #fff;
+        border-color: #fff;
+      }
+
+      .btn .btn-arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 14px;
+      }
+      .btn:hover .btn-arrow {
+        transform: translateX(-4px);
+      }
+
+      /* ============================================================
+       MODAL — letter style
+       ============================================================ */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        padding: 24px;
+        background: rgba(30, 26, 22, 0.42);
+        backdrop-filter: blur(20px) saturate(140%);
+        -webkit-backdrop-filter: blur(20px) saturate(140%);
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s var(--ease);
+        overflow-y: auto;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal-inner {
+        position: relative;
+        width: 100%;
+        max-width: 480px;
+        margin: auto;
+        padding: 48px 40px 36px;
+        background: var(--letter, #faf6ee);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 50px 100px rgba(30, 26, 22, 0.28),
+          0 12px 30px rgba(30, 26, 22, 0.14);
+        transform: translateY(30px) scale(0.95) rotate(-0.8deg);
+        transition: transform 0.8s var(--ease-spring);
+        max-height: calc(100vh - 48px);
+        overflow-y: auto;
+        text-align: left;
+      }
+
+      .modal-overlay.active .modal-inner {
+        transform: translateY(0) scale(1) rotate(0deg);
+      }
+
+      .modal-inner::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border: 1px solid rgba(30, 26, 22, 0.06);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      .modal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 18px;
+        margin-bottom: 28px;
+        border-bottom: 1px solid var(--line);
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        position: relative;
+        z-index: 1;
+      }
+
+      .modal-head .latin {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--rose-deep);
+      }
+
+      .modal-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(24px, 3vw, 30px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 24px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .modal-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 24px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .modal-actions .btn {
+        padding: 14px 22px;
+        font-size: 13.5px;
+      }
+
+      /* ============================================================
+       SHOP / FOOD GRIDS
+       ============================================================ */
+      .shop-tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .shop-tab {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line-2);
+        background: transparent;
+        color: var(--ink-3);
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+      }
+
+      .shop-tab.active {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        box-shadow: 0 4px 12px rgba(30, 26, 22, 0.2);
+      }
+
+      .shop-grid,
+      .food-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .shop-item,
+      .food-item {
+        padding: 18px 12px 14px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        font-family: inherit;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+        text-align: center;
+      }
+
+      .shop-item:hover,
+      .food-item:hover {
+        border-color: var(--rose-deep);
+        background: var(--surface-2);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(30, 26, 22, 0.08);
+      }
+
+      .shop-item.owned {
+        background: rgba(181, 135, 148, 0.1);
+        border-color: var(--rose);
+      }
+
+      .shop-item.locked {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .shop-item.locked:hover {
+        transform: none;
+        background: var(--surface);
+        border-color: var(--line);
+        box-shadow: none;
+      }
+
+      .shop-emoji,
+      .food-emoji {
+        font-size: 32px;
+        line-height: 1;
+        filter: saturate(0.8);
+      }
+
+      .shop-name,
+      .food-name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 15px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+      }
+
+      .food-bonus {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        color: var(--rose-deep);
+        text-transform: uppercase;
+      }
+
+      .shop-price {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: var(--gold);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .shop-count {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: var(--rose-deep);
+      }
+
+      .btn-buy {
+        margin-top: 4px;
+        padding: 8px 16px;
+        font-family: "Inter", sans-serif;
+        font-size: 11.5px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+      }
+
+      .btn-buy:hover {
+        background: #000;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(30, 26, 22, 0.2);
+      }
+
+      .btn-buy:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .btn-equipped {
+        background: var(--rose-deep);
+      }
+
+      /* ============================================================
+       ACHIEVEMENTS
+       ============================================================ */
+      .achievement-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        margin-bottom: 8px;
+        text-align: left;
+        transition: all 0.3s var(--ease);
+        position: relative;
+        z-index: 1;
+      }
+
+      .achievement-row.unlocked {
+        background: linear-gradient(135deg, var(--rose-tint), var(--surface));
+        border-color: var(--rose);
+      }
+
+      .ach-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+        filter: saturate(0.8);
+        line-height: 1;
+      }
+
+      .ach-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .ach-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 16px;
+        line-height: 1.2;
+        color: var(--ink);
+        margin-bottom: 2px;
+      }
+
+      .ach-desc {
+        font-size: 12px;
+        color: var(--ink-3);
+        line-height: 1.35;
+      }
+
+      .ach-status {
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+
+      .achievement-row.unlocked .ach-status {
+        animation: heartbeat 2s infinite;
+      }
+
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        15% {
+          transform: scale(1.15);
+        }
+        30% {
+          transform: scale(1);
+        }
+      }
+
+      /* ============================================================
+       FLOATING HEARTS
+       ============================================================ */
+      .float-heart {
+        position: fixed;
+        pointer-events: none;
+        z-index: 5000;
+        filter: saturate(0.7);
+        animation: floatUp 1.6s var(--ease) forwards;
+      }
+
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) scale(0.5);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100px) scale(1.1);
+          opacity: 0;
+        }
+      }
+
+      /* ============================================================
+       TOAST
+       ============================================================ */
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 32px;
+        transform: translateX(-50%) translateY(20px);
+        padding: 14px 22px;
+        background: var(--ink);
+        color: var(--paper);
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        box-shadow: 0 20px 40px rgba(30, 26, 22, 0.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.5s var(--ease);
+        z-index: 6000;
+        max-width: calc(100vw - 40px);
+        text-align: center;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* ============================================================
+       ADMIN BUTTON
+       ============================================================ */
+      .admin-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(253, 250, 246, 0.75);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border: 1px solid var(--line-2);
+        color: var(--ink-3);
+        font-size: 16px;
+        cursor: pointer;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        opacity: 0.5;
+        transition: all 0.4s var(--ease);
+        box-shadow: 0 6px 16px rgba(30, 26, 22, 0.1);
+      }
+
+      .admin-btn:hover {
+        opacity: 1;
+        background: var(--surface);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: rotate(90deg) scale(1.08);
+      }
+
+      .admin-btn.active {
+        opacity: 1;
+        background: var(--ink);
+        color: var(--gold);
+        border-color: var(--ink);
+        transform: rotate(180deg);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 8px 24px rgba(30, 26, 22, 0.28),
+          0 0 0 3px rgba(184, 153, 104, 0.3);
+      }
+
+      body.night .admin-btn {
+        background: rgba(43, 38, 32, 0.75);
+        color: rgba(232, 212, 216, 0.7);
+        border-color: rgba(232, 212, 216, 0.15);
+      }
+
+      /* ============================================================
+       ADMIN INDICATOR
+       ============================================================ */
+      .admin-indicator {
+        position: fixed;
+        top: 92px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-30px);
+        padding: 10px 22px;
+        background: var(--ink);
+        color: var(--gold);
+        border-radius: 999px;
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        box-shadow: 0 12px 30px rgba(30, 26, 22, 0.28);
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.5s var(--ease-spring);
+      }
+
+      .admin-indicator.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* Admin confetti */
+      .admin-confetti {
+        position: fixed;
+        pointer-events: none;
+        z-index: 4000;
+        filter: saturate(0.85);
+        animation: adminConfettiFall linear forwards;
+      }
+
+      @keyframes adminConfettiFall {
+        0% {
+          transform: translateY(-20vh) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(110vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* Admin mode body glow */
+      body.admin-mode .room-frame {
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 0 0 1px rgba(184, 153, 104, 0.35);
+      }
+
+      /* ============================================================
+       FOOTER
+       ============================================================ */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+        transition:
+          color 0.8s,
+          border-color 0.8s;
+      }
+
+      body.night .footer {
+        color: rgba(232, 212, 216, 0.45);
+        border-top-color: rgba(232, 212, 216, 0.1);
+      }
+
+      /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(30px, 8vw, 44px);
         }
 
-        state.ownedHats = Array.isArray(state.ownedHats) ? state.ownedHats : [];
-        state.ownedFood = (typeof state.ownedFood === 'object' && state.ownedFood) ? state.ownedFood : {};
-        state.achievements = Array.isArray(state.achievements) ? state.achievements : [];
-
-        if (state.equippedHat && !state.ownedHats.includes(state.equippedHat)) {
-          state.equippedHat = null;
+        .top-panel {
+          margin: 40px 0 16px;
+          padding: 14px 18px;
+        }
+        .coins-value {
+          font-size: 24px;
+        }
+        .top-panel-btn {
+          padding: 10px 16px;
+          font-size: 12px;
         }
 
-        const now = Date.now();
-        const elapsed = Math.floor((now - (state.lastUpdate || now)) / 1000 / 30);
-        state.hunger = Math.max(0, state.hunger - elapsed * 2);
-        state.mood = Math.max(0, state.mood - elapsed * 1);
-        state.lastUpdate = now;
-        return state;
-      } catch (e) {
-        console.error('loadState error:', e);
-        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        .room-frame {
+          padding: 12px;
+        }
+        .room {
+          aspect-ratio: 1 / 1;
+        }
+        .cat-pet {
+          font-size: 76px;
+        }
+        .cat-pet.sleeping {
+          font-size: 68px;
+        }
+        .cat-hat {
+          font-size: 26px;
+          top: -12px;
+        }
+
+        .stats-row {
+          margin: 18px 0 16px;
+          padding: 20px 4px;
+        }
+        .stat-card {
+          padding: 0 6px;
+        }
+        .stat-label {
+          font-size: 9px;
+          letter-spacing: 0.16em;
+        }
+        .stat-emoji {
+          font-size: 18px;
+          margin-bottom: 6px;
+        }
+        .stat-value {
+          font-size: 17px;
+        }
+
+        .action-btn {
+          padding: 11px 15px;
+          font-size: 12px;
+          gap: 8px;
+        }
+        .action-btn .icon {
+          font-size: 15px;
+        }
+
+        .btn {
+          padding: 13px 20px;
+          font-size: 13px;
+        }
+
+        .modal-inner {
+          padding: 36px 22px 28px;
+          border-radius: 3px;
+        }
+        .modal-title {
+          font-size: 22px;
+        }
+        .shop-grid,
+        .food-grid {
+          gap: 8px;
+        }
+        .shop-item,
+        .food-item {
+          padding: 14px 10px 12px;
+        }
+        .shop-emoji,
+        .food-emoji {
+          font-size: 26px;
+        }
+        .shop-name,
+        .food-name {
+          font-size: 13px;
+        }
+
+        .admin-btn {
+          bottom: 16px;
+          right: 16px;
+          width: 40px;
+          height: 40px;
+          font-size: 14px;
+        }
+        .admin-indicator {
+          top: 80px;
+          font-size: 10px;
+          padding: 8px 18px;
+          letter-spacing: 0.14em;
+        }
+
+        .toast {
+          bottom: 20px;
+          font-size: 12px;
+          padding: 12px 18px;
+        }
+
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
       }
-    }
 
-    function saveState() {
-      catState.lastUpdate = Date.now();
-      try { localStorage.setItem('catState', JSON.stringify(catState)); } catch {}
-    }
-
-    // ═══════════════════════════════════════════
-    // ДОСТИЖЕНИЯ
-    // ═══════════════════════════════════════════
-    const ACHIEVEMENTS = [
-      { id: 'first_record', icon: '🥇', title: 'Первый рекорд', desc: 'Поставь свой первый рекорд в игре' },
-      { id: 'hundred', icon: '💯', title: '100 очков', desc: 'Набери 100 очков в мини-игре' },
-      { id: 'ten_fish', icon: '🐟', title: 'Собрал 10 рыбок', desc: 'Поймай 10 рыбок за всё время' },
-      { id: 'first_buy', icon: '🛍️', title: 'Первая покупка', desc: 'Купи что-нибудь в магазине' },
-      { id: 'max_hunger', icon: '🍖', title: 'Сыт по горло', desc: 'Покорми котика до 100% сытости' },
-      { id: 'level_master', icon: '🌈', title: 'Путешественник', desc: 'Пройди через 3 разных уровня' },
-      { id: 'sky_high', icon: '☁️', title: 'Небесный кот', desc: 'Набери 500 высоты в Doodle' },
-      { id: 'hacker_cat', icon: '🔐', title: 'Кот-взломщик', desc: 'Взломай 10 замков за раз' },
-      { id: 'thorn_king', icon: '🌹', title: 'Король шипов', desc: 'Пройди 5 волн в Терновом Троне' },
-      { id: 'thorn_legend', icon: '👑', title: 'Легенда трона', desc: 'Набери 50 000 очков в Терновом Троне' }
-    ];
-
-    function unlockAchievement(id) {
-      if (catState.achievements.includes(id)) return;
-      catState.achievements.push(id);
-      saveState();
-      const ach = ACHIEVEMENTS.find(a => a.id === id);
-      if (ach) {
-        showToast(`🏆 Достижение: ${ach.title}!`);
-        Sound.ach();
-        spawnHearts(10);
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
       }
-    }
+    </style>
+  </head>
 
-    function openAchievements() {
-      const list = document.getElementById('achievementsList');
-      list.innerHTML = '';
-      ACHIEVEMENTS.forEach(ach => {
-        const unlocked = catState.achievements.includes(ach.id);
-        const row = document.createElement('div');
-        row.className = 'achievement-row' + (unlocked ? ' unlocked' : '');
-        row.innerHTML = `
-          <div class="ach-icon">${unlocked ? ach.icon : '🔒'}</div>
+  <body>
+    <div class="grain"></div>
+
+    <!-- ============================================================
+       TOPBAR
+       ============================================================ -->
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
+      </div>
+    </header>
+
+    <main>
+      <!-- ============================================================
+         HERO
+         ============================================================ -->
+      <section class="hero">
+        <span class="eyebrow">11 · Котик</span>
+        <h1 id="mainTitle">Домик <em>котика</em></h1>
+        <p class="hero-sub" id="mainSubtitle">
+          Заботься о нём — и он будет счастлив.
+        </p>
+      </section>
+
+      <!-- ============================================================
+         TOP PANEL
+         ============================================================ -->
+      <div class="top-panel">
+        <div class="coins-box">
+          <span class="coins-icon">🪙</span>
+          <span>Монеты</span>
+          <span class="coins-value" id="coinsCount">0</span>
+        </div>
+        <button class="top-panel-btn" onclick="openAchievements()">
+          <span class="icon">🏆</span>
+          <span>Достижения</span>
+        </button>
+      </div>
+
+      <!-- ============================================================
+         ROOM
+         ============================================================ -->
+      <div class="room-frame">
+        <div class="room">
+          <div class="wall"></div>
+          <div class="floor"></div>
+
+          <div class="window">
+            <div class="sun"></div>
+            <div class="window-stars" id="windowStars"></div>
+          </div>
+
+          <div class="picture">🐟</div>
+          <div class="rug"></div>
+
+          <div class="cat-pet" id="catPet">🐱</div>
+          <div class="zzz" id="zzz1">💤</div>
+          <div class="pet-bubble" id="petBubble">Мяу!</div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+         STATS
+         ============================================================ -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Сытость</div>
+          <span class="stat-emoji" id="hungerEmoji">😺</span>
+          <div class="stat-bar">
+            <div class="stat-fill" id="hungerFill" style="width: 50%"></div>
+          </div>
+          <div class="stat-value" id="hungerVal">50%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Настроение</div>
+          <span class="stat-emoji" id="moodEmoji">😺</span>
+          <div class="stat-bar">
+            <div class="stat-fill" id="moodFill" style="width: 50%"></div>
+          </div>
+          <div class="stat-value" id="moodVal">50%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ласка</div>
+          <span class="stat-emoji" id="affectionEmoji">💗</span>
+          <div class="stat-bar">
+            <div class="stat-fill" id="affectionFill" style="width: 50%"></div>
+          </div>
+          <div class="stat-value" id="affectionVal">50%</div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+         ACTIONS
+         ============================================================ -->
+      <div class="actions">
+        <button class="action-btn" onclick="openFoodMenu()">
+          <span class="icon">🍖</span>
+          <span>Корм</span>
+        </button>
+        <button class="action-btn" onclick="petCat()">
+          <span class="icon">💗</span>
+          <span>Погладить</span>
+        </button>
+        <button class="action-btn" onclick="playWithCat()">
+          <span class="icon">🎾</span>
+          <span>Играть</span>
+        </button>
+        <button class="action-btn" onclick="sleepCat()">
+          <span class="icon" id="sleepIcon">😴</span>
+          <span id="sleepLabel">Спать</span>
+        </button>
+        <button class="action-btn" onclick="openShop()">
+          <span class="icon">👗</span>
+          <span>Магазин</span>
+        </button>
+      </div>
+
+      <!-- ============================================================
+         BOTTOM LINKS
+         ============================================================ -->
+      <div class="bottom-buttons">
+        <a href="index.html" class="btn">
+          <span class="btn-arrow">←</span>
+          <span>На главную</span>
+        </a>
+        <a href="game-jump.html" class="btn primary">🎮 Котик-прыгун</a>
+        <a href="game-doodle.html" class="btn">🎨 Doodle-кот</a>
+        <a href="game-lock.html" class="btn">🔐 Взлом замка</a>
+        <a href="game-thorn.html" class="btn">🌹 Терновый Трон</a>
+        <a href="movie.html" class="btn">🎬 Наш фильм</a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <!-- ============================================================
+       FOOD MODAL
+       ============================================================ -->
+    <div class="modal-overlay" id="foodMenu">
+      <div class="modal-inner">
+        <div class="modal-head">
+          <span>Покормить</span>
+          <span class="latin">Cibus · feles</span>
+        </div>
+        <h3 class="modal-title">Что будем <em>кушать</em>?</h3>
+        <div class="food-grid" id="foodGrid"></div>
+        <div class="modal-actions">
+          <button class="btn" onclick="closeModal('foodMenu')">Отмена</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+       SHOP MODAL
+       ============================================================ -->
+    <div class="modal-overlay" id="shopMenu">
+      <div class="modal-inner">
+        <div class="modal-head">
+          <span>Магазин</span>
+          <span class="latin">Taberna · feles</span>
+        </div>
+        <h3 class="modal-title">Магазин <em>котика</em></h3>
+        <p
+          style="
+            font-size: 12px;
+            color: var(--ink-3);
+            margin: -14px 0 22px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+          "
+        >
+          У тебя:
+          <b
+            style="
+              color: var(--gold);
+              font-family: &quot;Instrument Serif&quot;, Georgia, serif;
+              font-style: italic;
+              font-size: 16px;
+              letter-spacing: 0;
+              text-transform: none;
+            "
+            >🪙 <span id="shopCoins">0</span></b
+          >
+        </p>
+
+        <div class="shop-tabs">
+          <button
+            class="shop-tab active"
+            id="tabHats"
+            onclick="switchShopTab('hats')"
+          >
+            Шапки
+          </button>
+          <button class="shop-tab" id="tabFood" onclick="switchShopTab('food')">
+            Еда
+          </button>
+        </div>
+
+        <div class="shop-grid" id="shopGrid"></div>
+
+        <div class="modal-actions">
+          <button class="btn" onclick="closeModal('shopMenu')">Закрыть</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+       ACHIEVEMENTS MODAL
+       ============================================================ -->
+    <div class="modal-overlay" id="achievementsMenu">
+      <div class="modal-inner">
+        <div class="modal-head">
+          <span>Достижения</span>
+          <span class="latin">Res gestae</span>
+        </div>
+        <h3 class="modal-title">Мои <em>достижения</em></h3>
+        <div id="achievementsList"></div>
+        <div class="modal-actions">
+          <button class="btn" onclick="closeModal('achievementsMenu')">
+            Закрыть
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN BUTTON -->
+    <button
+      class="admin-btn"
+      id="adminBtn"
+      onclick="toggleAdmin()"
+      title="секрет"
+      aria-label="Секретная кнопка"
+    >
+      ⚙️
+    </button>
+
+    <!-- ADMIN INDICATOR -->
+    <div class="admin-indicator" id="adminIndicator">
+      👑 Админ-режим активен
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================================
+       TIME + WEATHER
+       ============================================================ -->
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("timeText").textContent = `${hh}:${mm}`;
+
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        document.getElementById("timeIcon").textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
+
+      const WEATHER_CITY = { name: "Улан-Удэ" };
+
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
+
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
+
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      document
+        .getElementById("infoWidget")
+        .addEventListener("click", loadWeather);
+    </script>
+
+    <!-- ============================================================
+       GAME SCRIPT
+       ============================================================ -->
+    <script>
+      // ============================================================
+      // SOUNDS
+      // ============================================================
+      let audioCtx = null;
+
+      function initAudio() {
+        if (!audioCtx) {
+          try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          } catch {}
+        }
+      }
+
+      function playTone(frequency, duration, type = "sine", volume = 0.15) {
+        if (!audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.value = frequency;
+          gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioCtx.currentTime + duration,
+          );
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch {}
+      }
+
+      const Sound = {
+        jump: () => {
+          playTone(440, 0.1, "square", 0.1);
+          setTimeout(() => playTone(660, 0.1, "square", 0.08), 50);
+        },
+        fish: () => {
+          playTone(880, 0.12, "sine", 0.15);
+          setTimeout(() => playTone(1320, 0.15, "sine", 0.12), 60);
+        },
+        hurt: () => {
+          playTone(220, 0.3, "sawtooth", 0.15);
+          setTimeout(() => playTone(140, 0.4, "sawtooth", 0.12), 100);
+        },
+        powerup: () => {
+          playTone(660, 0.1, "sine", 0.15);
+          setTimeout(() => playTone(880, 0.1, "sine", 0.15), 80);
+          setTimeout(() => playTone(1320, 0.2, "sine", 0.15), 160);
+        },
+        coin: () => {
+          playTone(1200, 0.08, "sine", 0.12);
+          setTimeout(() => playTone(1600, 0.12, "sine", 0.1), 50);
+        },
+        ach: () => {
+          playTone(660, 0.15, "sine", 0.15);
+          setTimeout(() => playTone(880, 0.15, "sine", 0.15), 100);
+          setTimeout(() => playTone(1100, 0.25, "sine", 0.15), 200);
+        },
+      };
+
+      // ============================================================
+      // STATE
+      // ============================================================
+      const DEFAULT_STATE = {
+        hunger: 50,
+        mood: 60,
+        affection: 50,
+        sleeping: false,
+        coins: 0,
+        ownedHats: [],
+        ownedFood: {},
+        fishCollected: 0,
+        equippedHat: null,
+        achievements: [],
+        totalFishCollected: 0,
+        lastUpdate: Date.now(),
+      };
+
+      let catState = loadState();
+
+      function loadState() {
+        try {
+          const saved = localStorage.getItem("catState");
+          if (!saved) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+          const raw = JSON.parse(saved);
+          const state = {
+            ...JSON.parse(JSON.stringify(DEFAULT_STATE)),
+            ...raw,
+          };
+
+          if (raw.ownedItems && !raw.ownedHats) {
+            state.ownedHats = raw.ownedItems.filter(
+              (id) => typeof id === "string" && id.startsWith("hat_"),
+            );
+          }
+          if (raw.equipped && raw.equipped.hat && !raw.equippedHat) {
+            state.equippedHat = raw.equipped.hat;
+          }
+
+          state.ownedHats = Array.isArray(state.ownedHats)
+            ? state.ownedHats
+            : [];
+          state.ownedFood =
+            typeof state.ownedFood === "object" && state.ownedFood
+              ? state.ownedFood
+              : {};
+          state.achievements = Array.isArray(state.achievements)
+            ? state.achievements
+            : [];
+
+          if (
+            state.equippedHat &&
+            !state.ownedHats.includes(state.equippedHat)
+          ) {
+            state.equippedHat = null;
+          }
+
+          const now = Date.now();
+          const elapsed = Math.floor(
+            (now - (state.lastUpdate || now)) / 1000 / 30,
+          );
+          state.hunger = Math.max(0, state.hunger - elapsed * 2);
+          state.mood = Math.max(0, state.mood - elapsed * 1);
+          state.lastUpdate = now;
+          return state;
+        } catch (e) {
+          console.error("loadState error:", e);
+          return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        }
+      }
+
+      function saveState() {
+        catState.lastUpdate = Date.now();
+        try {
+          localStorage.setItem("catState", JSON.stringify(catState));
+        } catch {}
+      }
+
+      // ============================================================
+      // ACHIEVEMENTS
+      // ============================================================
+      const ACHIEVEMENTS = [
+        {
+          id: "first_record",
+          icon: "🥇",
+          title: "Первый рекорд",
+          desc: "Поставь свой первый рекорд в игре",
+        },
+        {
+          id: "hundred",
+          icon: "💯",
+          title: "100 очков",
+          desc: "Набери 100 очков в мини-игре",
+        },
+        {
+          id: "ten_fish",
+          icon: "🐟",
+          title: "Собрал 10 рыбок",
+          desc: "Поймай 10 рыбок за всё время",
+        },
+        {
+          id: "first_buy",
+          icon: "🛍️",
+          title: "Первая покупка",
+          desc: "Купи что-нибудь в магазине",
+        },
+        {
+          id: "max_hunger",
+          icon: "🍖",
+          title: "Сыт по горло",
+          desc: "Покорми котика до 100% сытости",
+        },
+        {
+          id: "level_master",
+          icon: "🌈",
+          title: "Путешественник",
+          desc: "Пройди через 3 разных уровня",
+        },
+        {
+          id: "sky_high",
+          icon: "☁️",
+          title: "Небесный кот",
+          desc: "Набери 500 высоты в Doodle",
+        },
+        {
+          id: "hacker_cat",
+          icon: "🔐",
+          title: "Кот-взломщик",
+          desc: "Взломай 10 замков за раз",
+        },
+        {
+          id: "thorn_king",
+          icon: "🌹",
+          title: "Король шипов",
+          desc: "Пройди 5 волн в Терновом Троне",
+        },
+        {
+          id: "thorn_legend",
+          icon: "👑",
+          title: "Легенда трона",
+          desc: "Набери 50 000 очков в Терновом Троне",
+        },
+      ];
+
+      function unlockAchievement(id) {
+        if (catState.achievements.includes(id)) return;
+        catState.achievements.push(id);
+        saveState();
+        const ach = ACHIEVEMENTS.find((a) => a.id === id);
+        if (ach) {
+          showToast(`🏆 Достижение: ${ach.title}`);
+          Sound.ach();
+          spawnHearts(10);
+        }
+      }
+
+      function openAchievements() {
+        const list = document.getElementById("achievementsList");
+        list.innerHTML = "";
+        ACHIEVEMENTS.forEach((ach) => {
+          const unlocked = catState.achievements.includes(ach.id);
+          const row = document.createElement("div");
+          row.className = "achievement-row" + (unlocked ? " unlocked" : "");
+          row.innerHTML = `
+          <div class="ach-icon">${unlocked ? ach.icon : "🔒"}</div>
           <div class="ach-info">
             <div class="ach-title">${ach.title}</div>
             <div class="ach-desc">${ach.desc}</div>
           </div>
-          <div class="ach-status">${unlocked ? '✅' : ''}</div>
+          <div class="ach-status">${unlocked ? "✦" : ""}</div>
         `;
-        list.appendChild(row);
-      });
-      document.getElementById('achievementsMenu').classList.add('active');
-    }
+          list.appendChild(row);
+        });
+        document.getElementById("achievementsMenu").classList.add("active");
+      }
 
-    // ═══════════════════════════════════════════
-    // МАГАЗИН
-    // ═══════════════════════════════════════════
-    const HATS = [
-      { id: 'hat_pink', emoji: '🎀', name: 'Розовый бантик', price: 5 },
-      { id: 'hat_crown', emoji: '👑', name: 'Корона', price: 10 },
-      { id: 'hat_wizard', emoji: '🎩', name: 'Волшебная шляпа', price: 8 },
-      { id: 'hat_cap', emoji: '🧢', name: 'Кепка', price: 4 },
-      { id: 'hat_grad', emoji: '🎓', name: 'Выпускная шапочка', price: 12 },
-      { id: 'hat_flower', emoji: '🌸', name: 'Цветок', price: 6 }
-    ];
+      // ============================================================
+      // SHOP DATA
+      // ============================================================
+      const HATS = [
+        { id: "hat_pink", emoji: "🎀", name: "Розовый бантик", price: 5 },
+        { id: "hat_crown", emoji: "👑", name: "Корона", price: 10 },
+        { id: "hat_wizard", emoji: "🎩", name: "Волшебная шляпа", price: 8 },
+        { id: "hat_cap", emoji: "🧢", name: "Кепка", price: 4 },
+        { id: "hat_grad", emoji: "🎓", name: "Выпускная шапочка", price: 12 },
+        { id: "hat_flower", emoji: "🌸", name: "Цветок", price: 6 },
+      ];
 
-    const FOOD_SHOP = [
-      { id: 'milk', emoji: '🥛', name: 'Молоко', price: 3, bonus: 20, mood: 10 },
-      { id: 'meat', emoji: '🍖', name: 'Мясо', price: 6, bonus: 50, mood: 15 },
-      { id: 'cookie', emoji: '🍪', name: 'Печенье', price: 4, bonus: 15, mood: 20 },
-      { id: 'cake', emoji: '🍰', name: 'Тортик', price: 8, bonus: 30, mood: 25 }
-    ];
+      const FOOD_SHOP = [
+        {
+          id: "milk",
+          emoji: "🥛",
+          name: "Молоко",
+          price: 3,
+          bonus: 20,
+          mood: 10,
+        },
+        {
+          id: "meat",
+          emoji: "🍖",
+          name: "Мясо",
+          price: 6,
+          bonus: 50,
+          mood: 15,
+        },
+        {
+          id: "cookie",
+          emoji: "🍪",
+          name: "Печенье",
+          price: 4,
+          bonus: 15,
+          mood: 20,
+        },
+        {
+          id: "cake",
+          emoji: "🍰",
+          name: "Тортик",
+          price: 8,
+          bonus: 30,
+          mood: 25,
+        },
+      ];
 
-    let currentTab = 'hats';
+      let currentTab = "hats";
 
-    function openShop() {
-      renderShop();
-      document.getElementById('shopCoins').textContent = catState.coins;
-      document.getElementById('shopMenu').classList.add('active');
-    }
+      function openShop() {
+        renderShop();
+        document.getElementById("shopCoins").textContent = catState.coins;
+        document.getElementById("shopMenu").classList.add("active");
+      }
 
-    function switchShopTab(tab) {
-      currentTab = tab;
-      document.getElementById('tabHats').classList.toggle('active', tab === 'hats');
-      document.getElementById('tabFood').classList.toggle('active', tab === 'food');
-      renderShop();
-    }
+      function switchShopTab(tab) {
+        currentTab = tab;
+        document
+          .getElementById("tabHats")
+          .classList.toggle("active", tab === "hats");
+        document
+          .getElementById("tabFood")
+          .classList.toggle("active", tab === "food");
+        renderShop();
+      }
 
-    function renderShop() {
-      const grid = document.getElementById('shopGrid');
-      grid.innerHTML = '';
+      function renderShop() {
+        const grid = document.getElementById("shopGrid");
+        grid.innerHTML = "";
 
-      if (currentTab === 'hats') {
-        HATS.forEach(item => {
-          const owned = catState.ownedHats.includes(item.id);
-          const equipped = catState.equippedHat === item.id;
-          const canAfford = catState.coins >= item.price;
+        if (currentTab === "hats") {
+          HATS.forEach((item) => {
+            const owned = catState.ownedHats.includes(item.id);
+            const equipped = catState.equippedHat === item.id;
+            const canAfford = catState.coins >= item.price;
 
-          const el = document.createElement('div');
-          el.className = 'shop-item' + (owned ? ' owned' : '') + (!canAfford && !owned ? ' locked' : '');
+            const el = document.createElement("div");
+            el.className =
+              "shop-item" +
+              (owned ? " owned" : "") +
+              (!canAfford && !owned ? " locked" : "");
 
-          if (owned) {
-            el.innerHTML = `
+            if (owned) {
+              el.innerHTML = `
               <div class="shop-emoji">${item.emoji}</div>
               <div class="shop-name">${item.name}</div>
-              <button class="btn-buy ${equipped ? 'btn-equipped' : 'btn-equip'}" onclick="equipHat('${item.id}')">
-                ${equipped ? '✓ Надето' : 'Надеть'}
+              <button class="btn-buy ${equipped ? "btn-equipped" : ""}" onclick="equipHat('${item.id}')">
+                ${equipped ? "✓ Надето" : "Надеть"}
               </button>
             `;
-          } else {
-            el.innerHTML = `
+            } else {
+              el.innerHTML = `
               <div class="shop-emoji">${item.emoji}</div>
               <div class="shop-name">${item.name}</div>
               <div class="shop-price">🪙 ${item.price}</div>
-              <button class="btn-buy" onclick="buyHat('${item.id}')" ${!canAfford ? 'disabled' : ''}>Купить</button>
+              <button class="btn-buy" onclick="buyHat('${item.id}')" ${!canAfford ? "disabled" : ""}>Купить</button>
             `;
-          }
-          grid.appendChild(el);
-        });
-      } else {
-        FOOD_SHOP.forEach(item => {
-          const count = catState.ownedFood[item.id] || 0;
-          const canAfford = catState.coins >= item.price;
+            }
+            grid.appendChild(el);
+          });
+        } else {
+          FOOD_SHOP.forEach((item) => {
+            const count = catState.ownedFood[item.id] || 0;
+            const canAfford = catState.coins >= item.price;
 
-          const el = document.createElement('div');
-          el.className = 'shop-item' + (!canAfford ? ' locked' : '');
+            const el = document.createElement("div");
+            el.className = "shop-item" + (!canAfford ? " locked" : "");
 
-          el.innerHTML = `
+            el.innerHTML = `
             <div class="shop-emoji">${item.emoji}</div>
-            <div class="shop-name">${item.name} ${count > 0 ? `×${count}` : ''}</div>
+            <div class="shop-name">${item.name} ${count > 0 ? `· ${count}` : ""}</div>
             <div class="shop-price">🪙 ${item.price}</div>
-            <button class="btn-buy" onclick="buyFood('${item.id}')" ${!canAfford ? 'disabled' : ''}>Купить</button>
+            <button class="btn-buy" onclick="buyFood('${item.id}')" ${!canAfford ? "disabled" : ""}>Купить</button>
           `;
-          grid.appendChild(el);
-        });
+            grid.appendChild(el);
+          });
+        }
       }
-    }
 
-    function buyHat(id) {
-      const item = HATS.find(i => i.id === id);
-      if (!item) return;
-      if (catState.ownedHats.includes(id)) return;
-      if (catState.coins < item.price) { showToast('😔 Не хватает монеток'); return; }
+      function buyHat(id) {
+        const item = HATS.find((i) => i.id === id);
+        if (!item) return;
+        if (catState.ownedHats.includes(id)) return;
+        if (catState.coins < item.price) {
+          showToast("😔 Не хватает монеток");
+          return;
+        }
 
-      catState.coins -= item.price;
-      catState.ownedHats.push(id);
-      catState.equippedHat = id;
-      showToast(`👗 ${item.name} куплен и надет!`);
-      spawnHearts(8);
-      Sound.fish();
-
-      saveState();
-      unlockAchievement('first_buy');
-      updateUI();
-      document.getElementById('shopCoins').textContent = catState.coins;
-      renderShop();
-    }
-
-    function equipHat(id) {
-      if (catState.equippedHat === id) {
-        catState.equippedHat = null;
-        showToast('👕 Шапка снята');
-      } else {
+        catState.coins -= item.price;
+        catState.ownedHats.push(id);
         catState.equippedHat = id;
-        const item = HATS.find(i => i.id === id);
-        showToast(`👗 Надето: ${item.name}`);
-      }
-      saveState();
-      updateUI();
-      renderShop();
-    }
-
-    function buyFood(id) {
-      const item = FOOD_SHOP.find(i => i.id === id);
-      if (!item) return;
-      if (catState.coins < item.price) { showToast('😔 Не хватает монеток'); return; }
-
-      catState.coins -= item.price;
-      catState.ownedFood[id] = (catState.ownedFood[id] || 0) + 1;
-
-      showToast(`🍽️ Куплено: ${item.name}`);
-      Sound.coin();
-
-      saveState();
-      unlockAchievement('first_buy');
-      updateUI();
-      document.getElementById('shopCoins').textContent = catState.coins;
-      renderShop();
-    }
-
-    // ═══════════════════════════════════════════
-    // КОТИК — действия
-    // ═══════════════════════════════════════════
-    const PHRASES = {
-      hungry: ['Мяу... я проголодался 🥺', 'Хозяюшка, покушать? 😿', 'Мой животик урчит... 🐾'],
-      happy: ['Муррр! 🥰', 'Я тебя обожаю 💕', 'Ты лучшая! 💗', 'Мур-мур-мур~ 😽'],
-      playing: ['Ловлю бантик! 🎾', 'Ещё! Ещё! 🎉', 'Как же круто! 😸'],
-      sleeping: ['Мррр... 💤', 'Сплю... не буди 😴'],
-      normal: ['Мяу!', 'Мур... 🐱', 'Привет! 💕', 'Как дела? 😺']
-    };
-
-    function pickPhrase(cat) {
-      const arr = PHRASES[cat] || PHRASES.normal;
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
-
-    const petBubble = document.getElementById('petBubble');
-    let bubbleTimer = null;
-    function catSay(text, ms = 2500) {
-      petBubble.textContent = text;
-      petBubble.classList.add('show');
-      clearTimeout(bubbleTimer);
-      bubbleTimer = setTimeout(() => petBubble.classList.remove('show'), ms);
-    }
-
-    function applyNightMode(isNight) {
-      document.body.classList.toggle('night', isNight);
-      document.getElementById('mainTitle').textContent = isNight ? '🌙 Домик котика — ночь' : '🏠 Домик котика';
-      document.getElementById('mainSubtitle').textContent = isNight
-        ? 'Сладких снов, котик спит 💤'
-        : 'Заботься о нём — и он будет счастлив 💕';
-      document.getElementById('sleepIcon').textContent = isNight ? '☀️' : '😴';
-      document.getElementById('sleepLabel').textContent = isNight ? 'Разбудить' : 'Спать';
-      if (isNight) generateWindowStars();
-    }
-
-    function generateWindowStars() {
-      const cont = document.getElementById('windowStars');
-      if (cont.children.length > 0) return;
-      for (let i = 0; i < 8; i++) {
-        const s = document.createElement('div');
-        s.className = 'window-star';
-        s.style.left = (5 + Math.random() * 90) + '%';
-        s.style.top = (5 + Math.random() * 90) + '%';
-        s.style.animationDelay = (Math.random() * 2) + 's';
-        cont.appendChild(s);
-      }
-    }
-
-    function updateUI() {
-      const { hunger, mood, affection, sleeping, coins, equippedHat } = catState;
-
-      document.getElementById('coinsCount').textContent = coins;
-
-      document.getElementById('hungerFill').style.width = hunger + '%';
-      document.getElementById('hungerVal').textContent = Math.round(hunger) + '%';
-      document.getElementById('hungerEmoji').textContent = hunger > 70 ? '😻' : hunger > 40 ? '😺' : '😿';
-
-      document.getElementById('moodFill').style.width = mood + '%';
-      document.getElementById('moodVal').textContent = Math.round(mood) + '%';
-      document.getElementById('moodEmoji').textContent = mood > 70 ? '😻' : mood > 40 ? '😺' : mood > 20 ? '😐' : '😾';
-
-      document.getElementById('affectionFill').style.width = affection + '%';
-      document.getElementById('affectionVal').textContent = Math.round(affection) + '%';
-      document.getElementById('affectionEmoji').textContent = affection > 70 ? '💖' : affection > 40 ? '💗' : '💕';
-
-      const catEl = document.getElementById('catPet');
-      const zzz = document.getElementById('zzz1');
-
-      let catEmoji = '🐱';
-      if (sleeping) {
-        catEmoji = '😴';
-        catEl.classList.add('sleeping');
-        zzz.classList.add('active');
-      } else {
-        catEl.classList.remove('sleeping');
-        zzz.classList.remove('active');
-        if (hunger < 30) catEmoji = '🙀';
-        else if (mood > 80 && hunger > 70) catEmoji = '😻';
-        else if (mood > 50) catEmoji = '😺';
-        else if (mood < 30) catEmoji = '😿';
-      }
-
-      let hatEmoji = '';
-      if (equippedHat) {
-        const item = HATS.find(i => i.id === equippedHat);
-        if (item) hatEmoji = item.emoji;
-      }
-
-      catEl.innerHTML = hatEmoji
-        ? `<span style="display:inline-block; position:relative;">
-             <span style="position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:32px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));">${hatEmoji}</span>
-             ${catEmoji}
-           </span>`
-        : catEmoji;
-
-      const hour = new Date().getHours();
-      const isRealNight = hour >= 22 || hour < 7;
-      applyNightMode(sleeping || isRealNight);
-    }
-
-    function changeStat(key, amount) {
-      catState[key] = Math.max(0, Math.min(100, catState[key] + amount));
-      if (catState.hunger >= 100) unlockAchievement('max_hunger');
-    }
-
-    function changeStats(obj) {
-      for (const k in obj) {
-        catState[k] = Math.max(0, Math.min(100, catState[k] + obj[k]));
-      }
-      if (catState.hunger >= 100) unlockAchievement('max_hunger');
-      saveState();
-      updateUI();
-    }
-
-    function petCat() {
-      if (catState.sleeping) { catSay('Мррр... не буди 😴', 2000); return; }
-      changeStats({ affection: 10, mood: 5 });
-      catSay(pickPhrase('happy'), 2000);
-      spawnHearts(5);
-      Sound.fish();
-      const cat = document.getElementById('catPet');
-      cat.style.transform = 'translateX(-50%) scale(1.15)';
-      setTimeout(() => cat.style.transform = '', 300);
-      showToast('💗 Мур-мур! Котик доволен');
-    }
-
-    function openFoodMenu() {
-      if (catState.sleeping) { catSay('Я сплю... 💤', 2000); return; }
-      if (catState.hunger > 90) { catSay('Я наелся! 😽', 2000); return; }
-
-      const available = [];
-
-      if (catState.fishCollected > 0) {
-        available.push({
-          id: 'fish',
-          emoji: '🐟',
-          name: 'Рыбка',
-          bonus: 30,
-          mood: 5,
-          count: catState.fishCollected,
-          fromGame: true
-        });
-      }
-
-      Object.keys(catState.ownedFood).forEach(id => {
-        const count = catState.ownedFood[id];
-        if (count > 0) {
-          const item = FOOD_SHOP.find(f => f.id === id);
-          if (item) {
-            available.push({
-              id: item.id,
-              emoji: item.emoji,
-              name: item.name,
-              bonus: item.bonus,
-              mood: item.mood,
-              count: count,
-              fromGame: false
-            });
-          }
-        }
-      });
-
-      if (available.length === 0) {
-        catSay('У нас нет еды... 🥺', 2500);
-        showToast('🍽️ Нет еды! Купи в магазине или поймай рыбок в игре');
-        return;
-      }
-
-      const grid = document.getElementById('foodGrid');
-      grid.innerHTML = '';
-
-      available.forEach(item => {
-        const btn = document.createElement('button');
-        btn.className = 'food-item';
-        btn.onclick = () => feedCat(item.id, item.fromGame);
-        btn.innerHTML = `
-          <span class="food-emoji">${item.emoji}</span>
-          <span class="food-name">${item.name}</span>
-          <span class="food-bonus">+${item.bonus} 🍖 ×${item.count}</span>
-        `;
-        grid.appendChild(btn);
-      });
-
-      document.getElementById('foodMenu').classList.add('active');
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-    }
-
-    function feedCat(foodId, fromGame) {
-      closeModal('foodMenu');
-
-      let item = null;
-
-      if (foodId === 'fish') {
-        if (catState.fishCollected <= 0) {
-          showToast('🐟 Рыбки закончились!');
-          return;
-        }
-        item = { emoji: '🐟', name: 'Рыбка', bonus: 30, mood: 5 };
-        catState.fishCollected--;
-      } else {
-        if (!catState.ownedFood[foodId] || catState.ownedFood[foodId] <= 0) {
-          showToast('🍽️ Этой еды нет!');
-          return;
-        }
-        const shopItem = FOOD_SHOP.find(f => f.id === foodId);
-        if (!shopItem) return;
-        item = { emoji: shopItem.emoji, name: shopItem.name, bonus: shopItem.bonus, mood: shopItem.mood };
-        catState.ownedFood[foodId]--;
-        if (catState.ownedFood[foodId] <= 0) delete catState.ownedFood[foodId];
-      }
-
-      changeStats({ hunger: item.bonus, mood: item.mood, affection: 3 });
-
-      catSay(`${item.emoji} ${item.name}! Спасибо!`, 2500);
-      showToast(`🍽️ Покормила: ${item.emoji} +${item.bonus} сытости`);
-      Sound.fish();
-
-      const cat = document.getElementById('catPet');
-      let i = 0;
-      const jump = setInterval(() => {
-        cat.style.transform = `translateX(-50%) translateY(${i % 2 === 0 ? -15 : 0}px)`;
-        i++;
-        if (i > 5) { clearInterval(jump); cat.style.transform = ''; }
-      }, 100);
-      spawnHearts(8);
-    }
-
-    function playWithCat() {
-      if (catState.sleeping) { catSay('Сплю! 😾', 2000); return; }
-      if (catState.hunger < 30) {
-        catSay('Сначала покорми! 🥺', 2500);
-        showToast('🍖 Котик слишком голоден');
-        return;
-      }
-      changeStats({ mood: 15, affection: 10, hunger: -10 });
-      catSay(pickPhrase('playing'), 2500);
-      showToast('🎾 Котик набегался!');
-      spawnHearts(6);
-      Sound.powerup();
-      const cat = document.getElementById('catPet');
-      let i = 0;
-      const jump = setInterval(() => {
-        cat.style.transform = `translateX(${-50 + (Math.random() * 20 - 10)}%) translateY(${Math.random() * -20}px) rotate(${Math.random() * 20 - 10}deg)`;
-        i++;
-        if (i > 8) { clearInterval(jump); cat.style.transform = 'translateX(-50%)'; }
-      }, 100);
-    }
-
-    function sleepCat() {
-      if (catState.sleeping) {
-        catState.sleeping = false;
-        saveState(); updateUI();
-        catSay('Проснулся! ☀️', 2000);
-        showToast('☀️ Доброе утро!');
-        return;
-      }
-      catState.sleeping = true;
-      changeStats({ mood: 10 });
-      catSay('Сладких снов... 💤', 2500);
-      showToast('🌙 Ночь наступила');
-
-      setTimeout(() => {
-        if (catState.sleeping) {
-          catState.sleeping = false;
-          saveState(); updateUI();
-          catSay('Выспался! ☀️', 2000);
-          showToast('☀️ Котик проснулся');
-        }
-      }, 20000);
-    }
-
-    function spawnHearts(count) {
-      const cat = document.getElementById('catPet');
-      if (!cat) return;
-      const rect = cat.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-          const heart = document.createElement('div');
-          heart.className = 'float-heart';
-          heart.textContent = ['💗', '💖', '❤️', '💕', '✨'][Math.floor(Math.random() * 5)];
-          heart.style.left = (cx + (Math.random() * 60 - 30)) + 'px';
-          heart.style.top = cy + 'px';
-          heart.style.fontSize = (16 + Math.random() * 12) + 'px';
-          document.body.appendChild(heart);
-          setTimeout(() => heart.remove(), 1500);
-        }, i * 80);
-      }
-    }
-
-    let toastTimer = null;
-    function showToast(text) {
-      const toast = document.getElementById('toast');
-      toast.textContent = text;
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-    }
-
-    document.getElementById('catPet').addEventListener('click', () => {
-      if (catState.sleeping) catSay(pickPhrase('sleeping'), 2000);
-      else if (catState.hunger < 30) catSay(pickPhrase('hungry'), 2500);
-      else if (catState.mood > 70) catSay(pickPhrase('happy'), 2000);
-      else catSay(pickPhrase('normal'), 2000);
-      spawnHearts(3);
-    });
-
-    const container = document.getElementById('hearts-container');
-    function createHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
-      const types = ['❤️', '💖', '💗', '💕', '🌸'];
-      heart.innerText = types[Math.floor(Math.random() * types.length)];
-      heart.style.left = Math.random() * 100 + "vw";
-      heart.style.animationDuration = Math.random() * 3 + 3 + "s";
-      heart.style.fontSize = Math.random() * 15 + 15 + "px";
-      container.appendChild(heart);
-      setTimeout(() => { heart.remove(); }, 6000);
-    }
-    setInterval(createHeart, 700);
-
-    setInterval(() => {
-      if (!catState.sleeping) {
-        catState.hunger = Math.max(0, catState.hunger - 1);
-        catState.mood = Math.max(0, catState.mood - 0.5);
-        saveState(); updateUI();
-      }
-    }, 30000);
-
-    setTimeout(() => {
-      if (catState.sleeping) catSay('Тсс... сплю 💤', 3000);
-      else if (catState.hunger < 30) catSay('Мяу! Покорми 🥺', 3500);
-      else catSay('Привет! Как хорошо, что ты зашла! 🐱', 3500);
-    }, 800);
-
-    // ═══════════════════════════════════════════
-    // АДМИН
-    // ═══════════════════════════════════════════
-    const ADMIN_COINS = 666;
-
-    function isAdminMode() { return localStorage.getItem('adminMode') === 'on'; }
-
-    function toggleAdmin() {
-      const btn = document.getElementById('adminBtn');
-      const indicator = document.getElementById('adminIndicator');
-
-      if (isAdminMode()) {
-        const confirmed = confirm(
-          '👑 Выключить админ-режим?\n\n' +
-          '↩️ Всё вернётся к состоянию ДО включения админа:\n' +
-          '• 666 монет заберутся\n' +
-          '• Всё, что куплено НА админские монеты — пропадёт\n' +
-          '• То, что было до админа — останется\n\n' +
-          'Продолжить?'
-        );
-        if (!confirmed) return;
-
-        try {
-          const snapshotRaw = localStorage.getItem('adminSnapshot');
-          if (snapshotRaw) {
-            const snapshot = JSON.parse(snapshotRaw);
-            catState.coins = snapshot.coins;
-            catState.ownedHats = snapshot.ownedHats || [];
-            catState.ownedFood = snapshot.ownedFood || {};
-            catState.equippedHat = snapshot.equippedHat || null;
-            catState.achievements = snapshot.achievements || [];
-            catState.fishCollected = snapshot.fishCollected || 0;
-            catState.totalFishCollected = snapshot.totalFishCollected || 0;
-          } else {
-            catState.coins = Math.max(0, catState.coins - ADMIN_COINS);
-          }
-          localStorage.removeItem('adminSnapshot');
-        } catch (e) {
-          console.error('Ошибка восстановления снимка:', e);
-          catState.coins = Math.max(0, catState.coins - ADMIN_COINS);
-        }
+        showToast(`👗 ${item.name} куплен и надет`);
+        spawnHearts(8);
+        Sound.fish();
 
         saveState();
-        localStorage.removeItem('adminMode');
-        document.body.classList.remove('admin-mode');
-        btn.classList.remove('active');
-        indicator.classList.remove('show');
-
+        unlockAchievement("first_buy");
         updateUI();
-        renderShopIfOpen();
-
-        showToast('⚙️ Админ-режим выключен. Прогресс восстановлен');
-        Sound.hurt();
-        catSay('Мои вещи вернулись! 🥰', 3000);
-
-      } else {
-        const confirmed = confirm(
-          '👑 Включить админ-режим?\n\n' +
-          '• Ты получишь 666 монет\n' +
-          '• Прогресс до этого будет сохранён\n' +
-          '• Когда выключишь — всё вернётся, кроме купленного на эти 666\n\n' +
-          'Продолжить?'
-        );
-        if (!confirmed) return;
-
-        const snapshot = {
-          coins: catState.coins,
-          ownedHats: [...catState.ownedHats],
-          ownedFood: { ...catState.ownedFood },
-          equippedHat: catState.equippedHat,
-          achievements: [...catState.achievements],
-          fishCollected: catState.fishCollected,
-          totalFishCollected: catState.totalFishCollected
-        };
-        localStorage.setItem('adminSnapshot', JSON.stringify(snapshot));
-
-        catState.coins += ADMIN_COINS;
-        saveState();
-
-        localStorage.setItem('adminMode', 'on');
-        document.body.classList.add('admin-mode');
-        btn.classList.add('active');
-        indicator.classList.add('show');
-        setTimeout(() => indicator.classList.remove('show'), 4000);
-
-        updateUI();
-        renderShopIfOpen();
-
-        Sound.ach();
-        setTimeout(() => Sound.coin(), 200);
-        setTimeout(() => Sound.powerup(), 400);
-
-        for (let i = 0; i < 60; i++) setTimeout(() => spawnAdminConfetti(), i * 25);
-
-        showToast(`👑 Админ-режим активен! +${ADMIN_COINS} монет`);
-        catSay('ВАУ! 👑 Я теперь королевский котик!', 3000);
-      }
-    }
-
-    function renderShopIfOpen() {
-      const shopMenu = document.getElementById('shopMenu');
-      if (shopMenu && shopMenu.classList.contains('active')) {
-        document.getElementById('shopCoins').textContent = catState.coins;
+        document.getElementById("shopCoins").textContent = catState.coins;
         renderShop();
       }
-    }
 
-    function spawnAdminConfetti() {
-      const confetti = document.createElement('div');
-      confetti.className = 'admin-confetti';
-      confetti.textContent = ['👑', '🪙', '💰', '✨', '💎', '⭐'][Math.floor(Math.random() * 6)];
-      confetti.style.left = Math.random() * 100 + 'vw';
-      confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
-      confetti.style.fontSize = (20 + Math.random() * 20) + 'px';
-      document.body.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 4500);
-    }
-
-    function restoreAdminMode() {
-      if (isAdminMode()) {
-        document.body.classList.add('admin-mode');
-        document.getElementById('adminBtn').classList.add('active');
-        setTimeout(() => {
-          const indicator = document.getElementById('adminIndicator');
-          indicator.classList.add('show');
-          setTimeout(() => indicator.classList.remove('show'), 4000);
-        }, 500);
+      function equipHat(id) {
+        if (catState.equippedHat === id) {
+          catState.equippedHat = null;
+          showToast("Шапка снята");
+        } else {
+          catState.equippedHat = id;
+          const item = HATS.find((i) => i.id === id);
+          showToast(`Надето: ${item.name}`);
+        }
+        saveState();
+        updateUI();
+        renderShop();
       }
-    }
 
-    // ═══════════════════════════════════════════
-    // СТАРТ
-    // ═══════════════════════════════════════════
-    updateUI();
-    restoreAdminMode();
-  </script>
-</body>
+      function buyFood(id) {
+        const item = FOOD_SHOP.find((i) => i.id === id);
+        if (!item) return;
+        if (catState.coins < item.price) {
+          showToast("😔 Не хватает монеток");
+          return;
+        }
+
+        catState.coins -= item.price;
+        catState.ownedFood[id] = (catState.ownedFood[id] || 0) + 1;
+
+        showToast(`🍽️ Куплено: ${item.name}`);
+        Sound.coin();
+
+        saveState();
+        unlockAchievement("first_buy");
+        updateUI();
+        document.getElementById("shopCoins").textContent = catState.coins;
+        renderShop();
+      }
+
+      // ============================================================
+      // CAT ACTIONS
+      // ============================================================
+      const PHRASES = {
+        hungry: [
+          "Мяу... я проголодался",
+          "Хозяюшка, покушать?",
+          "Мой животик урчит...",
+        ],
+        happy: ["Муррр!", "Я тебя обожаю", "Ты лучшая!", "Мур-мур-мур~"],
+        playing: ["Ловлю бантик!", "Ещё! Ещё!", "Как же круто!"],
+        sleeping: ["Мррр...", "Сплю... не буди"],
+        normal: ["Мяу!", "Мур...", "Привет!", "Как дела?"],
+      };
+
+      function pickPhrase(cat) {
+        const arr = PHRASES[cat] || PHRASES.normal;
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      const petBubble = document.getElementById("petBubble");
+      let bubbleTimer = null;
+      function catSay(text, ms = 2500) {
+        petBubble.textContent = text;
+        petBubble.classList.add("show");
+        clearTimeout(bubbleTimer);
+        bubbleTimer = setTimeout(() => petBubble.classList.remove("show"), ms);
+      }
+
+      function applyNightMode(isNight) {
+        document.body.classList.toggle("night", isNight);
+        document.getElementById("mainTitle").innerHTML = isNight
+          ? "Ночной <em>домик</em>"
+          : "Домик <em>котика</em>";
+        document.getElementById("mainSubtitle").textContent = isNight
+          ? "Сладких снов, котик спит."
+          : "Заботься о нём — и он будет счастлив.";
+        document.getElementById("sleepIcon").textContent = isNight
+          ? "☀️"
+          : "😴";
+        document.getElementById("sleepLabel").textContent = isNight
+          ? "Разбудить"
+          : "Спать";
+        if (isNight) generateWindowStars();
+      }
+
+      function generateWindowStars() {
+        const cont = document.getElementById("windowStars");
+        if (cont.children.length > 0) return;
+        for (let i = 0; i < 8; i++) {
+          const s = document.createElement("div");
+          s.className = "window-star";
+          s.style.left = 5 + Math.random() * 90 + "%";
+          s.style.top = 5 + Math.random() * 90 + "%";
+          s.style.animationDelay = Math.random() * 2 + "s";
+          cont.appendChild(s);
+        }
+      }
+
+      function updateUI() {
+        const { hunger, mood, affection, sleeping, coins, equippedHat } =
+          catState;
+
+        document.getElementById("coinsCount").textContent = coins;
+
+        document.getElementById("hungerFill").style.width = hunger + "%";
+        document.getElementById("hungerVal").textContent =
+          Math.round(hunger) + "%";
+        document.getElementById("hungerEmoji").textContent =
+          hunger > 70 ? "😻" : hunger > 40 ? "😺" : "😿";
+
+        document.getElementById("moodFill").style.width = mood + "%";
+        document.getElementById("moodVal").textContent = Math.round(mood) + "%";
+        document.getElementById("moodEmoji").textContent =
+          mood > 70 ? "😻" : mood > 40 ? "😺" : mood > 20 ? "😐" : "😾";
+
+        document.getElementById("affectionFill").style.width = affection + "%";
+        document.getElementById("affectionVal").textContent =
+          Math.round(affection) + "%";
+        document.getElementById("affectionEmoji").textContent =
+          affection > 70 ? "💖" : affection > 40 ? "💗" : "💕";
+
+        const catEl = document.getElementById("catPet");
+        const zzz = document.getElementById("zzz1");
+
+        let catEmoji = "🐱";
+        if (sleeping) {
+          catEmoji = "😴";
+          catEl.classList.add("sleeping");
+          zzz.classList.add("active");
+        } else {
+          catEl.classList.remove("sleeping");
+          zzz.classList.remove("active");
+          if (hunger < 30) catEmoji = "🙀";
+          else if (mood > 80 && hunger > 70) catEmoji = "😻";
+          else if (mood > 50) catEmoji = "😺";
+          else if (mood < 30) catEmoji = "😿";
+        }
+
+        let hatEmoji = "";
+        if (equippedHat) {
+          const item = HATS.find((i) => i.id === equippedHat);
+          if (item) hatEmoji = item.emoji;
+        }
+
+        catEl.innerHTML = hatEmoji
+          ? `<span style="display:inline-block; position:relative;"><span class="cat-hat">${hatEmoji}</span>${catEmoji}</span>`
+          : catEmoji;
+
+        const hour = new Date().getHours();
+        const isRealNight = hour >= 22 || hour < 7;
+        applyNightMode(sleeping || isRealNight);
+      }
+
+      function changeStats(obj) {
+        for (const k in obj) {
+          catState[k] = Math.max(0, Math.min(100, catState[k] + obj[k]));
+        }
+        if (catState.hunger >= 100) unlockAchievement("max_hunger");
+        saveState();
+        updateUI();
+      }
+
+      function petCat() {
+        if (catState.sleeping) {
+          catSay("Мррр... не буди", 2000);
+          return;
+        }
+        changeStats({ affection: 10, mood: 5 });
+        catSay(pickPhrase("happy"), 2000);
+        spawnHearts(5);
+        Sound.fish();
+        const cat = document.getElementById("catPet");
+        cat.style.transform = "translateX(-50%) scale(1.15)";
+        setTimeout(() => (cat.style.transform = ""), 300);
+        showToast("💗 Мур-мур! Котик доволен");
+      }
+
+      function openFoodMenu() {
+        if (catState.sleeping) {
+          catSay("Я сплю...", 2000);
+          return;
+        }
+        if (catState.hunger > 90) {
+          catSay("Я наелся!", 2000);
+          return;
+        }
+
+        const available = [];
+
+        if (catState.fishCollected > 0) {
+          available.push({
+            id: "fish",
+            emoji: "🐟",
+            name: "Рыбка",
+            bonus: 30,
+            mood: 5,
+            count: catState.fishCollected,
+            fromGame: true,
+          });
+        }
+
+        Object.keys(catState.ownedFood).forEach((id) => {
+          const count = catState.ownedFood[id];
+          if (count > 0) {
+            const item = FOOD_SHOP.find((f) => f.id === id);
+            if (item) {
+              available.push({
+                id: item.id,
+                emoji: item.emoji,
+                name: item.name,
+                bonus: item.bonus,
+                mood: item.mood,
+                count: count,
+                fromGame: false,
+              });
+            }
+          }
+        });
+
+        if (available.length === 0) {
+          catSay("У нас нет еды...", 2500);
+          showToast("🍽️ Нет еды! Купи в магазине или поймай рыбок в игре");
+          return;
+        }
+
+        const grid = document.getElementById("foodGrid");
+        grid.innerHTML = "";
+
+        available.forEach((item) => {
+          const btn = document.createElement("button");
+          btn.className = "food-item";
+          btn.onclick = () => feedCat(item.id, item.fromGame);
+          btn.innerHTML = `
+          <span class="food-emoji">${item.emoji}</span>
+          <span class="food-name">${item.name}</span>
+          <span class="food-bonus">+${item.bonus} · ×${item.count}</span>
+        `;
+          grid.appendChild(btn);
+        });
+
+        document.getElementById("foodMenu").classList.add("active");
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("active");
+      }
+
+      function feedCat(foodId, fromGame) {
+        closeModal("foodMenu");
+
+        let item = null;
+
+        if (foodId === "fish") {
+          if (catState.fishCollected <= 0) {
+            showToast("🐟 Рыбки закончились!");
+            return;
+          }
+          item = { emoji: "🐟", name: "Рыбка", bonus: 30, mood: 5 };
+          catState.fishCollected--;
+        } else {
+          if (!catState.ownedFood[foodId] || catState.ownedFood[foodId] <= 0) {
+            showToast("🍽️ Этой еды нет!");
+            return;
+          }
+          const shopItem = FOOD_SHOP.find((f) => f.id === foodId);
+          if (!shopItem) return;
+          item = {
+            emoji: shopItem.emoji,
+            name: shopItem.name,
+            bonus: shopItem.bonus,
+            mood: shopItem.mood,
+          };
+          catState.ownedFood[foodId]--;
+          if (catState.ownedFood[foodId] <= 0)
+            delete catState.ownedFood[foodId];
+        }
+
+        changeStats({ hunger: item.bonus, mood: item.mood, affection: 3 });
+
+        catSay(`${item.emoji} ${item.name}! Спасибо!`, 2500);
+        showToast(`🍽️ Покормила: ${item.emoji} +${item.bonus} сытости`);
+        Sound.fish();
+
+        const cat = document.getElementById("catPet");
+        let i = 0;
+        const jump = setInterval(() => {
+          cat.style.transform = `translateX(-50%) translateY(${i % 2 === 0 ? -15 : 0}px)`;
+          i++;
+          if (i > 5) {
+            clearInterval(jump);
+            cat.style.transform = "";
+          }
+        }, 100);
+        spawnHearts(8);
+      }
+
+      function playWithCat() {
+        if (catState.sleeping) {
+          catSay("Сплю!", 2000);
+          return;
+        }
+        if (catState.hunger < 30) {
+          catSay("Сначала покорми!", 2500);
+          showToast("🍖 Котик слишком голоден");
+          return;
+        }
+        changeStats({ mood: 15, affection: 10, hunger: -10 });
+        catSay(pickPhrase("playing"), 2500);
+        showToast("🎾 Котик набегался!");
+        spawnHearts(6);
+        Sound.powerup();
+        const cat = document.getElementById("catPet");
+        let i = 0;
+        const jump = setInterval(() => {
+          cat.style.transform = `translateX(${-50 + (Math.random() * 20 - 10)}%) translateY(${Math.random() * -20}px) rotate(${Math.random() * 20 - 10}deg)`;
+          i++;
+          if (i > 8) {
+            clearInterval(jump);
+            cat.style.transform = "translateX(-50%)";
+          }
+        }, 100);
+      }
+
+      function sleepCat() {
+        if (catState.sleeping) {
+          catState.sleeping = false;
+          saveState();
+          updateUI();
+          catSay("Проснулся!", 2000);
+          showToast("☀️ Доброе утро!");
+          return;
+        }
+        catState.sleeping = true;
+        changeStats({ mood: 10 });
+        catSay("Сладких снов...", 2500);
+        showToast("🌙 Ночь наступила");
+
+        setTimeout(() => {
+          if (catState.sleeping) {
+            catState.sleeping = false;
+            saveState();
+            updateUI();
+            catSay("Выспался!", 2000);
+            showToast("☀️ Котик проснулся");
+          }
+        }, 20000);
+      }
+
+      function spawnHearts(count) {
+        const cat = document.getElementById("catPet");
+        if (!cat) return;
+        const rect = cat.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        for (let i = 0; i < count; i++) {
+          setTimeout(() => {
+            const heart = document.createElement("div");
+            heart.className = "float-heart";
+            heart.textContent = ["💗", "💖", "❤️", "💕", "✦"][
+              Math.floor(Math.random() * 5)
+            ];
+            heart.style.left = cx + (Math.random() * 60 - 30) + "px";
+            heart.style.top = cy + "px";
+            heart.style.fontSize = 16 + Math.random() * 12 + "px";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1600);
+          }, i * 80);
+        }
+      }
+
+      let toastTimer = null;
+      function showToast(text) {
+        const toast = document.getElementById("toast");
+        toast.textContent = text;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+      }
+
+      document.getElementById("catPet").addEventListener("click", () => {
+        if (catState.sleeping) catSay(pickPhrase("sleeping"), 2000);
+        else if (catState.hunger < 30) catSay(pickPhrase("hungry"), 2500);
+        else if (catState.mood > 70) catSay(pickPhrase("happy"), 2000);
+        else catSay(pickPhrase("normal"), 2000);
+        spawnHearts(3);
+      });
+
+      // Passive stat drain
+      setInterval(() => {
+        if (!catState.sleeping) {
+          catState.hunger = Math.max(0, catState.hunger - 1);
+          catState.mood = Math.max(0, catState.mood - 0.5);
+          saveState();
+          updateUI();
+        }
+      }, 30000);
+
+      setTimeout(() => {
+        if (catState.sleeping) catSay("Тсс... сплю", 3000);
+        else if (catState.hunger < 30) catSay("Мяу! Покорми", 3500);
+        else catSay("Привет! Как хорошо, что ты зашла", 3500);
+      }, 800);
+
+      // ============================================================
+      // ADMIN
+      // ============================================================
+      const ADMIN_COINS = 666;
+
+      function isAdminMode() {
+        return localStorage.getItem("adminMode") === "on";
+      }
+
+      function toggleAdmin() {
+        const btn = document.getElementById("adminBtn");
+        const indicator = document.getElementById("adminIndicator");
+
+        if (isAdminMode()) {
+          const confirmed = confirm(
+            "👑 Выключить админ-режим?\n\n" +
+              "Всё вернётся к состоянию ДО включения админа:\n" +
+              "• 666 монет заберутся\n" +
+              "• Всё, что куплено НА админские монеты — пропадёт\n" +
+              "• То, что было до админа — останется\n\n" +
+              "Продолжить?",
+          );
+          if (!confirmed) return;
+
+          try {
+            const snapshotRaw = localStorage.getItem("adminSnapshot");
+            if (snapshotRaw) {
+              const snapshot = JSON.parse(snapshotRaw);
+              catState.coins = snapshot.coins;
+              catState.ownedHats = snapshot.ownedHats || [];
+              catState.ownedFood = snapshot.ownedFood || {};
+              catState.equippedHat = snapshot.equippedHat || null;
+              catState.achievements = snapshot.achievements || [];
+              catState.fishCollected = snapshot.fishCollected || 0;
+              catState.totalFishCollected = snapshot.totalFishCollected || 0;
+            } else {
+              catState.coins = Math.max(0, catState.coins - ADMIN_COINS);
+            }
+            localStorage.removeItem("adminSnapshot");
+          } catch (e) {
+            catState.coins = Math.max(0, catState.coins - ADMIN_COINS);
+          }
+
+          saveState();
+          localStorage.removeItem("adminMode");
+          document.body.classList.remove("admin-mode");
+          btn.classList.remove("active");
+          indicator.classList.remove("show");
+
+          updateUI();
+          renderShopIfOpen();
+
+          showToast("⚙️ Админ-режим выключен. Прогресс восстановлен");
+          Sound.hurt();
+          catSay("Мои вещи вернулись!", 3000);
+        } else {
+          const confirmed = confirm(
+            "👑 Включить админ-режим?\n\n" +
+              "• Ты получишь 666 монет\n" +
+              "• Прогресс до этого будет сохранён\n" +
+              "• Когда выключишь — всё вернётся, кроме купленного на эти 666\n\n" +
+              "Продолжить?",
+          );
+          if (!confirmed) return;
+
+          const snapshot = {
+            coins: catState.coins,
+            ownedHats: [...catState.ownedHats],
+            ownedFood: { ...catState.ownedFood },
+            equippedHat: catState.equippedHat,
+            achievements: [...catState.achievements],
+            fishCollected: catState.fishCollected,
+            totalFishCollected: catState.totalFishCollected,
+          };
+          localStorage.setItem("adminSnapshot", JSON.stringify(snapshot));
+
+          catState.coins += ADMIN_COINS;
+          saveState();
+
+          localStorage.setItem("adminMode", "on");
+          document.body.classList.add("admin-mode");
+          btn.classList.add("active");
+          indicator.classList.add("show");
+          setTimeout(() => indicator.classList.remove("show"), 4000);
+
+          updateUI();
+          renderShopIfOpen();
+
+          Sound.ach();
+          setTimeout(() => Sound.coin(), 200);
+          setTimeout(() => Sound.powerup(), 400);
+
+          for (let i = 0; i < 60; i++)
+            setTimeout(() => spawnAdminConfetti(), i * 25);
+
+          showToast(`👑 Админ-режим активен! +${ADMIN_COINS} монет`);
+          catSay("ВАУ! 👑 Я теперь королевский котик!", 3000);
+        }
+      }
+
+      function renderShopIfOpen() {
+        const shopMenu = document.getElementById("shopMenu");
+        if (shopMenu && shopMenu.classList.contains("active")) {
+          document.getElementById("shopCoins").textContent = catState.coins;
+          renderShop();
+        }
+      }
+
+      function spawnAdminConfetti() {
+        const confetti = document.createElement("div");
+        confetti.className = "admin-confetti";
+        confetti.textContent = ["👑", "🪙", "💰", "✦", "✧", "⭐"][
+          Math.floor(Math.random() * 6)
+        ];
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.animationDuration = 2 + Math.random() * 2 + "s";
+        confetti.style.fontSize = 18 + Math.random() * 18 + "px";
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 4500);
+      }
+
+      function restoreAdminMode() {
+        if (isAdminMode()) {
+          document.body.classList.add("admin-mode");
+          document.getElementById("adminBtn").classList.add("active");
+          setTimeout(() => {
+            const indicator = document.getElementById("adminIndicator");
+            indicator.classList.add("show");
+            setTimeout(() => indicator.classList.remove("show"), 4000);
+          }, 500);
+        }
+      }
+
+      // ============================================================
+      // START
+      // ============================================================
+      updateUI();
+      restoreAdminMode();
+
+      // Init audio on first interaction
+      ["click", "touchstart", "keydown"].forEach((evt) => {
+        document.addEventListener(evt, initAudio, {
+          once: true,
+          passive: true,
+        });
+      });
+    </script>
+    <script src="sw-register.js" defer></script>
+  </body>
 </html>

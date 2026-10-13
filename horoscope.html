@@ -1,0 +1,1804 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Гороскоп на нас · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
+        --sand: #cfb8a3;
+        --gold: #b89968;
+        --gold-deep: #8a6f4d;
+        --night: #1a1613;
+        --night-2: #2b2620;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+      }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
+
+      /* TOPBAR */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.72);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+      }
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      /* LAYOUT */
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
+
+      /* HERO */
+      .hero {
+        padding: 20px 0 40px;
+        text-align: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+      }
+      .eyebrow::before,
+      .eyebrow::after {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 72px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 22px;
+        max-width: 16ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        margin: 0 auto;
+        max-width: 46ch;
+        font-weight: 400;
+      }
+
+      /* COMPATIBILITY CARD */
+      .compat-card {
+        position: relative;
+        margin-top: 72px;
+        padding: 56px 48px 48px;
+        background: linear-gradient(
+          160deg,
+          var(--surface) 0%,
+          var(--surface-2) 100%
+        );
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 8px 20px rgba(30, 26, 22, 0.05);
+        overflow: hidden;
+      }
+      .compat-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='nz'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23nz)'/></svg>");
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      .compat-card::after {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(30, 26, 22, 0.05);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      .compat-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 20px;
+        margin-bottom: 40px;
+        border-bottom: 1px solid var(--line);
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .compat-head .label {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .compat-head .latin {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        color: var(--rose-deep);
+      }
+
+      .pair-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 32px;
+        align-items: center;
+        margin-bottom: 44px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .person {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+      .person-name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 15px;
+        font-style: italic;
+        color: var(--ink-3);
+        letter-spacing: 0.02em;
+      }
+      .person-sign {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 32px;
+        line-height: 1;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+      }
+      .person-sign em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .person-glyph {
+        font-size: 44px;
+        line-height: 1;
+        filter: saturate(0.7);
+        margin-bottom: 4px;
+        display: block;
+      }
+      .person-dates {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+      }
+
+      .pair-heart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: var(--rose-deep);
+      }
+      .pair-heart .heart {
+        font-size: 28px;
+        animation: heartbeat 2.4s ease infinite;
+        filter: saturate(0.75);
+      }
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        15% {
+          transform: scale(1.15);
+        }
+        30% {
+          transform: scale(1);
+        }
+        45% {
+          transform: scale(1.08);
+        }
+        60% {
+          transform: scale(1);
+        }
+      }
+      .pair-heart .link-line {
+        width: 60px;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--rose-deep),
+          transparent
+        );
+      }
+
+      .compat-score {
+        text-align: center;
+        padding: 40px 20px 44px;
+        position: relative;
+        z-index: 1;
+      }
+      .compat-score-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(90px, 16vw, 200px);
+        line-height: 0.85;
+        letter-spacing: -0.05em;
+        color: var(--ink);
+        margin: 0;
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+      }
+      .compat-score-value sup {
+        font-size: 0.28em;
+        color: var(--rose-deep);
+        letter-spacing: -0.02em;
+        vertical-align: super;
+        top: -1.4em;
+        margin-left: 8px;
+        font-style: italic;
+      }
+      .compat-score-label {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-top: 20px;
+      }
+      .compat-score-text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: clamp(16px, 2vw, 20px);
+        line-height: 1.5;
+        color: var(--ink-2);
+        margin: 24px auto 0;
+        max-width: 46ch;
+        letter-spacing: -0.005em;
+      }
+
+      /* NATAL CHART */
+      .chart-section {
+        margin-top: 72px;
+        display: flex;
+        justify-content: center;
+      }
+      .chart-frame {
+        position: relative;
+        padding: 32px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1),
+          0 8px 20px rgba(30, 26, 22, 0.05);
+        max-width: 620px;
+        width: 100%;
+      }
+      .chart-frame::before,
+      .chart-frame::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--ink-3);
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .chart-frame::before {
+        top: 6px;
+        left: 6px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .chart-frame::after {
+        bottom: 6px;
+        right: 6px;
+        border-left: none;
+        border-top: none;
+      }
+      .chart-inner {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background: linear-gradient(180deg, #faf6ee 0%, var(--surface-2) 100%);
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      #natalChart {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .chart-label {
+        position: absolute;
+        top: 22px;
+        left: 24px;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        color: var(--ink-3);
+        opacity: 0.7;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .chart-tag {
+        position: absolute;
+        top: 22px;
+        right: 24px;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        opacity: 0.8;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      /* SIGNS SECTION */
+      .signs-section {
+        margin-top: 72px;
+      }
+      .section-head {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 60px;
+        margin-bottom: 40px;
+        align-items: baseline;
+      }
+      .section-label {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .section-label .num {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 18px;
+        color: var(--rose-deep);
+        letter-spacing: 0;
+        text-transform: none;
+      }
+      .section-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(26px, 3.4vw, 40px);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        margin: 0;
+        color: var(--ink);
+      }
+      .section-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .signs-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .sign-card {
+        position: relative;
+        padding: 36px 32px 32px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 20px 45px rgba(30, 26, 22, 0.08),
+          0 4px 12px rgba(30, 26, 22, 0.04);
+      }
+      .sign-card::after {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: 1px solid rgba(30, 26, 22, 0.05);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+      .sign-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 14px;
+        margin-bottom: 22px;
+        border-bottom: 1px solid var(--line);
+        position: relative;
+        z-index: 1;
+      }
+      .sign-card-head .label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .sign-card-head .who {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        color: var(--rose-deep);
+      }
+
+      .sign-row {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--line);
+        position: relative;
+        z-index: 1;
+      }
+      .sign-row:last-child {
+        border-bottom: none;
+      }
+
+      .sign-symbol {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--rose-tint) 0%,
+          var(--rose-soft) 100%
+        );
+        border: 1px solid rgba(143, 100, 114, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 22px;
+        color: var(--rose-deep);
+        flex-shrink: 0;
+        line-height: 1;
+        padding-bottom: 2px;
+      }
+      .sign-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .sign-name {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 18px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin: 0 0 3px;
+      }
+      .sign-desc {
+        font-size: 12.5px;
+        color: var(--ink-3);
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      /* AUSPICIOUS DATES */
+      .dates-section {
+        margin-top: 72px;
+      }
+      .dates-list {
+        display: flex;
+        flex-direction: column;
+      }
+      .date-row {
+        display: grid;
+        grid-template-columns: 180px 1fr 140px;
+        gap: 32px;
+        padding: 28px 8px;
+        border-top: 1px solid var(--line);
+        align-items: center;
+        transition:
+          background 0.4s var(--ease),
+          padding 0.4s var(--ease);
+      }
+      .date-row:last-child {
+        border-bottom: 1px solid var(--line);
+      }
+      .date-row:hover {
+        background: rgba(253, 250, 246, 0.6);
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .date-when {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 15px;
+        letter-spacing: 0.02em;
+        color: var(--rose-deep);
+        line-height: 1.3;
+      }
+      .date-what {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 1.25;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+      }
+      .date-what em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .date-what .date-sub {
+        display: block;
+        font-family: "Inter", sans-serif;
+        font-size: 12.5px;
+        font-weight: 400;
+        font-style: normal;
+        color: var(--ink-3);
+        letter-spacing: 0.01em;
+        line-height: 1.5;
+        margin-top: 4px;
+      }
+
+      .date-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: rgba(181, 135, 148, 0.12);
+        border: 1px solid rgba(143, 100, 114, 0.2);
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        justify-self: end;
+        white-space: nowrap;
+      }
+      .date-badge .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--rose-deep);
+      }
+
+      /* FORECAST */
+      .forecast {
+        margin-top: 72px;
+        position: relative;
+        padding: 56px 48px 48px;
+        background: linear-gradient(
+          160deg,
+          var(--night) 0%,
+          var(--night-2) 100%
+        );
+        border-radius: 4px;
+        color: var(--paper);
+        overflow: hidden;
+      }
+      .forecast::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n4'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n4)'/></svg>");
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .forecast::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border: 1px solid rgba(232, 212, 216, 0.1);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+      .forecast-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 18px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid rgba(232, 212, 216, 0.12);
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: rgba(232, 212, 216, 0.55);
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .forecast-head .latin {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--rose);
+      }
+      .forecast-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(24px, 3vw, 34px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--paper);
+        margin: 0 0 16px;
+        position: relative;
+        z-index: 1;
+      }
+      .forecast-title em {
+        font-style: italic;
+        color: var(--rose);
+      }
+      .forecast-text {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 16px;
+        line-height: 1.65;
+        letter-spacing: -0.005em;
+        color: rgba(232, 212, 216, 0.9);
+        margin: 0 0 32px;
+        position: relative;
+        z-index: 1;
+        max-width: 48ch;
+      }
+      .forecast-text b {
+        font-weight: 400;
+        color: var(--rose);
+      }
+
+      .forecast-chart {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        position: relative;
+        z-index: 1;
+      }
+      .forecast-cell {
+        text-align: center;
+        padding: 20px 12px;
+        position: relative;
+      }
+      .forecast-cell + .forecast-cell::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 20%;
+        bottom: 20%;
+        width: 1px;
+        background: rgba(232, 212, 216, 0.12);
+      }
+      .forecast-cell .fc-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(232, 212, 216, 0.5);
+        display: block;
+        margin-bottom: 12px;
+      }
+      .forecast-cell .fc-value {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 26px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--paper);
+        font-variant-numeric: tabular-nums;
+      }
+      .forecast-cell .fc-value.rose {
+        color: var(--rose);
+      }
+
+      /* NAV */
+      .nav-wrap {
+        margin-top: 96px;
+        padding-top: 40px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 32px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .back-link:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
+      }
+      .back-link .arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 15px;
+      }
+      .back-link:hover .arrow {
+        transform: translateX(-5px);
+      }
+      .nav-link-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 28px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .nav-link-secondary:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+      .nav-link-secondary .icon {
+        font-size: 14px;
+        filter: saturate(0.75);
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .nav-link-secondary:hover .icon {
+        transform: scale(1.15);
+      }
+
+      /* FOOTER */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 900px) {
+        .section-head {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          margin-bottom: 28px;
+        }
+        .signs-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        .date-row {
+          grid-template-columns: 1fr;
+          gap: 10px;
+          padding: 22px 4px;
+        }
+        .date-row:hover {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+        .date-badge {
+          justify-self: start;
+        }
+        .pair-row {
+          grid-template-columns: 1fr;
+          gap: 20px;
+          text-align: center;
+        }
+        .pair-heart {
+          order: 0;
+        }
+        .pair-heart .link-line {
+          width: 40px;
+        }
+        .forecast-chart {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .forecast-cell:nth-child(3)::before {
+          display: none;
+        }
+        .forecast-cell:nth-child(2)::before {
+          display: none;
+        }
+        .forecast-cell:nth-child(3),
+        .forecast-cell:nth-child(4) {
+          border-top: 1px solid rgba(232, 212, 216, 0.12);
+          padding-top: 28px;
+        }
+        .chart-frame {
+          padding: 20px;
+        }
+        .chart-label {
+          top: 14px;
+          left: 16px;
+          font-size: 10px;
+        }
+        .chart-tag {
+          top: 14px;
+          right: 16px;
+          font-size: 9px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(32px, 9vw, 46px);
+        }
+        .compat-card {
+          padding: 36px 24px 32px;
+          margin-top: 56px;
+        }
+        .compat-head {
+          padding-bottom: 14px;
+          margin-bottom: 28px;
+        }
+        .compat-score {
+          padding: 28px 0 32px;
+        }
+        .compat-score-value {
+          font-size: clamp(80px, 26vw, 160px);
+        }
+        .compat-score-label {
+          font-size: 10px;
+          margin-top: 14px;
+        }
+        .compat-score-text {
+          font-size: 15px;
+          margin-top: 18px;
+        }
+        .sign-card {
+          padding: 26px 22px 24px;
+        }
+        .sign-symbol {
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
+        }
+        .sign-name {
+          font-size: 16px;
+        }
+        .sign-desc {
+          font-size: 12px;
+        }
+        .date-what {
+          font-size: 17px;
+        }
+        .date-when {
+          font-size: 13.5px;
+        }
+        .date-what .date-sub {
+          font-size: 11.5px;
+        }
+        .forecast {
+          padding: 36px 24px 32px;
+          margin-top: 56px;
+        }
+        .forecast-title {
+          font-size: 22px;
+        }
+        .forecast-text {
+          font-size: 14.5px;
+          margin-bottom: 24px;
+        }
+        .forecast-cell .fc-value {
+          font-size: 22px;
+        }
+        .forecast-cell .fc-label {
+          font-size: 9px;
+        }
+        .chart-section {
+          margin-top: 56px;
+        }
+        .signs-section,
+        .dates-section {
+          margin-top: 56px;
+        }
+        .nav-wrap {
+          margin-top: 72px;
+          padding-top: 32px;
+          gap: 10px;
+        }
+        .back-link,
+        .nav-link-secondary {
+          padding: 16px 24px;
+          font-size: 13.5px;
+        }
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+        .pair-heart .heart {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item"
+          ><span class="icon" id="timeIcon">☀️</span
+          ><span id="timeText">--:--</span></span
+        >
+        <span class="meta-sep">·</span>
+        <span class="meta-item"
+          ><span class="icon" id="weatherIcon">🌤️</span
+          ><span id="weatherText">...</span></span
+        >
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <span class="eyebrow">22 · Астрология</span>
+        <h1>Гороскоп на <em>нас с тобой</em></h1>
+        <p class="hero-sub">
+          Овен и Близнецы — классика астрологии. Огонь встречает Воздух, искра
+          встречает лёгкость. Совместимость подтверждена звёздами.
+        </p>
+      </section>
+
+      <!-- COMPATIBILITY CARD -->
+      <article class="compat-card">
+        <header class="compat-head">
+          <span class="label">Карта совместимости</span>
+          <span class="latin">Synastria · aeterna</span>
+        </header>
+
+        <div class="pair-row">
+          <div class="person">
+            <span class="person-glyph">♈</span>
+            <span class="person-sign">Овен</span>
+            <span class="person-name">Она</span>
+            <span class="person-dates">огонь · энергия · первая</span>
+          </div>
+
+          <div class="pair-heart">
+            <span class="heart">♥</span>
+            <div class="link-line"></div>
+          </div>
+
+          <div class="person">
+            <span class="person-glyph">♊</span>
+            <span class="person-sign">Близнецы</span>
+            <span class="person-name">Он</span>
+            <span class="person-dates">воздух · лёгкость · слово</span>
+          </div>
+        </div>
+
+        <div class="compat-score">
+          <h2 class="compat-score-value">98<sup>%</sup></h2>
+          <div class="compat-score-label">Совместимость</div>
+          <p class="compat-score-text">
+            Овен и Близнецы — союз двух стихий, которые только друг друга и
+            раздувают, и остужают вовремя. Два процента оставим на то, чтобы
+            продолжать удивлять друг друга.
+          </p>
+        </div>
+      </article>
+
+      <!-- NATAL CHART -->
+      <section class="chart-section">
+        <div class="chart-frame">
+          <div class="chart-inner" id="chartInner">
+            <span class="chart-label">№ 22 · синастрия</span>
+            <span class="chart-tag">Овен ♥ Близнецы</span>
+            <canvas id="natalChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- SIGNS BREAKDOWN -->
+      <section class="signs-section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">01</span>
+            <span>Положения</span>
+          </div>
+          <h2 class="section-title">Звёзды о нас <em>двоих</em></h2>
+        </div>
+
+        <div class="signs-grid">
+          <!-- HER -->
+          <div class="sign-card">
+            <div class="sign-card-head">
+              <span class="label">Её космос</span>
+              <span class="who">Вероника · Овен</span>
+            </div>
+            <div class="sign-row">
+              <div class="sign-symbol">♈</div>
+              <div class="sign-info">
+                <h3 class="sign-name">Солнце в Овне</h3>
+                <p class="sign-desc">
+                  Искра, которая зажигает всё вокруг. Смелость идти первой,
+                  честность без фильтров, огонь в каждом жесте.
+                </p>
+              </div>
+            </div>
+            <div class="sign-row">
+              <div class="sign-symbol">☾</div>
+              <div class="sign-info">
+                <h3 class="sign-name">Луна в Тельце</h3>
+                <p class="sign-desc">
+                  А внутри — тепло, уют и любовь к пледу. Овен снаружи, но дом,
+                  объятия и стабильность — там, где сердце.
+                </p>
+              </div>
+            </div>
+            <div class="sign-row">
+              <div class="sign-symbol">♀</div>
+              <div class="sign-info">
+                <h3 class="sign-name">Венера в Рыбах</h3>
+                <p class="sign-desc">
+                  Нежность без границ, чувствование чужого настроения, эмпатия
+                  как суперсила. Любит глубоко и искренне.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- HIM -->
+          <div class="sign-card">
+            <div class="sign-card-head">
+              <span class="label">Его космос</span>
+              <span class="who">Анатолий · Близнецы</span>
+            </div>
+            <div class="sign-row">
+              <div class="sign-symbol">♊</div>
+              <div class="sign-info">
+                <h3 class="sign-name">Солнце в Близнецах</h3>
+                <p class="sign-desc">
+                  Лёгкость, любопытство, слова, которые всегда находят нужные
+                  двери. Умеет говорить с кем угодно — особенно с ней.
+                </p>
+              </div>
+            </div>
+            <div class="sign-row">
+              <div class="sign-symbol">☾</div>
+              <div class="sign-info">
+                <h3 class="sign-name">Луна в Деве</h3>
+                <p class="sign-desc">
+                  Заботится тихо и точно: заметит, что она замёрзла, принесёт
+                  чай, укроет пледом. Любовь — в деталях.
+                </p>
+              </div>
+            </div>
+            <div class="sign-row">
+              <div class="sign-symbol">♂</div>
+              <div class="sign-info">
+                <h3 class="sign-name">Марс в Скорпионе</h3>
+                <p class="sign-desc">
+                  Умение идти до конца. В любви — держать крепко, не отпускать,
+                  идти за ней куда угодно.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AUSPICIOUS DATES -->
+      <section class="dates-section">
+        <div class="section-head">
+          <div class="section-label">
+            <span class="num">02</span>
+            <span>Даты</span>
+          </div>
+          <h2 class="section-title">Когда <em>звёзды</em> были за нас</h2>
+        </div>
+
+        <div class="dates-list">
+          <div class="date-row">
+            <div class="date-when">9 сентября 2025</div>
+            <div class="date-what">
+              Первая встреча
+              <span class="date-sub"
+                >Венера в удачном доме. Её Овен встретил его Близнецов — и всё
+                сразу стало ясно.</span
+              >
+            </div>
+            <div class="date-badge"><span class="dot"></span>Судьбоносно</div>
+          </div>
+
+          <div class="date-row">
+            <div class="date-when">27 сентября 2025</div>
+            <div class="date-what">
+              Первое свидание
+              <span class="date-sub"
+                >Луна в Весах — идеальный баланс для прогулок до утра.</span
+              >
+            </div>
+            <div class="date-badge"><span class="dot"></span>Гармония</div>
+          </div>
+
+          <div class="date-row">
+            <div class="date-when">4 октября 2025</div>
+            <div class="date-what">
+              Официально вместе
+              <span class="date-sub"
+                >Сатурн в дружественном доме — обещание на всю жизнь.</span
+              >
+            </div>
+            <div class="date-badge"><span class="dot"></span>Навсегда</div>
+          </div>
+
+          <div class="date-row">
+            <div class="date-when">18 октября 2025</div>
+            <div class="date-what">
+              Первый поцелуй
+              <span class="date-sub"
+                >Марс соединился с Венерой — редкое и очень уместное
+                событие.</span
+              >
+            </div>
+            <div class="date-badge"><span class="dot"></span>Страстно</div>
+          </div>
+
+          <div class="date-row">
+            <div class="date-when">Каждый день</div>
+            <div class="date-what">
+              Любая дата с тобой
+              <span class="date-sub"
+                >Огонь и Воздух давно перестали проверять — они просто знают,
+                что сработает.</span
+              >
+            </div>
+            <div class="date-badge"><span class="dot"></span>Идеально</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FORECAST -->
+      <section class="forecast">
+        <div class="forecast-head">
+          <span>Прогноз на 100 лет</span>
+          <span class="latin">Praedictio · centum</span>
+        </div>
+
+        <h3 class="forecast-title">В основном <em>безоблачно</em></h3>
+        <p class="forecast-text">
+          Звёзды обещают: <b>безоблачно</b>, местами — <b>ливни счастья</b>,
+          периодически — <b>грозы страсти</b>, после которых воздух становится
+          чище, а чувства — свежее. Осадки в виде поцелуев возможны в любой день
+          без предупреждения.
+        </p>
+
+        <div class="forecast-chart">
+          <div class="forecast-cell">
+            <span class="fc-label">Лет вместе</span>
+            <span class="fc-value">100</span>
+          </div>
+          <div class="forecast-cell">
+            <span class="fc-label">Ссор</span>
+            <span class="fc-value">0</span>
+          </div>
+          <div class="forecast-cell">
+            <span class="fc-label">Объятий</span>
+            <span class="fc-value">∞</span>
+          </div>
+          <div class="forecast-cell">
+            <span class="fc-label">Прогноз</span>
+            <span class="fc-value rose">♥</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- NAV -->
+      <div class="nav-wrap">
+        <a href="index.html" class="back-link">
+          <span class="arrow">←</span>
+          <span>На главную</span>
+        </a>
+        <a href="stars.html" class="nav-link-secondary">
+          <span class="icon">✨</span>
+          <span>Созвездие Вероники</span>
+        </a>
+        <a href="sky.html" class="nav-link-secondary">
+          <span class="icon">🌌</span>
+          <span>Небо сегодня</span>
+        </a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <!-- TIME + WEATHER -->
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const t = document.getElementById("timeText");
+        if (t) t.textContent = `${hh}:${mm}`;
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        const ti = document.getElementById("timeIcon");
+        if (ti) ti.textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
+
+      const WEATHER_CITY = { name: "Улан-Удэ" };
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        if (!iconEl || !textEl) return;
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      const iw = document.getElementById("infoWidget");
+      if (iw) iw.addEventListener("click", loadWeather);
+    </script>
+
+    <!-- NATAL CHART — canvas -->
+    <script>
+      (function () {
+        "use strict";
+
+        let canvas, ctx;
+        let rafActive = false;
+
+        function resizeCanvas() {
+          if (!canvas) return;
+          const wrap = canvas.parentElement;
+          if (!wrap) return;
+          const rect = wrap.getBoundingClientRect();
+          const W = rect.width || 600;
+          const H = rect.height || 400;
+          const size = Math.min(W, H);
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.floor(size * dpr);
+          canvas.height = Math.floor(size * dpr);
+          canvas.style.width = size + "px";
+          canvas.style.height = size + "px";
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function drawChart() {
+          if (!canvas || !ctx) return;
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          const W = canvas.width / dpr;
+          const H = canvas.height / dpr;
+          if (W < 10 || H < 10) {
+            if (!rafActive) {
+              rafActive = true;
+              setTimeout(() => {
+                rafActive = false;
+                resizeCanvas();
+                drawChart();
+              }, 200);
+            }
+            return;
+          }
+
+          const cx = W / 2;
+          const cy = H / 2;
+          const R = Math.min(W, H) * 0.42;
+          const rInner = R * 0.62;
+          const rInnerSmall = R * 0.24;
+
+          ctx.clearRect(0, 0, W, H);
+
+          const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+          bg.addColorStop(0, "#faf6ee");
+          bg.addColorStop(1, "#f2e4e7");
+          ctx.fillStyle = bg;
+          ctx.beginPath();
+          ctx.arc(cx, cy, R, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = "rgba(30, 26, 22, 0.28)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(cx, cy, R, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.strokeStyle = "rgba(30, 26, 22, 0.18)";
+          ctx.beginPath();
+          ctx.arc(cx, cy, rInner, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.strokeStyle = "rgba(30, 26, 22, 0.12)";
+          ctx.beginPath();
+          ctx.arc(cx, cy, rInnerSmall, 0, Math.PI * 2);
+          ctx.stroke();
+
+          const ZODIAC_GLYPHS = [
+            "♈",
+            "♉",
+            "♊",
+            "♋",
+            "♌",
+            "♍",
+            "♎",
+            "♏",
+            "♐",
+            "♑",
+            "♒",
+            "♓",
+          ];
+          const HIGHLIGHTED = {
+            0: "rgba(143, 100, 114, 0.75)",
+            2: "rgba(184, 153, 104, 0.85)",
+          };
+
+          for (let i = 0; i < 12; i++) {
+            const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
+            const angleNext = ((i + 1) / 12) * Math.PI * 2 - Math.PI / 2;
+
+            ctx.strokeStyle = "rgba(30, 26, 22, 0.10)";
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(
+              cx + Math.cos(angle) * rInner,
+              cy + Math.sin(angle) * rInner,
+            );
+            ctx.lineTo(cx + Math.cos(angle) * R, cy + Math.sin(angle) * R);
+            ctx.stroke();
+
+            const midAngle = (angle + angleNext) / 2;
+            const glyphR = (R + rInner) / 2;
+            const gx = cx + Math.cos(midAngle) * glyphR;
+            const gy = cy + Math.sin(midAngle) * glyphR;
+
+            if (HIGHLIGHTED[i]) {
+              ctx.beginPath();
+              ctx.arc(gx, gy, R * 0.052, 0, Math.PI * 2);
+              ctx.fillStyle =
+                i === 0
+                  ? "rgba(143, 100, 114, 0.14)"
+                  : "rgba(184, 153, 104, 0.16)";
+              ctx.fill();
+            }
+
+            ctx.font = `${Math.floor(R * 0.07)}px serif`;
+            ctx.fillStyle = HIGHLIGHTED[i] || "rgba(30, 26, 22, 0.45)";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(ZODIAC_GLYPHS[i], gx, gy);
+          }
+
+          const angles = [0.15, 0.35, 0.55, 0.75, 0.9];
+          const colors = [
+            "rgba(143, 100, 114, 0.42)",
+            "rgba(184, 153, 104, 0.38)",
+            "rgba(181, 135, 148, 0.45)",
+          ];
+          angles.forEach((a, i) => {
+            for (let j = i + 1; j < angles.length; j++) {
+              const a1 = a * Math.PI * 2 - Math.PI / 2;
+              const a2 = angles[j] * Math.PI * 2 - Math.PI / 2;
+              const x1 = cx + Math.cos(a1) * rInner * 0.92;
+              const y1 = cy + Math.sin(a1) * rInner * 0.92;
+              const x2 = cx + Math.cos(a2) * rInner * 0.92;
+              const y2 = cy + Math.sin(a2) * rInner * 0.92;
+              ctx.strokeStyle = colors[(i + j) % colors.length];
+              ctx.lineWidth = 0.8;
+              ctx.beginPath();
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(x2, y2);
+              ctx.stroke();
+            }
+          });
+
+          const planets = [
+            { angle: 0.02, glyph: "☉", color: "var(--rose-deep)", side: "her" },
+            { angle: 0.06, glyph: "☾", color: "var(--rose-deep)", side: "her" },
+            { angle: 0.1, glyph: "♀", color: "var(--rose-deep)", side: "her" },
+            { angle: 0.18, glyph: "☉", color: "var(--gold-deep)", side: "him" },
+            { angle: 0.22, glyph: "☾", color: "var(--gold-deep)", side: "him" },
+            { angle: 0.26, glyph: "♂", color: "var(--gold-deep)", side: "him" },
+          ];
+
+          planets.forEach((p) => {
+            const a = p.angle * Math.PI * 2 - Math.PI / 2;
+            const pr = (R + rInner) / 2;
+            const px = cx + Math.cos(a) * pr;
+            const py = cy + Math.sin(a) * pr;
+
+            ctx.beginPath();
+            ctx.arc(px, py, R * 0.05, 0, Math.PI * 2);
+            ctx.fillStyle =
+              p.side === "her"
+                ? "rgba(143, 100, 114, 0.14)"
+                : "rgba(184, 153, 104, 0.14)";
+            ctx.fill();
+
+            ctx.font = `${Math.floor(R * 0.075)}px serif`;
+            ctx.fillStyle = p.color;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(p.glyph, px, py);
+          });
+
+          ctx.font = `${Math.floor(R * 0.22)}px serif`;
+          ctx.fillStyle = "rgba(143, 100, 114, 0.85)";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("♥", cx, cy + R * 0.02);
+
+          for (let i = 0; i < 60; i++) {
+            const a = (i / 60) * Math.PI * 2 - Math.PI / 2;
+            const isMajor = i % 5 === 0;
+            const tickR1 = R - (isMajor ? R * 0.05 : R * 0.025);
+            const tickR2 = R;
+            ctx.strokeStyle = isMajor
+              ? "rgba(30, 26, 22, 0.28)"
+              : "rgba(30, 26, 22, 0.12)";
+            ctx.lineWidth = isMajor ? 0.8 : 0.5;
+            ctx.beginPath();
+            ctx.moveTo(cx + Math.cos(a) * tickR1, cy + Math.sin(a) * tickR1);
+            ctx.lineTo(cx + Math.cos(a) * tickR2, cy + Math.sin(a) * tickR2);
+            ctx.stroke();
+          }
+
+          requestAnimationFrame(drawChart);
+        }
+
+        function initChart() {
+          try {
+            canvas = document.getElementById("natalChart");
+            if (!canvas) return;
+            ctx = canvas.getContext("2d");
+            requestAnimationFrame(() => {
+              resizeCanvas();
+              drawChart();
+            });
+            let resizeTimer;
+            window.addEventListener("resize", () => {
+              clearTimeout(resizeTimer);
+              resizeTimer = setTimeout(() => resizeCanvas(), 200);
+            });
+          } catch (e) {
+            console.error("initChart:", e);
+          }
+        }
+
+        if (document.readyState === "complete") {
+          initChart();
+        } else {
+          window.addEventListener("load", initChart);
+        }
+      })();
+    </script>
+
+    <script src="sw-register.js" defer></script>
+  </body>
+</html>

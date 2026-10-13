@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Вероника — Википедия</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --paper: #f3ede4;
+        --paper-2: #ece4d8;
+        --surface: #fdfaf6;
+        --surface-2: #f7f0e6;
+        --surface-3: #efe7da;
+        --ink: #1e1a16;
+        --ink-2: #4a423c;
+        --ink-3: #8a7f75;
+        --ink-4: #b8aca1;
+        --line: rgba(30, 26, 22, 0.08);
+        --line-2: rgba(30, 26, 22, 0.16);
+        --rose: #b58794;
+        --rose-deep: #8f6472;
+        --rose-soft: #e8d4d8;
+        --rose-tint: #f2e4e7;
+        --sand: #cfb8a3;
+        --gold: #b89968;
+        --link: #8f6472;
+        --link-visited: #6b4855;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 90% 60% at 15% -10%,
+            rgba(232, 212, 216, 0.55),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 95% 15%,
+            rgba(207, 184, 163, 0.28),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 5% 105%,
+            rgba(181, 135, 148, 0.16),
+            transparent 60%
+          ),
+          var(--paper);
+      }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.3;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      ::selection {
+        background: var(--rose-soft);
+        color: var(--rose-deep);
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(30, 26, 22, 0.12);
+        border-radius: 10px;
+        border: 3px solid var(--paper);
+      }
+
+      /* TOPBAR */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: rgba(243, 237, 228, 0.72);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--line);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 2px;
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .brand:hover .brand-mark {
+        transform: rotate(-12deg) scale(1.05);
+      }
+      .brand-label {
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ink-2);
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+      }
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .meta-item .icon {
+        font-size: 13px;
+        filter: saturate(0.7);
+      }
+      .meta-sep {
+        color: var(--ink-4);
+      }
+
+      /* LAYOUT */
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 140px 32px 80px;
+      }
+
+      /* HERO / ARTICLE HEAD */
+      .article-head {
+        padding-bottom: 20px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .article-head-left {
+        min-width: 0;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 20px;
+      }
+      .eyebrow::before {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+      }
+      h1 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(38px, 5.4vw, 68px);
+        line-height: 1.02;
+        letter-spacing: -0.025em;
+        color: var(--ink);
+        margin: 0 0 12px;
+      }
+      h1 em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .article-tagline {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 16px;
+        color: var(--ink-3);
+        letter-spacing: -0.005em;
+        margin: 0;
+      }
+      .article-meta {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .article-meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .article-meta-item .dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--rose);
+      }
+
+      /* WIKI LAYOUT */
+      .wiki-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 56px;
+        align-items: start;
+      }
+
+      /* MAIN ARTICLE */
+      .wiki-article {
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        line-height: 1.75;
+        color: var(--ink-2);
+        max-width: 72ch;
+      }
+
+      .wiki-article p {
+        margin: 0 0 20px;
+        text-wrap: pretty;
+      }
+
+      .wiki-article p strong {
+        font-weight: 500;
+        color: var(--ink);
+      }
+
+      .wiki-article h2 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(24px, 3vw, 32px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 44px 0 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .wiki-article h2:first-child {
+        margin-top: 0;
+      }
+
+      .wiki-article h3 {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 32px 0 12px;
+      }
+
+      .wiki-article a {
+        color: var(--link);
+        border-bottom: 1px solid rgba(143, 100, 114, 0.35);
+        transition: all 0.25s var(--ease);
+      }
+      .wiki-article a:hover {
+        color: var(--rose-deep);
+        border-bottom-color: var(--rose-deep);
+        background: var(--rose-tint);
+      }
+      .wiki-article a:visited {
+        color: var(--link-visited);
+      }
+
+      .wiki-article ul,
+      .wiki-article ol {
+        margin: 0 0 20px;
+        padding-left: 24px;
+      }
+      .wiki-article li {
+        margin-bottom: 8px;
+        line-height: 1.7;
+      }
+      .wiki-article li::marker {
+        color: var(--rose-deep);
+      }
+
+      /* Lead paragraph */
+      .lead {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 18px !important;
+        line-height: 1.65 !important;
+        color: var(--ink) !important;
+        letter-spacing: -0.005em;
+      }
+
+      /* Info notice */
+      .notice {
+        display: flex;
+        gap: 14px;
+        padding: 16px 20px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-left: 2px solid var(--rose-deep);
+        border-radius: 3px;
+        margin: 24px 0;
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--ink-2);
+        font-style: italic;
+      }
+      .notice-mark {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 22px;
+        color: var(--rose-deep);
+        flex-shrink: 0;
+        line-height: 1;
+      }
+      .notice b {
+        font-weight: 500;
+        font-style: normal;
+        color: var(--ink);
+      }
+
+      /* Contents box */
+      .toc {
+        display: inline-block;
+        padding: 20px 24px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        margin: 20px 0 32px;
+        min-width: 280px;
+      }
+      .toc-head {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: 15px;
+        font-style: italic;
+        color: var(--ink);
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--line);
+        letter-spacing: -0.005em;
+      }
+      .toc ol {
+        margin: 0;
+        padding-left: 20px;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+      .toc li {
+        margin-bottom: 2px;
+      }
+      .toc a {
+        color: var(--ink-2);
+        border: none;
+        transition: color 0.2s var(--ease);
+      }
+      .toc a:hover {
+        color: var(--rose-deep);
+        background: none;
+      }
+
+      /* Infobox */
+      .infobox {
+        position: sticky;
+        top: 100px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 20px 45px rgba(30, 26, 22, 0.1);
+      }
+
+      .infobox-head {
+        padding: 22px 24px 20px;
+        background: linear-gradient(
+          160deg,
+          var(--rose-tint) 0%,
+          var(--surface-2) 100%
+        );
+        border-bottom: 1px solid var(--line);
+        text-align: center;
+      }
+      .infobox-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-weight: 400;
+        font-size: 24px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 4px;
+      }
+      .infobox-subtitle {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 13.5px;
+        color: var(--rose-deep);
+        letter-spacing: -0.005em;
+      }
+
+      .infobox-photo {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background: linear-gradient(
+          135deg,
+          #ecd8dc 0%,
+          #ddc5ca 55%,
+          #cbb0b6 100%
+        );
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .infobox-photo::before {
+        content: "V";
+        position: absolute;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 120px;
+        line-height: 1;
+        color: rgba(30, 26, 22, 0.14);
+        padding-bottom: 8px;
+      }
+      .infobox-photo img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+      }
+      .infobox-photo-caption {
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 12px;
+        color: rgba(30, 26, 22, 0.75);
+        z-index: 2;
+      }
+
+      .infobox-body {
+        padding: 0;
+      }
+      .infobox-row {
+        display: grid;
+        grid-template-columns: 40% 60%;
+        padding: 12px 22px;
+        border-bottom: 1px solid var(--line);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .infobox-row:last-child {
+        border-bottom: none;
+      }
+      .infobox-row .label {
+        font-weight: 500;
+        color: var(--ink-3);
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        align-self: flex-start;
+        padding-top: 1px;
+      }
+      .infobox-row .value {
+        color: var(--ink);
+        font-weight: 400;
+      }
+      .infobox-row .value em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+      .infobox-row .value a {
+        color: var(--link);
+        border-bottom: 1px solid rgba(143, 100, 114, 0.3);
+      }
+      .infobox-row .value a:hover {
+        color: var(--rose-deep);
+        background: var(--rose-tint);
+      }
+
+      /* Wiki quote */
+      .wiki-quote {
+        margin: 32px 0;
+        padding: 24px 28px;
+        border-left: 3px solid var(--rose-deep);
+        background: var(--surface-2);
+        border-radius: 0 4px 4px 0;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 19px;
+        line-height: 1.5;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+      }
+      .wiki-quote-cite {
+        display: block;
+        margin-top: 14px;
+        font-family: "Inter", sans-serif;
+        font-style: normal;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      /* Fact table */
+      .fact-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .fact-list li {
+        padding: 14px 20px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        font-size: 14.5px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        transition: all 0.3s var(--ease);
+      }
+      .fact-list li:hover {
+        background: var(--surface);
+        border-color: var(--rose);
+        transform: translateX(3px);
+      }
+      .fact-list li b {
+        color: var(--ink);
+        font-weight: 500;
+      }
+
+      /* See also */
+      .see-also {
+        margin-top: 48px;
+        padding: 24px 28px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+      }
+      .see-also-title {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 16px;
+        color: var(--ink);
+        margin-bottom: 14px;
+        letter-spacing: -0.005em;
+      }
+      .see-also-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .see-also-list a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink-2);
+        border-bottom: 1px solid var(--line-2);
+        transition: all 0.3s var(--ease);
+      }
+      .see-also-list a:hover {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        transform: translateY(-2px);
+      }
+      .see-also-list a .icon {
+        font-size: 13px;
+        filter: saturate(0.8);
+      }
+
+      /* Article footer */
+      .article-foot {
+        margin-top: 48px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: var(--ink-3);
+        font-style: italic;
+      }
+
+      /* NAV */
+      .nav-wrap {
+        margin-top: 80px;
+        padding-top: 40px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 32px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .back-link:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
+      }
+      .back-link .arrow {
+        display: inline-block;
+        transition: transform 0.4s var(--ease);
+        font-size: 15px;
+      }
+      .back-link:hover .arrow {
+        transform: translateX(-5px);
+      }
+      .nav-link-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 28px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: all 0.35s var(--ease);
+      }
+      .nav-link-secondary:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-2px);
+      }
+      .nav-link-secondary .icon {
+        font-size: 14px;
+        filter: saturate(0.75);
+        transition: transform 0.4s var(--ease-spring);
+      }
+      .nav-link-secondary:hover .icon {
+        transform: scale(1.15);
+      }
+
+      /* FOOTER */
+      .footer {
+        padding: 40px 32px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        max-width: 1240px;
+        margin: 40px auto 0;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 900px) {
+        .wiki-layout {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .infobox {
+          position: static;
+          max-width: 100%;
+          order: -1;
+        }
+        main {
+          padding: 130px 24px 60px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 120px 20px 60px;
+        }
+        h1 {
+          font-size: clamp(32px, 9vw, 46px);
+        }
+        .article-head {
+          padding-bottom: 16px;
+          margin-bottom: 24px;
+        }
+        .article-meta {
+          gap: 14px;
+          font-size: 10px;
+        }
+        .wiki-article {
+          font-size: 15px;
+          line-height: 1.7;
+        }
+        .lead {
+          font-size: 16px !important;
+        }
+        .wiki-article h2 {
+          font-size: 22px;
+          margin: 32px 0 12px;
+        }
+        .wiki-article h3 {
+          font-size: 18px;
+        }
+        .toc {
+          min-width: 0;
+          width: 100%;
+          padding: 16px 18px;
+        }
+        .notice {
+          padding: 14px 16px;
+          font-size: 13px;
+        }
+        .wiki-quote {
+          font-size: 17px;
+          padding: 18px 20px;
+        }
+        .infobox-head {
+          padding: 18px 20px 16px;
+        }
+        .infobox-title {
+          font-size: 22px;
+        }
+        .infobox-photo::before {
+          font-size: 90px;
+        }
+        .infobox-row {
+          padding: 10px 18px;
+        }
+        .see-also {
+          padding: 20px;
+        }
+        .nav-wrap {
+          margin-top: 60px;
+          padding-top: 32px;
+          gap: 10px;
+        }
+        .back-link,
+        .nav-link-secondary {
+          padding: 16px 24px;
+          font-size: 13.5px;
+        }
+        .topbar {
+          padding: 16px 20px;
+          font-size: 11.5px;
+        }
+        .brand-label {
+          display: none;
+        }
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          font-size: 15px;
+        }
+        .meta-sep {
+          display: none;
+        }
+        .topbar-meta {
+          gap: 10px;
+          font-size: 11.5px;
+        }
+        .footer {
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+          font-size: 10.5px;
+          padding: 32px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item"
+          ><span class="icon" id="timeIcon">☀️</span
+          ><span id="timeText">--:--</span></span
+        >
+        <span class="meta-sep">·</span>
+        <span class="meta-item"
+          ><span class="icon" id="weatherIcon">🌤️</span
+          ><span id="weatherText">...</span></span
+        >
+      </div>
+    </header>
+
+    <main>
+      <!-- ARTICLE HEAD -->
+      <div class="article-head">
+        <div class="article-head-left">
+          <span class="eyebrow">21 · Энциклопедия</span>
+          <h1>Вероника <em>Юрьевна</em></h1>
+          <p class="article-tagline">
+            Из тёплой энциклопедии — статья о самой любимой
+          </p>
+        </div>
+        <div class="article-meta">
+          <span class="article-meta-item">
+            <span class="dot"></span>
+            Статья
+          </span>
+          <span class="article-meta-item">
+            <span class="dot"></span>
+            Обсуждение
+          </span>
+          <span class="article-meta-item">
+            <span class="dot"></span>
+            Читать
+          </span>
+        </div>
+      </div>
+
+      <!-- WIKI LAYOUT -->
+      <div class="wiki-layout">
+        <!-- MAIN ARTICLE -->
+        <article class="wiki-article">
+          <p class="lead">
+            <strong>Вероника Юрьевна</strong> (род. 14 апреля 2007,
+            <a href="map.html">Улан-Удэ</a>) — выдающаяся личность, известная
+            прежде всего как <em>главная героиня</em>
+            <a href="movie.html">нашего фильма</a>, постоянный автор и редактор
+            <a href="reasons.html">100 причин</a>, а также — по совместительству
+            — центр вселенной одного конкретного человека. По оценке большинства
+            независимых экспертов (то есть меня), является
+            <em>самой красивой, самой умной и самой тёплой</em> девушкой на
+            планете Земля.
+          </p>
+
+          <!-- Notice -->
+          <div class="notice">
+            <span class="notice-mark">i</span>
+            <p>
+              <b>Примечание редактора.</b> Данная статья написана с максимальной
+              любовью и минимальной объективностью. Ссылки на источники
+              отсутствуют, так как источник один — я, а он бесспорный.
+            </p>
+          </div>
+
+          <!-- TOC -->
+          <div class="toc">
+            <div class="toc-head">Содержание</div>
+            <ol>
+              <li><a href="#bio">Биография</a></li>
+              <li><a href="#character">Характер</a></li>
+              <li><a href="#interests">Интересы</a></li>
+              <li><a href="#relations">Отношения</a></li>
+              <li><a href="#influence">Влияние</a></li>
+              <li><a href="#facts">Интересные факты</a></li>
+            </ol>
+          </div>
+
+          <!-- Биография -->
+          <h2 id="bio">Биография</h2>
+
+          <p>
+            Родилась 14 апреля 2007 года. Уже в детстве проявила незаурядные
+            качества: нежность, обаяние и умение одним взглядом делать так,
+            чтобы всё вокруг становилось теплее. Окончила школу, затем поступила
+            в колледж и параллельно — в моё сердце, где и осталась на постоянной
+            основе.
+          </p>
+
+          <p>
+            Ключевое событие в биографии —
+            <strong>9 сентября 2025 года</strong>, когда она впервые оказалась в
+            поле зрения одного конкретного Анатолия и дала ему флешку. С этого
+            дня её биография официально стала называться <em>«наша»</em>. С тех
+            пор наблюдается стабильный рост в категориях «счастье», «смысл
+            жизни» и «количество обнимашек в сутки».
+          </p>
+
+          <!-- Характер -->
+          <h2 id="character">Характер</h2>
+
+          <p>
+            Основные черты — <strong>доброта</strong>,
+            <strong>умение слушать</strong>, <strong>чувство юмора</strong> и
+            <strong
+              >невероятная способность делать обычные дни особенными</strong
+            >. Обладает редким сочетанием силы и мягкости: может защитить, когда
+            нужно, и обнять, когда ещё нужнее.
+          </p>
+
+          <div class="wiki-quote">
+            «Она умеет быть нежной без слов и сильной без доказательств. Это —
+            редкий дар».
+            <span class="wiki-quote-cite">— Анатолий, личный свидетель</span>
+          </div>
+
+          <p>
+            Также известно, что Вероника
+            <em>не выносит раннее утро до первой чашки чая</em>, обожает уют,
+            любит длинные разговоры и умеет найти что-то хорошее даже в самый
+            пасмурный день. Данные подтверждены многодневными наблюдениями.
+          </p>
+
+          <!-- Интересы -->
+          <h2 id="interests">Интересы</h2>
+
+          <p>
+            В свободное время занимается творчеством, общением и тем, что делает
+            её счастливой. По данным наших исследований, в число её интересов
+            входят:
+          </p>
+
+          <ul>
+            <li>Прогулки — в любую погоду, но особенно тёплыми вечерами;</li>
+            <li>Разговоры — обо всём и ни о чём, главное — вместе;</li>
+            <li>
+              Уют — пледы, фильмы, чай и любимая песня —
+              <a href="song.html">наша</a>;
+            </li>
+            <li>Творчество — рисунки, идеи, маленькие радости;</li>
+            <li>Сюрпризы — и то, что делает мир вокруг чуть более тёплым.</li>
+          </ul>
+
+          <p>
+            Отдельно стоит отметить её уникальную способность
+            <em>превращать простой вечер в целое событие</em> — по признанию
+            близких, это её врождённый талант.
+          </p>
+
+          <!-- Отношения -->
+          <h2 id="relations">Отношения</h2>
+
+          <p>
+            С <strong>4 октября 2025 года</strong> находится в устойчивых
+            романтических отношениях с <em>Анатолием</em> — единственным, кто
+            официально подтверждён всеми сторонами. Отношения описаны в
+            многочисленных источниках:
+          </p>
+
+          <ul>
+            <li>
+              <a href="timer.html">Наша история в цифрах</a> — хронология;
+            </li>
+            <li><a href="map.html">Карта наших мест</a> — география чувств;</li>
+            <li>
+              <a href="movie.html">Наш фильм</a> — художественная интерпретация;
+            </li>
+            <li>
+              <a href="capsule.html">Капсула времени</a> — послание в будущее;
+            </li>
+            <li>
+              <a href="boarding.html">Билет в наше будущее</a> — маршрут
+              навсегда.
+            </li>
+          </ul>
+
+          <p>
+            Совместимость оценивается в <strong>99.9%</strong>. Остальные 0.1% —
+            запас на то, чтобы продолжать удивлять друг друга.
+          </p>
+
+          <!-- Влияние -->
+          <h2 id="influence">Влияние</h2>
+
+          <p>
+            Влияние Вероники на мир (в рамках одного конкретного человека)
+            невозможно переоценить. До встречи с ней этот человек был обычным;
+            после — стал счастливым. Это, по мнению специалистов, самый значимый
+            эффект за всю историю наблюдений.
+          </p>
+
+          <p>
+            Кроме того, Вероника послужила вдохновением для целого ряда
+            произведений цифровой культуры:
+            <a href="reasons.html">100 причин</a>,
+            <a href="love.html">«Что я в тебе люблю»</a>,
+            <a href="stars.html">созвездия её имени</a> и многих других.
+          </p>
+
+          <!-- Интересные факты -->
+          <h2 id="facts">Интересные факты</h2>
+
+          <ul class="fact-list">
+            <li>
+              <b>Факт 1.</b> Её смех способен мгновенно улучшать настроение в
+              радиусе одного сердца. Подтверждено.
+            </li>
+            <li>
+              <b>Факт 2.</b> Может заставить скучный день стать лучшим — просто
+              позвонив.
+            </li>
+            <li>
+              <b>Факт 3.</b> Однажды сказала «привет» — и с тех пор всё
+              изменилось.
+            </li>
+            <li>
+              <b>Факт 4.</b> Умеет слушать так, что собеседник чувствует себя
+              услышанным по-настоящему.
+            </li>
+            <li>
+              <b>Факт 5.</b> Знает наизусть все события, но иногда рассказывает
+              их по сто раз — чтобы рассмешить.
+            </li>
+            <li>
+              <b>Факт 6.</b> Её обнимашки обладают доказанным терапевтическим
+              эффектом.
+            </li>
+            <li>
+              <b>Факт 7.</b> Единственная девушка, чьё имя хочется произносить
+              вслух чаще, чем своё.
+            </li>
+            <li>
+              <b>Факт 8.</b> Является официальным автором лучших моментов в
+              жизни одного конкретного человека.
+            </li>
+          </ul>
+
+          <!-- See also -->
+          <div class="see-also">
+            <div class="see-also-title">См. также</div>
+            <div class="see-also-list">
+              <a href="index.html"
+                ><span class="icon">🏠</span>Главная вселенная</a
+              >
+              <a href="timer.html"
+                ><span class="icon">❤️</span>История в цифрах</a
+              >
+              <a href="movie.html"><span class="icon">🎬</span>Наш фильм</a>
+              <a href="reasons.html"><span class="icon">💕</span>100 причин</a>
+              <a href="love.html"
+                ><span class="icon">💗</span>Что я в тебе люблю</a
+              >
+              <a href="stars.html"><span class="icon">✨</span>Созвездие</a>
+              <a href="capsule.html"><span class="icon">⏳</span>Капсула</a>
+              <a href="boarding.html"><span class="icon">✈️</span>Билет</a>
+              <a href="manual.html"><span class="icon">📖</span>Инструкция</a>
+              <a href="medcard.html"
+                ><span class="icon">🩺</span>История болезни</a
+              >
+            </div>
+          </div>
+
+          <div class="article-foot">
+            <p>
+              Последнее изменение статьи — только что, когда я снова подумал о
+              тебе. Все правки внесены с любовью.
+            </p>
+          </div>
+        </article>
+
+        <!-- INFOBOX -->
+        <aside class="infobox">
+          <div class="infobox-head">
+            <h2 class="infobox-title">Вероника</h2>
+            <div class="infobox-subtitle">Véronique · единственная</div>
+          </div>
+
+          <div class="infobox-photo">
+            <img
+              src="photos/photo1.jpg"
+              alt=""
+              onerror="this.remove()"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="infobox-photo-caption">Мы · 2025</span>
+          </div>
+
+          <div class="infobox-body">
+            <div class="infobox-row">
+              <span class="label">Дата рождения</span>
+              <span class="value">14 апреля 2007</span>
+            </div>
+            <div class="infobox-row">
+              <span class="label">Место рождения</span>
+              <span class="value">Арей, Россия</span>
+            </div>
+            <div class="infobox-row">
+              <span class="label">Род деятельности</span>
+              <span class="value">Быть любимой, делать мир теплее</span>
+            </div>
+            <div class="infobox-row">
+              <span class="label">Известна как</span>
+              <span class="value">Самая лучшая девушка на свете</span>
+            </div>
+            <div class="infobox-row">
+              <span class="label">Статус</span>
+              <span class="value"><em>Занята, счастлива</em></span>
+            </div>
+            <div class="infobox-row">
+              <span class="label">Партнёр</span>
+              <span class="value">Анатолий</span>
+            </div>
+            <div class="infobox-row">
+              <span class="label">В отношениях с</span>
+              <span class="value">4 октября 2025</span>
+            </div>
+            <div class="infobox-row">
+              <span class="label">Рост</span>
+              <span class="value">Идеальный</span>
+            </div>
+            <div class="infobox-row">
+              <span class="label">Глаза</span>
+              <span class="value">Мои самые любимые</span>
+            </div>
+            <div class="infobox-row">
+              <span class="label">Улыбка</span>
+              <span class="value">Ослепительная</span>
+            </div>
+            <div class="infobox-row">
+              <span class="label">Особые приметы</span>
+              <span class="value"
+                >Нежность в каждом движении, способность лечить одним
+                словом</span
+              >
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- NAV -->
+      <div class="nav-wrap">
+        <a href="index.html" class="back-link">
+          <span class="arrow">←</span>
+          <span>На главную</span>
+        </a>
+        <a href="medcard.html" class="nav-link-secondary">
+          <span class="icon">🩺</span>
+          <span>История болезни</span>
+        </a>
+        <a href="manual.html" class="nav-link-secondary">
+          <span class="icon">📖</span>
+          <span>Инструкция</span>
+        </a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <!-- ============================================================
+         TIME + WEATHER
+         ============================================================ -->
+    <script>
+      function updateTimeWidget() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const t = document.getElementById("timeText");
+        if (t) t.textContent = `${hh}:${mm}`;
+        const h = now.getHours();
+        let icon = "🌙";
+        if (h >= 5 && h < 12) icon = "🌅";
+        else if (h >= 12 && h < 18) icon = "☀️";
+        else if (h >= 18 && h < 23) icon = "🌆";
+        const ti = document.getElementById("timeIcon");
+        if (ti) ti.textContent = icon;
+      }
+      updateTimeWidget();
+      setInterval(updateTimeWidget, 1000);
+
+      const WEATHER_CITY = { name: "Улан-Удэ" };
+      function pickIconFromDesc(desc) {
+        desc = (desc || "").toLowerCase();
+        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
+        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
+        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
+        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
+        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
+        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
+        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
+        return "🌤️";
+      }
+      function seasonalWeather() {
+        const m = new Date().getMonth();
+        let icon, temp;
+        if (m === 11 || m === 0 || m === 1) {
+          icon = "❄️";
+          temp = -18;
+        } else if (m === 2 || m === 3) {
+          icon = "🌨️";
+          temp = -5;
+        } else if (m === 4) {
+          icon = "🌱";
+          temp = 8;
+        } else if (m >= 5 && m <= 7) {
+          icon = "☀️";
+          temp = 24;
+        } else if (m === 8) {
+          icon = "🍂";
+          temp = 12;
+        } else {
+          icon = "🌧️";
+          temp = 2;
+        }
+        return { icon, temp };
+      }
+      async function loadWeather() {
+        const iconEl = document.getElementById("weatherIcon");
+        const textEl = document.getElementById("weatherText");
+        if (!iconEl || !textEl) return;
+        iconEl.textContent = "⛅";
+        textEl.textContent = "...";
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(
+            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
+            { signal: ctrl.signal, cache: "no-store" },
+          );
+          clearTimeout(timer);
+          if (res.ok) {
+            const data = await res.json();
+            const cur = data.current_condition && data.current_condition[0];
+            if (cur && cur.temp_C !== undefined) {
+              const temp = parseInt(cur.temp_C, 10);
+              const desc =
+                cur.weatherDesc && cur.weatherDesc[0]
+                  ? cur.weatherDesc[0].value
+                  : "";
+              iconEl.textContent = pickIconFromDesc(desc);
+              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
+              return;
+            }
+          }
+        } catch (e) {}
+        const w = seasonalWeather();
+        iconEl.textContent = w.icon;
+        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
+      }
+      loadWeather();
+      setInterval(loadWeather, 30 * 60 * 1000);
+      const iw = document.getElementById("infoWidget");
+      if (iw) iw.addEventListener("click", loadWeather);
+    </script>
+
+    <script src="sw-register.js" defer></script>
+  </body>
+</html>
