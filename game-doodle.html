@@ -8,7 +8,6 @@
     />
     <title>Doodle-кот · Для Вероники</title>
 
-    <!-- PWA -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#f3ede4" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -22,350 +21,101 @@
     <meta http-equiv="Expires" content="0" />
     <link rel="apple-touch-icon" href="photos/icon-192.png" />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap"
       rel="stylesheet"
     />
 
+    <!-- Единый движок -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
     <style>
       /* ============================================================
-       TOKENS
-       ============================================================ */
+         DOODLE-КОТ · только специфика страницы
+         ============================================================ */
+
+      /* --- Доп. токены (только для этой страницы) --- */
       :root {
-        --paper: #f3ede4;
-        --paper-2: #ece4d8;
-        --surface: #fdfaf6;
-        --surface-2: #f7f0e6;
-        --surface-3: #efe7da;
-
-        --ink: #1e1a16;
-        --ink-2: #4a423c;
-        --ink-3: #8a7f75;
-        --ink-4: #b8aca1;
-
-        --line: rgba(30, 26, 22, 0.08);
-        --line-2: rgba(30, 26, 22, 0.16);
-
-        --rose: #b58794;
-        --rose-deep: #8f6472;
-        --rose-soft: #e8d4d8;
-        --rose-tint: #f2e4e7;
-
-        --sand: #cfb8a3;
-        --gold: #b89968;
-
         --sky-top: #b8c8d4;
         --sky-bot: #e8d4d8;
-
-        --night-bg: #2b2620;
-        --night-bg-2: #1a1613;
-        --night-ink: #e8d4d8;
-
-        --ease: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
+      /* --- Переходы для смены темы --- */
       body {
-        margin: 0;
-        padding: 0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        font-size: 16px;
-        line-height: 1.5;
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
-        -webkit-tap-highlight-color: transparent;
         transition:
           background 0.8s var(--ease),
           color 0.8s var(--ease);
       }
-
       body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          radial-gradient(
-            ellipse 90% 60% at 15% -10%,
-            rgba(232, 212, 216, 0.55),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 60% 50% at 95% 15%,
-            rgba(207, 184, 163, 0.28),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 70% 55% at 5% 105%,
-            rgba(181, 135, 148, 0.16),
-            transparent 60%
-          ),
-          var(--paper);
         transition: opacity 0.8s var(--ease);
       }
 
+      /* --- Ночной режим: переопределения базовых элементов --- */
       body.night {
-        background: var(--night-bg);
-        color: var(--night-ink);
+        background: var(--night);
+        color: #e8d4d8;
       }
       body.night::before {
         opacity: 0;
       }
-
-      .grain {
-        position: fixed;
-        inset: 0;
-        z-index: 9998;
-        pointer-events: none;
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-        border: none;
-        background: none;
-      }
-      img {
-        max-width: 100%;
-        display: block;
-      }
-
-      ::selection {
-        background: var(--rose-soft);
-        color: var(--rose-deep);
-      }
-
-      ::-webkit-scrollbar {
-        width: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(30, 26, 22, 0.12);
-        border-radius: 10px;
-        border: 3px solid var(--paper);
-      }
-
-      /* ============================================================
-       TOPBAR
-       ============================================================ */
-      .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 32px;
-        background: rgba(243, 237, 228, 0.78);
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border-bottom: 1px solid var(--line);
-        font-size: 12.5px;
-        letter-spacing: 0.02em;
-        transition:
-          background 0.8s var(--ease),
-          border-color 0.8s var(--ease);
-      }
-
       body.night .topbar {
         background: rgba(43, 38, 32, 0.78);
         border-bottom-color: rgba(232, 212, 216, 0.12);
       }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-
-      .brand-mark {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--ink);
-        border-radius: 50%;
-        font-family: "Instrument Serif", Georgia, serif;
-        font-style: italic;
-        font-size: 17px;
-        line-height: 1;
-        color: var(--ink);
-        padding-bottom: 2px;
-        transition:
-          transform 0.4s var(--ease-spring),
-          border-color 0.8s,
-          color 0.8s;
-      }
-
       body.night .brand-mark {
-        border-color: var(--night-ink);
-        color: var(--night-ink);
+        border-color: #e8d4d8;
+        color: #e8d4d8;
       }
-      .brand:hover .brand-mark {
-        transform: rotate(-12deg) scale(1.05);
-      }
-
-      .brand-label {
-        color: var(--ink-2);
-        font-weight: 500;
-        transition: color 0.8s;
-      }
-
       body.night .brand-label {
         color: rgba(232, 212, 216, 0.7);
-      }
-
-      .topbar-meta {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--ink-2);
-        cursor: pointer;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-        transition: color 0.3s;
-      }
-
-      .topbar-meta:hover {
-        color: var(--ink);
       }
       body.night .topbar-meta {
         color: rgba(232, 212, 216, 0.85);
       }
-
-      .meta-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
+      body.night .eyebrow {
+        color: var(--rose);
+      }
+      body.night h1 {
+        color: #e8d4d8;
+      }
+      body.night h1 em {
+        color: var(--rose);
+      }
+      body.night .hero-sub {
+        color: rgba(232, 212, 216, 0.7);
+      }
+      body.night .footer {
+        color: rgba(232, 212, 216, 0.45);
+        border-top-color: rgba(232, 212, 216, 0.1);
       }
 
-      .meta-item .icon {
-        font-size: 13px;
-        filter: saturate(0.7);
-      }
-      .meta-sep {
-        color: var(--ink-4);
-      }
-
-      /* ============================================================
-       LAYOUT
-       ============================================================ */
+      /* --- main: своя сетка для игры --- */
       main {
         max-width: 900px;
-        margin: 0 auto;
         padding: 140px 32px 60px;
         display: flex;
         flex-direction: column;
         min-height: 100vh;
       }
 
-      /* ============================================================
-       HERO (compact — just eyebrow + title)
-       ============================================================ */
+      /* --- hero: компактнее, чем базовый --- */
       .hero {
         padding: 10px 0 24px;
-        text-align: center;
       }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--rose-deep);
-        margin-bottom: 20px;
-        transition: color 0.8s;
-      }
-
-      body.night .eyebrow {
-        color: var(--rose);
-      }
-
-      .eyebrow::before,
-      .eyebrow::after {
-        content: "";
-        width: 24px;
-        height: 1px;
-        background: currentColor;
-      }
-
       h1 {
-        font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 400;
         font-size: clamp(32px, 4.8vw, 52px);
-        line-height: 1.04;
-        letter-spacing: -0.02em;
-        color: var(--ink);
         margin: 0 0 12px;
-        transition: color 0.8s;
       }
-
-      body.night h1 {
-        color: var(--night-ink);
-      }
-
-      h1 em {
-        font-style: italic;
-        color: var(--rose-deep);
-        transition: color 0.8s;
-      }
-      body.night h1 em {
-        color: var(--rose);
-      }
-
       .hero-sub {
         font-size: 15px;
-        line-height: 1.55;
-        color: var(--ink-2);
-        margin: 0 auto;
-        max-width: 44ch;
-        font-weight: 400;
-        transition: color 0.8s;
-      }
-
-      body.night .hero-sub {
-        color: rgba(232, 212, 216, 0.7);
       }
 
       /* ============================================================
-       GAME STATS ROW
-       ============================================================ */
+         GAME STATS ROW
+         ============================================================ */
       .stats-row {
         margin: 32px 0 20px;
         padding: 20px 8px;
@@ -382,9 +132,8 @@
           border-color 0.8s,
           box-shadow 0.8s;
       }
-
       body.night .stats-row {
-        background: var(--night-bg-2);
+        background: var(--night);
         border-color: rgba(232, 212, 216, 0.14);
         box-shadow:
           0 1px 0 rgba(255, 255, 255, 0.04) inset,
@@ -396,7 +145,6 @@
         padding: 0 12px;
         position: relative;
       }
-
       .stat-cell + .stat-cell::before {
         content: "";
         position: absolute;
@@ -407,7 +155,6 @@
         background: var(--line);
         transition: background 0.8s;
       }
-
       body.night .stat-cell + .stat-cell::before {
         background: rgba(232, 212, 216, 0.1);
       }
@@ -421,13 +168,12 @@
         margin-bottom: 8px;
         transition: color 0.8s;
       }
-
       body.night .stat-label {
         color: rgba(232, 212, 216, 0.55);
       }
 
       .stat-value {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: clamp(26px, 3.4vw, 34px);
         line-height: 1;
@@ -440,11 +186,9 @@
         gap: 6px;
         transition: color 0.8s;
       }
-
       body.night .stat-value {
-        color: var(--night-ink);
+        color: #e8d4d8;
       }
-
       .stat-value .plus {
         font-size: 0.55em;
         color: var(--gold);
@@ -452,8 +196,8 @@
       }
 
       /* ============================================================
-       CANVAS
-       ============================================================ */
+         CANVAS
+         ============================================================ */
       .canvas-frame {
         position: relative;
         padding: 16px;
@@ -469,16 +213,14 @@
           border-color 0.8s,
           box-shadow 0.8s;
       }
-
       body.night .canvas-frame {
-        background: var(--night-bg-2);
+        background: var(--night);
         border-color: rgba(232, 212, 216, 0.14);
         box-shadow:
           0 1px 0 rgba(255, 255, 255, 0.04) inset,
           0 30px 60px rgba(0, 0, 0, 0.5);
       }
 
-      /* Corner ticks */
       .canvas-frame::before,
       .canvas-frame::after {
         content: "";
@@ -490,14 +232,12 @@
         pointer-events: none;
         z-index: 5;
       }
-
       .canvas-frame::before {
         top: 6px;
         left: 6px;
         border-right: none;
         border-bottom: none;
       }
-
       .canvas-frame::after {
         bottom: 6px;
         right: 6px;
@@ -520,7 +260,6 @@
         overflow: hidden;
         transition: background 0.8s;
       }
-
       body.night .canvas-inner {
         background: linear-gradient(180deg, #1a1613 0%, #241f1b 100%);
       }
@@ -532,12 +271,11 @@
         touch-action: none;
       }
 
-      /* Plate label */
       .canvas-label {
         position: absolute;
         top: 26px;
         left: 28px;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 11px;
         letter-spacing: 0.02em;
@@ -547,14 +285,13 @@
         z-index: 4;
         transition: color 0.8s;
       }
-
       body.night .canvas-label {
         color: rgba(232, 212, 216, 0.5);
       }
 
       /* ============================================================
-       GAME OVER OVERLAY
-       ============================================================ */
+         GAME OVER OVERLAY
+         ============================================================ */
       .game-over {
         position: absolute;
         inset: 0;
@@ -568,7 +305,6 @@
         z-index: 10;
         animation: overlayIn 0.4s var(--ease);
       }
-
       @keyframes overlayIn {
         from {
           opacity: 0;
@@ -577,7 +313,6 @@
           opacity: 1;
         }
       }
-
       .game-over.show {
         display: flex;
       }
@@ -599,7 +334,6 @@
           background 0.8s,
           border-color 0.8s;
       }
-
       @keyframes cardIn {
         from {
           transform: translateY(20px) scale(0.94);
@@ -610,7 +344,6 @@
           opacity: 1;
         }
       }
-
       .game-over-card::after {
         content: "";
         position: absolute;
@@ -619,9 +352,8 @@
         border-radius: 2px;
         pointer-events: none;
       }
-
       body.night .game-over-card {
-        background: var(--night-bg-2);
+        background: var(--night);
         border-color: rgba(232, 212, 216, 0.14);
       }
 
@@ -640,21 +372,18 @@
         position: relative;
         z-index: 1;
       }
-
       body.night .go-head {
         color: rgba(232, 212, 216, 0.5);
         border-bottom-color: rgba(232, 212, 216, 0.1);
       }
-
       .go-head .latin {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 12px;
         letter-spacing: 0.02em;
         text-transform: none;
         color: var(--rose-deep);
       }
-
       body.night .go-head .latin {
         color: var(--rose);
       }
@@ -666,9 +395,8 @@
         filter: saturate(0.85);
         display: block;
       }
-
       .go-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: 24px;
         line-height: 1.15;
@@ -678,21 +406,19 @@
         position: relative;
         z-index: 1;
       }
-
       .go-title em {
         font-style: italic;
         color: var(--rose-deep);
       }
-
       body.night .go-title {
-        color: var(--night-ink);
+        color: #e8d4d8;
       }
       body.night .go-title em {
         color: var(--rose);
       }
 
       .go-score {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: 44px;
         line-height: 1;
@@ -703,9 +429,8 @@
         position: relative;
         z-index: 1;
       }
-
       body.night .go-score {
-        color: var(--night-ink);
+        color: #e8d4d8;
       }
 
       .go-score-label {
@@ -718,13 +443,12 @@
         position: relative;
         z-index: 1;
       }
-
       body.night .go-score-label {
         color: rgba(232, 212, 216, 0.5);
       }
 
       .go-meta {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         color: var(--ink-2);
@@ -732,13 +456,12 @@
         position: relative;
         z-index: 1;
       }
-
       body.night .go-meta {
         color: rgba(232, 212, 216, 0.75);
       }
 
       .go-coins {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 16px;
         color: var(--gold);
@@ -749,8 +472,8 @@
       }
 
       /* ============================================================
-       CONTROLS
-       ============================================================ */
+         CONTROLS
+         ============================================================ */
       .controls {
         display: flex;
         gap: 10px;
@@ -759,6 +482,7 @@
         margin-top: 24px;
       }
 
+      /* .btn (локальный, в base такого класса нет) */
       .btn {
         display: inline-flex;
         align-items: center;
@@ -768,7 +492,7 @@
         background: transparent;
         color: var(--ink-2);
         border: 1px solid var(--line-2);
-        font-family: "Inter", sans-serif;
+        font-family: var(--font-sans);
         font-size: 14px;
         font-weight: 500;
         letter-spacing: 0.01em;
@@ -776,20 +500,17 @@
         transition: all 0.35s var(--ease);
         text-decoration: none;
       }
-
       .btn:hover {
         background: var(--surface-2);
         color: var(--ink);
         border-color: var(--ink-3);
         transform: translateY(-2px);
       }
-
       .btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
         transform: none;
       }
-
       .btn.primary {
         background: var(--ink);
         color: var(--paper);
@@ -798,7 +519,6 @@
           0 1px 0 rgba(255, 255, 255, 0.12) inset,
           0 8px 20px rgba(30, 26, 22, 0.2);
       }
-
       .btn.primary:hover {
         background: #000;
         color: var(--paper);
@@ -807,26 +527,24 @@
           0 1px 0 rgba(255, 255, 255, 0.12) inset,
           0 14px 32px rgba(30, 26, 22, 0.26);
       }
-
       body.night .btn {
         color: rgba(232, 212, 216, 0.85);
         border-color: rgba(232, 212, 216, 0.15);
       }
       body.night .btn:hover {
         background: rgba(232, 212, 216, 0.08);
-        color: var(--night-ink);
+        color: #e8d4d8;
         border-color: rgba(232, 212, 216, 0.3);
       }
       body.night .btn.primary {
-        background: var(--night-ink);
-        color: var(--night-bg-2);
-        border-color: var(--night-ink);
+        background: #e8d4d8;
+        color: #1a1613;
+        border-color: #e8d4d8;
       }
       body.night .btn.primary:hover {
         background: #fff;
         border-color: #fff;
       }
-
       .btn .btn-arrow {
         display: inline-block;
         transition: transform 0.4s var(--ease);
@@ -837,8 +555,8 @@
       }
 
       /* ============================================================
-       HINT
-       ============================================================ */
+         HINT
+         ============================================================ */
       .hint {
         margin-top: 24px;
         text-align: center;
@@ -849,11 +567,9 @@
         color: var(--ink-3);
         transition: color 0.8s;
       }
-
       body.night .hint {
         color: rgba(232, 212, 216, 0.5);
       }
-
       .hint-row {
         display: flex;
         flex-wrap: wrap;
@@ -861,13 +577,11 @@
         justify-content: center;
         align-items: center;
       }
-
       .hint-item {
         display: inline-flex;
         align-items: center;
         gap: 6px;
       }
-
       .hint-key {
         display: inline-flex;
         align-items: center;
@@ -878,7 +592,7 @@
         background: var(--surface);
         border: 1px solid var(--line-2);
         border-radius: 5px;
-        font-family: "Inter", sans-serif;
+        font-family: var(--font-sans);
         font-size: 11px;
         font-weight: 600;
         letter-spacing: 0;
@@ -886,41 +600,15 @@
         text-transform: none;
         transition: all 0.8s;
       }
-
       body.night .hint-key {
-        background: var(--night-bg-2);
+        background: var(--night);
         border-color: rgba(232, 212, 216, 0.15);
         color: rgba(232, 212, 216, 0.75);
       }
 
       /* ============================================================
-       FOOTER
-       ============================================================ */
-      .footer {
-        padding: 40px 32px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-        max-width: 1240px;
-        margin: 40px auto 0;
-        transition:
-          color 0.8s,
-          border-color 0.8s;
-      }
-
-      body.night .footer {
-        color: rgba(232, 212, 216, 0.45);
-        border-top-color: rgba(232, 212, 216, 0.1);
-      }
-
-      /* ============================================================
-       FLOATING HEARTS
-       ============================================================ */
+         FLOATING HEARTS / SCORES (специфика страницы)
+         ============================================================ */
       .float-heart {
         position: fixed;
         pointer-events: none;
@@ -928,7 +616,6 @@
         filter: saturate(0.7);
         animation: floatUp 1.6s var(--ease) forwards;
       }
-
       @keyframes floatUp {
         0% {
           transform: translateY(0) scale(0.5);
@@ -940,9 +627,6 @@
         }
       }
 
-      /* ============================================================
-       FLOAT SCORE
-       ============================================================ */
       @keyframes floatUpScore {
         0% {
           transform: translateY(0) scale(1);
@@ -953,12 +637,11 @@
           opacity: 0;
         }
       }
-
       .float-score {
         position: absolute;
         pointer-events: none;
         z-index: 100;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-weight: 400;
         letter-spacing: -0.01em;
@@ -966,45 +649,12 @@
       }
 
       /* ============================================================
-       TOAST
-       ============================================================ */
-      .toast {
-        position: fixed;
-        left: 50%;
-        bottom: 32px;
-        transform: translateX(-50%) translateY(20px);
-        padding: 14px 22px;
-        background: var(--ink);
-        color: var(--paper);
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        box-shadow: 0 20px 40px rgba(30, 26, 22, 0.25);
-        opacity: 0;
-        pointer-events: none;
-        transition: all 0.5s var(--ease);
-        z-index: 6000;
-        max-width: calc(100vw - 40px);
-        text-align: center;
-      }
-
-      .toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-
-      /* ============================================================
-       RESPONSIVE
-       ============================================================ */
+         RESPONSIVE (только специфика страницы)
+         ============================================================ */
       @media (max-width: 640px) {
-        main {
-          padding: 120px 20px 40px;
-        }
         h1 {
           font-size: clamp(28px, 8vw, 40px);
         }
-
         .stats-row {
           margin: 24px 0 16px;
           padding: 16px 4px;
@@ -1017,7 +667,6 @@
           letter-spacing: 0.14em;
           margin-bottom: 6px;
         }
-
         .canvas-frame {
           padding: 12px;
         }
@@ -1030,7 +679,6 @@
           left: 20px;
           font-size: 10px;
         }
-
         .game-over-card {
           padding: 26px 22px 22px;
           border-radius: 3px;
@@ -1052,7 +700,6 @@
           font-size: 14px;
           margin-bottom: 18px;
         }
-
         .controls {
           margin-top: 18px;
           gap: 8px;
@@ -1061,7 +708,6 @@
           padding: 14px 22px;
           font-size: 13px;
         }
-
         .hint {
           font-size: 10px;
           letter-spacing: 0.12em;
@@ -1074,49 +720,12 @@
           height: 20px;
           font-size: 10px;
         }
-
-        .toast {
-          bottom: 20px;
-          font-size: 12px;
-          padding: 12px 18px;
-        }
-
-        .topbar {
-          padding: 16px 20px;
-          font-size: 11.5px;
-        }
-        .brand-label {
-          display: none;
-        }
-        .brand-mark {
-          width: 26px;
-          height: 26px;
-          font-size: 15px;
-        }
-        .meta-sep {
-          display: none;
-        }
-        .topbar-meta {
-          gap: 10px;
-          font-size: 11.5px;
-        }
-
-        .footer {
-          flex-direction: column;
-          gap: 8px;
-          text-align: center;
-          font-size: 10.5px;
-          padding: 32px 20px;
-        }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
+        .float-heart,
+        .float-score {
+          animation: none;
         }
       }
     </style>
@@ -1125,9 +734,6 @@
   <body>
     <div class="grain"></div>
 
-    <!-- ============================================================
-       TOPBAR
-       ============================================================ -->
     <header class="topbar">
       <a href="cat.html" class="brand">
         <span class="brand-mark">V</span>
@@ -1147,9 +753,6 @@
     </header>
 
     <main>
-      <!-- ============================================================
-         HERO
-         ============================================================ -->
       <section class="hero">
         <span class="eyebrow">12 · Игра</span>
         <h1>Doodle-<em>кот</em></h1>
@@ -1159,9 +762,6 @@
         </p>
       </section>
 
-      <!-- ============================================================
-         STATS
-         ============================================================ -->
       <div class="stats-row">
         <div class="stat-cell">
           <div class="stat-label">Высота</div>
@@ -1179,15 +779,11 @@
         </div>
       </div>
 
-      <!-- ============================================================
-         CANVAS
-         ============================================================ -->
       <div class="canvas-frame">
         <div class="canvas-inner" id="doodleCanvasWrap">
           <span class="canvas-label">№ 12 · прыжок</span>
           <canvas id="doodleCanvas"></canvas>
 
-          <!-- Game Over overlay -->
           <div class="game-over" id="doodleOverBox">
             <div class="game-over-card">
               <div class="go-head">
@@ -1213,32 +809,25 @@
         </div>
       </div>
 
-      <!-- ============================================================
-         CONTROLS
-         ============================================================ -->
       <div class="controls">
         <button class="btn primary" onclick="startDoodle()" id="doodleStartBtn">
           <span>Начать</span>
           <span class="btn-arrow">→</span>
         </button>
-        <a href="cat.html" class="btn" id="backLink">
-          <span class="btn-arrow">←</span>
-          <span>К котику</span>
-        </a>
       </div>
 
-      <!-- ============================================================
-         HINT
-         ============================================================ -->
       <div class="hint">
         <div class="hint-row">
-          <span class="hint-item"
-            ><span class="hint-key">←</span><span class="hint-key">→</span> или
-            наклоняй телефон</span
-          >
+          <span class="hint-item">
+            <span class="hint-key">←</span><span class="hint-key">→</span>
+            или наклоняй телефон
+          </span>
           <span class="hint-item">Прыгай по платформам вверх</span>
         </div>
       </div>
+
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="auto-nav" data-nav="cat,album,heartmap"></nav>
     </main>
 
     <footer class="footer">
@@ -1246,113 +835,10 @@
       <span>Сделано с любовью</span>
     </footer>
 
-    <div class="toast" id="toast"></div>
+    <!-- Единый движок: часы, погода, тосты, авто-навигация, SW -->
+    <script src="shared/widgets.js"></script>
 
-    <!-- ============================================================
-       TIME + WEATHER
-       ============================================================ -->
-    <script>
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        document.getElementById("timeText").textContent = `${hh}:${mm}`;
-
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        document.getElementById("timeIcon").textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
-
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      document
-        .getElementById("infoWidget")
-        .addEventListener("click", loadWeather);
-    </script>
-
-    <!-- ============================================================
-       GAME SCRIPT
-       ============================================================ -->
+    <!-- Логика игры (специфика страницы) -->
     <script>
       // ============================================================
       // SOUNDS
@@ -1409,7 +895,7 @@
       };
 
       // ============================================================
-      // STATE
+      // STATE (общий с cat.html)
       // ============================================================
       const DEFAULT_STATE = {
         hunger: 50,
@@ -1483,19 +969,10 @@
         saveState();
         const ach = ACHIEVEMENTS.find((a) => a.id === id);
         if (ach) {
-          showToast(`🏆 ${ach.title}`);
+          window.toast(`🏆 ${ach.title}`);
           Sound.ach();
           spawnHearts(10);
         }
-      }
-
-      let toastTimer = null;
-      function showToast(text) {
-        const toast = document.getElementById("toast");
-        toast.textContent = text;
-        toast.classList.add("show");
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
       }
 
       function spawnHearts(count) {
@@ -1517,12 +994,12 @@
         }
       }
 
-      // Night mode based on real time
+      // Ночной режим по реальному времени
       const hour = new Date().getHours();
       if (hour >= 22 || hour < 7) document.body.classList.add("night");
 
       // ============================================================
-      // DOODLE CAT — game
+      // DOODLE CAT — игра
       // ============================================================
       const doodleCanvas = document.getElementById("doodleCanvas");
       const doodleCanvasWrap = document.getElementById("doodleCanvasWrap");
@@ -1568,7 +1045,6 @@
         dctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
 
-      // Platform styles in editorial palette
       const PLATFORM_STYLES = {
         normal: { color: "#a8917a", border: "#8a6f4d" },
         moving: { color: "#8fa9b8", border: "#5f7d8c" },
@@ -1772,7 +1248,6 @@
       function drawPlatform(p) {
         const style = PLATFORM_STYLES[p.type];
 
-        // Shadow
         dctx.fillStyle = "rgba(30, 26, 22, 0.10)";
         dctx.beginPath();
         if (dctx.roundRect)
@@ -1780,14 +1255,12 @@
         else dctx.rect(p.x + 2, p.y + 3, p.width, p.height);
         dctx.fill();
 
-        // Body
         dctx.fillStyle = style.color;
         dctx.beginPath();
         if (dctx.roundRect) dctx.roundRect(p.x, p.y, p.width, p.height, 5);
         else dctx.rect(p.x, p.y, p.width, p.height);
         dctx.fill();
 
-        // Border
         dctx.strokeStyle = style.border;
         dctx.lineWidth = 1.2;
         dctx.beginPath();
@@ -1795,14 +1268,12 @@
         else dctx.rect(p.x, p.y, p.width, p.height);
         dctx.stroke();
 
-        // Top highlight
         dctx.fillStyle = "rgba(255, 255, 255, 0.35)";
         dctx.beginPath();
         if (dctx.roundRect) dctx.roundRect(p.x + 4, p.y + 3, p.width - 8, 4, 2);
         else dctx.rect(p.x + 4, p.y + 3, p.width - 8, 4);
         dctx.fill();
 
-        // Type details
         if (p.type === "spring") {
           dctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
           dctx.lineWidth = 1;
@@ -1852,7 +1323,6 @@
         dctx.fillStyle = grad;
         dctx.fillRect(0, 0, W, H);
 
-        // Subtle horizon line
         dctx.strokeStyle = document.body.classList.contains("night")
           ? "rgba(232, 212, 216, 0.06)"
           : "rgba(30, 26, 22, 0.05)";
@@ -1958,21 +1428,9 @@
       // ============================================================
       // CONTROLS
       // ============================================================
-      function setupDoodleControls() {
-        cleanupDoodleControls();
-        document.addEventListener("keydown", doodleKeyDown);
-        document.addEventListener("keyup", doodleKeyUp);
-        window.addEventListener("deviceorientation", doodleOrientation);
-      }
-
-      function cleanupDoodleControls() {
-        document.removeEventListener("keydown", doodleKeyDown);
-        document.removeEventListener("keyup", doodleKeyUp);
-        window.removeEventListener("deviceorientation", doodleOrientation);
-        doodle.moveLeft = false;
-        doodle.moveRight = false;
-        doodle.tiltX = 0;
-      }
+      document.addEventListener("keydown", doodleKeyDown);
+      document.addEventListener("keyup", doodleKeyUp);
+      window.addEventListener("deviceorientation", doodleOrientation);
 
       function doodleKeyDown(e) {
         if (e.code === "ArrowLeft" || e.code === "KeyA") {
@@ -2026,9 +1484,7 @@
           doodle.coinsThisRun = 0;
         }
       }
-
       window.addEventListener("beforeunload", flushCoins);
-      document.getElementById("backLink").addEventListener("click", flushCoins);
 
       // ============================================================
       // INIT
@@ -2038,11 +1494,9 @@
           resizeDoodleCanvas();
           initDoodle();
           doodleDraw();
-          setupDoodleControls();
         }, 50);
       });
 
-      // Init audio on first interaction
       ["click", "touchstart", "keydown"].forEach((evt) => {
         document.addEventListener(evt, initAudio, {
           once: true,
@@ -2050,6 +1504,5 @@
         });
       });
     </script>
-    <script src="sw-register.js" defer></script>
   </body>
 </html>

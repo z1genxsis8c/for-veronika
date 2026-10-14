@@ -8,7 +8,6 @@
     />
     <title>Карта наших мест · Для Вероники</title>
 
-    <!-- PWA -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#f3ede4" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -22,11 +21,10 @@
     <meta http-equiv="Expires" content="0" />
     <link rel="apple-touch-icon" href="photos/icon-192.png" />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap"
       rel="stylesheet"
     />
 
@@ -38,38 +36,14 @@
       crossorigin=""
     />
 
+    <!-- Единый движок: токены (палитра, шрифты, easing).
+         base.css НЕ подключаем — страница полноэкранная, с absolute-позициями. -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+
     <style>
       /* ============================================================
-       TOKENS
-       ============================================================ */
-      :root {
-        --paper: #f3ede4;
-        --paper-2: #ece4d8;
-        --surface: #fdfaf6;
-        --surface-2: #f7f0e6;
-
-        --ink: #1e1a16;
-        --ink-2: #4a423c;
-        --ink-3: #8a7f75;
-        --ink-4: #b8aca1;
-
-        --line: rgba(30, 26, 22, 0.08);
-        --line-2: rgba(30, 26, 22, 0.16);
-
-        --rose: #b58794;
-        --rose-deep: #8f6472;
-        --rose-soft: #e8d4d8;
-        --rose-tint: #f2e4e7;
-
-        --sand: #cfb8a3;
-
-        --ease: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
+         КАРТА НАШИХ МЕСТ · только специфика страницы
+         ============================================================ */
 
       html,
       body {
@@ -83,11 +57,7 @@
       }
 
       body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
+        font-family: var(--font-sans);
         background: var(--paper);
         color: var(--ink);
         font-size: 16px;
@@ -116,8 +86,8 @@
       }
 
       /* ============================================================
-       MAP
-       ============================================================ */
+         MAP
+         ============================================================ */
       #map {
         position: absolute;
         inset: 0;
@@ -125,15 +95,14 @@
         background: var(--paper);
       }
 
-      /* Warm, desaturated tiles — премиальная тонировка для OSM */
       .leaflet-tile-pane {
         filter: grayscale(0.65) sepia(0.35) saturate(0.85) brightness(1.02)
           contrast(0.94);
       }
 
       /* ============================================================
-       GRAIN + VIGNETTE OVERLAYS
-       ============================================================ */
+         GRAIN + VIGNETTE
+         ============================================================ */
       .grain {
         position: fixed;
         inset: 0;
@@ -157,8 +126,8 @@
       }
 
       /* ============================================================
-       TOP BAR
-       ============================================================ */
+         TOPBAR
+         ============================================================ */
       .topbar {
         position: fixed;
         top: 0;
@@ -191,7 +160,7 @@
         justify-content: center;
         border: 1px solid var(--ink);
         border-radius: 50%;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 17px;
         line-height: 1;
@@ -239,8 +208,8 @@
       }
 
       /* ============================================================
-       HERO PANEL
-       ============================================================ */
+         HERO PANEL
+         ============================================================ */
       .hero-panel {
         position: fixed;
         top: 104px;
@@ -291,7 +260,7 @@
       }
 
       .hero-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: 38px;
         line-height: 1.05;
@@ -334,7 +303,7 @@
       }
 
       .hero-stats .stat b {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-weight: 400;
         font-size: 20px;
@@ -352,8 +321,8 @@
       }
 
       /* ============================================================
-       BOTTOM CHIPS BAR
-       ============================================================ */
+         BOTTOM CHIPS BAR
+         ============================================================ */
       .chips-bar {
         position: fixed;
         bottom: 28px;
@@ -393,7 +362,7 @@
         border-radius: 999px;
         background: transparent;
         color: var(--ink-2);
-        font-family: "Inter", sans-serif;
+        font-family: var(--font-sans);
         font-size: 12.5px;
         font-weight: 500;
         letter-spacing: 0.01em;
@@ -429,8 +398,8 @@
       }
 
       /* ============================================================
-       ZOOM CONTROL
-       ============================================================ */
+         ZOOM CONTROL
+         ============================================================ */
       .leaflet-control-zoom {
         border: 1px solid rgba(255, 255, 255, 0.7) !important;
         border-radius: 14px !important;
@@ -468,13 +437,13 @@
       }
 
       /* ============================================================
-       ATTRIBUTION
-       ============================================================ */
+         ATTRIBUTION
+         ============================================================ */
       .leaflet-control-attribution {
         background: rgba(253, 250, 246, 0.85) !important;
         color: var(--ink-3) !important;
         font-size: 10px !important;
-        font-family: "Inter", sans-serif !important;
+        font-family: var(--font-sans) !important;
         letter-spacing: 0.02em !important;
         border-top-left-radius: 8px !important;
         padding: 3px 8px !important;
@@ -488,8 +457,8 @@
       }
 
       /* ============================================================
-       CUSTOM MARKERS
-       ============================================================ */
+         CUSTOM MARKERS
+         ============================================================ */
       .custom-marker {
         background: transparent;
         border: none;
@@ -551,8 +520,8 @@
       }
 
       /* ============================================================
-       POPUP
-       ============================================================ */
+         POPUP
+         ============================================================ */
       .leaflet-popup-content-wrapper {
         background: var(--surface) !important;
         border-radius: 4px !important;
@@ -568,7 +537,7 @@
       .leaflet-popup-content {
         margin: 0 !important;
         width: 300px !important;
-        font-family: "Inter", sans-serif;
+        font-family: var(--font-sans);
         line-height: 1.5;
       }
 
@@ -628,7 +597,7 @@
       .popup-photo-wrap::before {
         content: "V";
         position: absolute;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 76px;
         line-height: 1;
@@ -656,7 +625,7 @@
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.7);
         border-radius: 999px;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 11px;
         letter-spacing: 0.06em;
@@ -669,7 +638,7 @@
       }
 
       .popup-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: 22px;
         line-height: 1.15;
@@ -692,7 +661,7 @@
       }
 
       .popup-text {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-weight: 400;
         font-size: 15px;
@@ -703,8 +672,8 @@
       }
 
       /* ============================================================
-       INTRO HINT
-       ============================================================ */
+         INTRO HINT
+         ============================================================ */
       .intro-hint {
         position: fixed;
         left: 50%;
@@ -741,7 +710,7 @@
       }
 
       .intro-hint .hint-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 20px;
         color: var(--ink);
@@ -756,8 +725,8 @@
       }
 
       /* ============================================================
-       RESPONSIVE
-       ============================================================ */
+         RESPONSIVE
+         ============================================================ */
       @media (max-width: 900px) {
         .hero-panel {
           top: 88px;
@@ -899,15 +868,11 @@
   </head>
 
   <body>
-    <!-- MAP -->
     <div id="map"></div>
 
     <div class="vignette"></div>
     <div class="grain"></div>
 
-    <!-- ============================================================
-       TOP BAR
-       ============================================================ -->
     <header class="topbar">
       <a href="index.html" class="brand">
         <span class="brand-mark">V</span>
@@ -926,9 +891,6 @@
       </div>
     </header>
 
-    <!-- ============================================================
-       HERO PANEL
-       ============================================================ -->
     <aside class="hero-panel">
       <span class="eyebrow">05 · География</span>
       <h1 class="hero-title">Карта <em>наших мест</em></h1>
@@ -948,127 +910,18 @@
       </div>
     </aside>
 
-    <!-- ============================================================
-       CHIPS BAR
-       ============================================================ -->
-    <nav class="chips-bar" id="chipsBar">
-      <!-- Генерируется JS -->
-    </nav>
+    <nav class="chips-bar" id="chipsBar"></nav>
 
-    <!-- ============================================================
-       INTRO HINT
-       ============================================================ -->
     <div class="intro-hint" id="introHint">
       <span class="hint-emoji">📍</span>
       <div class="hint-title">Наши точки на карте</div>
       <div class="hint-text">Нажми на маркер или выбери место снизу</div>
     </div>
 
-    <!-- ============================================================
-       TIME + WEATHER
-       ============================================================ -->
-    <script>
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        document.getElementById("timeText").textContent = `${hh}:${mm}`;
+    <!-- Единый движок: часы, погода, тосты, авто-навигация, SW -->
+    <script src="shared/widgets.js"></script>
 
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        document.getElementById("timeIcon").textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
-
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      document
-        .getElementById("infoWidget")
-        .addEventListener("click", loadWeather);
-    </script>
-
-    <!-- ============================================================
-       Leaflet
-       ============================================================ -->
+    <!-- Leaflet -->
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -1143,7 +996,6 @@
         fadeAnimation: true,
       });
 
-      // OpenStreetMap — работает всегда, без ключей
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap contributors",
         maxZoom: 19,
@@ -1178,19 +1030,19 @@
         }).addTo(map);
 
         const popupHTML = `
-        <div class="popup-inner">
-          <div class="popup-photo-wrap">
-            <img class="popup-photo" src="${place.photo}" alt=""
-                 onerror="this.remove()" loading="lazy" decoding="async">
-            <span class="popup-index">${pad2(index)}</span>
+          <div class="popup-inner">
+            <div class="popup-photo-wrap">
+              <img class="popup-photo" src="${place.photo}" alt=""
+                   onerror="this.remove()" loading="lazy" decoding="async">
+              <span class="popup-index">${pad2(index)}</span>
+            </div>
+            <div class="popup-body">
+              <h3 class="popup-title">${place.title}</h3>
+              <span class="popup-date">${place.date}</span>
+              <p class="popup-text">${place.text}</p>
+            </div>
           </div>
-          <div class="popup-body">
-            <h3 class="popup-title">${place.title}</h3>
-            <span class="popup-date">${place.date}</span>
-            <p class="popup-text">${place.text}</p>
-          </div>
-        </div>
-      `;
+        `;
 
         marker.bindPopup(popupHTML, {
           maxWidth: 320,
@@ -1203,7 +1055,6 @@
 
         markers.push(marker);
 
-        // --- Chip ---
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "chip";
@@ -1256,6 +1107,5 @@
         }, 900);
       }
     </script>
-    <script src="sw-register.js" defer></script>
   </body>
 </html>

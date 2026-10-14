@@ -28,238 +28,30 @@
       rel="stylesheet"
     />
 
+    <!-- Единый движок -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
     <style>
+      /* ============================================================
+         КАРТА СЕРДЦА · только специфика страницы
+         ============================================================ */
+
+      /* --- Доп. токены: пергамент и гравюра --- */
       :root {
-        --paper: #f3ede4;
-        --surface: #fdfaf6;
-        --surface-2: #f7f0e6;
-
-        --ink: #1e1a16;
-        --ink-2: #4a423c;
-        --ink-3: #8a7f75;
-        --ink-4: #b8aca1;
-
-        --line: rgba(30, 26, 22, 0.08);
-        --line-2: rgba(30, 26, 22, 0.16);
-
-        --rose: #b58794;
-        --rose-deep: #8f6472;
-        --rose-soft: #e8d4d8;
-        --rose-tint: #f2e4e7;
-
-        --gold: #b89968;
-        --gold-deep: #8a6f4d;
-
-        /* Пергамент */
         --parch-1: #f0e2bd;
         --parch-2: #e3d0a3;
         --parch-3: #d1b884;
         --parch-4: #b89a66;
 
-        /* Чернила гравюры */
         --ink-brown: #4a2f1c;
         --ink-brown-2: #6b4529;
         --ink-red: #8b3524;
         --ink-blue: #2f3f5a;
-
-        --ease: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        font-size: 16px;
-        line-height: 1.5;
-        min-height: 100vh;
-        overflow-x: hidden;
-        -webkit-tap-highlight-color: transparent;
-      }
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          radial-gradient(
-            ellipse 90% 60% at 15% -10%,
-            rgba(232, 212, 216, 0.55),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 60% 50% at 95% 15%,
-            rgba(207, 184, 163, 0.28),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 70% 55% at 5% 105%,
-            rgba(181, 135, 148, 0.16),
-            transparent 60%
-          ),
-          var(--paper);
-      }
-      .grain {
-        position: fixed;
-        inset: 0;
-        z-index: 9998;
-        pointer-events: none;
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      }
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-        border: none;
-        background: none;
-      }
-      ::selection {
-        background: var(--rose-soft);
-        color: var(--rose-deep);
-      }
-
-      /* TOPBAR */
-      .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 32px;
-        background: rgba(243, 237, 228, 0.72);
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border-bottom: 1px solid var(--line);
-        font-size: 12.5px;
-        letter-spacing: 0.02em;
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-      .brand-mark {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--ink);
-        border-radius: 50%;
-        font-family: "Instrument Serif", Georgia, serif;
-        font-style: italic;
-        font-size: 17px;
-        line-height: 1;
-        color: var(--ink);
-        padding-bottom: 2px;
-        transition: transform 0.4s var(--ease-spring);
-      }
-      .brand:hover .brand-mark {
-        transform: rotate(-12deg) scale(1.05);
-      }
-      .brand-label {
-        color: var(--ink-2);
-        font-weight: 500;
-      }
-      .topbar-meta {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--ink-2);
-        cursor: pointer;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-      }
-      .meta-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .meta-item .icon {
-        font-size: 13px;
-        filter: saturate(0.7);
-      }
-      .meta-sep {
-        color: var(--ink-4);
-      }
-
-      main {
-        max-width: 1240px;
-        margin: 0 auto;
-        padding: 140px 32px 80px;
-      }
-
-      /* HERO */
-      .hero {
-        padding: 20px 0 40px;
-        text-align: center;
-      }
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--rose-deep);
-        margin-bottom: 28px;
-      }
-      .eyebrow::before,
-      .eyebrow::after {
-        content: "";
-        width: 24px;
-        height: 1px;
-        background: var(--rose-deep);
-      }
-      h1 {
-        font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 400;
-        font-size: clamp(38px, 5.4vw, 72px);
-        line-height: 1.04;
-        letter-spacing: -0.02em;
-        color: var(--ink);
-        margin: 0 0 22px;
-        max-width: 18ch;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      h1 em {
-        font-style: italic;
-        color: var(--rose-deep);
-      }
-      .hero-sub {
-        font-size: 16px;
-        line-height: 1.6;
-        color: var(--ink-2);
-        margin: 0 auto;
-        max-width: 50ch;
       }
 
       /* ============================================================
-         КАРТА
+         MAP STAGE
          ============================================================ */
       .map-stage {
         margin-top: 72px;
@@ -309,7 +101,7 @@
         gap: 4px;
       }
       .map-head .mark {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 26px;
         line-height: 1;
         color: var(--ink);
@@ -339,14 +131,16 @@
         margin-bottom: 4px;
       }
       .map-head .right .value {
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 13px;
         font-weight: 500;
         color: var(--ink);
         letter-spacing: 0.06em;
       }
 
-      /* --- Сам пергамент --- */
+      /* ============================================================
+         ПЕРГАМЕНТ
+         ============================================================ */
       .map-scroll {
         position: relative;
         z-index: 2;
@@ -354,7 +148,6 @@
         margin: 0 auto;
         padding: 24px;
         background:
-          /* Крапины и потёртости */
           radial-gradient(
             circle at 12% 20%,
             rgba(74, 47, 28, 0.07) 0 3px,
@@ -420,7 +213,6 @@
           );
         mix-blend-mode: multiply;
       }
-      /* Двойная рамка вокруг карты */
       .map-scroll::after {
         content: "";
         position: absolute;
@@ -431,7 +223,9 @@
         box-shadow: inset 0 0 0 6px rgba(74, 47, 28, 0.08);
       }
 
-      /* SVG карты */
+      /* ============================================================
+         SVG КАРТЫ
+         ============================================================ */
       .map-svg-wrap {
         position: relative;
         width: 100%;
@@ -449,7 +243,9 @@
         user-select: none;
       }
 
-      /* Интерактивные маркеры */
+      /* ============================================================
+         МАРКЕРЫ
+         ============================================================ */
       .marker {
         position: absolute;
         transform: translate(-50%, -50%);
@@ -505,7 +301,6 @@
           0 8px 20px rgba(74, 47, 28, 0.4);
       }
 
-      /* Тултип над маркером */
       .marker-tip {
         position: absolute;
         bottom: 100%;
@@ -513,7 +308,7 @@
         transform: translateX(-50%) translateY(4px);
         white-space: nowrap;
         padding: 6px 12px;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         color: var(--ink-brown);
@@ -530,7 +325,6 @@
         transform: translateX(-50%) translateY(-8px);
       }
 
-      /* Пульсация "ты здесь" для одного маркера */
       @keyframes pingRing {
         0% {
           transform: scale(0.6);
@@ -551,7 +345,9 @@
         pointer-events: none;
       }
 
-      /* --- Панель-легенда снизу --- */
+      /* ============================================================
+         ЛЕГЕНДА + ИНФО
+         ============================================================ */
       .legend-row {
         position: relative;
         z-index: 2;
@@ -562,7 +358,6 @@
         align-items: start;
       }
 
-      /* Информация о выбранной точке */
       .map-info {
         padding: 26px 28px;
         background: linear-gradient(
@@ -579,7 +374,7 @@
         gap: 6px;
       }
       .map-info .info-eyebrow {
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 10px;
         font-weight: 500;
         letter-spacing: 0.28em;
@@ -587,7 +382,7 @@
         color: var(--rose-deep);
       }
       .map-info .info-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-style: italic;
         font-size: clamp(24px, 3vw, 32px);
@@ -598,7 +393,7 @@
         padding-bottom: 3px;
       }
       .map-info .info-text {
-        font-family: "Cormorant Garamond", "Instrument Serif", Georgia, serif;
+        font-family: var(--font-body-serif);
         font-size: 17px;
         line-height: 1.55;
         color: var(--ink-2);
@@ -611,13 +406,12 @@
       .map-info .info-hint {
         margin-top: auto;
         padding-top: 12px;
-        font-family: "Caveat", cursive;
+        font-family: var(--font-hand);
         font-size: 17px;
         color: var(--ink-3);
         opacity: 0.9;
       }
 
-      /* Легенда (список островов) */
       .legend {
         padding: 24px 24px 20px;
         background: var(--surface-2);
@@ -625,7 +419,7 @@
         border-radius: 3px;
       }
       .legend-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 18px;
         line-height: 1;
@@ -667,7 +461,7 @@
         filter: saturate(0.85);
       }
       .legend-name {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 15.5px;
         line-height: 1.25;
         color: var(--ink-2);
@@ -681,14 +475,13 @@
         font-style: italic;
       }
 
-      /* Подпись под картой */
       .map-caption {
         position: relative;
         z-index: 2;
         text-align: center;
         margin: 44px auto 0;
         max-width: 50ch;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 15px;
         color: var(--ink-3);
@@ -698,82 +491,9 @@
         color: var(--rose-deep);
       }
 
-      /* NAV */
-      .nav-wrap {
-        margin-top: 96px;
-        padding-top: 40px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 14px;
-        padding: 18px 32px;
-        border-radius: 999px;
-        background: var(--ink);
-        color: var(--paper);
-        font-size: 14.5px;
-        font-weight: 500;
-        transition: all 0.35s var(--ease);
-      }
-      .back-link:hover {
-        background: #000;
-        transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
-      }
-      .back-link .arrow {
-        display: inline-block;
-        transition: transform 0.4s var(--ease);
-        font-size: 15px;
-      }
-      .back-link:hover .arrow {
-        transform: translateX(-5px);
-      }
-      .nav-link-secondary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 18px 28px;
-        border-radius: 999px;
-        background: transparent;
-        color: var(--ink-2);
-        border: 1px solid var(--line-2);
-        font-size: 14.5px;
-        font-weight: 500;
-        transition: all 0.35s var(--ease);
-      }
-      .nav-link-secondary:hover {
-        background: var(--surface-2);
-        color: var(--ink);
-        border-color: var(--ink-3);
-        transform: translateY(-2px);
-      }
-      .nav-link-secondary .icon {
-        font-size: 14px;
-        filter: saturate(0.75);
-      }
-
-      /* FOOTER */
-      .footer {
-        padding: 40px 32px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-        max-width: 1240px;
-        margin: 40px auto 0;
-      }
-
-      /* RESPONSIVE */
+      /* ============================================================
+         RESPONSIVE (только специфика страницы)
+         ============================================================ */
       @media (max-width: 900px) {
         .map-stage {
           padding: 40px 20px 44px;
@@ -802,12 +522,6 @@
       }
 
       @media (max-width: 640px) {
-        main {
-          padding: 120px 20px 60px;
-        }
-        h1 {
-          font-size: clamp(32px, 9vw, 46px);
-        }
         .map-stage {
           padding: 26px 12px 30px;
         }
@@ -836,51 +550,11 @@
         .legend {
           padding: 20px 18px 16px;
         }
-        .nav-wrap {
-          margin-top: 72px;
-          padding-top: 32px;
-          gap: 10px;
-        }
-        .back-link,
-        .nav-link-secondary {
-          padding: 16px 24px;
-          font-size: 13.5px;
-        }
-        .topbar {
-          padding: 16px 20px;
-          font-size: 11.5px;
-        }
-        .brand-label {
-          display: none;
-        }
-        .brand-mark {
-          width: 26px;
-          height: 26px;
-          font-size: 15px;
-        }
-        .meta-sep {
-          display: none;
-        }
-        .topbar-meta {
-          gap: 10px;
-          font-size: 11.5px;
-        }
-        .footer {
-          flex-direction: column;
-          gap: 8px;
-          text-align: center;
-          font-size: 10.5px;
-          padding: 32px 20px;
-        }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
+        .marker--you::after {
+          animation: none;
         }
       }
     </style>
@@ -895,21 +569,21 @@
         <span class="brand-label">Для Вероники</span>
       </a>
       <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
-        <span class="meta-item"
-          ><span class="icon" id="timeIcon">☀️</span
-          ><span id="timeText">--:--</span></span
-        >
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
         <span class="meta-sep">·</span>
-        <span class="meta-item"
-          ><span class="icon" id="weatherIcon">🌤️</span
-          ><span id="weatherText">...</span></span
-        >
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
       </div>
     </header>
 
-    <main>
+    <main class="wide">
       <section class="hero">
-        <span class="eyebrow">Карта · MDCXXV · Моё сердце</span>
+        <span class="eyebrow">28 · Карта · Моё сердце</span>
         <h1>Карта <em>моего сердца</em></h1>
         <p class="hero-sub">
           Составлена по рассказам моряков, вернувшихся из плавания в мою душу.
@@ -940,7 +614,6 @@
               aria-hidden="true"
             >
               <defs>
-                <!-- Узор для воды: тонкие линии -->
                 <pattern
                   id="seaHatch"
                   x="0"
@@ -960,7 +633,6 @@
                     opacity="0.16"
                   />
                 </pattern>
-                <!-- Штриховка внутри суши -->
                 <pattern
                   id="landHatch"
                   x="0"
@@ -980,7 +652,6 @@
                     opacity="0.28"
                   />
                 </pattern>
-                <!-- Радиальный градиент пергамента -->
                 <radialGradient id="parchGlow" cx="50%" cy="50%" r="65%">
                   <stop offset="0%" stop-color="#f5e7c4" stop-opacity="0.35" />
                   <stop offset="70%" stop-color="#e3d0a3" stop-opacity="0" />
@@ -1003,7 +674,6 @@
                 </filter>
               </defs>
 
-              <!-- Фон-пергамент внутри карты -->
               <rect
                 x="0"
                 y="0"
@@ -1012,7 +682,7 @@
                 fill="url(#parchGlow)"
               />
 
-              <!-- Румбы (из центра) -->
+              <!-- Румбы -->
               <g
                 stroke="#4a2f1c"
                 stroke-width="0.35"
@@ -1033,7 +703,7 @@
                 <line x1="400" y1="300" x2="600" y2="540" />
               </g>
 
-              <!-- МОРЕ (штриховка) -->
+              <!-- МОРЕ -->
               <rect
                 x="0"
                 y="0"
@@ -1042,7 +712,7 @@
                 fill="url(#seaHatch)"
               />
 
-              <!-- ПУНКТИРНЫЕ ТОРГОВЫЕ ПУТИ -->
+              <!-- Торговые пути -->
               <g
                 fill="none"
                 stroke="#4a2f1c"
@@ -1055,34 +725,19 @@
                 <path d="M 260 440 Q 380 420 460 380" />
               </g>
 
-              <!-- МАТЕРИК 1 (слева сверху) -->
+              <!-- МАТЕРИК 1 -->
               <g filter="url(#ink)">
                 <path
-                  d="M 60 130
-                     Q 90 90 150 96
-                     Q 200 100 240 130
-                     Q 268 150 275 190
-                     Q 280 220 250 240
-                     Q 210 260 170 250
-                     Q 130 240 100 210
-                     Q 70 180 60 130 Z"
+                  d="M 60 130 Q 90 90 150 96 Q 200 100 240 130 Q 268 150 275 190 Q 280 220 250 240 Q 210 260 170 250 Q 130 240 100 210 Q 70 180 60 130 Z"
                   fill="#e8d5a6"
                   stroke="#4a2f1c"
                   stroke-width="1.6"
                 />
                 <path
-                  d="M 60 130
-                     Q 90 90 150 96
-                     Q 200 100 240 130
-                     Q 268 150 275 190
-                     Q 280 220 250 240
-                     Q 210 260 170 250
-                     Q 130 240 100 210
-                     Q 70 180 60 130 Z"
+                  d="M 60 130 Q 90 90 150 96 Q 200 100 240 130 Q 268 150 275 190 Q 280 220 250 240 Q 210 260 170 250 Q 130 240 100 210 Q 70 180 60 130 Z"
                   fill="url(#landHatch)"
                   opacity="0.45"
                 />
-                <!-- Подпись -->
                 <text
                   x="168"
                   y="176"
@@ -1117,34 +772,19 @@
                 </text>
               </g>
 
-              <!-- МАТЕРИК 2 (слева снизу — большой) -->
+              <!-- МАТЕРИК 2 -->
               <g filter="url(#ink)">
                 <path
-                  d="M 40 380
-                     Q 100 360 160 380
-                     Q 210 396 240 430
-                     Q 260 458 250 500
-                     Q 240 540 190 552
-                     Q 120 566 70 540
-                     Q 30 518 26 470
-                     Q 22 420 40 380 Z"
+                  d="M 40 380 Q 100 360 160 380 Q 210 396 240 430 Q 260 458 250 500 Q 240 540 190 552 Q 120 566 70 540 Q 30 518 26 470 Q 22 420 40 380 Z"
                   fill="#e8d5a6"
                   stroke="#4a2f1c"
                   stroke-width="1.6"
                 />
                 <path
-                  d="M 40 380
-                     Q 100 360 160 380
-                     Q 210 396 240 430
-                     Q 260 458 250 500
-                     Q 240 540 190 552
-                     Q 120 566 70 540
-                     Q 30 518 26 470
-                     Q 22 420 40 380 Z"
+                  d="M 40 380 Q 100 360 160 380 Q 210 396 240 430 Q 260 458 250 500 Q 240 540 190 552 Q 120 566 70 540 Q 30 518 26 470 Q 22 420 40 380 Z"
                   fill="url(#landHatch)"
                   opacity="0.45"
                 />
-                <!-- Горы -->
                 <g stroke="#4a2f1c" stroke-width="1" fill="none" opacity="0.55">
                   <path d="M 70 470 L 82 448 L 94 470" />
                   <path d="M 92 480 L 106 452 L 120 480" />
@@ -1174,30 +814,19 @@
                 </text>
               </g>
 
-              <!-- ОСТРОВ 1: Первый поцелуй (центр-верх) -->
+              <!-- ОСТРОВ 1 -->
               <g filter="url(#ink)">
                 <path
-                  d="M 340 130
-                     Q 380 110 410 130
-                     Q 440 148 428 176
-                     Q 416 202 380 202
-                     Q 344 202 336 176
-                     Q 328 152 340 130 Z"
+                  d="M 340 130 Q 380 110 410 130 Q 440 148 428 176 Q 416 202 380 202 Q 344 202 336 176 Q 328 152 340 130 Z"
                   fill="#e8d5a6"
                   stroke="#4a2f1c"
                   stroke-width="1.6"
                 />
                 <path
-                  d="M 340 130
-                     Q 380 110 410 130
-                     Q 440 148 428 176
-                     Q 416 202 380 202
-                     Q 344 202 336 176
-                     Q 328 152 340 130 Z"
+                  d="M 340 130 Q 380 110 410 130 Q 440 148 428 176 Q 416 202 380 202 Q 344 202 336 176 Q 328 152 340 130 Z"
                   fill="url(#landHatch)"
                   opacity="0.4"
                 />
-                <!-- Дворец -->
                 <g stroke="#4a2f1c" stroke-width="1" fill="none" opacity="0.7">
                   <rect x="368" y="152" width="24" height="20" />
                   <polygon points="365,152 380,142 395,152" />
@@ -1232,30 +861,19 @@
                 </text>
               </g>
 
-              <!-- ОСТРОВ 2: Сердце (правый верх) -->
+              <!-- ОСТРОВ 2 -->
               <g filter="url(#ink)">
                 <path
-                  d="M 620 130
-                     Q 650 108 685 118
-                     Q 718 128 720 158
-                     Q 722 190 690 198
-                     Q 656 206 634 188
-                     Q 610 168 618 146 Z"
+                  d="M 620 130 Q 650 108 685 118 Q 718 128 720 158 Q 722 190 690 198 Q 656 206 634 188 Q 610 168 618 146 Z"
                   fill="#e8d5a6"
                   stroke="#4a2f1c"
                   stroke-width="1.6"
                 />
                 <path
-                  d="M 620 130
-                     Q 650 108 685 118
-                     Q 718 128 720 158
-                     Q 722 190 690 198
-                     Q 656 206 634 188
-                     Q 610 168 618 146 Z"
+                  d="M 620 130 Q 650 108 685 118 Q 718 128 720 158 Q 722 190 690 198 Q 656 206 634 188 Q 610 168 618 146 Z"
                   fill="url(#landHatch)"
                   opacity="0.4"
                 />
-                <!-- Крепость -->
                 <g stroke="#4a2f1c" stroke-width="1" fill="none" opacity="0.7">
                   <rect x="660" y="140" width="22" height="18" />
                   <rect x="660" y="134" width="4" height="6" />
@@ -1286,7 +904,7 @@
                 </text>
               </g>
 
-              <!-- ОСТРОВ 3: Котик (центр-низ) -->
+              <!-- ОСТРОВ 3 -->
               <g filter="url(#ink)">
                 <ellipse
                   cx="420"
@@ -1305,7 +923,6 @@
                   fill="url(#landHatch)"
                   opacity="0.4"
                 />
-                <!-- Пальмы -->
                 <g stroke="#4a2f1c" stroke-width="1" fill="none" opacity="0.7">
                   <line x1="400" y1="470" x2="400" y2="450" />
                   <path d="M 400 450 q -10 -6 -16 -3" />
@@ -1339,26 +956,16 @@
                 </text>
               </g>
 
-              <!-- ОСТРОВ 4: Чай (правый низ) -->
+              <!-- ОСТРОВ 4 -->
               <g filter="url(#ink)">
                 <path
-                  d="M 630 420
-                     Q 660 400 690 410
-                     Q 720 420 720 448
-                     Q 720 476 690 484
-                     Q 656 492 636 472
-                     Q 616 452 630 420 Z"
+                  d="M 630 420 Q 660 400 690 410 Q 720 420 720 448 Q 720 476 690 484 Q 656 492 636 472 Q 616 452 630 420 Z"
                   fill="#e8d5a6"
                   stroke="#4a2f1c"
                   stroke-width="1.6"
                 />
                 <path
-                  d="M 630 420
-                     Q 660 400 690 410
-                     Q 720 420 720 448
-                     Q 720 476 690 484
-                     Q 656 492 636 472
-                     Q 616 452 630 420 Z"
+                  d="M 630 420 Q 660 400 690 410 Q 720 420 720 448 Q 720 476 690 484 Q 656 492 636 472 Q 616 452 630 420 Z"
                   fill="url(#landHatch)"
                   opacity="0.4"
                 />
@@ -1386,7 +993,7 @@
                 </text>
               </g>
 
-              <!-- МЕЛКИЕ ОСТРОВА -->
+              <!-- Мелкие острова -->
               <g filter="url(#ink)">
                 <ellipse
                   cx="290"
@@ -1417,7 +1024,7 @@
                 />
               </g>
 
-              <!-- МОРСКОЕ ЧУДОВИЩЕ: кит -->
+              <!-- Кит -->
               <g
                 transform="translate(190 320) rotate(-8)"
                 stroke="#4a2f1c"
@@ -1426,11 +1033,7 @@
                 opacity="0.7"
               >
                 <path
-                  d="M 0 0
-                     Q 20 -14 50 -10
-                     Q 80 -6 96 6
-                     Q 80 14 50 14
-                     Q 20 14 0 0 Z"
+                  d="M 0 0 Q 20 -14 50 -10 Q 80 -6 96 6 Q 80 14 50 14 Q 20 14 0 0 Z"
                   fill="#e3d0a3"
                 />
                 <path d="M -6 0 Q -14 -8 -22 -4 Q -14 0 -22 4 Q -14 8 -6 0 Z" />
@@ -1439,7 +1042,7 @@
                 <path d="M 30 -10 Q 34 -18 38 -20" />
               </g>
 
-              <!-- МОРСКОЕ ЧУДОВИЩЕ: змей -->
+              <!-- Змей -->
               <g
                 transform="translate(340 360)"
                 stroke="#4a2f1c"
@@ -1455,7 +1058,7 @@
                 <circle cx="0" cy="0" r="1" fill="#4a2f1c" />
               </g>
 
-              <!-- КОРАБЛЬ -->
+              <!-- Корабли -->
               <g
                 transform="translate(90 250) rotate(-4)"
                 stroke="#4a2f1c"
@@ -1466,10 +1069,8 @@
                 <path d="M 0 22 L 46 22 L 52 8 L -6 8 Z" fill="#e3d0a3" />
                 <line x1="20" y1="8" x2="20" y2="-22" />
                 <line x1="34" y1="8" x2="34" y2="-14" />
-                <!-- Паруса -->
                 <path d="M 20 -22 L 12 -14 L 20 -6 L 28 -14 Z" fill="#f5e7c4" />
                 <path d="M 34 -14 L 28 -8 L 34 -2 L 40 -8 Z" fill="#f5e7c4" />
-                <!-- Флаг -->
                 <polygon
                   points="20,-22 26,-20 20,-17"
                   fill="#8b3524"
@@ -1477,7 +1078,6 @@
                 />
               </g>
 
-              <!-- Второй корабль -->
               <g
                 transform="translate(680 270) rotate(6) scale(0.85)"
                 stroke="#4a2f1c"
@@ -1490,7 +1090,7 @@
                 <path d="M 20 -22 L 12 -14 L 20 -6 L 28 -14 Z" fill="#f5e7c4" />
               </g>
 
-              <!-- КОМПАС-РОЗА (правый верхний угол) -->
+              <!-- Компас-роза -->
               <g transform="translate(700 90)" opacity="0.85">
                 <circle
                   r="42"
@@ -1510,7 +1110,6 @@
                   stroke="#4a2f1c"
                   stroke-width="0.4"
                 />
-                <!-- 8 лучей -->
                 <g stroke="#4a2f1c" stroke-width="0.8" fill="none">
                   <polygon
                     points="0,-34 4,-8 0,0 -4,-8"
@@ -1532,7 +1131,6 @@
                     fill="#4a2f1c"
                     stroke="none"
                   />
-                  <!-- промежуточные -->
                   <line x1="-22" y1="-22" x2="-4" y2="-4" />
                   <line x1="22" y1="-22" x2="4" y2="-4" />
                   <line x1="-22" y1="22" x2="-4" y2="4" />
@@ -1584,7 +1182,7 @@
                 </text>
               </g>
 
-              <!-- МАСШТАБНАЯ ЛИНЕЙКА (левый низ) -->
+              <!-- Масштабная линейка -->
               <g
                 transform="translate(60 570)"
                 stroke="#4a2f1c"
@@ -1640,7 +1238,7 @@
                 </text>
               </g>
 
-              <!-- МОРЕ НЕЖНОСТИ — большая надпись по воде -->
+              <!-- Mare Tenerezza -->
               <text
                 x="540"
                 y="140"
@@ -1668,7 +1266,7 @@
                 Море Нежности
               </text>
 
-              <!-- ЗАЛИВ ОБНИМАШЕК — подпись -->
+              <!-- Залив Обнимашек -->
               <text
                 x="270"
                 y="410"
@@ -1697,8 +1295,7 @@
               </text>
             </svg>
 
-            <!-- === СЛОЙ 2: интерактивные маркеры (HTML) === -->
-            <!-- Позиции в % от контейнера -->
+            <!-- === СЛОЙ 2: маркеры === -->
             <div
               class="marker marker--you"
               data-id="kiss"
@@ -1805,24 +1402,8 @@
         </p>
       </section>
 
-      <div class="nav-wrap">
-        <a href="index.html" class="back-link">
-          <span class="arrow">←</span>
-          <span>На главную</span>
-        </a>
-        <a href="temple.html" class="nav-link-secondary">
-          <span class="icon">🏛</span>
-          <span>Храм любви</span>
-        </a>
-        <a href="passport.html" class="nav-link-secondary">
-          <span class="icon">📋</span>
-          <span>Паспорт</span>
-        </a>
-        <a href="slots.html" class="nav-link-secondary">
-          <span class="icon">🎰</span>
-          <span>Слот-машина</span>
-        </a>
-      </div>
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="auto-nav" data-nav="temple,passport,slots"></nav>
     </main>
 
     <footer class="footer">
@@ -1830,100 +1411,11 @@
       <span>Carta Marina · MMXXV</span>
     </footer>
 
+    <!-- Единый движок -->
+    <script src="shared/widgets.js"></script>
+
+    <!-- Логика карты (специфика страницы) -->
     <script>
-      /* ============ Топбар: время + погода ============ */
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        const t = document.getElementById("timeText");
-        if (t) t.textContent = `${hh}:${mm}`;
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        const ti = document.getElementById("timeIcon");
-        if (ti) ti.textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
-
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        if (!iconEl || !textEl) return;
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      const iw = document.getElementById("infoWidget");
-      if (iw) iw.addEventListener("click", loadWeather);
-
-      /* ============ КАРТА: данные точек ============ */
       const PLACES = {
         kiss: {
           eyebrow: "Остров · 001",
@@ -1997,7 +1489,6 @@
         infoText.innerHTML = p.text;
         infoHint.textContent = p.hint;
 
-        // лёгкая анимация появления
         [infoTitle, infoText].forEach((el) => {
           el.animate(
             [

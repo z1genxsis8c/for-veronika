@@ -8,7 +8,6 @@
     />
     <title>Наши даты · Для Вероники</title>
 
-    <!-- PWA -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#f3ede4" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -22,285 +21,30 @@
     <meta http-equiv="Expires" content="0" />
     <link rel="apple-touch-icon" href="photos/icon-192.png" />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap"
       rel="stylesheet"
     />
 
+    <!-- Единый движок -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
     <style>
       /* ============================================================
-       TOKENS
-       ============================================================ */
-      :root {
-        --paper: #f3ede4;
-        --paper-2: #ece4d8;
-        --surface: #fdfaf6;
-        --surface-2: #f7f0e6;
-        --surface-3: #efe7da;
+         НАШИ ДАТЫ · только специфика страницы
+         ============================================================ */
 
-        --ink: #1e1a16;
-        --ink-2: #4a423c;
-        --ink-3: #8a7f75;
-        --ink-4: #b8aca1;
-
-        --line: rgba(30, 26, 22, 0.08);
-        --line-2: rgba(30, 26, 22, 0.16);
-
-        --rose: #b58794;
-        --rose-deep: #8f6472;
-        --rose-soft: #e8d4d8;
-        --rose-tint: #f2e4e7;
-
-        --sand: #cfb8a3;
-
-        --ease: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        font-size: 16px;
-        line-height: 1.5;
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          radial-gradient(
-            ellipse 90% 60% at 15% -10%,
-            rgba(232, 212, 216, 0.55),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 60% 50% at 95% 15%,
-            rgba(207, 184, 163, 0.28),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 70% 55% at 5% 105%,
-            rgba(181, 135, 148, 0.16),
-            transparent 60%
-          ),
-          var(--paper);
-      }
-
-      .grain {
-        position: fixed;
-        inset: 0;
-        z-index: 9998;
-        pointer-events: none;
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-        border: none;
-        background: none;
-      }
-      img {
-        max-width: 100%;
-        display: block;
-      }
-
-      ::selection {
-        background: var(--rose-soft);
-        color: var(--rose-deep);
-      }
-
-      ::-webkit-scrollbar {
-        width: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(30, 26, 22, 0.12);
-        border-radius: 10px;
-        border: 3px solid var(--paper);
-      }
-
-      /* ============================================================
-       TOP BAR
-       ============================================================ */
-      .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 32px;
-        background: rgba(243, 237, 228, 0.78);
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border-bottom: 1px solid var(--line);
-        font-size: 12.5px;
-        letter-spacing: 0.02em;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-
-      .brand-mark {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--ink);
-        border-radius: 50%;
-        font-family: "Instrument Serif", Georgia, serif;
-        font-style: italic;
-        font-size: 17px;
-        line-height: 1;
-        color: var(--ink);
-        padding-bottom: 2px;
-        transition: transform 0.4s var(--ease-spring);
-      }
-
-      .brand:hover .brand-mark {
-        transform: rotate(-12deg) scale(1.05);
-      }
-
-      .brand-label {
-        color: var(--ink-2);
-        font-weight: 500;
-      }
-
-      .topbar-meta {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--ink-2);
-        cursor: pointer;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-        transition: color 0.2s;
-      }
-
-      .topbar-meta:hover {
-        color: var(--ink);
-      }
-
-      .meta-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .meta-item .icon {
-        font-size: 13px;
-        filter: saturate(0.7);
-      }
-      .meta-sep {
-        color: var(--ink-4);
-      }
-
-      /* ============================================================
-       LAYOUT
-       ============================================================ */
+      /* --- main: сузим под эту страницу --- */
       main {
         max-width: 900px;
-        margin: 0 auto;
-        padding: 140px 32px 80px;
       }
 
       /* ============================================================
-       HERO
-       ============================================================ */
-      .hero {
-        padding: 20px 0 40px;
-        text-align: center;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--rose-deep);
-        margin-bottom: 28px;
-      }
-
-      .eyebrow::before,
-      .eyebrow::after {
-        content: "";
-        width: 24px;
-        height: 1px;
-        background: var(--rose-deep);
-      }
-
-      h1 {
-        font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 400;
-        font-size: clamp(38px, 5.4vw, 68px);
-        line-height: 1.04;
-        letter-spacing: -0.02em;
-        color: var(--ink);
-        margin: 0 0 22px;
-      }
-
-      h1 em {
-        font-style: italic;
-        color: var(--rose-deep);
-      }
-
-      .hero-sub {
-        font-size: 16px;
-        line-height: 1.6;
-        color: var(--ink-2);
-        margin: 0 auto;
-        max-width: 44ch;
-        font-weight: 400;
-      }
-
-      /* ============================================================
-       EVENTS LIST
-       ============================================================ */
+         EVENTS LIST
+         ============================================================ */
       .events-list {
         margin-top: 72px;
         display: flex;
@@ -323,7 +67,6 @@
           box-shadow 0.4s var(--ease),
           transform 0.4s var(--ease);
       }
-
       @keyframes cardIn {
         from {
           opacity: 0;
@@ -334,15 +77,12 @@
           transform: translateY(0);
         }
       }
-
       .event-card:hover {
         box-shadow:
           0 1px 0 rgba(255, 255, 255, 0.9) inset,
           0 28px 60px rgba(30, 26, 22, 0.12),
           0 6px 16px rgba(30, 26, 22, 0.06);
       }
-
-      /* Inner frame */
       .event-card::after {
         content: "";
         position: absolute;
@@ -351,8 +91,6 @@
         border-radius: 2px;
         pointer-events: none;
       }
-
-      /* Corner ticks */
       .event-card::before {
         content: "";
         position: absolute;
@@ -379,18 +117,15 @@
         position: relative;
         z-index: 1;
       }
-
       .event-emoji {
         font-size: 36px;
         line-height: 1;
         filter: saturate(0.75);
         flex-shrink: 0;
       }
-
       .event-info {
         min-width: 0;
       }
-
       .event-label {
         display: block;
         font-size: 10px;
@@ -400,9 +135,8 @@
         color: var(--ink-3);
         margin-bottom: 6px;
       }
-
       .event-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: clamp(20px, 2.4vw, 26px);
         line-height: 1.15;
@@ -410,17 +144,14 @@
         color: var(--ink);
         margin: 0 0 4px;
       }
-
       .event-date {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         color: var(--rose-deep);
         letter-spacing: 0.01em;
         margin: 0;
       }
-
-      /* Delete button */
       .event-delete {
         width: 32px;
         height: 32px;
@@ -438,7 +169,6 @@
         position: relative;
         z-index: 2;
       }
-
       .event-delete:hover {
         background: var(--ink);
         color: var(--paper);
@@ -454,13 +184,11 @@
         position: relative;
         z-index: 1;
       }
-
       .time-block {
         text-align: center;
         padding: 4px 8px;
         position: relative;
       }
-
       .time-block + .time-block::before {
         content: "";
         position: absolute;
@@ -470,10 +198,9 @@
         width: 1px;
         background: var(--line);
       }
-
       .time-num {
         display: block;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: clamp(36px, 5.5vw, 56px);
         line-height: 1;
@@ -483,11 +210,9 @@
         font-feature-settings: "tnum";
         transition: color 0.3s;
       }
-
       .time-num.tick {
         animation: tickPop 0.5s var(--ease-spring);
       }
-
       @keyframes tickPop {
         0% {
           transform: scale(1);
@@ -501,7 +226,6 @@
           color: var(--ink);
         }
       }
-
       .time-label {
         display: block;
         font-size: 10px;
@@ -512,41 +236,37 @@
         margin-top: 10px;
       }
 
-      /* Today / passed state */
+      /* Today / passed */
       .event-card.today {
         border-color: var(--rose);
       }
-
       .event-card.today::before {
         border-color: var(--rose-deep);
         opacity: 0.7;
       }
-
       .event-status {
         display: none;
         text-align: center;
         padding: 20px 0;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 20px;
         color: var(--rose-deep);
         position: relative;
         z-index: 1;
       }
-
       .event-card.today .event-status,
       .event-card.passed .event-status {
         display: block;
       }
-
       .event-card.today .countdown-grid,
       .event-card.passed .countdown-grid {
         display: none;
       }
 
       /* ============================================================
-       ADD PANEL
-       ============================================================ */
+         ADD PANEL
+         ============================================================ */
       .add-panel {
         margin-top: 72px;
         padding: 44px 40px 40px;
@@ -556,7 +276,6 @@
         position: relative;
         animation: cardIn 0.7s var(--ease) 0.3s backwards;
       }
-
       .add-panel-head {
         display: flex;
         justify-content: space-between;
@@ -570,18 +289,16 @@
         text-transform: uppercase;
         color: var(--ink-3);
       }
-
       .add-panel-head .latin {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         letter-spacing: 0.02em;
         text-transform: none;
         color: var(--rose-deep);
       }
-
       .add-panel-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: clamp(22px, 2.8vw, 30px);
         line-height: 1.15;
@@ -590,18 +307,16 @@
         margin: 0 0 30px;
         text-align: left;
       }
-
       .add-panel-title em {
         font-style: italic;
         color: var(--rose-deep);
       }
 
       /* Field */
-      .field {
+      .form-field {
         margin-bottom: 20px;
       }
-
-      .field label {
+      .form-field label {
         display: block;
         font-size: 10.5px;
         font-weight: 500;
@@ -610,16 +325,15 @@
         color: var(--ink-3);
         margin-bottom: 10px;
       }
-
-      .field input[type="text"],
-      .field input[type="date"],
-      .field input[type="time"] {
+      .form-field input[type="text"],
+      .form-field input[type="date"],
+      .form-field input[type="time"] {
         width: 100%;
         padding: 14px 16px;
         background: var(--surface-2);
         border: 1px solid var(--line);
         border-radius: 12px;
-        font-family: "Inter", sans-serif;
+        font-family: var(--font-sans);
         font-size: 15px;
         color: var(--ink);
         transition:
@@ -629,14 +343,12 @@
         -webkit-appearance: none;
         appearance: none;
       }
-
-      .field input:focus {
+      .form-field input:focus {
         outline: none;
         border-color: var(--rose-deep);
         background: var(--surface);
         box-shadow: 0 0 0 4px rgba(143, 100, 114, 0.1);
       }
-
       .field-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -649,7 +361,6 @@
         flex-wrap: wrap;
         gap: 8px;
       }
-
       .emoji-choice {
         width: 42px;
         height: 42px;
@@ -665,13 +376,11 @@
         padding: 0;
         filter: saturate(0.75);
       }
-
       .emoji-choice:hover {
         transform: translateY(-2px);
         border-color: var(--rose);
         background: var(--surface);
       }
-
       .emoji-choice.selected {
         background: var(--ink);
         border-color: var(--ink);
@@ -692,7 +401,7 @@
         border-radius: 999px;
         background: var(--ink);
         color: var(--paper);
-        font-family: "Inter", sans-serif;
+        font-family: var(--font-sans);
         font-size: 15px;
         font-weight: 500;
         letter-spacing: 0.01em;
@@ -704,7 +413,6 @@
           0 8px 20px rgba(30, 26, 22, 0.2);
         margin-top: 8px;
       }
-
       .btn-add:hover {
         background: #000;
         transform: translateY(-2px);
@@ -712,24 +420,19 @@
           0 1px 0 rgba(255, 255, 255, 0.12) inset,
           0 14px 32px rgba(30, 26, 22, 0.26);
       }
-
       .btn-add:active {
         transform: translateY(0) scale(0.99);
       }
-
       .btn-add .add-arrow {
         display: inline-block;
         transition: transform 0.4s var(--ease);
         font-size: 14px;
       }
-
       .btn-add:hover .add-arrow {
         transform: translateX(4px);
       }
 
-      /* ============================================================
-       EMPTY STATE
-       ============================================================ */
+      /* Empty state */
       .empty-hint {
         text-align: center;
         padding: 72px 40px;
@@ -737,7 +440,6 @@
         border: 1px dashed var(--line-2);
         border-radius: 4px;
       }
-
       .empty-hint .big {
         display: block;
         font-size: 44px;
@@ -745,16 +447,14 @@
         margin-bottom: 20px;
         filter: saturate(0.7);
       }
-
       .empty-hint .empty-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 22px;
         color: var(--ink);
         line-height: 1.35;
         margin: 0 0 8px;
       }
-
       .empty-hint .empty-sub {
         font-size: 13.5px;
         color: var(--ink-3);
@@ -762,107 +462,7 @@
         line-height: 1.5;
       }
 
-      /* ============================================================
-       NAV
-       ============================================================ */
-      .nav-wrap {
-        margin-top: 80px;
-        padding-top: 40px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 14px;
-        padding: 18px 32px;
-        border-radius: 999px;
-        background: var(--ink);
-        color: var(--paper);
-        font-family: "Inter", sans-serif;
-        font-size: 14.5px;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        transition: all 0.35s var(--ease);
-        border: none;
-        cursor: pointer;
-      }
-
-      .back-link:hover {
-        background: #000;
-        transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
-      }
-
-      .back-link .arrow {
-        display: inline-block;
-        transition: transform 0.4s var(--ease);
-        font-size: 15px;
-      }
-
-      .back-link:hover .arrow {
-        transform: translateX(-5px);
-      }
-
-      .nav-link-secondary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 18px 28px;
-        border-radius: 999px;
-        background: transparent;
-        color: var(--ink-2);
-        border: 1px solid var(--line-2);
-        font-family: "Inter", sans-serif;
-        font-size: 14.5px;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        transition: all 0.35s var(--ease);
-        cursor: pointer;
-      }
-
-      .nav-link-secondary:hover {
-        background: var(--surface-2);
-        color: var(--ink);
-        border-color: var(--ink-3);
-        transform: translateY(-2px);
-      }
-
-      .nav-link-secondary .icon {
-        font-size: 14px;
-        filter: saturate(0.75);
-        transition: transform 0.4s var(--ease-spring);
-      }
-
-      .nav-link-secondary:hover .icon {
-        transform: rotate(-180deg);
-      }
-
-      /* ============================================================
-       FOOTER
-       ============================================================ */
-      .footer {
-        padding: 40px 32px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-        max-width: 1240px;
-        margin: 40px auto 0;
-      }
-
-      /* ============================================================
-       SPARKLES
-       ============================================================ */
+      /* Sparkles */
       .sparkle {
         position: fixed;
         pointer-events: none;
@@ -871,54 +471,16 @@
       }
 
       /* ============================================================
-       TOAST
-       ============================================================ */
-      .toast {
-        position: fixed;
-        left: 50%;
-        bottom: 32px;
-        transform: translateX(-50%) translateY(20px);
-        padding: 14px 22px;
-        background: var(--ink);
-        color: var(--paper);
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        box-shadow: 0 20px 40px rgba(30, 26, 22, 0.25);
-        opacity: 0;
-        pointer-events: none;
-        transition: all 0.5s var(--ease);
-        z-index: 6000;
-        max-width: calc(100vw - 40px);
-        text-align: center;
-      }
-
-      .toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-
-      /* ============================================================
-       RESPONSIVE
-       ============================================================ */
+         RESPONSIVE (только специфика страницы)
+         ============================================================ */
       @media (max-width: 640px) {
-        main {
-          padding: 120px 20px 60px;
-        }
-        h1 {
-          font-size: clamp(30px, 8vw, 44px);
-        }
-
         .events-list {
           margin-top: 56px;
           gap: 14px;
         }
-
         .event-card {
           padding: 28px 22px 24px;
         }
-
         .event-head {
           grid-template-columns: auto 1fr auto;
           gap: 16px;
@@ -939,7 +501,6 @@
           height: 28px;
           font-size: 11px;
         }
-
         .time-num {
           font-size: 34px;
         }
@@ -951,12 +512,10 @@
         .time-block {
           padding: 4px 4px;
         }
-
         .event-status {
           font-size: 17px;
           padding: 16px 0;
         }
-
         .add-panel {
           margin-top: 56px;
           padding: 32px 22px 28px;
@@ -965,12 +524,11 @@
           font-size: 22px;
           margin-bottom: 24px;
         }
-
         .field-row {
           grid-template-columns: 1fr;
           gap: 0;
         }
-        .field input {
+        .form-field input {
           padding: 13px 14px;
           font-size: 15px;
         }
@@ -983,7 +541,6 @@
           padding: 16px 24px;
           font-size: 14px;
         }
-
         .empty-hint {
           padding: 48px 24px;
         }
@@ -993,61 +550,13 @@
         .empty-hint .empty-title {
           font-size: 18px;
         }
-
-        .nav-wrap {
-          margin-top: 56px;
-          padding-top: 32px;
-          gap: 10px;
-        }
-        .back-link,
-        .nav-link-secondary {
-          padding: 16px 24px;
-          font-size: 13.5px;
-        }
-
-        .topbar {
-          padding: 16px 20px;
-          font-size: 11.5px;
-        }
-        .brand-label {
-          display: none;
-        }
-        .brand-mark {
-          width: 26px;
-          height: 26px;
-          font-size: 15px;
-        }
-        .meta-sep {
-          display: none;
-        }
-        .topbar-meta {
-          gap: 10px;
-          font-size: 11.5px;
-        }
-
-        .footer {
-          flex-direction: column;
-          gap: 8px;
-          text-align: center;
-          font-size: 10.5px;
-          padding: 32px 20px;
-        }
-
-        .toast {
-          bottom: 20px;
-          font-size: 12px;
-          padding: 12px 18px;
-          white-space: normal;
-        }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
+        .event-card,
+        .add-panel,
+        .time-num.tick {
+          animation: none;
         }
       }
     </style>
@@ -1056,9 +565,6 @@
   <body>
     <div class="grain"></div>
 
-    <!-- ============================================================
-       TOP BAR
-       ============================================================ -->
     <header class="topbar">
       <a href="index.html" class="brand">
         <span class="brand-mark">V</span>
@@ -1078,9 +584,6 @@
     </header>
 
     <main>
-      <!-- ============================================================
-         HERO
-         ============================================================ -->
       <section class="hero">
         <span class="eyebrow">10 · Даты</span>
         <h1>Наши <em>важные даты</em></h1>
@@ -1090,16 +593,8 @@
         </p>
       </section>
 
-      <!-- ============================================================
-         EVENTS
-         ============================================================ -->
-      <section class="events-list" id="eventsList">
-        <!-- Генерируется JS -->
-      </section>
+      <section class="events-list" id="eventsList"></section>
 
-      <!-- ============================================================
-         ADD PANEL
-         ============================================================ -->
       <section class="add-panel">
         <div class="add-panel-head">
           <span>Новая дата</span>
@@ -1108,7 +603,7 @@
 
         <h2 class="add-panel-title">Добавь свою <em>дату</em></h2>
 
-        <div class="field">
+        <div class="form-field">
           <label for="eventName">Название</label>
           <input
             type="text"
@@ -1118,7 +613,7 @@
           />
         </div>
 
-        <div class="field">
+        <div class="form-field">
           <label>Эмодзи</label>
           <div class="emoji-picker" id="emojiPicker">
             <button class="emoji-choice selected" data-emoji="💖">💖</button>
@@ -1133,11 +628,11 @@
         </div>
 
         <div class="field-row">
-          <div class="field">
+          <div class="form-field">
             <label for="eventDate">Дата</label>
             <input type="date" id="eventDate" />
           </div>
-          <div class="field">
+          <div class="form-field">
             <label for="eventTime">Время (необязательно)</label>
             <input type="time" id="eventTime" value="00:00" />
           </div>
@@ -1149,18 +644,10 @@
         </button>
       </section>
 
-      <!-- ============================================================
-         NAV
-         ============================================================ -->
-      <div class="nav-wrap">
-        <a href="index.html" class="back-link">
-          <span class="arrow">←</span>
-          <span>На главную</span>
-        </a>
-        <a href="cat.html" class="nav-link-secondary">
-          <span class="icon">🐱</span>
-          <span>Домик котика</span>
-        </a>
+      <!-- АВТО-НАВИГАЦИЯ: сброс к стандартным добавляем как доп. кнопку рядом -->
+      <nav class="auto-nav" data-nav="cat,heartmap,timer"></nav>
+
+      <div style="display: flex; justify-content: center; margin-top: 16px">
         <button class="nav-link-secondary" onclick="resetEvents()">
           <span class="icon">↻</span>
           <span>Сбросить к стандартным</span>
@@ -1173,113 +660,10 @@
       <span>Сделано с любовью</span>
     </footer>
 
-    <div class="toast" id="toast"></div>
+    <!-- Единый движок: часы, погода, тосты, авто-навигация, SW -->
+    <script src="shared/widgets.js"></script>
 
-    <!-- ============================================================
-       TIME + WEATHER
-       ============================================================ -->
-    <script>
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        document.getElementById("timeText").textContent = `${hh}:${mm}`;
-
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        document.getElementById("timeIcon").textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
-
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      document
-        .getElementById("infoWidget")
-        .addEventListener("click", loadWeather);
-    </script>
-
-    <!-- ============================================================
-       COUNTDOWN SCRIPT
-       ============================================================ -->
+    <!-- Логика отсчёта (специфика страницы) -->
     <script>
       // ============================================================
       // ⚠️ СТАНДАРТНЫЕ ДАТЫ
@@ -1312,6 +696,7 @@
       // ============================================================
 
       const STORAGE_KEY = "countdown_events";
+      const showToast = window.toast;
 
       let events = [];
       let selectedEmoji = "💖";
@@ -1391,15 +776,8 @@
         ];
 
         let str = `${day} ${months[month - 1]}`;
-
-        if (!event.annual) {
-          str += ` ${year}`;
-        }
-
-        if (event.time && event.time !== "00:00") {
-          str += `, ${event.time}`;
-        }
-
+        if (!event.annual) str += ` ${year}`;
+        if (event.time && event.time !== "00:00") str += `, ${event.time}`;
         return str;
       }
 
@@ -1409,16 +787,15 @@
 
         if (events.length === 0) {
           list.innerHTML = `
-          <div class="empty-hint">
-            <span class="big">🎈</span>
-            <p class="empty-title">Добавь первую важную дату —<br>и я начну отсчёт до неё</p>
-            <p class="empty-sub">Всё сохранится прямо здесь, в браузере</p>
-          </div>
-        `;
+            <div class="empty-hint">
+              <span class="big">🎈</span>
+              <p class="empty-title">Добавь первую важную дату —<br>и я начну отсчёт до неё</p>
+              <p class="empty-sub">Всё сохранится прямо здесь, в браузере</p>
+            </div>
+          `;
           return;
         }
 
-        // Sort by next date
         const sortedEvents = [...events].sort((a, b) => {
           return getNextDate(a) - getNextDate(b);
         });
@@ -1437,43 +814,43 @@
             const cardClass = isToday ? "today" : isPassed ? "passed" : "";
 
             return `
-          <div class="event-card ${cardClass}" data-id="${event.id}" style="animation-delay: ${index * 0.08}s">
-            <button class="event-delete" onclick="deleteEvent('${event.id}')" title="Удалить" aria-label="Удалить">✕</button>
+              <div class="event-card ${cardClass}" data-id="${event.id}" style="animation-delay: ${index * 0.08}s">
+                <button class="event-delete" onclick="deleteEvent('${event.id}')" title="Удалить" aria-label="Удалить">✕</button>
 
-            <div class="event-head">
-              <span class="event-emoji">${event.emoji}</span>
-              <div class="event-info">
-                <span class="event-label">Событие</span>
-                <h3 class="event-title">${event.name}</h3>
-                <p class="event-date">${formatDate(event)}</p>
-              </div>
-              <span></span>
-            </div>
+                <div class="event-head">
+                  <span class="event-emoji">${event.emoji}</span>
+                  <div class="event-info">
+                    <span class="event-label">Событие</span>
+                    <h3 class="event-title">${event.name}</h3>
+                    <p class="event-date">${formatDate(event)}</p>
+                  </div>
+                  <span></span>
+                </div>
 
-            <div class="event-status">
-              ${isToday ? "Сегодня — с праздником, любимая" : "Уже прошло — но помню"}
-            </div>
+                <div class="event-status">
+                  ${isToday ? "Сегодня — с праздником, любимая" : "Уже прошло — но помню"}
+                </div>
 
-            <div class="countdown-grid">
-              <div class="time-block">
-                <span class="time-num" data-unit="days">0</span>
-                <span class="time-label">дней</span>
+                <div class="countdown-grid">
+                  <div class="time-block">
+                    <span class="time-num" data-unit="days">0</span>
+                    <span class="time-label">дней</span>
+                  </div>
+                  <div class="time-block">
+                    <span class="time-num" data-unit="hours">0</span>
+                    <span class="time-label">часов</span>
+                  </div>
+                  <div class="time-block">
+                    <span class="time-num" data-unit="minutes">0</span>
+                    <span class="time-label">минут</span>
+                  </div>
+                  <div class="time-block">
+                    <span class="time-num" data-unit="seconds">0</span>
+                    <span class="time-label">секунд</span>
+                  </div>
+                </div>
               </div>
-              <div class="time-block">
-                <span class="time-num" data-unit="hours">0</span>
-                <span class="time-label">часов</span>
-              </div>
-              <div class="time-block">
-                <span class="time-num" data-unit="minutes">0</span>
-                <span class="time-label">минут</span>
-              </div>
-              <div class="time-block">
-                <span class="time-num" data-unit="seconds">0</span>
-                <span class="time-label">секунд</span>
-              </div>
-            </div>
-          </div>
-        `;
+            `;
           })
           .join("");
 
@@ -1633,16 +1010,6 @@
         setTimeout(() => sparkle.remove(), 1600);
       }
 
-      // ---------- TOAST ----------
-      let toastTimer = null;
-      function showToast(text) {
-        const toast = document.getElementById("toast");
-        toast.textContent = text;
-        toast.classList.add("show");
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
-      }
-
       // ---------- START ----------
       loadEvents();
       renderEvents();
@@ -1651,6 +1018,5 @@
         .toISOString()
         .split("T")[0];
     </script>
-    <script src="sw-register.js" defer></script>
   </body>
 </html>

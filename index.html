@@ -28,6 +28,9 @@
       rel="stylesheet"
     />
 
+    <!-- Единый движок: часы, погода, тосты, SW -->
+    <script src="shared/widgets.js" defer></script>
+
     <style>
       :root {
         --paper: #f3ede4;
@@ -1615,6 +1618,9 @@
               Да, пойду
               <span class="arrow">→</span>
             </button>
+            <a href="universe.html" class="btn-ghost">
+              🗺 Открыть карту вселенной
+            </a>
             <button
               class="btn-ghost"
               id="noBtn"
@@ -2292,105 +2298,6 @@
     </div>
 
     <script>
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        document.getElementById("timeText").textContent = `${hh}:${mm}`;
-
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        document.getElementById("timeIcon").textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
-
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      document
-        .getElementById("infoWidget")
-        .addEventListener("click", loadWeather);
-    </script>
-
-    <script>
       const MY_EMAIL = "vilya51aura@gmail.com";
 
       const noBtn = document.getElementById("noBtn");
@@ -2927,40 +2834,5 @@
           closeModal();
       });
     </script>
-
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", async () => {
-          try {
-            const reg = await navigator.serviceWorker.register(
-              "service-worker.js",
-              {
-                updateViaCache: "none",
-              },
-            );
-            setInterval(() => reg.update().catch(() => {}), 30000);
-            reg.addEventListener("updatefound", () => {
-              const nw = reg.installing;
-              if (!nw) return;
-              nw.addEventListener("statechange", () => {
-                if (
-                  nw.state === "installed" &&
-                  navigator.serviceWorker.controller
-                ) {
-                  nw.postMessage("SKIP_WAITING");
-                }
-              });
-            });
-          } catch (e) {}
-        });
-        let reloaded = false;
-        navigator.serviceWorker.addEventListener("controllerchange", () => {
-          if (reloaded) return;
-          reloaded = true;
-          window.location.reload();
-        });
-      }
-    </script>
-    <script src="sw-register.js" defer></script>
   </body>
 </html>

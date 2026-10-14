@@ -24,232 +24,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap"
       rel="stylesheet"
     />
 
+    <!-- Единый движок: палитра + базовые стили -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
     <style>
-      :root {
-        --paper: #f3ede4;
-        --paper-2: #ece4d8;
-        --surface: #fdfaf6;
-        --surface-2: #f7f0e6;
-        --ink: #1e1a16;
-        --ink-2: #4a423c;
-        --ink-3: #8a7f75;
-        --ink-4: #b8aca1;
-        --line: rgba(30, 26, 22, 0.08);
-        --line-2: rgba(30, 26, 22, 0.16);
-        --rose: #b58794;
-        --rose-deep: #8f6472;
-        --rose-soft: #e8d4d8;
-        --rose-tint: #f2e4e7;
-        --sand: #cfb8a3;
-        --gold: #b89968;
-        --night: #1a1613;
-        --night-2: #2b2620;
-        --ease: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        font-size: 16px;
-        line-height: 1.5;
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
-        -webkit-tap-highlight-color: transparent;
-      }
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          radial-gradient(
-            ellipse 90% 60% at 15% -10%,
-            rgba(232, 212, 216, 0.55),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 60% 50% at 95% 15%,
-            rgba(207, 184, 163, 0.28),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 70% 55% at 5% 105%,
-            rgba(181, 135, 148, 0.16),
-            transparent 60%
-          ),
-          var(--paper);
-      }
-      .grain {
-        position: fixed;
-        inset: 0;
-        z-index: 9998;
-        pointer-events: none;
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      }
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-        border: none;
-        background: none;
-      }
-      ::selection {
-        background: var(--rose-soft);
-        color: var(--rose-deep);
-      }
-
-      /* TOPBAR */
-      .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 32px;
-        background: rgba(243, 237, 228, 0.72);
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border-bottom: 1px solid var(--line);
-        font-size: 12.5px;
-        letter-spacing: 0.02em;
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-      .brand-mark {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--ink);
-        border-radius: 50%;
-        font-family: "Instrument Serif", Georgia, serif;
-        font-style: italic;
-        font-size: 17px;
-        line-height: 1;
-        color: var(--ink);
-        padding-bottom: 2px;
-        transition: transform 0.4s var(--ease-spring);
-      }
-      .brand:hover .brand-mark {
-        transform: rotate(-12deg) scale(1.05);
-      }
-      .brand-label {
-        color: var(--ink-2);
-        font-weight: 500;
-      }
-      .topbar-meta {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--ink-2);
-        cursor: pointer;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-      }
-      .meta-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .meta-item .icon {
-        font-size: 13px;
-        filter: saturate(0.7);
-      }
-      .meta-sep {
-        color: var(--ink-4);
-      }
-
-      /* LAYOUT */
-      main {
-        max-width: 1080px;
-        margin: 0 auto;
-        padding: 140px 32px 80px;
-      }
-
-      /* HERO */
-      .hero {
-        padding: 20px 0 40px;
-        text-align: center;
-      }
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--rose-deep);
-        margin-bottom: 28px;
-      }
-      .eyebrow::before,
-      .eyebrow::after {
-        content: "";
-        width: 24px;
-        height: 1px;
-        background: var(--rose-deep);
-      }
-      h1 {
-        font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 400;
-        font-size: clamp(38px, 5.4vw, 72px);
-        line-height: 1.04;
-        letter-spacing: -0.02em;
-        color: var(--ink);
-        margin: 0 0 22px;
-        max-width: 16ch;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      h1 em {
-        font-style: italic;
-        color: var(--rose-deep);
-      }
-      .hero-sub {
-        font-size: 16px;
-        line-height: 1.6;
-        color: var(--ink-2);
-        margin: 0 auto;
-        max-width: 44ch;
-        font-weight: 400;
-      }
-
       /* ============================================================
-         BOARDING PASS
+         BOARDING PASS · только специфика страницы
+         Общие стили (топбар, hero, кнопки, футер, nav-wrap, toast,
+         модалки) — уже в shared/base.css
          ============================================================ */
+
+      /* ---------- PASS ZONE ---------- */
       .pass-zone {
         margin-top: 72px;
         display: flex;
@@ -275,7 +65,6 @@
           box-shadow 0.6s var(--ease);
         isolation: isolate;
       }
-
       .pass:hover {
         transform: translateY(-3px);
         box-shadow:
@@ -284,42 +73,7 @@
           0 14px 40px rgba(30, 26, 22, 0.1);
       }
 
-      /* Main part */
-      .pass-main {
-        padding: 40px 44px 36px;
-        border-right: 1px dashed var(--line-2);
-        position: relative;
-        background:
-          repeating-linear-gradient(
-            135deg,
-            transparent 0,
-            transparent 4px,
-            rgba(143, 100, 114, 0.012) 4px,
-            rgba(143, 100, 114, 0.012) 5px
-          ),
-          var(--surface);
-      }
-
-      /* Stub part */
-      .pass-stub {
-        padding: 40px 32px 36px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        background:
-          repeating-linear-gradient(
-            135deg,
-            transparent 0,
-            transparent 4px,
-            rgba(143, 100, 114, 0.02) 4px,
-            rgba(143, 100, 114, 0.02) 5px
-          ),
-          var(--surface-2);
-        position: relative;
-      }
-
-      /* Perforation dots along the divider */
+      /* Перфорационные «дырки» по краям разделителя */
       .pass::before,
       .pass::after {
         content: "";
@@ -340,7 +94,42 @@
         left: calc(100% - 320px - 11px);
       }
 
-      /* Airline header */
+      /* ---------- MAIN PART ---------- */
+      .pass-main {
+        padding: 40px 44px 36px;
+        border-right: 1px dashed var(--line-2);
+        position: relative;
+        background:
+          repeating-linear-gradient(
+            135deg,
+            transparent 0,
+            transparent 4px,
+            rgba(143, 100, 114, 0.012) 4px,
+            rgba(143, 100, 114, 0.012) 5px
+          ),
+          var(--surface);
+      }
+
+      /* ---------- STUB PART ---------- */
+      .pass-stub {
+        padding: 40px 32px 36px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        background:
+          repeating-linear-gradient(
+            135deg,
+            transparent 0,
+            transparent 4px,
+            rgba(143, 100, 114, 0.02) 4px,
+            rgba(143, 100, 114, 0.02) 5px
+          ),
+          var(--surface-2);
+        position: relative;
+      }
+
+      /* ---------- AIRLINE HEADER ---------- */
       .pass-head {
         display: flex;
         justify-content: space-between;
@@ -349,13 +138,11 @@
         margin-bottom: 28px;
         border-bottom: 1px solid var(--line);
       }
-
       .airline {
         display: flex;
         align-items: center;
         gap: 12px;
       }
-
       .airline-mark {
         width: 42px;
         height: 42px;
@@ -369,7 +156,7 @@
         align-items: center;
         justify-content: center;
         color: #fdfaf6;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 22px;
         line-height: 1;
@@ -378,12 +165,11 @@
           inset 0 0 12px rgba(0, 0, 0, 0.2),
           0 6px 14px rgba(143, 100, 114, 0.28);
       }
-
       .airline-text {
         line-height: 1.2;
       }
       .airline-name {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 17px;
         letter-spacing: -0.01em;
         color: var(--ink);
@@ -397,7 +183,6 @@
         color: var(--ink-3);
         margin-top: 2px;
       }
-
       .pass-type {
         font-size: 10px;
         font-weight: 500;
@@ -406,62 +191,53 @@
         color: var(--rose-deep);
       }
 
-      /* ============================================================
-         BOARDING PASS FIELDS
-         ============================================================ */
+      /* ---------- BOARDING PASS FIELDS ---------- */
       .pass-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 28px 40px;
         margin-bottom: 32px;
       }
-
-      .field {
+      .bp-field {
         display: flex;
         flex-direction: column;
         gap: 8px;
       }
-
-      .field--full {
+      .bp-field--full {
         grid-column: 1 / -1;
       }
-
-      .field-label {
+      .bp-label {
         font-size: 10px;
         font-weight: 500;
         letter-spacing: 0.24em;
         text-transform: uppercase;
         color: var(--ink-3);
       }
-
-      .field-value {
-        font-family: "Instrument Serif", Georgia, serif;
+      .bp-value {
+        font-family: var(--font-serif);
         font-size: 24px;
         line-height: 1.1;
         letter-spacing: -0.015em;
         color: var(--ink);
         font-style: italic;
       }
-
-      .field-value.mono {
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+      .bp-value--mono {
+        font-family: var(--font-mono);
         font-size: 20px;
         letter-spacing: 0.06em;
         font-style: normal;
         font-weight: 500;
       }
-
-      .field-value.rose {
+      .bp-value--rose {
         color: var(--rose-deep);
       }
-
-      .field-hint {
+      .bp-hint {
         font-size: 11px;
         color: var(--ink-3);
         font-style: italic;
       }
 
-      /* Route display */
+      /* ---------- ROUTE ---------- */
       .route {
         grid-column: 1 / -1;
         display: grid;
@@ -473,7 +249,6 @@
         border-bottom: 1px solid var(--line);
         margin-bottom: 4px;
       }
-
       .route-point {
         display: flex;
         flex-direction: column;
@@ -483,16 +258,14 @@
         text-align: right;
         align-items: flex-end;
       }
-
       .route-code {
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 40px;
         font-weight: 500;
         letter-spacing: 0.02em;
         line-height: 1;
         color: var(--ink);
       }
-
       .route-city {
         font-size: 11px;
         font-weight: 500;
@@ -500,7 +273,6 @@
         text-transform: uppercase;
         color: var(--ink-3);
       }
-
       .route-plane {
         display: flex;
         flex-direction: column;
@@ -509,14 +281,12 @@
         color: var(--rose-deep);
         padding: 0 8px;
       }
-
       .route-plane svg {
         width: 24px;
         height: 24px;
         transform: rotate(90deg);
         animation: planeFloat 4s ease-in-out infinite;
       }
-
       @keyframes planeFloat {
         0%,
         100% {
@@ -526,7 +296,6 @@
           transform: rotate(90deg) translateX(6px);
         }
       }
-
       .route-line {
         width: 100%;
         height: 1px;
@@ -539,7 +308,7 @@
         min-width: 80px;
       }
 
-      /* Small print */
+      /* ---------- FOOTER (barcode) ---------- */
       .pass-foot {
         display: flex;
         justify-content: space-between;
@@ -548,7 +317,6 @@
         padding-top: 22px;
         border-top: 1px dashed var(--line-2);
       }
-
       .pass-foot-left {
         display: flex;
         flex-direction: column;
@@ -566,7 +334,6 @@
         color: var(--ink-3);
         font-style: italic;
       }
-
       .pass-foot-right {
         text-align: right;
       }
@@ -584,14 +351,11 @@
         opacity: 0.7;
       }
 
-      /* ============================================================
-         STUB CONTENT
-         ============================================================ */
+      /* ---------- STUB CONTENT ---------- */
       .stub-head {
         text-align: center;
         margin-bottom: 20px;
       }
-
       .stub-head .label {
         font-size: 9.5px;
         font-weight: 500;
@@ -600,14 +364,12 @@
         color: var(--ink-3);
         margin-bottom: 10px;
       }
-
       .stub-head .airline-mini {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 15px;
         font-style: italic;
         color: var(--rose-deep);
       }
-
       .stub-route {
         display: flex;
         flex-direction: column;
@@ -615,24 +377,21 @@
         gap: 4px;
         margin-bottom: 20px;
       }
-
       .stub-route .codes {
         display: flex;
         align-items: center;
         gap: 12px;
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 18px;
         letter-spacing: 0.02em;
         color: var(--ink);
       }
-
       .stub-route .arrow {
         color: var(--rose-deep);
         font-size: 12px;
       }
-
       .stub-route .passenger {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         color: var(--ink-2);
@@ -649,14 +408,12 @@
         border-radius: 4px;
         margin-bottom: 20px;
       }
-
       .qr-wrap img {
         width: 140px;
         height: 140px;
         display: block;
         image-rendering: pixelated;
       }
-
       .qr-caption {
         font-size: 9px;
         font-weight: 500;
@@ -673,7 +430,6 @@
         gap: 6px;
         margin-bottom: 16px;
       }
-
       .stub-seat .seat-label {
         font-size: 9.5px;
         font-weight: 500;
@@ -681,15 +437,13 @@
         text-transform: uppercase;
         color: var(--ink-3);
       }
-
       .stub-seat .seat-value {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 22px;
         letter-spacing: -0.01em;
         color: var(--rose-deep);
       }
-
       .stub-footer {
         text-align: center;
         font-size: 9px;
@@ -700,9 +454,7 @@
         line-height: 1.6;
       }
 
-      /* ============================================================
-         CONDITIONS (below pass)
-         ============================================================ */
+      /* ---------- CONDITIONS ---------- */
       .conditions {
         max-width: 920px;
         margin: 56px auto 0;
@@ -714,7 +466,6 @@
           0 1px 0 rgba(255, 255, 255, 0.9) inset,
           0 20px 45px rgba(30, 26, 22, 0.08);
       }
-
       .conditions-head {
         display: flex;
         justify-content: space-between;
@@ -728,23 +479,20 @@
         text-transform: uppercase;
         color: var(--ink-3);
       }
-
       .conditions-head .latin {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 13px;
         letter-spacing: 0.02em;
         text-transform: none;
         color: var(--rose-deep);
       }
-
       .conditions-list {
         list-style: none;
         padding: 0;
         margin: 0;
         counter-reset: cond;
       }
-
       .conditions-list li {
         counter-increment: cond;
         display: grid;
@@ -754,35 +502,32 @@
         border-bottom: 1px solid var(--line);
         align-items: baseline;
       }
-
       .conditions-list li:last-child {
         border-bottom: none;
       }
-
       .conditions-list li::before {
         content: counter(cond, decimal-leading-zero);
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 17px;
         color: var(--rose-deep);
         letter-spacing: 0.02em;
       }
-
       .cond-text {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 16px;
         line-height: 1.6;
         letter-spacing: -0.005em;
         color: var(--ink-2);
+        margin: 0;
       }
-
       .cond-text b {
         font-weight: 400;
         font-style: italic;
         color: var(--ink);
       }
 
-      /* Actions */
+      /* ---------- ACTIONS ---------- */
       .pass-actions {
         max-width: 920px;
         margin: 40px auto 0;
@@ -791,7 +536,6 @@
         justify-content: center;
         flex-wrap: wrap;
       }
-
       .btn {
         display: inline-flex;
         align-items: center;
@@ -801,7 +545,7 @@
         background: transparent;
         color: var(--ink-2);
         border: 1px solid var(--line-2);
-        font-family: "Inter", sans-serif;
+        font-family: var(--font-sans);
         font-size: 14px;
         font-weight: 500;
         letter-spacing: 0.01em;
@@ -809,14 +553,12 @@
         transition: all 0.35s var(--ease);
         text-decoration: none;
       }
-
       .btn:hover {
         background: var(--surface-2);
         color: var(--ink);
         border-color: var(--ink-3);
         transform: translateY(-2px);
       }
-
       .btn.primary {
         background: var(--ink);
         color: var(--paper);
@@ -825,7 +567,6 @@
           0 1px 0 rgba(255, 255, 255, 0.12) inset,
           0 8px 20px rgba(30, 26, 22, 0.2);
       }
-
       .btn.primary:hover {
         background: #000;
         color: var(--paper);
@@ -834,7 +575,6 @@
           0 1px 0 rgba(255, 255, 255, 0.12) inset,
           0 14px 32px rgba(30, 26, 22, 0.26);
       }
-
       .btn .btn-arrow {
         display: inline-block;
         transition: transform 0.4s var(--ease);
@@ -844,118 +584,7 @@
         transform: translateX(-4px);
       }
 
-      /* Toast */
-      .toast {
-        position: fixed;
-        left: 50%;
-        bottom: 32px;
-        transform: translateX(-50%) translateY(20px);
-        padding: 14px 22px;
-        background: var(--ink);
-        color: var(--paper);
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        box-shadow: 0 20px 40px rgba(30, 26, 22, 0.25);
-        opacity: 0;
-        pointer-events: none;
-        transition: all 0.5s var(--ease);
-        z-index: 7000;
-        max-width: calc(100vw - 40px);
-        text-align: center;
-      }
-
-      .toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-
-      /* NAV */
-      .nav-wrap {
-        margin-top: 96px;
-        padding-top: 40px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 14px;
-        padding: 18px 32px;
-        border-radius: 999px;
-        background: var(--ink);
-        color: var(--paper);
-        font-family: "Inter", sans-serif;
-        font-size: 14.5px;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        transition: all 0.35s var(--ease);
-      }
-      .back-link:hover {
-        background: #000;
-        transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
-      }
-      .back-link .arrow {
-        display: inline-block;
-        transition: transform 0.4s var(--ease);
-        font-size: 15px;
-      }
-      .back-link:hover .arrow {
-        transform: translateX(-5px);
-      }
-      .nav-link-secondary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 18px 28px;
-        border-radius: 999px;
-        background: transparent;
-        color: var(--ink-2);
-        border: 1px solid var(--line-2);
-        font-family: "Inter", sans-serif;
-        font-size: 14.5px;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        transition: all 0.35s var(--ease);
-        cursor: pointer;
-      }
-      .nav-link-secondary:hover {
-        background: var(--surface-2);
-        color: var(--ink);
-        border-color: var(--ink-3);
-        transform: translateY(-2px);
-      }
-      .nav-link-secondary .icon {
-        font-size: 14px;
-        filter: saturate(0.75);
-        transition: transform 0.4s var(--ease-spring);
-      }
-      .nav-link-secondary:hover .icon {
-        transform: scale(1.15);
-      }
-
-      /* FOOTER */
-      .footer {
-        padding: 40px 32px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-        max-width: 1240px;
-        margin: 40px auto 0;
-      }
-
-      /* RESPONSIVE */
+      /* ---------- RESPONSIVE (только специфика страницы) ---------- */
       @media (max-width: 860px) {
         .pass {
           grid-template-columns: 1fr;
@@ -980,10 +609,10 @@
           gap: 20px 20px;
           margin-bottom: 24px;
         }
-        .field-value {
+        .bp-value {
           font-size: 20px;
         }
-        .field-value.mono {
+        .bp-value--mono {
           font-size: 17px;
         }
         .route-code {
@@ -996,12 +625,6 @@
       }
 
       @media (max-width: 640px) {
-        main {
-          padding: 120px 20px 60px;
-        }
-        h1 {
-          font-size: clamp(32px, 9vw, 46px);
-        }
         .pass-zone {
           margin-top: 56px;
         }
@@ -1039,52 +662,6 @@
           padding: 14px 22px;
           font-size: 13px;
         }
-        .nav-wrap {
-          margin-top: 72px;
-          padding-top: 32px;
-          gap: 10px;
-        }
-        .back-link,
-        .nav-link-secondary {
-          padding: 16px 24px;
-          font-size: 13.5px;
-        }
-        .topbar {
-          padding: 16px 20px;
-          font-size: 11.5px;
-        }
-        .brand-label {
-          display: none;
-        }
-        .brand-mark {
-          width: 26px;
-          height: 26px;
-          font-size: 15px;
-        }
-        .meta-sep {
-          display: none;
-        }
-        .topbar-meta {
-          gap: 10px;
-          font-size: 11.5px;
-        }
-        .footer {
-          flex-direction: column;
-          gap: 8px;
-          text-align: center;
-          font-size: 10.5px;
-          padding: 32px 20px;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
       }
     </style>
   </head>
@@ -1092,29 +669,27 @@
   <body>
     <div class="grain"></div>
 
-    <!-- TOPBAR -->
     <header class="topbar">
       <a href="index.html" class="brand">
         <span class="brand-mark">V</span>
         <span class="brand-label">Для Вероники</span>
       </a>
       <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
-        <span class="meta-item"
-          ><span class="icon" id="timeIcon">☀️</span
-          ><span id="timeText">--:--</span></span
-        >
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
         <span class="meta-sep">·</span>
-        <span class="meta-item"
-          ><span class="icon" id="weatherIcon">🌤️</span
-          ><span id="weatherText">...</span></span
-        >
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
       </div>
     </header>
 
     <main>
-      <!-- HERO -->
       <section class="hero">
-        <span class="eyebrow">18 · Посадочный талон</span>
+        <span class="eyebrow">14 · Посадочный талон</span>
         <h1>Билет в наше <em>будущее</em></h1>
         <p class="hero-sub">
           Один пассажир, без обратного рейса. Оформлен навсегда и уже
@@ -1122,10 +697,8 @@
         </p>
       </section>
 
-      <!-- BOARDING PASS -->
       <div class="pass-zone">
         <article class="pass">
-          <!-- MAIN PART -->
           <div class="pass-main">
             <header class="pass-head">
               <div class="airline">
@@ -1139,16 +712,15 @@
             </header>
 
             <div class="pass-grid">
-              <div class="field field--full">
-                <span class="field-label">Пассажир</span>
-                <span class="field-value"
-                  >Вероника
-                  <em style="color: var(--rose-deep)">— единственная</em></span
-                >
-                <span class="field-hint">Первый класс, место у окна</span>
+              <div class="bp-field bp-field--full">
+                <span class="bp-label">Пассажир</span>
+                <span class="bp-value">
+                  Вероника
+                  <em style="color: var(--rose-deep)">— единственная</em>
+                </span>
+                <span class="bp-hint">Первый класс, место у окна</span>
               </div>
 
-              <!-- ROUTE -->
               <div class="route">
                 <div class="route-point">
                   <div class="route-code">TODAY</div>
@@ -1175,33 +747,33 @@
                 </div>
               </div>
 
-              <div class="field">
-                <span class="field-label">Рейс</span>
-                <span class="field-value mono">LOVE-2026</span>
+              <div class="bp-field">
+                <span class="bp-label">Рейс</span>
+                <span class="bp-value bp-value--mono">LOVE-2026</span>
               </div>
 
-              <div class="field">
-                <span class="field-label">Дата</span>
-                <span class="field-value rose">без обратного</span>
+              <div class="bp-field">
+                <span class="bp-label">Дата</span>
+                <span class="bp-value bp-value--rose">без обратного</span>
               </div>
 
-              <div class="field">
-                <span class="field-label">Место</span>
-                <span class="field-value">рядом со мной</span>
+              <div class="bp-field">
+                <span class="bp-label">Место</span>
+                <span class="bp-value">рядом со мной</span>
               </div>
 
-              <div class="field">
-                <span class="field-label">Выход на посадку</span>
-                <span class="field-value mono">GATE ♥</span>
+              <div class="bp-field">
+                <span class="bp-label">Выход на посадку</span>
+                <span class="bp-value bp-value--mono">GATE ♥</span>
               </div>
 
-              <div class="field field--full">
-                <span class="field-label">Багаж</span>
-                <span class="field-value"
-                  >Мои чувства —
-                  <em style="color: var(--rose-deep)">без ограничений</em></span
-                >
-                <span class="field-hint">Провоз разрешён в салоне</span>
+              <div class="bp-field bp-field--full">
+                <span class="bp-label">Багаж</span>
+                <span class="bp-value">
+                  Мои чувства —
+                  <em style="color: var(--rose-deep)">без ограничений</em>
+                </span>
+                <span class="bp-hint">Провоз разрешён в салоне</span>
               </div>
             </div>
 
@@ -1212,32 +784,31 @@
               </div>
               <div class="pass-foot-right">
                 <div class="barcode" aria-hidden="true">
-                  <span style="height: 100%"></span
-                  ><span style="height: 80%"></span
-                  ><span style="height: 100%"></span
-                  ><span style="height: 60%"></span
-                  ><span style="height: 90%"></span
-                  ><span style="height: 100%"></span
-                  ><span style="height: 70%"></span
-                  ><span style="height: 100%"></span
-                  ><span style="height: 85%"></span
-                  ><span style="height: 100%"></span
-                  ><span style="height: 65%"></span
-                  ><span style="height: 90%"></span
-                  ><span style="height: 100%"></span
-                  ><span style="height: 75%"></span
-                  ><span style="height: 100%"></span
-                  ><span style="height: 60%"></span
-                  ><span style="height: 95%"></span
-                  ><span style="height: 100%"></span
-                  ><span style="height: 70%"></span
-                  ><span style="height: 100%"></span>
+                  <span style="height: 100%"></span>
+                  <span style="height: 80%"></span>
+                  <span style="height: 100%"></span>
+                  <span style="height: 60%"></span>
+                  <span style="height: 90%"></span>
+                  <span style="height: 100%"></span>
+                  <span style="height: 70%"></span>
+                  <span style="height: 100%"></span>
+                  <span style="height: 85%"></span>
+                  <span style="height: 100%"></span>
+                  <span style="height: 65%"></span>
+                  <span style="height: 90%"></span>
+                  <span style="height: 100%"></span>
+                  <span style="height: 75%"></span>
+                  <span style="height: 100%"></span>
+                  <span style="height: 60%"></span>
+                  <span style="height: 95%"></span>
+                  <span style="height: 100%"></span>
+                  <span style="height: 70%"></span>
+                  <span style="height: 100%"></span>
                 </div>
               </div>
             </footer>
           </div>
 
-          <!-- STUB PART -->
           <aside class="pass-stub">
             <div class="stub-head">
               <div class="label">Посадочный талон</div>
@@ -1273,7 +844,6 @@
         </article>
       </div>
 
-      <!-- CONDITIONS -->
       <section class="conditions">
         <div class="conditions-head">
           <span>Условия перелёта</span>
@@ -1319,7 +889,6 @@
         </ol>
       </section>
 
-      <!-- ACTIONS -->
       <div class="pass-actions">
         <button class="btn primary" onclick="printPass()">
           <span>🖨️ Распечатать билет</span>
@@ -1329,21 +898,8 @@
         </button>
       </div>
 
-      <!-- NAV -->
-      <div class="nav-wrap">
-        <a href="index.html" class="back-link">
-          <span class="arrow">←</span>
-          <span>На главную</span>
-        </a>
-        <a href="movie.html" class="nav-link-secondary">
-          <span class="icon">🎬</span>
-          <span>Наш фильм</span>
-        </a>
-        <a href="capsule.html" class="nav-link-secondary">
-          <span class="icon">⏳</span>
-          <span>Капсула времени</span>
-        </a>
-      </div>
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="auto-nav" data-nav="movie,capsule,album"></nav>
     </main>
 
     <footer class="footer">
@@ -1351,109 +907,12 @@
       <span>Сделано с любовью</span>
     </footer>
 
-    <div class="toast" id="toast"></div>
+    <div id="toast"></div>
 
-    <!-- ============================================================
-         TIME + WEATHER
-         ============================================================ -->
-    <script>
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        const t = document.getElementById("timeText");
-        if (t) t.textContent = `${hh}:${mm}`;
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        const ti = document.getElementById("timeIcon");
-        if (ti) ti.textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
+    <!-- Единый движок: часы, погода, тосты, авто-навигация, SW -->
+    <script src="shared/widgets.js"></script>
 
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        if (!iconEl || !textEl) return;
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      const iw = document.getElementById("infoWidget");
-      if (iw) iw.addEventListener("click", loadWeather);
-    </script>
-
-    <!-- ============================================================
-         QR CODE
-         Используем внешний сервис без ключей.
-         Кодируем ссылку на главную, чтобы «вернуться домой».
-         ============================================================ -->
+    <!-- QR-код: генерируем через внешний сервис без ключей -->
     <script>
       (function () {
         "use strict";
@@ -1466,7 +925,6 @@
           const img = document.getElementById("qrImage");
           if (!img) return;
 
-          // Формируем URL к сервису QR-кодов (без API-ключа, HTTPS)
           const apiUrl =
             "https://api.qrserver.com/v1/create-qr-code/" +
             "?size=280x280" +
@@ -1478,7 +936,6 @@
 
           img.src = apiUrl;
           img.onerror = function () {
-            // Если API недоступен — рисуем заглушку через SVG
             img.style.display = "none";
             const wrap = img.parentElement;
             if (!wrap) return;
@@ -1489,7 +946,7 @@
               display: flex;
               align-items: center;
               justify-content: center;
-              font-family: 'Instrument Serif', Georgia, serif;
+              font-family: var(--font-serif);
               font-style: italic;
               font-size: 52px;
               color: var(--rose-deep);
@@ -1509,24 +966,13 @@
       })();
     </script>
 
-    <!-- ============================================================
-         ACTIONS
-         ============================================================ -->
+    <!-- Действия страницы: печать и копирование ссылки -->
     <script>
-      function showToast(text) {
-        const toast = document.getElementById("toast");
-        if (!toast) return;
-        toast.textContent = text;
-        toast.classList.add("show");
-        clearTimeout(showToast._t);
-        showToast._t = setTimeout(() => toast.classList.remove("show"), 2200);
-      }
-
       function printPass() {
         try {
           window.print();
         } catch (e) {
-          showToast("Не удалось распечатать");
+          window.toast("Не удалось распечатать");
         }
       }
 
@@ -1535,19 +981,12 @@
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
             .writeText(url)
-            .then(() => showToast("🔗 Ссылка скопирована"))
-            .catch(() => showToast("Скопируй из адресной строки"));
+            .then(() => window.toast("🔗 Ссылка скопирована"))
+            .catch(() => window.toast("Скопируй из адресной строки"));
         } else {
-          showToast("Скопируй из адресной строки");
+          window.toast("Скопируй из адресной строки");
         }
       }
-
-      // Гарантируем отображение
-      document
-        .querySelectorAll("script[src='sw-register.js']")
-        .forEach(() => {});
     </script>
-
-    <script src="sw-register.js" defer></script>
   </body>
 </html>

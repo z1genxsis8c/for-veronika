@@ -14,10 +14,17 @@
     <meta http-equiv="Expires" content="0" />
     <title>Терновый Трон · Котик 💗</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Единый движок: подключаем только tokens.css для консистентности.
+         base.css и widgets.js здесь НЕ подключаем — это полноэкранный
+         canvas-гейм с собственной тёмной палитрой и своим HUD. -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+
     <style>
       * {
         margin: 0;
@@ -585,9 +592,9 @@
         finalMessage:
           "Ты — моё самое тёплое место на свете.<br>Спасибо, что ты рядом. 💗",
         maxWave: 100,
-        coinDivisor: 2000, // очков на 1 монетку котику
-        unlockWaveAch: 5, // «Король шипов» — пройти 5 волн
-        unlockScoreAch: 50000, // «Легенда трона» — 50 000 очков
+        coinDivisor: 2000,
+        unlockWaveAch: 5,
+        unlockScoreAch: 50000,
       };
 
       /* =========================================================
@@ -715,7 +722,7 @@
         msgTimer: 0,
         score: 0,
         bestScore: 0,
-        boss: null, // ссылка на живого босса (для HP-бара)
+        boss: null,
       };
 
       try {
@@ -1034,7 +1041,6 @@
    ТИПЫ ВРАГОВ
    ========================================================= */
       const ENEMY_TYPES = {
-        /* базовые */
         thorn: {
           hp: 18,
           speed: 63,
@@ -1076,7 +1082,6 @@
           spikes: 7,
           ranged: true,
         },
-        /* особые */
         bomber: {
           hp: 22,
           speed: 78,
@@ -1209,7 +1214,6 @@
           spikes: 9,
           summons: "thorn",
         },
-        /* БОССЫ */
         boss_king: {
           hp: 400,
           speed: 40,
@@ -1274,7 +1278,6 @@
         },
       };
 
-      /* Какие типы появляются на какой волне */
       function availableTypes(n) {
         const a = ["thorn"];
         if (n >= 2) a.push("swift");
@@ -1314,9 +1317,6 @@
         return bosses[idx];
       }
 
-      /* =========================================================
-   ГЕНЕРАЦИЯ ВОЛНЫ
-   ========================================================= */
       function buildWave(n) {
         const isBoss = n % 10 === 0;
         let count;
@@ -1331,15 +1331,11 @@
         return list;
       }
 
-      /* =========================================================
-   СПАВН
-   ========================================================= */
       function spawnEnemy(type) {
         const base = ENEMY_TYPES[type];
         if (!base) return;
         const w = G.wave;
 
-        /* Масштабирование статов */
         const hpScale = 1 + (w - 1) * 0.35 + Math.pow(w / 10, 2.0);
         const dmgScale = 1 + (w - 1) * 0.1;
         const spScale = 1 + Math.min(w - 1, 40) * 0.012;
@@ -1413,9 +1409,6 @@
         }
       }
 
-      /* =========================================================
-   ЭФФЕКТЫ
-   ========================================================= */
       function addParticles(x, y, n, color, opts = {}) {
         if (G.parts.length > 400) n = Math.min(n, 3);
         for (let i = 0; i < n; i++) {
@@ -1490,9 +1483,6 @@
         return false;
       }
 
-      /* =========================================================
-   СТАРТ / КОНЕЦ
-   ========================================================= */
       function startGame() {
         G.state = "playing";
         G.t = 0;
@@ -1522,9 +1512,6 @@
         updateHUD();
       }
 
-      /* =========================================================
-   ОВЕРЛЕЙ
-   ========================================================= */
       const overlay = document.getElementById("overlay");
       function showOverlay(node) {
         overlay.innerHTML = "";
@@ -1565,7 +1552,6 @@
         p.querySelector("#startBtn").onclick = () => startGame();
       }
 
-      /* --- Апгрейды --- */
       function pickUpgrades(n) {
         const avail = UPGRADES.filter(
           (u) => (G.upgradesTaken[u.id] || 0) < u.max,
@@ -1629,7 +1615,6 @@
         else G.state = "playing";
       }
 
-      /* --- Конец игры --- */
       function endScreen(isWin) {
         G.state = isWin ? "win" : "over";
         document.getElementById("hud").classList.remove("show");
@@ -1687,9 +1672,6 @@
         }
       }
 
-      /* =========================================================
-   ВВОД
-   ========================================================= */
       const keys = {};
       window.addEventListener("keydown", (e) => {
         const k = e.key.toLowerCase();
@@ -1756,9 +1738,6 @@
         { passive: false },
       );
 
-      /* =========================================================
-   ОБНОВЛЕНИЕ
-   ========================================================= */
       function update(dt) {
         G.t += dt;
         const p = G.player;
@@ -1771,7 +1750,6 @@
             document.getElementById("centerMsg").classList.remove("show");
         }
 
-        /* --- движение --- */
         let mx = 0,
           my = 0;
         if (keys["w"] || keys["arrowup"] || keys["ц"]) my--;
@@ -1797,7 +1775,6 @@
         if (p.hurtFlash > 0) p.hurtFlash -= dt;
         if (p.regen > 0) p.hp = Math.min(p.maxHp, p.hp + p.regen * dt);
 
-        /* --- аура --- */
         if (p.auraR > 0) {
           p.auraPulse += dt * 2.4;
           p.auraTick -= dt;
@@ -1811,7 +1788,6 @@
           }
         }
 
-        /* --- автострельба --- */
         p.cool -= dt;
         if (p.cool <= 0) {
           const tgt = nearestEnemy(p.x, p.y, 1100);
@@ -1821,7 +1797,6 @@
           }
         }
 
-        /* --- волны --- */
         if (G.breather > 0) {
           G.breather -= dt;
           if (G.breather <= 0 && !G.waveActive) startWave(G.wave + 1);
@@ -1840,7 +1815,6 @@
             }
             G.breather = 2.2;
             p.hp = Math.min(p.maxHp, p.hp + p.maxHp * 0.12);
-            // маленький бонус к макс HP каждый 5 волн
             if (G.wave % 5 === 0) {
               p.maxHp += 5;
               p.hp = Math.min(p.maxHp, p.hp + 5);
@@ -1888,7 +1862,6 @@
           }
         }
         if (!best) {
-          // если остались только призраки — целимся в них
           for (const e of G.enemies) {
             const d = dist2(e.x, e.y, x, y);
             if (d < bd) {
@@ -1936,7 +1909,6 @@
         beep(720 + Math.random() * 90, 0.045, "square", 0.022, 480);
       }
 
-      /* --- ВРАГИ --- */
       function updateEnemies(dt) {
         const p = G.player;
         const arr = G.enemies;
@@ -1957,7 +1929,6 @@
           let sp = e.speed;
           if (e.slowT > 0) sp *= 0.45;
 
-          /* ranged */
           if (e.ranged) {
             const range = e.longRange ? 420 : 260;
             if (d < range * 0.75) sp = -sp * 0.7;
@@ -1973,7 +1944,6 @@
             }
           }
 
-          /* charger */
           if (e.charges) {
             e.chargeCd -= dt;
             if (e.chargeT > 0) {
@@ -1986,7 +1956,6 @@
             }
           }
 
-          /* teleporter */
           if (e.teleports) {
             e.teleCd -= dt;
             if (e.teleCd <= 0 && d > 90) {
@@ -2000,7 +1969,6 @@
             }
           }
 
-          /* healer */
           if (e.heals) {
             e.healsTick -= dt;
             if (e.healsTick <= 0) {
@@ -2018,7 +1986,6 @@
             }
           }
 
-          /* summoner */
           if (e.summons) {
             e.summonCd -= dt;
             if (e.summonCd <= 0 && G.enemies.length < 60) {
@@ -2031,11 +1998,9 @@
             }
           }
 
-          /* движение */
           e.x += ux * sp * dt;
           e.y += uy * sp * dt;
 
-          /* расталкивание */
           for (let j = i - 1; j >= 0; j--) {
             const o = arr[j];
             const ddx = o.x - e.x,
@@ -2056,7 +2021,6 @@
           e.x = clamp(e.x, e.r, W - e.r);
           e.y = clamp(e.y, e.r, H - e.r);
 
-          /* контактный урон */
           if (d < e.r + p.r && e.hitCd <= 0) {
             hurtPlayer(e.dmg);
             if (e.lifesteal) e.hp = Math.min(e.maxHp, e.hp + e.dmg * 0.5);
@@ -2091,7 +2055,6 @@
         if (e.armor) final *= 1 - e.armor;
         if (e.ghost) final *= 0.7;
 
-        /* щит */
         if (e.shield > 0) {
           const absorbed = Math.min(e.shield, final);
           e.shield -= absorbed;
@@ -2130,7 +2093,6 @@
           heart: true,
         });
 
-        /* бомбер взрывается */
         if (e.explodes) {
           G.shake = Math.max(G.shake, 8);
           const R = 90;
@@ -2140,7 +2102,6 @@
           beep(120, 0.25, "sawtooth", 0.06, 60);
         }
 
-        /* сплиттер делится */
         if (e.splitInto && G.enemies.length < 60) {
           for (let k = 0; k < 2; k++) {
             const old = G.wave;
@@ -2194,7 +2155,6 @@
           }
         }
 
-        /* опыт */
         const orbs = e.boss ? 18 : e.type === "brute" ? 3 : 1;
         for (let k = 0; k < orbs; k++) {
           const a = rnd(0, TAU),
@@ -2241,7 +2201,6 @@
         updateHUD();
       }
 
-      /* --- СНАРЯДЫ ИГРОКА --- */
       function updateBullets(dt) {
         const p = G.player;
         for (let i = G.bullets.length - 1; i >= 0; i--) {
@@ -2263,7 +2222,6 @@
           b.x += b.vx * dt;
           b.y += b.vy * dt;
 
-          /* рикошет от краёв */
           let bounced = false;
           if (b.ricochet > 0) {
             if (b.x < b.r && b.vx < 0) {
@@ -2317,7 +2275,6 @@
               if (b.freeze > 0 && Math.random() < b.freeze && e.hp > 0)
                 e.slowT = 1.8;
 
-              /* взрыв */
               if (b.explosive > 0) {
                 const R = 55 + b.explosive * 12;
                 const R2 = R * R;
@@ -2347,7 +2304,6 @@
         }
       }
 
-      /* --- СНАРЯДЫ ВРАГОВ --- */
       function updateEBullets(dt) {
         const p = G.player;
         for (let i = G.ebullets.length - 1; i >= 0; i--) {
@@ -2375,7 +2331,6 @@
         }
       }
 
-      /* --- ОПЫТ --- */
       function updateOrbs(dt) {
         const p = G.player;
         const m2 = p.magnet * p.magnet;
@@ -2419,7 +2374,6 @@
         if (G.pendingLevels > 0 && G.state === "playing") openUpgrade();
       }
 
-      /* --- ЧАСТИЦЫ / ТЕКСТЫ --- */
       function updateParticles(dt) {
         for (let i = G.parts.length - 1; i >= 0; i--) {
           const q = G.parts[i];
@@ -2444,9 +2398,6 @@
         }
       }
 
-      /* =========================================================
-   HUD
-   ========================================================= */
       const hpFill = document.getElementById("hpFill");
       const hpText = document.getElementById("hpText");
       const xpFill = document.getElementById("xpFill");
@@ -2483,9 +2434,6 @@
         }
       }
 
-      /* =========================================================
-   ОТРИСОВКА
-   ========================================================= */
       const bgHearts = [];
       for (let i = 0; i < 18; i++) {
         bgHearts.push({
@@ -2609,7 +2557,6 @@
           const alpha = e.ghost ? 0.55 : 1;
           ctx.globalAlpha = alpha;
 
-          /* щит */
           if (e.shield > 0) {
             ctx.strokeStyle = "rgba(96,165,250,.85)";
             ctx.lineWidth = 3;
@@ -2623,7 +2570,6 @@
             ctx.stroke();
           }
 
-          /* шипы */
           ctx.fillStyle = col;
           ctx.beginPath();
           const n = e.spikes;
@@ -2638,7 +2584,6 @@
           ctx.fill();
           ctx.globalAlpha = alpha;
 
-          /* тело */
           const grad = ctx.createRadialGradient(
             -e.r * 0.3,
             -e.r * 0.3,
@@ -2654,7 +2599,6 @@
           ctx.arc(0, 0, e.r, 0, TAU);
           ctx.fill();
 
-          /* глазки */
           const eyeY = -e.r * 0.08;
           const eyeX = e.r * 0.34;
           ctx.fillStyle = "rgba(15,4,25,.92)";
@@ -2672,7 +2616,6 @@
           ctx.arc(eyeX + e.r * 0.05, eyeY - e.r * 0.06, e.r * 0.05, 0, TAU);
           ctx.fill();
 
-          /* корона у босса */
           if (e.boss) {
             ctx.fillStyle = "#ffd166";
             ctx.strokeStyle = "#b8860b";
@@ -2694,7 +2637,6 @@
 
           ctx.globalAlpha = 1;
 
-          /* хп-бар (не у боссов — у них отдельный) */
           if (!e.boss && e.hp < e.maxHp) {
             const bw = e.r * 2.1,
               bh = 4;
@@ -2715,7 +2657,6 @@
             }
           }
 
-          /* замедление */
           if (e.slowT > 0) {
             ctx.strokeStyle = "rgba(147,197,253,.7)";
             ctx.lineWidth = 1.5;
@@ -2788,7 +2729,6 @@
         ctx.fill();
         ctx.restore();
 
-        /* хвост */
         const tw = Math.sin(p.t * 5) * 7;
         ctx.strokeStyle = "#f7a8d0";
         ctx.lineWidth = 6;
@@ -2798,7 +2738,6 @@
         ctx.quadraticCurveTo(-s * 2.1, s * 0.3 + tw, -s * 1.75, -s * 0.75 + tw);
         ctx.stroke();
 
-        /* ушки */
         ctx.fillStyle = "#fff3f9";
         ctx.strokeStyle = "#f7a8d0";
         ctx.lineWidth = 2;
@@ -2831,7 +2770,6 @@
         ctx.closePath();
         ctx.fill();
 
-        /* тело */
         const g = ctx.createRadialGradient(
           -s * 0.3,
           -s * 0.35,
@@ -2850,7 +2788,6 @@
         ctx.fill();
         ctx.stroke();
 
-        /* румянец */
         ctx.fillStyle = "rgba(255,150,190,.42)";
         ctx.beginPath();
         ctx.ellipse(-s * 0.58, s * 0.22, s * 0.24, s * 0.16, 0, 0, TAU);
@@ -2859,7 +2796,6 @@
         ctx.ellipse(s * 0.58, s * 0.22, s * 0.24, s * 0.16, 0, 0, TAU);
         ctx.fill();
 
-        /* глазки */
         const blink = Math.sin(p.t * 1.7) > 0.985 ? 0.12 : 1;
         ctx.fillStyle = "#3a1d33";
         ctx.beginPath();
@@ -2878,7 +2814,6 @@
           ctx.fill();
         }
 
-        /* носик */
         ctx.fillStyle = "#ff7ab0";
         ctx.beginPath();
         ctx.moveTo(0, s * 0.14);
@@ -2887,7 +2822,6 @@
         ctx.closePath();
         ctx.fill();
 
-        /* ротик */
         ctx.strokeStyle = "#c96b96";
         ctx.lineWidth = 1.6;
         ctx.beginPath();
@@ -2895,7 +2829,6 @@
         ctx.arc(s * 0.1, s * 0.2, s * 0.13, 0, Math.PI);
         ctx.stroke();
 
-        /* усики */
         ctx.strokeStyle = "rgba(190,120,160,.65)";
         ctx.lineWidth = 1.2;
         for (let i = -1; i <= 1; i++) {
@@ -2909,7 +2842,6 @@
           ctx.stroke();
         }
 
-        /* сердечко на груди */
         ctx.fillStyle = "rgba(255,120,180,.55)";
         heartPath(ctx, 0, s * 0.62, s * 0.22);
         ctx.fill();
@@ -2987,9 +2919,6 @@
         ctx.fillRect(0, 0, W, H);
       }
 
-      /* =========================================================
-   ГЛАВНЫЙ ЦИКЛ
-   ========================================================= */
       let lastT = performance.now();
       function loop(now) {
         let dt = (now - lastT) / 1000;
@@ -3012,13 +2941,9 @@
         requestAnimationFrame(loop);
       }
 
-      /* =========================================================
-   СТАРТ
-   ========================================================= */
       resize();
       showMenu();
       requestAnimationFrame(loop);
     </script>
-    <script src="sw-register.js" defer></script>
   </body>
 </html>

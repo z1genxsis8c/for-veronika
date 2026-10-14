@@ -1,0 +1,85 @@
+/* ============================================================
+   ТОКЕНЫ · единая палитра для всего сайта
+   Меняешь здесь — меняется везде.
+   ============================================================ */
+
+:root {
+  /* --- Бумага и поверхности --- */
+  --paper: #f3ede4;
+  --paper-2: #ece4d8;
+  --surface: #fdfaf6;
+  --surface-2: #f7f0e6;
+  --surface-3: #efe7da;
+
+  /* --- Чернила --- */
+  --ink: #1e1a16;
+  --ink-2: #4a423c;
+  --ink-3: #8a7f75;
+  --ink-4: #b8aca1;
+
+  /* --- Линии --- */
+  --line: rgba(30, 26, 22, 0.08);
+  --line-2: rgba(30, 26, 22, 0.16);
+
+  /* --- Розовая гамма --- */
+  --rose: #b58794;
+  --rose-deep: #8f6472;
+  --rose-soft: #e8d4d8;
+  --rose-tint: #f2e4e7;
+
+  /* --- Песок, золото, латунь --- */
+  --sand: #cfb8a3;
+  --gold: #b89968;
+  --gold-deep: #8a6f4d;
+  --gold-light: #dcc28a;
+  --brass: #c9a35b;
+  --brass-light: #ecd39a;
+
+  /* --- Ночь --- */
+  --night: #1a1613;
+  --night-2: #2b2620;
+
+  /* --- Статусы --- */
+  --accept: #34c759;
+  --accept-dark: #1e9c46;
+  --decline: #ff3b30;
+  --decline-dark: #c42b21;
+
+  /* --- Красное дерево (слот-машина) --- */
+  --wood-1: #6a2b1e;
+  --wood-2: #45180f;
+  --wood-3: #2c0d07;
+
+  /* --- Паспортный синий --- */
+  --pass-blue-1: #1c3454;
+  --pass-blue-2: #0f1e33;
+  --pass-blue-3: #060d18;
+  --pass-gold: #c8b177;
+
+  /* --- Пергамент (карта сердца) --- */
+  --parch-1: #f0e2bd;
+  --parch-2: #e3d0a3;
+  --parch-3: #d1b884;
+  --parch-4: #b89a66;
+  --ink-brown: #4a2f1c;
+  --ink-brown-2: #6b4529;
+  --ink-red: #8b3524;
+  --ink-blue: #2f3f5a;
+
+  /* --- Шрифты --- */
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-hand: "Caveat", cursive;
+  --font-body-serif: "Cormorant Garamond", "Instrument Serif", Georgia, serif;
+
+  /* --- Анимация --- */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* --- Скругления --- */
+  --radius-sm: 4px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+}

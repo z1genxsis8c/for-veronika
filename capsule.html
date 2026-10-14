@@ -24,268 +24,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap"
       rel="stylesheet"
     />
 
+    <!-- Единый движок -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
     <style>
-      :root {
-        --paper: #f3ede4;
-        --paper-2: #ece4d8;
-        --surface: #fdfaf6;
-        --surface-2: #f7f0e6;
+      /* ============================================================
+         КАПСУЛА ВРЕМЕНИ · только специфика страницы
+         ============================================================ */
 
-        --ink: #1e1a16;
-        --ink-2: #4a423c;
-        --ink-3: #8a7f75;
-        --ink-4: #b8aca1;
-
-        --line: rgba(30, 26, 22, 0.08);
-        --line-2: rgba(30, 26, 22, 0.16);
-
-        --rose: #b58794;
-        --rose-deep: #8f6472;
-        --rose-soft: #e8d4d8;
-        --rose-tint: #f2e4e7;
-
-        --sand: #cfb8a3;
-        --gold: #b89968;
-
-        --ease: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        font-size: 16px;
-        line-height: 1.5;
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          radial-gradient(
-            ellipse 90% 60% at 15% -10%,
-            rgba(232, 212, 216, 0.55),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 60% 50% at 95% 15%,
-            rgba(207, 184, 163, 0.28),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 70% 55% at 5% 105%,
-            rgba(181, 135, 148, 0.16),
-            transparent 60%
-          ),
-          var(--paper);
-      }
-
-      .grain {
-        position: fixed;
-        inset: 0;
-        z-index: 9998;
-        pointer-events: none;
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-        border: none;
-        background: none;
-      }
-      img {
-        max-width: 100%;
-        display: block;
-      }
-
-      ::selection {
-        background: var(--rose-soft);
-        color: var(--rose-deep);
-      }
-
-      ::-webkit-scrollbar {
-        width: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(30, 26, 22, 0.12);
-        border-radius: 10px;
-        border: 3px solid var(--paper);
-      }
-
-      /* TOPBAR */
-      .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 32px;
-        background: rgba(243, 237, 228, 0.72);
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border-bottom: 1px solid var(--line);
-        font-size: 12.5px;
-        letter-spacing: 0.02em;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-
-      .brand-mark {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--ink);
-        border-radius: 50%;
-        font-family: "Instrument Serif", Georgia, serif;
-        font-style: italic;
-        font-size: 17px;
-        line-height: 1;
-        color: var(--ink);
-        padding-bottom: 2px;
-        transition: transform 0.4s var(--ease-spring);
-      }
-
-      .brand:hover .brand-mark {
-        transform: rotate(-12deg) scale(1.05);
-      }
-
-      .brand-label {
-        color: var(--ink-2);
-        font-weight: 500;
-      }
-
-      .topbar-meta {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--ink-2);
-        cursor: pointer;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-      }
-
-      .meta-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .meta-item .icon {
-        font-size: 13px;
-        filter: saturate(0.7);
-      }
-      .meta-sep {
-        color: var(--ink-4);
-      }
-
-      /* LAYOUT */
-      main {
-        max-width: 1080px;
-        margin: 0 auto;
-        padding: 140px 32px 80px;
-      }
-
-      /* HERO */
-      .hero {
-        padding: 20px 0 40px;
-        text-align: center;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--rose-deep);
-        margin-bottom: 28px;
-      }
-
-      .eyebrow::before,
-      .eyebrow::after {
-        content: "";
-        width: 24px;
-        height: 1px;
-        background: var(--rose-deep);
-      }
-
-      h1 {
-        font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 400;
-        font-size: clamp(38px, 5.4vw, 72px);
-        line-height: 1.04;
-        letter-spacing: -0.02em;
-        color: var(--ink);
-        margin: 0 0 22px;
-        max-width: 16ch;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      h1 em {
-        font-style: italic;
-        color: var(--rose-deep);
-      }
-
-      .hero-sub {
-        font-size: 16px;
-        line-height: 1.6;
-        color: var(--ink-2);
-        margin: 0 auto;
-        max-width: 44ch;
-        font-weight: 400;
-      }
-
-      /* ENVELOPE STAGE */
+      /* ---------- ENVELOPE STAGE ---------- */
       .envelope-zone {
         margin-top: 72px;
         display: flex;
@@ -307,7 +59,6 @@
           opacity 0.6s var(--ease);
         outline: none;
       }
-
       .envelope-stage:hover {
         transform: scale(1.02);
       }
@@ -316,7 +67,6 @@
         outline-offset: 12px;
         border-radius: 8px;
       }
-
       .envelope-stage.hidden {
         opacity: 0;
         pointer-events: none;
@@ -346,7 +96,6 @@
         border-radius: 6px;
         overflow: hidden;
       }
-
       .envelope-body::before {
         content: "";
         position: absolute;
@@ -358,7 +107,6 @@
         border-right: 190px solid transparent;
         border-left: 190px solid transparent;
       }
-
       .envelope-body::after {
         content: "";
         position: absolute;
@@ -385,13 +133,12 @@
         z-index: 5;
         filter: drop-shadow(0 6px 10px rgba(30, 26, 22, 0.15));
       }
-
       .envelope.open .envelope-flap {
         transform: rotateX(180deg);
         z-index: 1;
       }
 
-      /* Seal */
+      /* Сургучная печать */
       .envelope-seal {
         position: absolute;
         top: 50%;
@@ -417,7 +164,6 @@
         transition: all 0.6s var(--ease);
         animation: sealPulse 3s ease-in-out infinite;
       }
-
       @keyframes sealPulse {
         0%,
         100% {
@@ -435,7 +181,6 @@
             0 0 0 12px rgba(181, 135, 148, 0);
         }
       }
-
       .envelope-seal::before {
         content: "";
         position: absolute;
@@ -443,10 +188,9 @@
         border-radius: 50%;
         border: 1px dashed rgba(255, 255, 255, 0.25);
       }
-
       .envelope-seal::after {
         content: "V";
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 30px;
         color: rgba(253, 250, 246, 0.92);
@@ -454,13 +198,12 @@
         padding-bottom: 3px;
         text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
       }
-
       .envelope.open .envelope-seal {
         opacity: 0;
         transform: translate(-50%, -50%) scale(0.4) rotate(120deg);
       }
 
-      /* Address */
+      /* Адрес */
       .envelope-address {
         position: absolute;
         top: 24px;
@@ -469,7 +212,6 @@
         text-align: right;
         line-height: 1.3;
       }
-
       .envelope-address .to {
         display: block;
         font-size: 9.5px;
@@ -479,9 +221,8 @@
         color: var(--ink-3);
         margin-bottom: 4px;
       }
-
       .envelope-address .name {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 19px;
         color: var(--ink);
@@ -490,7 +231,7 @@
         border-bottom: 1px solid rgba(30, 26, 22, 0.18);
       }
 
-      /* Lock hint */
+      /* Подсказка под конвертом */
       .envelope-lock-hint {
         position: absolute;
         bottom: -60px;
@@ -499,33 +240,29 @@
         text-align: center;
         width: 100%;
       }
-
       .envelope-lock-hint .lock-icon {
         font-size: 26px;
         display: block;
         margin-bottom: 10px;
         filter: saturate(0.75);
       }
-
       .envelope-lock-hint .lock-text {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 16px;
         color: var(--ink-2);
         letter-spacing: -0.005em;
         line-height: 1.4;
       }
-
       .envelope-lock-hint .lock-text b {
         font-weight: 400;
         color: var(--rose-deep);
       }
 
-      /* COUNTDOWN */
+      /* ---------- COUNTDOWN ---------- */
       .countdown-section {
         margin-top: 140px;
       }
-
       .countdown-frame {
         position: relative;
         padding: 48px 40px 44px;
@@ -540,7 +277,6 @@
         max-width: 720px;
         margin: 0 auto;
       }
-
       .countdown-frame::after {
         content: "";
         position: absolute;
@@ -549,7 +285,6 @@
         border-radius: 2px;
         pointer-events: none;
       }
-
       .countdown-head {
         display: flex;
         justify-content: space-between;
@@ -565,18 +300,16 @@
         position: relative;
         z-index: 1;
       }
-
       .countdown-head .latin {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         letter-spacing: 0.02em;
         text-transform: none;
         color: var(--rose-deep);
       }
-
       .countdown-label {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 18px;
         color: var(--ink-2);
@@ -585,7 +318,6 @@
         position: relative;
         z-index: 1;
       }
-
       .countdown-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -594,13 +326,11 @@
         z-index: 1;
         margin-bottom: 28px;
       }
-
       .countdown-cell {
         text-align: center;
         padding: 4px 8px;
         position: relative;
       }
-
       .countdown-cell + .countdown-cell::before {
         content: "";
         position: absolute;
@@ -610,9 +340,8 @@
         width: 1px;
         background: var(--line);
       }
-
       .countdown-num {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: clamp(40px, 6vw, 64px);
         line-height: 1;
@@ -622,7 +351,6 @@
         font-feature-settings: "tnum";
         display: block;
       }
-
       .countdown-lbl {
         display: block;
         font-size: 10px;
@@ -632,9 +360,8 @@
         color: var(--ink-3);
         margin-top: 10px;
       }
-
       .countdown-date {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 15px;
         color: var(--rose-deep);
@@ -643,7 +370,7 @@
         z-index: 1;
       }
 
-      /* Empty state */
+      /* ---------- EMPTY ---------- */
       .capsule-empty {
         margin-top: 72px;
         padding: 72px 40px;
@@ -655,7 +382,6 @@
         margin-left: auto;
         margin-right: auto;
       }
-
       .capsule-empty .empty-mark {
         display: block;
         font-size: 44px;
@@ -663,16 +389,14 @@
         margin-bottom: 20px;
         filter: saturate(0.7);
       }
-
       .capsule-empty .empty-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 24px;
         color: var(--ink);
         line-height: 1.35;
         margin: 0 0 12px;
       }
-
       .capsule-empty .empty-sub {
         font-size: 14px;
         color: var(--ink-3);
@@ -680,7 +404,7 @@
         line-height: 1.5;
       }
 
-      /* Buttons */
+      /* ---------- LOCAL BUTTONS (btn / btn.primary) ---------- */
       .btn {
         display: inline-flex;
         align-items: center;
@@ -690,7 +414,7 @@
         background: transparent;
         color: var(--ink-2);
         border: 1px solid var(--line-2);
-        font-family: "Inter", sans-serif;
+        font-family: var(--font-sans);
         font-size: 14px;
         font-weight: 500;
         letter-spacing: 0.01em;
@@ -698,14 +422,12 @@
         transition: all 0.35s var(--ease);
         text-decoration: none;
       }
-
       .btn:hover {
         background: var(--surface-2);
         color: var(--ink);
         border-color: var(--ink-3);
         transform: translateY(-2px);
       }
-
       .btn.primary {
         background: var(--ink);
         color: var(--paper);
@@ -714,7 +436,6 @@
           0 1px 0 rgba(255, 255, 255, 0.12) inset,
           0 8px 20px rgba(30, 26, 22, 0.2);
       }
-
       .btn.primary:hover {
         background: #000;
         color: var(--paper);
@@ -723,19 +444,17 @@
           0 1px 0 rgba(255, 255, 255, 0.12) inset,
           0 14px 32px rgba(30, 26, 22, 0.26);
       }
-
       .btn .btn-arrow {
         display: inline-block;
         transition: transform 0.4s var(--ease);
         font-size: 14px;
       }
-
       .btn:hover .btn-arrow {
         transform: translateX(-4px);
       }
 
-      /* MODAL */
-      .modal-overlay {
+      /* ---------- CAPSULE OVERLAY / MODAL (локальные, не из base) ---------- */
+      .capsule-overlay {
         display: none;
         position: fixed;
         inset: 0;
@@ -751,20 +470,18 @@
         transition: opacity 0.5s var(--ease);
         overflow-y: auto;
       }
-
-      .modal-overlay.active {
+      .capsule-overlay.active {
         display: flex;
         opacity: 1;
         pointer-events: auto;
       }
-
-      .modal {
+      .capsule-modal {
         position: relative;
         width: 100%;
         max-width: 560px;
         margin: auto;
         padding: 52px 48px 44px;
-        background: var(--letter, #faf6ee);
+        background: var(--surface);
         border-radius: 4px;
         box-shadow:
           0 1px 0 rgba(255, 255, 255, 0.9) inset,
@@ -775,12 +492,10 @@
         max-height: calc(100vh - 48px);
         overflow-y: auto;
       }
-
-      .modal-overlay.active .modal {
+      .capsule-overlay.active .capsule-modal {
         transform: translateY(0) scale(1) rotate(0deg);
       }
-
-      .modal::after {
+      .capsule-modal::after {
         content: "";
         position: absolute;
         inset: 16px;
@@ -788,34 +503,7 @@
         border-radius: 2px;
         pointer-events: none;
       }
-
-      .modal-close {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: transparent;
-        color: var(--ink-3);
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s var(--ease);
-        z-index: 10;
-        border: 1px solid transparent;
-      }
-
-      .modal-close:hover {
-        background: var(--surface-2);
-        color: var(--ink);
-        border-color: var(--line);
-        transform: rotate(90deg);
-      }
-
-      .modal-head {
+      .capsule-modal-head {
         display: flex;
         justify-content: space-between;
         align-items: baseline;
@@ -830,18 +518,16 @@
         position: relative;
         z-index: 1;
       }
-
-      .modal-head .latin {
-        font-family: "Instrument Serif", Georgia, serif;
+      .capsule-modal-head .latin {
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         letter-spacing: 0.02em;
         text-transform: none;
         color: var(--rose-deep);
       }
-
-      .modal-title {
-        font-family: "Instrument Serif", Georgia, serif;
+      .capsule-modal-title {
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: clamp(24px, 3vw, 30px);
         line-height: 1.15;
@@ -851,14 +537,12 @@
         position: relative;
         z-index: 1;
       }
-
-      .modal-title em {
+      .capsule-modal-title em {
         font-style: italic;
         color: var(--rose-deep);
       }
-
-      .modal-sub {
-        font-family: "Instrument Serif", Georgia, serif;
+      .capsule-modal-sub {
+        font-family: var(--font-serif);
         font-style: italic;
         font-weight: 400;
         font-size: 15px;
@@ -868,14 +552,12 @@
         position: relative;
         z-index: 1;
       }
-
-      .field {
+      .capsule-field {
         position: relative;
         z-index: 1;
         margin-bottom: 22px;
       }
-
-      .field label {
+      .capsule-field label {
         display: block;
         font-size: 10.5px;
         font-weight: 500;
@@ -884,15 +566,14 @@
         color: var(--ink-3);
         margin-bottom: 10px;
       }
-
-      .field textarea,
-      .field input[type="date"] {
+      .capsule-field textarea,
+      .capsule-field input[type="date"] {
         width: 100%;
         padding: 14px 16px;
         background: var(--surface);
         border: 1px solid var(--line-2);
         border-radius: 12px;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 16px;
         line-height: 1.5;
         color: var(--ink);
@@ -903,33 +584,29 @@
         appearance: none;
         resize: vertical;
       }
-
-      .field textarea {
+      .capsule-field textarea {
         min-height: 160px;
         font-style: italic;
       }
-
-      .field textarea:focus,
-      .field input:focus {
+      .capsule-field textarea:focus,
+      .capsule-field input:focus {
         outline: none;
         border-color: var(--rose-deep);
         box-shadow: 0 0 0 4px rgba(143, 100, 114, 0.1);
       }
-
-      .modal-actions {
+      .capsule-modal-actions {
         display: flex;
         gap: 10px;
         position: relative;
         z-index: 1;
         margin-top: 8px;
       }
-
-      .modal-actions .btn {
+      .capsule-modal-actions .btn {
         flex: 1;
         justify-content: center;
       }
 
-      /* LETTER VIEW (открытая капсула) */
+      /* ---------- LETTER OVERLAY (открытая капсула) ---------- */
       .letter-overlay {
         position: fixed;
         inset: 0;
@@ -945,19 +622,17 @@
         transition: opacity 0.5s var(--ease);
         overflow-y: auto;
       }
-
       .letter-overlay.active {
         display: flex;
         opacity: 1;
       }
-
       .letter {
         position: relative;
         width: 100%;
         max-width: 600px;
         margin: auto;
         padding: 56px 56px 40px;
-        background: var(--letter, #faf6ee);
+        background: var(--surface);
         border-radius: 4px;
         box-shadow:
           0 1px 0 rgba(255, 255, 255, 0.9) inset,
@@ -965,7 +640,6 @@
         max-height: calc(100vh - 48px);
         overflow-y: auto;
       }
-
       .letter::after {
         content: "";
         position: absolute;
@@ -974,7 +648,6 @@
         border-radius: 2px;
         pointer-events: none;
       }
-
       .letter-head {
         display: flex;
         justify-content: space-between;
@@ -990,18 +663,16 @@
         position: relative;
         z-index: 1;
       }
-
       .letter-head .latin {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         letter-spacing: 0.02em;
         text-transform: none;
         color: var(--rose-deep);
       }
-
       .letter-greeting {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-style: italic;
         font-size: 30px;
@@ -1012,9 +683,8 @@
         position: relative;
         z-index: 1;
       }
-
       .letter-body {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: 17.5px;
         line-height: 1.72;
@@ -1026,7 +696,6 @@
         z-index: 1;
         text-wrap: pretty;
       }
-
       .letter-signature {
         margin-top: 40px;
         padding-top: 26px;
@@ -1035,7 +704,6 @@
         position: relative;
         z-index: 1;
       }
-
       .letter-signature .from {
         display: block;
         font-size: 10.5px;
@@ -1045,9 +713,8 @@
         color: var(--ink-3);
         margin-bottom: 8px;
       }
-
       .letter-signature .name {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 28px;
         line-height: 1;
@@ -1055,7 +722,7 @@
         color: var(--ink);
       }
 
-      /* FLOATING HEARTS */
+      /* ---------- FLOATING HEARTS ---------- */
       .float-heart {
         position: fixed;
         pointer-events: none;
@@ -1063,7 +730,6 @@
         filter: saturate(0.7);
         animation: floatUp 1.8s var(--ease) forwards;
       }
-
       @keyframes floatUp {
         0% {
           transform: translateY(0) scale(0.5);
@@ -1075,134 +741,8 @@
         }
       }
 
-      /* TOAST */
-      .toast {
-        position: fixed;
-        left: 50%;
-        bottom: 32px;
-        transform: translateX(-50%) translateY(20px);
-        padding: 14px 22px;
-        background: var(--ink);
-        color: var(--paper);
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        box-shadow: 0 20px 40px rgba(30, 26, 22, 0.25);
-        opacity: 0;
-        pointer-events: none;
-        transition: all 0.5s var(--ease);
-        z-index: 7000;
-        max-width: calc(100vw - 40px);
-        text-align: center;
-      }
-
-      .toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-
-      /* NAV */
-      .nav-wrap {
-        margin-top: 96px;
-        padding-top: 40px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 14px;
-        padding: 18px 32px;
-        border-radius: 999px;
-        background: var(--ink);
-        color: var(--paper);
-        font-family: "Inter", sans-serif;
-        font-size: 14.5px;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        transition: all 0.35s var(--ease);
-      }
-
-      .back-link:hover {
-        background: #000;
-        transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
-      }
-
-      .back-link .arrow {
-        display: inline-block;
-        transition: transform 0.4s var(--ease);
-        font-size: 15px;
-      }
-
-      .back-link:hover .arrow {
-        transform: translateX(-5px);
-      }
-
-      .nav-link-secondary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 18px 28px;
-        border-radius: 999px;
-        background: transparent;
-        color: var(--ink-2);
-        border: 1px solid var(--line-2);
-        font-family: "Inter", sans-serif;
-        font-size: 14.5px;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        transition: all 0.35s var(--ease);
-        cursor: pointer;
-      }
-
-      .nav-link-secondary:hover {
-        background: var(--surface-2);
-        color: var(--ink);
-        border-color: var(--ink-3);
-        transform: translateY(-2px);
-      }
-
-      .nav-link-secondary .icon {
-        font-size: 14px;
-        filter: saturate(0.75);
-        transition: transform 0.4s var(--ease-spring);
-      }
-
-      .nav-link-secondary:hover .icon {
-        transform: scale(1.15);
-      }
-
-      /* FOOTER */
-      .footer {
-        padding: 40px 32px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-        max-width: 1240px;
-        margin: 40px auto 0;
-      }
-
-      /* RESPONSIVE */
+      /* ---------- RESPONSIVE ---------- */
       @media (max-width: 640px) {
-        main {
-          padding: 120px 20px 60px;
-        }
-        h1 {
-          font-size: clamp(32px, 9vw, 46px);
-        }
-
         .envelope-zone {
           margin-top: 56px;
           min-height: 340px;
@@ -1211,7 +751,6 @@
           width: 300px;
           height: 210px;
         }
-
         .envelope-flap {
           border-top-width: 112px;
           border-right-width: 150px;
@@ -1227,7 +766,6 @@
           border-left-width: 150px;
           border-right-width: 150px;
         }
-
         .envelope-seal {
           width: 56px;
           height: 56px;
@@ -1238,7 +776,6 @@
         .envelope-address .name {
           font-size: 16px;
         }
-
         .countdown-section {
           margin-top: 100px;
         }
@@ -1266,7 +803,6 @@
           letter-spacing: 0.14em;
           margin-top: 8px;
         }
-
         .capsule-empty {
           padding: 48px 24px;
           margin-top: 56px;
@@ -1274,18 +810,16 @@
         .capsule-empty .empty-title {
           font-size: 20px;
         }
-
-        .modal {
+        .capsule-modal {
           padding: 40px 26px 32px;
           border-radius: 3px;
         }
-        .modal-title {
+        .capsule-modal-title {
           font-size: 22px;
         }
-        .modal-sub {
+        .capsule-modal-sub {
           font-size: 13.5px;
         }
-
         .letter {
           padding: 40px 26px 32px;
         }
@@ -1309,55 +843,9 @@
         .letter-signature .name {
           font-size: 24px;
         }
-
-        .nav-wrap {
-          margin-top: 72px;
-          padding-top: 32px;
-          gap: 10px;
-        }
-        .back-link,
-        .nav-link-secondary {
-          padding: 16px 24px;
-          font-size: 13.5px;
-        }
-
-        .topbar {
-          padding: 16px 20px;
-          font-size: 11.5px;
-        }
-        .brand-label {
-          display: none;
-        }
-        .brand-mark {
-          width: 26px;
-          height: 26px;
-          font-size: 15px;
-        }
-        .meta-sep {
-          display: none;
-        }
-        .topbar-meta {
-          gap: 10px;
-          font-size: 11.5px;
-        }
-
-        .footer {
-          flex-direction: column;
-          gap: 8px;
-          text-align: center;
-          font-size: 10.5px;
-          padding: 32px 20px;
-        }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
         .envelope-seal {
           animation: none;
         }
@@ -1368,7 +856,6 @@
   <body>
     <div class="grain"></div>
 
-    <!-- TOPBAR -->
     <header class="topbar">
       <a href="index.html" class="brand">
         <span class="brand-mark">V</span>
@@ -1388,9 +875,8 @@
     </header>
 
     <main>
-      <!-- HERO -->
       <section class="hero">
-        <span class="eyebrow">16 · Капсула времени</span>
+        <span class="eyebrow">12 · Капсула времени</span>
         <h1>Письмо <em>через год</em></h1>
         <p class="hero-sub">
           Запечатанное послание из сегодняшнего дня. Открыть его можно только
@@ -1398,10 +884,8 @@
         </p>
       </section>
 
-      <!-- ENVELOPE / EMPTY STATE -->
       <section id="capsuleStage"></section>
 
-      <!-- COUNTDOWN -->
       <section
         class="countdown-section"
         id="countdownSection"
@@ -1435,21 +919,8 @@
         </div>
       </section>
 
-      <!-- NAV -->
-      <div class="nav-wrap">
-        <a href="index.html" class="back-link">
-          <span class="arrow">←</span>
-          <span>На главную</span>
-        </a>
-        <a href="movie.html" class="nav-link-secondary">
-          <span class="icon">🎬</span>
-          <span>Наш фильм</span>
-        </a>
-        <a href="song.html" class="nav-link-secondary">
-          <span class="icon">🎵</span>
-          <span>Наша песня</span>
-        </a>
-      </div>
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="auto-nav" data-nav="movie,song,heartmap"></nav>
     </main>
 
     <footer class="footer">
@@ -1458,8 +929,8 @@
     </footer>
 
     <!-- MODAL: создать капсулу -->
-    <div class="modal-overlay" id="createModal">
-      <div class="modal">
+    <div class="capsule-overlay" id="createModal">
+      <div class="capsule-modal">
         <button
           class="modal-close"
           onclick="closeCreate()"
@@ -1468,18 +939,18 @@
           ✕
         </button>
 
-        <div class="modal-head">
+        <div class="capsule-modal-head">
           <span>Новая капсула</span>
           <span class="latin">Epistola · futura</span>
         </div>
 
-        <h2 class="modal-title">Оставь письмо <em>в будущее</em></h2>
-        <p class="modal-sub">
+        <h2 class="capsule-modal-title">Оставь письмо <em>в будущее</em></h2>
+        <p class="capsule-modal-sub">
           Напиши всё, что хочешь сказать. Никто, включая тебя, не увидит текст,
           пока не наступит назначенный день.
         </p>
 
-        <div class="field">
+        <div class="capsule-field">
           <label for="letterText">Текст письма</label>
           <textarea
             id="letterText"
@@ -1488,12 +959,12 @@
           ></textarea>
         </div>
 
-        <div class="field">
+        <div class="capsule-field">
           <label for="openDate">Когда открыть</label>
           <input type="date" id="openDate" />
         </div>
 
-        <div class="modal-actions">
+        <div class="capsule-modal-actions">
           <button class="btn" onclick="closeCreate()">Отмена</button>
           <button class="btn primary" onclick="saveCapsule()">
             <span>Запечатать</span>
@@ -1531,109 +1002,10 @@
       </article>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <!-- Единый движок: часы, погода, тосты, авто-навигация, SW -->
+    <script src="shared/widgets.js"></script>
 
-    <!-- TIME + WEATHER -->
-    <script>
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        document.getElementById("timeText").textContent = `${hh}:${mm}`;
-
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        document.getElementById("timeIcon").textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
-
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      document
-        .getElementById("infoWidget")
-        .addEventListener("click", loadWeather);
-    </script>
-
-    <!-- CAPSULE SCRIPT -->
+    <!-- Логика капсулы (специфика страницы) -->
     <script>
       const STORAGE_KEY = "veronika_time_capsule_v1";
 
@@ -1650,7 +1022,6 @@
       const letterBody = document.getElementById("letterBody");
       const letterGreeting = document.getElementById("letterGreeting");
       const letterDateLabel = document.getElementById("letterDateLabel");
-      const toast = document.getElementById("toast");
 
       let countdownInterval = null;
       let capsule = loadCapsule();
@@ -1667,13 +1038,11 @@
           return null;
         }
       }
-
-      function saveCapsule() {
+      function persistCapsule() {
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(capsule));
         } catch {}
       }
-
       function deleteCapsule() {
         try {
           localStorage.removeItem(STORAGE_KEY);
@@ -1684,7 +1053,6 @@
       function pad2(n) {
         return String(n).padStart(2, "0");
       }
-
       function formatDateRu(dateObj) {
         return dateObj.toLocaleDateString("ru-RU", {
           day: "numeric",
@@ -1692,27 +1060,10 @@
           year: "numeric",
         });
       }
-
-      function formatTimeRu(dateObj) {
-        return dateObj.toLocaleTimeString("ru-RU", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      }
-
       function isCapsuleReady() {
         if (!capsule) return false;
         const target = new Date(capsule.openDate + "T00:00:00");
         return Date.now() >= target.getTime();
-      }
-
-      // ---------- TOAST ----------
-      let toastTimer = null;
-      function showToast(text) {
-        toast.textContent = text;
-        toast.classList.add("show");
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
       }
 
       // ---------- FLOAT HEARTS ----------
@@ -1767,7 +1118,6 @@
         const target = new Date(capsule.openDate + "T00:00:00");
 
         if (ready) {
-          // Капсула созрела — показываем открытый конверт + кнопку "Прочитать"
           capsuleStage.innerHTML = `
             <div class="envelope-zone">
               <div class="envelope-stage" id="capsuleEnvelope" tabindex="0" role="button" aria-label="Открыть письмо" onclick="openCapsule()">
@@ -1794,7 +1144,6 @@
           return;
         }
 
-        // Капсула запечатана — показываем конверт + отсчёт
         capsuleStage.innerHTML = `
           <div class="envelope-zone">
             <div class="envelope-stage" id="capsuleEnvelope" aria-label="Запечатанная капсула">
@@ -1824,7 +1173,6 @@
         updateCountdown(target);
         countdownInterval = setInterval(() => updateCountdown(target), 1000);
 
-        // Управление: удалить капсулу
         const zone = document.getElementById("capsuleStage");
         const extra = document.createElement("div");
         extra.style.cssText =
@@ -1844,7 +1192,6 @@
           cdHours.textContent = "0";
           cdMinutes.textContent = "0";
           cdSeconds.textContent = "0";
-          // Перерисуем — капсула готова
           if (countdownInterval) {
             clearInterval(countdownInterval);
             countdownInterval = null;
@@ -1865,12 +1212,10 @@
       // ---------- CREATE ----------
       function openCreate() {
         const input = document.getElementById("openDate");
-        // минимальная дата — завтра
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         const min = tomorrow.toISOString().split("T")[0];
         input.min = min;
-        // дефолт — через год
         const inYear = new Date();
         inYear.setFullYear(inYear.getFullYear() + 1);
         input.value = inYear.toISOString().split("T")[0];
@@ -1891,19 +1236,19 @@
         const openDate = document.getElementById("openDate").value;
 
         if (!text) {
-          showToast("✍️ Напиши что-нибудь в письме");
+          window.toast("✍️ Напиши что-нибудь в письме");
           document.getElementById("letterText").focus();
           return;
         }
         if (!openDate) {
-          showToast("📅 Выбери дату вскрытия");
+          window.toast("📅 Выбери дату вскрытия");
           document.getElementById("openDate").focus();
           return;
         }
 
         const target = new Date(openDate + "T00:00:00");
         if (target.getTime() <= Date.now()) {
-          showToast("📅 Дата должна быть в будущем");
+          window.toast("📅 Дата должна быть в будущем");
           return;
         }
 
@@ -1912,12 +1257,10 @@
           openDate,
           createdAt: new Date().toISOString(),
         };
-        saveCapsule();
+        persistCapsule();
         closeCreate();
         render();
-        showToast("🕰️ Капсула запечатана");
-
-        // Лёгкий салют из искр
+        window.toast("🕰️ Капсула запечатана");
         spawnHearts(8);
       }
 
@@ -1953,7 +1296,7 @@
         deleteCapsule();
         capsule = null;
         render();
-        showToast("🗑️ Капсула удалена");
+        window.toast("🗑️ Капсула удалена");
       }
 
       // ---------- EVENTS ----------
@@ -1973,7 +1316,5 @@
       // ---------- START ----------
       render();
     </script>
-
-    <script src="sw-register.js" defer></script>
   </body>
 </html>

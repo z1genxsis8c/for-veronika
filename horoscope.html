@@ -24,247 +24,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap"
       rel="stylesheet"
     />
 
+    <!-- Единый движок -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
     <style>
-      :root {
-        --paper: #f3ede4;
-        --paper-2: #ece4d8;
-        --surface: #fdfaf6;
-        --surface-2: #f7f0e6;
-        --surface-3: #efe7da;
-        --ink: #1e1a16;
-        --ink-2: #4a423c;
-        --ink-3: #8a7f75;
-        --ink-4: #b8aca1;
-        --line: rgba(30, 26, 22, 0.08);
-        --line-2: rgba(30, 26, 22, 0.16);
-        --rose: #b58794;
-        --rose-deep: #8f6472;
-        --rose-soft: #e8d4d8;
-        --rose-tint: #f2e4e7;
-        --sand: #cfb8a3;
-        --gold: #b89968;
-        --gold-deep: #8a6f4d;
-        --night: #1a1613;
-        --night-2: #2b2620;
-        --ease: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        font-size: 16px;
-        line-height: 1.5;
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
-        -webkit-tap-highlight-color: transparent;
-      }
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          radial-gradient(
-            ellipse 90% 60% at 15% -10%,
-            rgba(232, 212, 216, 0.55),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 60% 50% at 95% 15%,
-            rgba(207, 184, 163, 0.28),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 70% 55% at 5% 105%,
-            rgba(181, 135, 148, 0.16),
-            transparent 60%
-          ),
-          var(--paper);
-      }
-      .grain {
-        position: fixed;
-        inset: 0;
-        z-index: 9998;
-        pointer-events: none;
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      }
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-        border: none;
-        background: none;
-      }
-      img {
-        max-width: 100%;
-        display: block;
-      }
-      ::selection {
-        background: var(--rose-soft);
-        color: var(--rose-deep);
-      }
-      ::-webkit-scrollbar {
-        width: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(30, 26, 22, 0.12);
-        border-radius: 10px;
-        border: 3px solid var(--paper);
-      }
+      /* ============================================================
+         ГОРОСКОП · только специфика страницы
+         ============================================================ */
 
-      /* TOPBAR */
-      .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 32px;
-        background: rgba(243, 237, 228, 0.72);
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border-bottom: 1px solid var(--line);
-        font-size: 12.5px;
-        letter-spacing: 0.02em;
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-      .brand-mark {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--ink);
-        border-radius: 50%;
-        font-family: "Instrument Serif", Georgia, serif;
-        font-style: italic;
-        font-size: 17px;
-        line-height: 1;
-        color: var(--ink);
-        padding-bottom: 2px;
-        transition: transform 0.4s var(--ease-spring);
-      }
-      .brand:hover .brand-mark {
-        transform: rotate(-12deg) scale(1.05);
-      }
-      .brand-label {
-        color: var(--ink-2);
-        font-weight: 500;
-      }
-      .topbar-meta {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--ink-2);
-        cursor: pointer;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-      }
-      .meta-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .meta-item .icon {
-        font-size: 13px;
-        filter: saturate(0.7);
-      }
-      .meta-sep {
-        color: var(--ink-4);
-      }
-
-      /* LAYOUT */
-      main {
-        max-width: 1080px;
-        margin: 0 auto;
-        padding: 140px 32px 80px;
-      }
-
-      /* HERO */
-      .hero {
-        padding: 20px 0 40px;
-        text-align: center;
-      }
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--rose-deep);
-        margin-bottom: 28px;
-      }
-      .eyebrow::before,
-      .eyebrow::after {
-        content: "";
-        width: 24px;
-        height: 1px;
-        background: var(--rose-deep);
-      }
-      h1 {
-        font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 400;
-        font-size: clamp(38px, 5.4vw, 72px);
-        line-height: 1.04;
-        letter-spacing: -0.02em;
-        color: var(--ink);
-        margin: 0 0 22px;
-        max-width: 16ch;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      h1 em {
-        font-style: italic;
-        color: var(--rose-deep);
-      }
-      .hero-sub {
-        font-size: 16px;
-        line-height: 1.6;
-        color: var(--ink-2);
-        margin: 0 auto;
-        max-width: 46ch;
-        font-weight: 400;
-      }
-
-      /* COMPATIBILITY CARD */
+      /* ============================================================
+         COMPATIBILITY CARD
+         ============================================================ */
       .compat-card {
         position: relative;
         margin-top: 72px;
@@ -319,7 +94,7 @@
         color: var(--ink-3);
       }
       .compat-head .latin {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         letter-spacing: 0.02em;
@@ -343,14 +118,14 @@
         text-align: center;
       }
       .person-name {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 15px;
         font-style: italic;
         color: var(--ink-3);
         letter-spacing: 0.02em;
       }
       .person-sign {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 32px;
         line-height: 1;
         color: var(--ink);
@@ -423,7 +198,7 @@
         z-index: 1;
       }
       .compat-score-value {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: clamp(90px, 16vw, 200px);
         line-height: 0.85;
@@ -451,7 +226,7 @@
         margin-top: 20px;
       }
       .compat-score-text {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: clamp(16px, 2vw, 20px);
         line-height: 1.5;
@@ -461,7 +236,9 @@
         letter-spacing: -0.005em;
       }
 
-      /* NATAL CHART */
+      /* ============================================================
+         NATAL CHART
+         ============================================================ */
       .chart-section {
         margin-top: 72px;
         display: flex;
@@ -520,7 +297,7 @@
         position: absolute;
         top: 22px;
         left: 24px;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 11px;
         letter-spacing: 0.02em;
@@ -543,7 +320,9 @@
         z-index: 2;
       }
 
-      /* SIGNS SECTION */
+      /* ============================================================
+         SIGNS SECTION
+         ============================================================ */
       .signs-section {
         margin-top: 72px;
       }
@@ -565,7 +344,7 @@
         gap: 14px;
       }
       .section-label .num {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 18px;
         color: var(--rose-deep);
@@ -573,7 +352,7 @@
         text-transform: none;
       }
       .section-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: clamp(26px, 3.4vw, 40px);
         line-height: 1.1;
@@ -628,7 +407,7 @@
         color: var(--ink-3);
       }
       .sign-card-head .who {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         color: var(--rose-deep);
@@ -660,7 +439,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 22px;
         color: var(--rose-deep);
         flex-shrink: 0;
@@ -672,7 +451,7 @@
         min-width: 0;
       }
       .sign-name {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 18px;
         line-height: 1.2;
         letter-spacing: -0.01em;
@@ -686,7 +465,9 @@
         margin: 0;
       }
 
-      /* AUSPICIOUS DATES */
+      /* ============================================================
+         AUSPICIOUS DATES
+         ============================================================ */
       .dates-section {
         margin-top: 72px;
       }
@@ -715,7 +496,7 @@
       }
 
       .date-when {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 15px;
         letter-spacing: 0.02em;
@@ -723,7 +504,7 @@
         line-height: 1.3;
       }
       .date-what {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: 20px;
         line-height: 1.25;
@@ -736,7 +517,7 @@
       }
       .date-what .date-sub {
         display: block;
-        font-family: "Inter", sans-serif;
+        font-family: var(--font-sans);
         font-size: 12.5px;
         font-weight: 400;
         font-style: normal;
@@ -769,7 +550,9 @@
         background: var(--rose-deep);
       }
 
-      /* FORECAST */
+      /* ============================================================
+         FORECAST
+         ============================================================ */
       .forecast {
         margin-top: 72px;
         position: relative;
@@ -817,7 +600,7 @@
         gap: 12px;
       }
       .forecast-head .latin {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         letter-spacing: 0.02em;
@@ -825,7 +608,7 @@
         color: var(--rose);
       }
       .forecast-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: clamp(24px, 3vw, 34px);
         line-height: 1.15;
@@ -840,7 +623,7 @@
         color: var(--rose);
       }
       .forecast-text {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 16px;
         line-height: 1.65;
@@ -887,7 +670,7 @@
         margin-bottom: 12px;
       }
       .forecast-cell .fc-value {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 26px;
         line-height: 1;
         letter-spacing: -0.02em;
@@ -898,90 +681,9 @@
         color: var(--rose);
       }
 
-      /* NAV */
-      .nav-wrap {
-        margin-top: 96px;
-        padding-top: 40px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 14px;
-        padding: 18px 32px;
-        border-radius: 999px;
-        background: var(--ink);
-        color: var(--paper);
-        font-family: "Inter", sans-serif;
-        font-size: 14.5px;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        transition: all 0.35s var(--ease);
-      }
-      .back-link:hover {
-        background: #000;
-        transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
-      }
-      .back-link .arrow {
-        display: inline-block;
-        transition: transform 0.4s var(--ease);
-        font-size: 15px;
-      }
-      .back-link:hover .arrow {
-        transform: translateX(-5px);
-      }
-      .nav-link-secondary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 18px 28px;
-        border-radius: 999px;
-        background: transparent;
-        color: var(--ink-2);
-        border: 1px solid var(--line-2);
-        font-family: "Inter", sans-serif;
-        font-size: 14.5px;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        transition: all 0.35s var(--ease);
-      }
-      .nav-link-secondary:hover {
-        background: var(--surface-2);
-        color: var(--ink);
-        border-color: var(--ink-3);
-        transform: translateY(-2px);
-      }
-      .nav-link-secondary .icon {
-        font-size: 14px;
-        filter: saturate(0.75);
-        transition: transform 0.4s var(--ease-spring);
-      }
-      .nav-link-secondary:hover .icon {
-        transform: scale(1.15);
-      }
-
-      /* FOOTER */
-      .footer {
-        padding: 40px 32px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-        max-width: 1240px;
-        margin: 40px auto 0;
-      }
-
-      /* RESPONSIVE */
+      /* ============================================================
+         RESPONSIVE (только специфика страницы)
+         ============================================================ */
       @media (max-width: 900px) {
         .section-head {
           grid-template-columns: 1fr;
@@ -1045,12 +747,6 @@
       }
 
       @media (max-width: 640px) {
-        main {
-          padding: 120px 20px 60px;
-        }
-        h1 {
-          font-size: clamp(32px, 9vw, 46px);
-        }
         .compat-card {
           padding: 36px 24px 32px;
           margin-top: 56px;
@@ -1120,52 +816,9 @@
         .dates-section {
           margin-top: 56px;
         }
-        .nav-wrap {
-          margin-top: 72px;
-          padding-top: 32px;
-          gap: 10px;
-        }
-        .back-link,
-        .nav-link-secondary {
-          padding: 16px 24px;
-          font-size: 13.5px;
-        }
-        .topbar {
-          padding: 16px 20px;
-          font-size: 11.5px;
-        }
-        .brand-label {
-          display: none;
-        }
-        .brand-mark {
-          width: 26px;
-          height: 26px;
-          font-size: 15px;
-        }
-        .meta-sep {
-          display: none;
-        }
-        .topbar-meta {
-          gap: 10px;
-          font-size: 11.5px;
-        }
-        .footer {
-          flex-direction: column;
-          gap: 8px;
-          text-align: center;
-          font-size: 10.5px;
-          padding: 32px 20px;
-        }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
         .pair-heart .heart {
           animation: none;
         }
@@ -1176,29 +829,27 @@
   <body>
     <div class="grain"></div>
 
-    <!-- TOPBAR -->
     <header class="topbar">
       <a href="index.html" class="brand">
         <span class="brand-mark">V</span>
         <span class="brand-label">Для Вероники</span>
       </a>
       <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
-        <span class="meta-item"
-          ><span class="icon" id="timeIcon">☀️</span
-          ><span id="timeText">--:--</span></span
-        >
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
         <span class="meta-sep">·</span>
-        <span class="meta-item"
-          ><span class="icon" id="weatherIcon">🌤️</span
-          ><span id="weatherText">...</span></span
-        >
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
       </div>
     </header>
 
     <main>
-      <!-- HERO -->
       <section class="hero">
-        <span class="eyebrow">22 · Астрология</span>
+        <span class="eyebrow">18 · Астрология</span>
         <h1>Гороскоп на <em>нас с тобой</em></h1>
         <p class="hero-sub">
           Овен и Близнецы — классика астрологии. Огонь встречает Воздух, искра
@@ -1267,7 +918,6 @@
         </div>
 
         <div class="signs-grid">
-          <!-- HER -->
           <div class="sign-card">
             <div class="sign-card-head">
               <span class="label">Её космос</span>
@@ -1305,7 +955,6 @@
             </div>
           </div>
 
-          <!-- HIM -->
           <div class="sign-card">
             <div class="sign-card-head">
               <span class="label">Его космос</span>
@@ -1451,21 +1100,8 @@
         </div>
       </section>
 
-      <!-- NAV -->
-      <div class="nav-wrap">
-        <a href="index.html" class="back-link">
-          <span class="arrow">←</span>
-          <span>На главную</span>
-        </a>
-        <a href="stars.html" class="nav-link-secondary">
-          <span class="icon">✨</span>
-          <span>Созвездие Вероники</span>
-        </a>
-        <a href="sky.html" class="nav-link-secondary">
-          <span class="icon">🌌</span>
-          <span>Небо сегодня</span>
-        </a>
-      </div>
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="auto-nav" data-nav="stars,sky,heartmap"></nav>
     </main>
 
     <footer class="footer">
@@ -1473,101 +1109,10 @@
       <span>Сделано с любовью</span>
     </footer>
 
-    <!-- TIME + WEATHER -->
-    <script>
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        const t = document.getElementById("timeText");
-        if (t) t.textContent = `${hh}:${mm}`;
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        const ti = document.getElementById("timeIcon");
-        if (ti) ti.textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
+    <!-- Единый движок: часы, погода, тосты, авто-навигация, SW -->
+    <script src="shared/widgets.js"></script>
 
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        if (!iconEl || !textEl) return;
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      const iw = document.getElementById("infoWidget");
-      if (iw) iw.addEventListener("click", loadWeather);
-    </script>
-
-    <!-- NATAL CHART — canvas -->
+    <!-- Natal chart (специфика страницы) -->
     <script>
       (function () {
         "use strict";
@@ -1719,12 +1264,12 @@
           });
 
           const planets = [
-            { angle: 0.02, glyph: "☉", color: "var(--rose-deep)", side: "her" },
-            { angle: 0.06, glyph: "☾", color: "var(--rose-deep)", side: "her" },
-            { angle: 0.1, glyph: "♀", color: "var(--rose-deep)", side: "her" },
-            { angle: 0.18, glyph: "☉", color: "var(--gold-deep)", side: "him" },
-            { angle: 0.22, glyph: "☾", color: "var(--gold-deep)", side: "him" },
-            { angle: 0.26, glyph: "♂", color: "var(--gold-deep)", side: "him" },
+            { angle: 0.02, glyph: "☉", color: "#8f6472", side: "her" },
+            { angle: 0.06, glyph: "☾", color: "#8f6472", side: "her" },
+            { angle: 0.1, glyph: "♀", color: "#8f6472", side: "her" },
+            { angle: 0.18, glyph: "☉", color: "#8a6f4d", side: "him" },
+            { angle: 0.22, glyph: "☾", color: "#8a6f4d", side: "him" },
+            { angle: 0.26, glyph: "♂", color: "#8a6f4d", side: "him" },
           ];
 
           planets.forEach((p) => {
@@ -1798,7 +1343,5 @@
         }
       })();
     </script>
-
-    <script src="sw-register.js" defer></script>
   </body>
 </html>

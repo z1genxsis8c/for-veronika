@@ -8,7 +8,6 @@
     />
     <title>Открой меня · Для Вероники</title>
 
-    <!-- PWA -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#f3ede4" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -22,7 +21,6 @@
     <meta http-equiv="Expires" content="0" />
     <link rel="apple-touch-icon" href="photos/icon-192.png" />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,283 +28,27 @@
       rel="stylesheet"
     />
 
+    <!-- Единый движок -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
     <style>
       /* ============================================================
-       TOKENS
-       ============================================================ */
+         ОТКРОЙ МЕНЯ · только специфика страницы
+         ============================================================ */
+
+      /* Локальный токен страницы — не входит в общий набор */
       :root {
-        --paper: #f3ede4;
-        --paper-2: #ece4d8;
-        --paper-3: #e3d9ca;
-        --surface: #fdfaf6;
-        --surface-2: #f7f0e6;
         --letter: #faf6ee;
-
-        --ink: #1e1a16;
-        --ink-2: #4a423c;
-        --ink-3: #8a7f75;
-        --ink-4: #b8aca1;
-
-        --line: rgba(30, 26, 22, 0.08);
-        --line-2: rgba(30, 26, 22, 0.16);
-
-        --rose: #b58794;
-        --rose-deep: #8f6472;
-        --rose-soft: #e8d4d8;
-        --rose-tint: #f2e4e7;
-
-        --sand: #cfb8a3;
-
-        --ease: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        font-size: 16px;
-        line-height: 1.5;
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
-      }
-
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          radial-gradient(
-            ellipse 90% 60% at 15% -10%,
-            rgba(232, 212, 216, 0.55),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 60% 50% at 95% 15%,
-            rgba(207, 184, 163, 0.28),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 70% 55% at 5% 105%,
-            rgba(181, 135, 148, 0.16),
-            transparent 60%
-          ),
-          var(--paper);
-      }
-
-      .grain {
-        position: fixed;
-        inset: 0;
-        z-index: 9998;
-        pointer-events: none;
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-        border: none;
-        background: none;
-      }
-      img {
-        max-width: 100%;
-        display: block;
-      }
-
-      ::selection {
-        background: var(--rose-soft);
-        color: var(--rose-deep);
-      }
-
-      ::-webkit-scrollbar {
-        width: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(30, 26, 22, 0.12);
-        border-radius: 10px;
-        border: 3px solid var(--paper);
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(30, 26, 22, 0.22);
-      }
-
-      /* ============================================================
-       TOP BAR
-       ============================================================ */
-      .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 32px;
-        background: rgba(243, 237, 228, 0.72);
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border-bottom: 1px solid var(--line);
-        font-size: 12.5px;
-        letter-spacing: 0.02em;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-
-      .brand-mark {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--ink);
-        border-radius: 50%;
-        font-family: "Instrument Serif", Georgia, serif;
-        font-style: italic;
-        font-size: 17px;
-        line-height: 1;
-        color: var(--ink);
-        padding-bottom: 2px;
-        transition: transform 0.4s var(--ease-spring);
-      }
-
-      .brand:hover .brand-mark {
-        transform: rotate(-12deg) scale(1.05);
-      }
-
-      .brand-label {
-        color: var(--ink-2);
-        font-weight: 500;
-      }
-
-      .topbar-meta {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--ink-2);
-        cursor: pointer;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-        transition: color 0.2s;
-      }
-
-      .topbar-meta:hover {
-        color: var(--ink);
-      }
-
-      .meta-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .meta-item .icon {
-        font-size: 13px;
-        filter: saturate(0.7);
-      }
-      .meta-sep {
-        color: var(--ink-4);
-      }
-
-      /* ============================================================
-       LAYOUT
-       ============================================================ */
-      main {
-        max-width: 1080px;
-        margin: 0 auto;
-        padding: 140px 32px 80px;
-      }
-
-      /* ============================================================
-       HERO
-       ============================================================ */
-      .hero {
-        padding: 40px 0 40px;
-        text-align: center;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--rose-deep);
-        margin-bottom: 28px;
-      }
-
-      .eyebrow::before,
-      .eyebrow::after {
-        content: "";
-        width: 24px;
-        height: 1px;
-        background: var(--rose-deep);
-      }
-
-      h1 {
-        font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 400;
-        font-size: clamp(38px, 5.4vw, 72px);
-        line-height: 1.04;
-        letter-spacing: -0.02em;
-        color: var(--ink);
-        margin: 0 0 22px;
-        max-width: 16ch;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      h1 em {
-        font-style: italic;
-        color: var(--rose-deep);
       }
 
       .hero-sub {
-        font-size: 16px;
-        line-height: 1.6;
-        color: var(--ink-2);
-        margin: 0 auto;
         max-width: 44ch;
-        font-weight: 400;
       }
 
       /* ============================================================
-       ENVELOPE STAGE
-       ============================================================ */
+         ENVELOPE STAGE
+         ============================================================ */
       .envelope-zone {
         margin-top: 72px;
         display: flex;
@@ -329,7 +71,6 @@
         -webkit-tap-highlight-color: transparent;
         outline: none;
       }
-
       .envelope-stage:hover {
         transform: scale(1.02);
       }
@@ -338,7 +79,6 @@
         outline-offset: 12px;
         border-radius: 8px;
       }
-
       .envelope-stage.hidden {
         opacity: 0;
         pointer-events: none;
@@ -354,7 +94,6 @@
           drop-shadow(0 8px 14px rgba(30, 26, 22, 0.1));
       }
 
-      /* Base paper color */
       .envelope-back {
         position: absolute;
         inset: 0;
@@ -363,7 +102,6 @@
         box-shadow: inset 0 0 40px rgba(30, 26, 22, 0.08);
       }
 
-      /* Body with side triangles */
       .envelope-body {
         position: absolute;
         inset: 0;
@@ -372,7 +110,6 @@
         overflow: hidden;
       }
 
-      /* Top inner triangle (visible when flap opens) */
       .envelope-body::before {
         content: "";
         position: absolute;
@@ -385,7 +122,6 @@
         border-left: 190px solid transparent;
       }
 
-      /* Bottom triangle */
       .envelope-body::after {
         content: "";
         position: absolute;
@@ -413,7 +149,6 @@
         z-index: 5;
         filter: drop-shadow(0 6px 10px rgba(30, 26, 22, 0.15));
       }
-
       .envelope.open .envelope-flap {
         transform: rotateX(180deg);
         z-index: 1;
@@ -445,19 +180,16 @@
           0 6px 16px rgba(30, 26, 22, 0.28);
         transition: all 0.6s var(--ease);
       }
-
       .envelope-seal::before {
-        /* tiny wax texture ring */
         content: "";
         position: absolute;
         inset: 6px;
         border-radius: 50%;
         border: 1px dashed rgba(255, 255, 255, 0.25);
       }
-
       .envelope-seal::after {
         content: "V";
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 30px;
         color: rgba(253, 250, 246, 0.92);
@@ -465,13 +197,12 @@
         padding-bottom: 3px;
         text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
       }
-
       .envelope.open .envelope-seal {
         opacity: 0;
         transform: translate(-50%, -50%) scale(0.4) rotate(120deg);
       }
 
-      /* Address label — like handwritten on the front */
+      /* Address label */
       .envelope-address {
         position: absolute;
         top: 24px;
@@ -480,7 +211,6 @@
         text-align: right;
         line-height: 1.3;
       }
-
       .envelope-address .to {
         display: block;
         font-size: 9.5px;
@@ -490,9 +220,8 @@
         color: var(--ink-3);
         margin-bottom: 4px;
       }
-
       .envelope-address .name {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 19px;
         color: var(--ink);
@@ -501,7 +230,7 @@
         border-bottom: 1px solid rgba(30, 26, 22, 0.18);
       }
 
-      /* Click hint below envelope */
+      /* Click hint */
       .click-hint {
         margin-top: 44px;
         color: var(--ink-3);
@@ -512,14 +241,13 @@
         transition: opacity 0.5s var(--ease);
         text-align: center;
       }
-
       .envelope-stage.open + .click-hint {
         opacity: 0;
       }
 
       /* ============================================================
-       LETTER OVERLAY
-       ============================================================ */
+         LETTER OVERLAY
+         ============================================================ */
       .letter-overlay {
         position: fixed;
         inset: 0;
@@ -537,13 +265,11 @@
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
-
       .letter-overlay.active {
         opacity: 1;
         pointer-events: auto;
       }
 
-      /* Letter */
       .letter {
         position: relative;
         width: 100%;
@@ -566,7 +292,6 @@
         overflow-y: auto;
         will-change: transform, opacity;
       }
-
       .letter-overlay.active .letter {
         transform: translateY(0) scale(1) rotate(0deg);
         opacity: 1;
@@ -599,7 +324,6 @@
         pointer-events: none;
       }
 
-      /* Letter header */
       .letter-head {
         display: flex;
         justify-content: space-between;
@@ -610,15 +334,13 @@
         position: relative;
         z-index: 1;
       }
-
       .letter-head .date {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         color: var(--ink-3);
         letter-spacing: 0.02em;
       }
-
       .letter-head .num {
         font-size: 10.5px;
         font-weight: 500;
@@ -627,28 +349,25 @@
         color: var(--ink-3);
       }
 
-      /* Letter body text */
       .letter-body {
         position: relative;
         z-index: 1;
       }
-
       .letter-salutation {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 30px;
         line-height: 1.15;
         letter-spacing: -0.015em;
         color: var(--ink);
         margin: 0 0 28px;
       }
-
       .letter-salutation em {
         font-style: italic;
         color: var(--rose-deep);
       }
 
       .letter-text {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: 17.5px;
         line-height: 1.72;
@@ -657,7 +376,6 @@
         letter-spacing: -0.005em;
         text-wrap: pretty;
       }
-
       .letter-text b {
         font-weight: 400;
         font-style: italic;
@@ -666,7 +384,7 @@
 
       /* First letter drop cap */
       .letter-text.lead::first-letter {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         float: left;
         font-size: 68px;
@@ -676,7 +394,6 @@
         font-weight: 400;
       }
 
-      /* Signature */
       .letter-signature {
         margin-top: 40px;
         padding-top: 26px;
@@ -685,7 +402,6 @@
         position: relative;
         z-index: 1;
       }
-
       .letter-signature .from {
         display: block;
         font-size: 10.5px;
@@ -695,9 +411,8 @@
         color: var(--ink-3);
         margin-bottom: 8px;
       }
-
       .letter-signature .name {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 32px;
         line-height: 1;
@@ -713,7 +428,6 @@
         margin: 40px 0 8px;
         flex-wrap: wrap;
       }
-
       .polaroid {
         position: relative;
         padding: 10px 10px 34px;
@@ -726,19 +440,16 @@
         transition: transform 0.5s var(--ease);
         transform: rotate(-3deg);
       }
-
       .polaroid:nth-child(2) {
         transform: rotate(2.5deg);
       }
       .polaroid:nth-child(3) {
         transform: rotate(-1.5deg);
       }
-
       .polaroid:hover {
         transform: rotate(0deg) translateY(-4px) scale(1.02);
         z-index: 5;
       }
-
       .polaroid .frame {
         position: relative;
         width: 118px;
@@ -754,12 +465,10 @@
         align-items: center;
         justify-content: center;
       }
-
-      /* Monogram fallback */
       .polaroid .frame::before {
         content: "V";
         position: absolute;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 60px;
         line-height: 1;
@@ -767,7 +476,6 @@
         padding-bottom: 4px;
         z-index: 0;
       }
-
       .polaroid .frame img {
         position: absolute;
         inset: 0;
@@ -776,14 +484,13 @@
         object-fit: cover;
         z-index: 1;
       }
-
       .polaroid figcaption {
         position: absolute;
         left: 0;
         right: 0;
         bottom: 8px;
         text-align: center;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 12px;
         color: var(--ink-3);
@@ -800,16 +507,15 @@
         position: relative;
         z-index: 1;
       }
-
       .letter-btn {
         display: inline-flex;
         align-items: center;
         gap: 12px;
         padding: 16px 28px;
-        border-radius: 999px;
+        border-radius: var(--radius-pill);
         background: var(--ink);
         color: var(--paper);
-        font-family: "Inter", sans-serif;
+        font-family: var(--font-sans);
         font-size: 14.5px;
         font-weight: 500;
         letter-spacing: 0.01em;
@@ -818,30 +524,25 @@
         cursor: pointer;
         transition: all 0.35s var(--ease);
       }
-
       .letter-btn:hover {
         background: #000;
         transform: translateY(-2px);
         box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
       }
-
       .letter-btn .arrow {
         display: inline-block;
         transition: transform 0.4s var(--ease);
         font-size: 15px;
       }
-
       .letter-btn:hover .arrow {
         transform: translateX(-4px);
       }
-
       .letter-btn.secondary {
         background: transparent;
         color: var(--ink-2);
         border: 1px solid var(--line-2);
         padding: 16px 26px;
       }
-
       .letter-btn.secondary:hover {
         background: var(--surface-2);
         color: var(--ink);
@@ -849,7 +550,7 @@
         box-shadow: 0 8px 20px rgba(30, 26, 22, 0.08);
       }
 
-      /* Close button (X in corner) */
+      /* Close button */
       .letter-close {
         position: absolute;
         top: 20px;
@@ -867,7 +568,6 @@
         z-index: 10;
         font-size: 14px;
       }
-
       .letter-close:hover {
         background: var(--surface-2);
         color: var(--ink);
@@ -876,33 +576,9 @@
       }
 
       /* ============================================================
-       FOOTER
-       ============================================================ */
-      .footer {
-        padding: 40px 32px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-        max-width: 1240px;
-        margin: 40px auto 0;
-      }
-
-      /* ============================================================
-       RESPONSIVE
-       ============================================================ */
+         RESPONSIVE (только специфика страницы)
+         ============================================================ */
       @media (max-width: 640px) {
-        main {
-          padding: 120px 20px 60px;
-        }
-        h1 {
-          font-size: clamp(32px, 9vw, 46px);
-        }
-
         .envelope-zone {
           margin-top: 56px;
           min-height: 340px;
@@ -950,7 +626,6 @@
           letter-spacing: 0.18em;
         }
 
-        /* Letter */
         .letter {
           padding: 40px 26px 32px;
           border-radius: 3px;
@@ -1026,43 +701,11 @@
           width: 32px;
           height: 32px;
         }
-
-        .topbar {
-          padding: 16px 20px;
-          font-size: 11.5px;
-        }
-        .brand-label {
-          display: none;
-        }
-        .brand-mark {
-          width: 26px;
-          height: 26px;
-          font-size: 15px;
-        }
-        .meta-sep {
-          display: none;
-        }
-        .topbar-meta {
-          gap: 10px;
-          font-size: 11.5px;
-        }
-
-        .footer {
-          flex-direction: column;
-          gap: 8px;
-          text-align: center;
-          font-size: 10.5px;
-          padding: 32px 20px;
-        }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
+        .envelope-flap {
+          transition: none;
         }
       }
     </style>
@@ -1071,9 +714,6 @@
   <body>
     <div class="grain"></div>
 
-    <!-- ============================================================
-       TOP BAR
-       ============================================================ -->
     <header class="topbar">
       <a href="index.html" class="brand">
         <span class="brand-mark">V</span>
@@ -1093,9 +733,6 @@
     </header>
 
     <main>
-      <!-- ============================================================
-         HERO
-         ============================================================ -->
       <section class="hero">
         <span class="eyebrow">04 · Письмо</span>
         <h1>Для тебя <em>кое-что есть</em></h1>
@@ -1104,9 +741,7 @@
         </p>
       </section>
 
-      <!-- ============================================================
-         ENVELOPE
-         ============================================================ -->
+      <!-- ENVELOPE -->
       <section class="envelope-zone">
         <div
           class="envelope-stage"
@@ -1130,11 +765,12 @@
         </div>
         <div class="click-hint" id="clickHint">Нажми на конверт</div>
       </section>
+
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="auto-nav" data-nav="draw,puzzle,love"></nav>
     </main>
 
-    <!-- ============================================================
-       LETTER OVERLAY
-       ============================================================ -->
+    <!-- LETTER OVERLAY -->
     <div class="letter-overlay" id="letterOverlay">
       <article class="letter" id="letter">
         <button
@@ -1240,111 +876,10 @@
       <span>Сделано с любовью</span>
     </footer>
 
-    <!-- ============================================================
-       TIME + WEATHER
-       ============================================================ -->
-    <script>
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        document.getElementById("timeText").textContent = `${hh}:${mm}`;
+    <!-- Единый движок: часы, погода, тосты, авто-навигация, SW -->
+    <script src="shared/widgets.js"></script>
 
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        document.getElementById("timeIcon").textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
-
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      document
-        .getElementById("infoWidget")
-        .addEventListener("click", loadWeather);
-    </script>
-
-    <!-- ============================================================
-       ENVELOPE + LETTER LOGIC
-       ============================================================ -->
+    <!-- Логика конверта и письма (специфика страницы) -->
     <script>
       const envelopeStage = document.getElementById("envelopeStage");
       const envelope = document.getElementById("envelope");
@@ -1364,7 +899,6 @@
         letterDate.textContent = formatted;
       })();
 
-      // Open
       function openEnvelope() {
         if (isOpen) return;
         isOpen = true;
@@ -1372,16 +906,13 @@
         envelope.classList.add("open");
         envelopeStage.classList.add("open");
 
-        // Delay before showing letter so flap animation reads
         setTimeout(() => {
           envelopeStage.classList.add("hidden");
           letterOverlay.classList.add("active");
-          // lock body scroll
           document.body.style.overflow = "hidden";
         }, 950);
       }
 
-      // Close
       function closeLetter() {
         letterOverlay.classList.remove("active");
         document.body.style.overflow = "";
@@ -1393,7 +924,6 @@
         }, 500);
       }
 
-      // Events
       envelopeStage.addEventListener("click", openEnvelope);
       envelopeStage.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -1410,6 +940,5 @@
         if (e.target === letterOverlay) closeLetter();
       });
     </script>
-    <script src="sw-register.js" defer></script>
   </body>
 </html>

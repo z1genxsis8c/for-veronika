@@ -8,7 +8,6 @@
     />
     <title>Созвездие Вероники · Для Вероники</title>
 
-    <!-- PWA -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#f3ede4" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -22,7 +21,6 @@
     <meta http-equiv="Expires" content="0" />
     <link rel="apple-touch-icon" href="photos/icon-192.png" />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,279 +28,28 @@
       rel="stylesheet"
     />
 
+    <!-- Единый движок -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
     <style>
       /* ============================================================
-       TOKENS
-       ============================================================ */
-      :root {
-        --paper: #f3ede4;
-        --paper-2: #ece4d8;
-        --surface: #fdfaf6;
-        --surface-2: #f7f0e6;
-        --surface-3: #efe7da;
+         СОЗВЕЗДИЕ · только специфика страницы
+         ============================================================ */
 
-        --ink: #1e1a16;
-        --ink-2: #4a423c;
-        --ink-3: #8a7f75;
-        --ink-4: #b8aca1;
-
-        --line: rgba(30, 26, 22, 0.08);
-        --line-2: rgba(30, 26, 22, 0.16);
-
-        --rose: #b58794;
-        --rose-deep: #8f6472;
-        --rose-soft: #e8d4d8;
-        --rose-tint: #f2e4e7;
-
-        --sand: #cfb8a3;
-
-        --ease: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
+      /* Клики по звёздам — не выделяем текст */
       body {
-        margin: 0;
-        padding: 0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        font-size: 16px;
-        line-height: 1.5;
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
         user-select: none;
         -webkit-user-select: none;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          radial-gradient(
-            ellipse 90% 60% at 15% -10%,
-            rgba(232, 212, 216, 0.55),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 60% 50% at 95% 15%,
-            rgba(207, 184, 163, 0.28),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 70% 55% at 5% 105%,
-            rgba(181, 135, 148, 0.16),
-            transparent 60%
-          ),
-          var(--paper);
-      }
-
-      .grain {
-        position: fixed;
-        inset: 0;
-        z-index: 9998;
-        pointer-events: none;
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-        border: none;
-        background: none;
-      }
-      img {
-        max-width: 100%;
-        display: block;
-      }
-
-      ::selection {
-        background: var(--rose-soft);
-        color: var(--rose-deep);
-      }
-
-      ::-webkit-scrollbar {
-        width: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(30, 26, 22, 0.12);
-        border-radius: 10px;
-        border: 3px solid var(--paper);
-      }
-
-      /* ============================================================
-       TOP BAR
-       ============================================================ */
-      .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 32px;
-        background: rgba(243, 237, 228, 0.78);
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border-bottom: 1px solid var(--line);
-        font-size: 12.5px;
-        letter-spacing: 0.02em;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-
-      .brand-mark {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--ink);
-        border-radius: 50%;
-        font-family: "Instrument Serif", Georgia, serif;
-        font-style: italic;
-        font-size: 17px;
-        line-height: 1;
-        color: var(--ink);
-        padding-bottom: 2px;
-        transition: transform 0.4s var(--ease-spring);
-      }
-
-      .brand:hover .brand-mark {
-        transform: rotate(-12deg) scale(1.05);
-      }
-
-      .brand-label {
-        color: var(--ink-2);
-        font-weight: 500;
-      }
-
-      .topbar-meta {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--ink-2);
-        cursor: pointer;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-        transition: color 0.2s;
-      }
-
-      .topbar-meta:hover {
-        color: var(--ink);
-      }
-
-      .meta-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .meta-item .icon {
-        font-size: 13px;
-        filter: saturate(0.7);
-      }
-      .meta-sep {
-        color: var(--ink-4);
-      }
-
-      /* ============================================================
-       LAYOUT
-       ============================================================ */
-      main {
-        max-width: 1080px;
-        margin: 0 auto;
-        padding: 140px 32px 80px;
-      }
-
-      /* ============================================================
-       HERO
-       ============================================================ */
-      .hero {
-        padding: 20px 0 40px;
-        text-align: center;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--rose-deep);
-        margin-bottom: 28px;
-      }
-
-      .eyebrow::before,
-      .eyebrow::after {
-        content: "";
-        width: 24px;
-        height: 1px;
-        background: var(--rose-deep);
-      }
-
-      h1 {
-        font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 400;
-        font-size: clamp(38px, 5.4vw, 68px);
-        line-height: 1.04;
-        letter-spacing: -0.02em;
-        color: var(--ink);
-        margin: 0 0 22px;
-      }
-
-      h1 em {
-        font-style: italic;
-        color: var(--rose-deep);
       }
 
       .hero-sub {
-        font-size: 16px;
-        line-height: 1.6;
-        color: var(--ink-2);
-        margin: 0 auto;
         max-width: 44ch;
-        font-weight: 400;
       }
 
       /* ============================================================
-       CHART (star atlas plate)
-       ============================================================ */
+         CHART (star atlas plate)
+         ============================================================ */
       .chart-section {
         margin-top: 72px;
         display: flex;
@@ -369,9 +116,8 @@
         text-transform: uppercase;
         color: var(--ink-3);
       }
-
       .chart-head .latin {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 14px;
         letter-spacing: 0.02em;
@@ -388,7 +134,6 @@
         align-items: center;
         justify-content: center;
       }
-
       .constellation-svg {
         width: 100%;
         height: 100%;
@@ -404,7 +149,6 @@
         stroke-linecap: round;
         fill: none;
       }
-
       .const-line.secondary {
         stroke: rgba(30, 26, 22, 0.18);
         stroke-dasharray: 1 4;
@@ -416,36 +160,31 @@
         stroke: rgba(30, 26, 22, 0.14);
         stroke-width: 0.8;
       }
-
       .frame-circle.outer {
         stroke-dasharray: 1 4;
         stroke: rgba(30, 26, 22, 0.1);
       }
-
       .frame-circle.middle {
         stroke: rgba(30, 26, 22, 0.08);
       }
-
       .tick {
         stroke: rgba(30, 26, 22, 0.2);
         stroke-width: 0.8;
         stroke-linecap: round;
       }
-
       .tick.major {
         stroke: rgba(30, 26, 22, 0.35);
         stroke-width: 1;
       }
-
       .cross-hair {
         stroke: rgba(30, 26, 22, 0.06);
         stroke-width: 0.6;
         stroke-dasharray: 1 6;
       }
 
-      /* --- SVG: star designations (α, β, γ, ...) --- */
+      /* --- SVG: star designations --- */
       .star-designation {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 11px;
         fill: var(--ink-3);
@@ -457,14 +196,12 @@
         cursor: pointer;
         transition: filter 0.3s var(--ease);
       }
-
       .star-core {
         fill: var(--ink);
         transition:
           fill 0.4s var(--ease),
           r 0.4s var(--ease);
       }
-
       .star-halo {
         fill: var(--rose);
         opacity: 0.28;
@@ -472,11 +209,9 @@
           opacity 0.4s var(--ease),
           r 0.4s var(--ease);
       }
-
       .star-node:hover .star-halo {
         opacity: 0.55;
       }
-
       .star-node:hover .star-core {
         fill: var(--rose-deep);
       }
@@ -486,13 +221,11 @@
         fill: var(--rose-deep);
         r: 5;
       }
-
       .heart-star .star-halo {
         fill: var(--rose);
         opacity: 0.42;
         r: 12;
       }
-
       .heart-star:hover .star-halo {
         opacity: 0.75;
         r: 15;
@@ -503,7 +236,6 @@
         fill: var(--rose-deep);
         r: 4.5;
       }
-
       .star-node.active .star-halo {
         fill: var(--rose-deep);
         opacity: 0.55;
@@ -514,7 +246,6 @@
       .star-node.active .pulse-ring {
         animation: pulseRing 2.4s ease-out infinite;
       }
-
       .pulse-ring {
         fill: none;
         stroke: var(--rose-deep);
@@ -523,7 +254,6 @@
         transform-origin: center;
         transform-box: fill-box;
       }
-
       @keyframes pulseRing {
         0% {
           transform: scale(0.6);
@@ -551,7 +281,6 @@
         color: var(--ink-3);
         text-align: center;
       }
-
       .chart-foot .foot-mark {
         font-size: 11px;
         color: var(--rose-deep);
@@ -559,8 +288,8 @@
       }
 
       /* ============================================================
-       STAR CARD (tooltip)
-       ============================================================ */
+         STAR CARD (tooltip)
+         ============================================================ */
       .star-card {
         position: fixed;
         z-index: 9999;
@@ -581,7 +310,6 @@
         pointer-events: none;
         will-change: transform, opacity;
       }
-
       .star-card::after {
         content: "";
         position: absolute;
@@ -590,13 +318,11 @@
         border-radius: 2px;
         pointer-events: none;
       }
-
       .star-card.show {
         opacity: 1;
         transform: translateY(0) scale(1);
         pointer-events: auto;
       }
-
       .star-card-head {
         display: flex;
         justify-content: space-between;
@@ -607,15 +333,13 @@
         position: relative;
         z-index: 1;
       }
-
       .star-card-designation {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 16px;
         color: var(--rose-deep);
         letter-spacing: 0.02em;
       }
-
       .star-card-label {
         font-size: 9.5px;
         font-weight: 500;
@@ -623,9 +347,8 @@
         text-transform: uppercase;
         color: var(--ink-3);
       }
-
       .star-card-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-weight: 400;
         font-size: 22px;
         line-height: 1.15;
@@ -635,9 +358,8 @@
         position: relative;
         z-index: 1;
       }
-
       .star-card-text {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-weight: 400;
         font-size: 15px;
@@ -667,7 +389,6 @@
         z-index: 10;
         background: transparent;
       }
-
       .star-card-close:hover {
         background: var(--surface-2);
         color: var(--ink);
@@ -675,8 +396,8 @@
       }
 
       /* ============================================================
-       HINT
-       ============================================================ */
+         HINT
+         ============================================================ */
       .hint {
         position: fixed;
         left: 50%;
@@ -685,7 +406,7 @@
         padding: 14px 22px;
         background: var(--ink);
         color: var(--paper);
-        border-radius: 999px;
+        border-radius: var(--radius-pill);
         font-size: 13px;
         font-weight: 500;
         letter-spacing: 0.02em;
@@ -696,108 +417,14 @@
         z-index: 200;
         white-space: nowrap;
       }
-
       .hint.show {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
       }
 
       /* ============================================================
-       BOTTOM NAV
-       ============================================================ */
-      .nav-wrap {
-        margin-top: 80px;
-        padding-top: 40px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 14px;
-        padding: 18px 32px;
-        border-radius: 999px;
-        background: var(--ink);
-        color: var(--paper);
-        font-size: 14.5px;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        transition: all 0.35s var(--ease);
-      }
-
-      .back-link:hover {
-        background: #000;
-        transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
-      }
-
-      .back-link .back-arrow {
-        display: inline-block;
-        transition: transform 0.4s var(--ease);
-        font-size: 15px;
-      }
-
-      .back-link:hover .back-arrow {
-        transform: translateX(-5px);
-      }
-
-      .nav-link-secondary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 18px 28px;
-        border-radius: 999px;
-        background: transparent;
-        color: var(--ink-2);
-        border: 1px solid var(--line-2);
-        font-size: 14.5px;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        transition: all 0.35s var(--ease);
-      }
-
-      .nav-link-secondary:hover {
-        background: var(--surface-2);
-        color: var(--ink);
-        border-color: var(--ink-3);
-        transform: translateY(-2px);
-      }
-
-      .nav-link-secondary .icon {
-        font-size: 14px;
-        filter: saturate(0.75);
-        transition: transform 0.4s var(--ease-spring);
-      }
-
-      .nav-link-secondary:hover .icon {
-        transform: scale(1.15);
-      }
-
-      /* ============================================================
-       FOOTER
-       ============================================================ */
-      .footer {
-        padding: 40px 32px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-        max-width: 1240px;
-        margin: 40px auto 0;
-      }
-
-      /* ============================================================
-       SPARKLES (subtle on click)
-       ============================================================ */
+         SPARKLES (subtle on click)
+         ============================================================ */
       .sparkle {
         position: fixed;
         pointer-events: none;
@@ -807,16 +434,9 @@
       }
 
       /* ============================================================
-       RESPONSIVE
-       ============================================================ */
+         RESPONSIVE (только специфика страницы)
+         ============================================================ */
       @media (max-width: 640px) {
-        main {
-          padding: 120px 20px 60px;
-        }
-        h1 {
-          font-size: clamp(30px, 8vw, 44px);
-        }
-
         .chart-section {
           margin-top: 56px;
         }
@@ -865,54 +485,11 @@
           font-size: 12px;
           padding: 12px 18px;
         }
-
-        .nav-wrap {
-          margin-top: 56px;
-          padding-top: 32px;
-          gap: 10px;
-        }
-        .back-link,
-        .nav-link-secondary {
-          padding: 16px 24px;
-          font-size: 13.5px;
-        }
-
-        .topbar {
-          padding: 16px 20px;
-          font-size: 11.5px;
-        }
-        .brand-label {
-          display: none;
-        }
-        .brand-mark {
-          width: 26px;
-          height: 26px;
-          font-size: 15px;
-        }
-        .meta-sep {
-          display: none;
-        }
-        .topbar-meta {
-          gap: 10px;
-          font-size: 11.5px;
-        }
-
-        .footer {
-          flex-direction: column;
-          gap: 8px;
-          text-align: center;
-          font-size: 10.5px;
-          padding: 32px 20px;
-        }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
+        .star-node.active .pulse-ring {
+          animation: none;
         }
       }
     </style>
@@ -921,9 +498,6 @@
   <body>
     <div class="grain"></div>
 
-    <!-- ============================================================
-       TOP BAR
-       ============================================================ -->
     <header class="topbar">
       <a href="index.html" class="brand">
         <span class="brand-mark">V</span>
@@ -943,9 +517,6 @@
     </header>
 
     <main>
-      <!-- ============================================================
-         HERO
-         ============================================================ -->
       <section class="hero">
         <span class="eyebrow">07 · Астрономия</span>
         <h1>Созвездие <em>Вероники</em></h1>
@@ -955,20 +526,16 @@
         </p>
       </section>
 
-      <!-- ============================================================
-         CHART
-         ============================================================ -->
+      <!-- CHART -->
       <section class="chart-section">
         <div class="chart-frame">
           <div class="chart-inner">
-            <!-- Plate header -->
             <div class="chart-head">
               <span>Plate № 07</span>
               <span class="latin">Veronica · Constellatio</span>
               <span>51.8° N</span>
             </div>
 
-            <!-- Constellation -->
             <div class="chart">
               <svg
                 class="constellation-svg"
@@ -976,13 +543,10 @@
                 preserveAspectRatio="xMidYMid meet"
                 aria-label="Созвездие Вероники"
               >
-                <!-- Outer frame circle (dashed) -->
                 <circle class="frame-circle outer" cx="200" cy="200" r="182" />
                 <circle class="frame-circle middle" cx="200" cy="200" r="168" />
 
-                <!-- Degree ticks around outer circle -->
                 <g class="ticks">
-                  <!-- Every 15°, drawn manually as short segments from r=176 to r=182 -->
                   <line class="tick" x1="200" y1="24" x2="200" y2="18" />
                   <line class="tick" x1="247" y1="29" x2="244" y2="24" />
                   <line class="tick" x1="288" y1="50" x2="284" y2="45" />
@@ -1005,7 +569,6 @@
                   <line class="tick" x1="78" y1="83" x2="83" y2="79" />
                   <line class="tick" x1="112" y1="50" x2="116" y2="45" />
                   <line class="tick" x1="153" y1="29" x2="156" y2="24" />
-                  <!-- Major cardinal ticks (N/E/S/W) -->
                   <line class="tick major" x1="200" y1="26" x2="200" y2="14" />
                   <line
                     class="tick major"
@@ -1024,15 +587,10 @@
                   <line class="tick major" x1="26" y1="200" x2="14" y2="200" />
                 </g>
 
-                <!-- Cross-hairs through center -->
                 <line class="cross-hair" x1="200" y1="18" x2="200" y2="382" />
                 <line class="cross-hair" x1="18" y1="200" x2="382" y2="200" />
 
-                <!-- ================================================ -->
-                <!-- Constellation lines (V-shape + heart)            -->
-                <!-- ================================================ -->
                 <g class="const-lines">
-                  <!-- Main V shape -->
                   <line class="const-line" x1="80" y1="120" x2="140" y2="180" />
                   <line
                     class="const-line"
@@ -1055,8 +613,6 @@
                     x2="320"
                     y2="120"
                   />
-
-                  <!-- Upper triangle -->
                   <line
                     class="const-line"
                     x1="140"
@@ -1071,8 +627,6 @@
                     x2="260"
                     y2="180"
                   />
-
-                  <!-- Heart inner -->
                   <line
                     class="const-line secondary"
                     x1="200"
@@ -1108,8 +662,6 @@
                     x2="200"
                     y2="270"
                   />
-
-                  <!-- Downward ray -->
                   <line
                     class="const-line secondary"
                     x1="200"
@@ -1119,9 +671,6 @@
                   />
                 </g>
 
-                <!-- ================================================ -->
-                <!-- Star designations (small letters near each star) -->
-                <!-- ================================================ -->
                 <text class="star-designation" x="66" y="112">α</text>
                 <text class="star-designation" x="126" y="176">β</text>
                 <text class="star-designation" x="186" y="102">γ</text>
@@ -1131,11 +680,6 @@
                 <text class="star-designation" x="238" y="240">η</text>
                 <text class="star-designation" x="186" y="278">θ</text>
 
-                <!-- ================================================ -->
-                <!-- Stars                                            -->
-                <!-- ================================================ -->
-
-                <!-- Alpha — left tip -->
                 <g
                   class="star-node"
                   data-star="alpha"
@@ -1148,7 +692,6 @@
                   <circle class="pulse-ring" cx="80" cy="120" r="8" />
                 </g>
 
-                <!-- Beta — left shoulder -->
                 <g
                   class="star-node"
                   data-star="beta"
@@ -1161,7 +704,6 @@
                   <circle class="pulse-ring" cx="140" cy="180" r="8" />
                 </g>
 
-                <!-- Gamma — top -->
                 <g
                   class="star-node"
                   data-star="gamma"
@@ -1174,7 +716,6 @@
                   <circle class="pulse-ring" cx="200" cy="110" r="8" />
                 </g>
 
-                <!-- Delta — right shoulder -->
                 <g
                   class="star-node"
                   data-star="delta"
@@ -1187,7 +728,6 @@
                   <circle class="pulse-ring" cx="260" cy="180" r="8" />
                 </g>
 
-                <!-- Epsilon — right tip -->
                 <g
                   class="star-node"
                   data-star="epsilon"
@@ -1200,7 +740,6 @@
                   <circle class="pulse-ring" cx="320" cy="120" r="8" />
                 </g>
 
-                <!-- Zeta — lower left -->
                 <g
                   class="star-node"
                   data-star="zeta"
@@ -1213,7 +752,6 @@
                   <circle class="pulse-ring" cx="170" cy="240" r="8" />
                 </g>
 
-                <!-- Eta — lower right -->
                 <g
                   class="star-node"
                   data-star="eta"
@@ -1226,7 +764,6 @@
                   <circle class="pulse-ring" cx="230" cy="240" r="8" />
                 </g>
 
-                <!-- Theta — bottom point -->
                 <g
                   class="star-node"
                   data-star="theta"
@@ -1239,7 +776,6 @@
                   <circle class="pulse-ring" cx="200" cy="270" r="8" />
                 </g>
 
-                <!-- Heart star — centre -->
                 <g
                   class="star-node heart-star"
                   data-star="heart"
@@ -1254,7 +790,6 @@
               </svg>
             </div>
 
-            <!-- Plate footer -->
             <div class="chart-foot">
               <span class="foot-mark">✦</span>
               <span>Нажми на звезду, чтобы узнать её историю</span>
@@ -1264,19 +799,8 @@
         </div>
       </section>
 
-      <!-- ============================================================
-         NAV
-         ============================================================ -->
-      <div class="nav-wrap">
-        <a href="index.html" class="back-link">
-          <span class="back-arrow">←</span>
-          <span>На главную</span>
-        </a>
-        <a href="map.html" class="nav-link-secondary">
-          <span class="icon">🗺️</span>
-          <span>Карта наших мест</span>
-        </a>
-      </div>
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="auto-nav" data-nav="map,heartmap,sky"></nav>
     </main>
 
     <footer class="footer">
@@ -1284,9 +808,7 @@
       <span>Сделано с любовью</span>
     </footer>
 
-    <!-- ============================================================
-       STAR CARD (tooltip)
-       ============================================================ -->
+    <!-- STAR CARD (tooltip) -->
     <div class="star-card" id="starCard">
       <button class="star-card-close" id="starCardClose" aria-label="Закрыть">
         ✕
@@ -1302,111 +824,10 @@
     <!-- Hint -->
     <div class="hint" id="hint">Нажми на любую звезду</div>
 
-    <!-- ============================================================
-       TIME + WEATHER
-       ============================================================ -->
-    <script>
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        document.getElementById("timeText").textContent = `${hh}:${mm}`;
+    <!-- Единый движок: часы, погода, тосты, авто-навигация, SW -->
+    <script src="shared/widgets.js"></script>
 
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        document.getElementById("timeIcon").textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
-
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      document
-        .getElementById("infoWidget")
-        .addEventListener("click", loadWeather);
-    </script>
-
-    <!-- ============================================================
-       CONSTELLATION SCRIPT
-       ============================================================ -->
+    <!-- Логика созвездия (специфика страницы) -->
     <script>
       const starCard = document.getElementById("starCard");
       const starCardClose = document.getElementById("starCardClose");
@@ -1422,7 +843,6 @@
         star.addEventListener("click", (e) => {
           e.stopPropagation();
 
-          // toggle active class on star
           if (activeStar && activeStar !== star) {
             activeStar.classList.remove("active");
           }
@@ -1437,7 +857,6 @@
           scTitle.textContent = title;
           scText.textContent = text;
 
-          // Position near star
           const rect = star.getBoundingClientRect();
           const cardWidth = 320;
           const cardHeight = 200;
@@ -1445,7 +864,6 @@
           let left = rect.left + rect.width / 2 - cardWidth / 2;
           let top = rect.top - cardHeight - 20;
 
-          // Correct for viewport
           if (left < 12) left = 12;
           if (left + cardWidth > window.innerWidth - 12) {
             left = window.innerWidth - cardWidth - 12;
@@ -1461,7 +879,6 @@
           starCard.style.top = top + "px";
           starCard.classList.add("show");
 
-          // Sparkles around the clicked star
           const cx = rect.left + rect.width / 2;
           const cy = rect.top + rect.height / 2;
           for (let i = 0; i < 6; i++) {
@@ -1494,7 +911,6 @@
         if (e.key === "Escape") closeCard();
       });
 
-      // Reposition on resize
       window.addEventListener("resize", () => {
         if (starCard.classList.contains("show")) closeCard();
       });
@@ -1532,6 +948,5 @@
         }, 1200);
       }
     </script>
-    <script src="sw-register.js" defer></script>
   </body>
 </html>

@@ -28,233 +28,25 @@
       rel="stylesheet"
     />
 
+    <!-- Единый движок -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
     <style>
+      /* ============================================================
+         ПАСПОРТ · только специфика страницы
+         ============================================================ */
+
+      /* --- Доп. токены: паспортный синий и золото --- */
       :root {
-        --paper: #f3ede4;
-        --paper-2: #ece4d8;
-        --surface: #fdfaf6;
-        --surface-2: #f7f0e6;
-
-        --ink: #1e1a16;
-        --ink-2: #4a423c;
-        --ink-3: #8a7f75;
-        --ink-4: #b8aca1;
-
-        --line: rgba(30, 26, 22, 0.08);
-        --line-2: rgba(30, 26, 22, 0.16);
-
-        --rose: #b58794;
-        --rose-deep: #8f6472;
-        --rose-soft: #e8d4d8;
-        --rose-tint: #f2e4e7;
-
-        --gold: #b89968;
-        --gold-deep: #8a6f4d;
-        --brass: #c9a35b;
-
         --pass-blue-1: #1c3454;
         --pass-blue-2: #0f1e33;
         --pass-blue-3: #060d18;
         --pass-gold: #c8b177;
-
-        --ease: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        font-size: 16px;
-        line-height: 1.5;
-        min-height: 100vh;
-        overflow-x: hidden;
-        -webkit-tap-highlight-color: transparent;
-      }
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          radial-gradient(
-            ellipse 90% 60% at 15% -10%,
-            rgba(232, 212, 216, 0.55),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 60% 50% at 95% 15%,
-            rgba(207, 184, 163, 0.28),
-            transparent 55%
-          ),
-          radial-gradient(
-            ellipse 70% 55% at 5% 105%,
-            rgba(181, 135, 148, 0.16),
-            transparent 60%
-          ),
-          var(--paper);
-      }
-      .grain {
-        position: fixed;
-        inset: 0;
-        z-index: 9998;
-        pointer-events: none;
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      }
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-        border: none;
-        background: none;
-      }
-      ::selection {
-        background: var(--rose-soft);
-        color: var(--rose-deep);
-      }
-
-      /* TOPBAR */
-      .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 32px;
-        background: rgba(243, 237, 228, 0.72);
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border-bottom: 1px solid var(--line);
-        font-size: 12.5px;
-        letter-spacing: 0.02em;
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-      .brand-mark {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--ink);
-        border-radius: 50%;
-        font-family: "Instrument Serif", Georgia, serif;
-        font-style: italic;
-        font-size: 17px;
-        line-height: 1;
-        color: var(--ink);
-        padding-bottom: 2px;
-        transition: transform 0.4s var(--ease-spring);
-      }
-      .brand:hover .brand-mark {
-        transform: rotate(-12deg) scale(1.05);
-      }
-      .brand-label {
-        color: var(--ink-2);
-        font-weight: 500;
-      }
-      .topbar-meta {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--ink-2);
-        cursor: pointer;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-      }
-      .meta-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .meta-item .icon {
-        font-size: 13px;
-        filter: saturate(0.7);
-      }
-      .meta-sep {
-        color: var(--ink-4);
-      }
-
-      main {
-        max-width: 1180px;
-        margin: 0 auto;
-        padding: 140px 32px 80px;
-      }
-
-      /* HERO */
-      .hero {
-        padding: 20px 0 40px;
-        text-align: center;
-      }
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--rose-deep);
-        margin-bottom: 28px;
-      }
-      .eyebrow::before,
-      .eyebrow::after {
-        content: "";
-        width: 24px;
-        height: 1px;
-        background: var(--rose-deep);
-      }
-      h1 {
-        font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 400;
-        font-size: clamp(38px, 5.4vw, 72px);
-        line-height: 1.04;
-        letter-spacing: -0.02em;
-        color: var(--ink);
-        margin: 0 0 22px;
-        max-width: 18ch;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      h1 em {
-        font-style: italic;
-        color: var(--rose-deep);
-      }
-      .hero-sub {
-        font-size: 16px;
-        line-height: 1.6;
-        color: var(--ink-2);
-        margin: 0 auto;
-        max-width: 48ch;
       }
 
       /* ============================================================
-         ПАСПОРТ
+         PASSPORT STAGE
          ============================================================ */
       .passport-stage {
         margin-top: 72px;
@@ -304,7 +96,7 @@
         gap: 4px;
       }
       .passport-head .mark {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 26px;
         line-height: 1;
         color: var(--ink);
@@ -334,7 +126,7 @@
         margin-bottom: 4px;
       }
       .passport-head .right .value {
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 13px;
         font-weight: 500;
         color: var(--ink);
@@ -448,7 +240,7 @@
         padding-left: 0.38em;
       }
       .page-top .code {
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 10px;
         letter-spacing: 0.24em;
         color: rgba(200, 177, 119, 0.6);
@@ -535,7 +327,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 90px;
         line-height: 1;
@@ -551,7 +343,6 @@
         z-index: 1;
         filter: saturate(0.95) contrast(1.03);
       }
-      /* Голографический блик поверх фото */
       .photo-frame::after {
         content: "";
         position: absolute;
@@ -604,7 +395,7 @@
         color: rgba(200, 177, 119, 0.72);
       }
       .data-field .v {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-size: 17px;
         line-height: 1.35;
         letter-spacing: 0.005em;
@@ -615,7 +406,7 @@
         color: var(--pass-gold);
       }
       .data-field .v .mono {
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 14px;
         letter-spacing: 0.16em;
       }
@@ -666,7 +457,7 @@
       }
       .bio-cell .bv {
         display: block;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 16px;
         line-height: 1.3;
@@ -679,7 +470,7 @@
       }
 
       .stamps-title {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 20px;
         line-height: 1.1;
@@ -820,7 +611,7 @@
       }
       .stamp-title {
         display: block;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 20px;
         line-height: 1;
@@ -829,7 +620,7 @@
       }
       .stamp-sub {
         display: block;
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 9.5px;
         font-weight: 500;
         letter-spacing: 0.22em;
@@ -839,7 +630,7 @@
       }
       .stamp-note {
         display: block;
-        font-family: "Caveat", cursive;
+        font-family: var(--font-hand);
         font-size: 17px;
         line-height: 1.2;
         margin-top: 6px;
@@ -854,7 +645,7 @@
       }
       .mrz-line {
         display: block;
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 11px;
         letter-spacing: 0.14em;
         color: rgba(200, 177, 119, 0.75);
@@ -886,7 +677,7 @@
         padding-left: 0.3em;
       }
       .passno .num {
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-family: var(--font-mono);
         font-size: 15px;
         letter-spacing: 0.18em;
         color: #f4eccd;
@@ -911,7 +702,7 @@
         padding-left: 0.28em;
       }
       .signature .name {
-        font-family: "Caveat", cursive;
+        font-family: var(--font-hand);
         font-size: 30px;
         line-height: 1;
         color: #f4eccd;
@@ -927,7 +718,7 @@
         text-align: center;
         margin: 44px auto 0;
         max-width: 46ch;
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: 15px;
         color: var(--ink-3);
@@ -937,7 +728,7 @@
         color: var(--rose-deep);
       }
 
-      /* Панель действий (кнопки под книгой) */
+      /* Панель действий */
       .passport-actions {
         position: relative;
         z-index: 2;
@@ -988,82 +779,9 @@
         filter: saturate(0.75);
       }
 
-      /* NAV */
-      .nav-wrap {
-        margin-top: 96px;
-        padding-top: 40px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 14px;
-        padding: 18px 32px;
-        border-radius: 999px;
-        background: var(--ink);
-        color: var(--paper);
-        font-size: 14.5px;
-        font-weight: 500;
-        transition: all 0.35s var(--ease);
-      }
-      .back-link:hover {
-        background: #000;
-        transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(30, 26, 22, 0.24);
-      }
-      .back-link .arrow {
-        display: inline-block;
-        transition: transform 0.4s var(--ease);
-        font-size: 15px;
-      }
-      .back-link:hover .arrow {
-        transform: translateX(-5px);
-      }
-      .nav-link-secondary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 18px 28px;
-        border-radius: 999px;
-        background: transparent;
-        color: var(--ink-2);
-        border: 1px solid var(--line-2);
-        font-size: 14.5px;
-        font-weight: 500;
-        transition: all 0.35s var(--ease);
-      }
-      .nav-link-secondary:hover {
-        background: var(--surface-2);
-        color: var(--ink);
-        border-color: var(--ink-3);
-        transform: translateY(-2px);
-      }
-      .nav-link-secondary .icon {
-        font-size: 14px;
-        filter: saturate(0.75);
-      }
-
-      /* FOOTER */
-      .footer {
-        padding: 40px 32px;
-        border-top: 1px solid var(--line);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-        max-width: 1240px;
-        margin: 40px auto 0;
-      }
-
-      /* RESPONSIVE */
+      /* ============================================================
+         RESPONSIVE (только специфика страницы)
+         ============================================================ */
       @media (max-width: 900px) {
         .passport-stage {
           padding: 40px 20px 44px;
@@ -1105,12 +823,6 @@
       }
 
       @media (max-width: 640px) {
-        main {
-          padding: 120px 20px 60px;
-        }
-        h1 {
-          font-size: clamp(32px, 9vw, 46px);
-        }
         .passport-stage {
           padding: 28px 12px 32px;
         }
@@ -1151,56 +863,16 @@
         .signature .name {
           font-size: 26px;
         }
-        .nav-wrap {
-          margin-top: 72px;
-          padding-top: 32px;
-          gap: 10px;
-        }
-        .back-link,
-        .nav-link-secondary {
-          padding: 16px 24px;
-          font-size: 13.5px;
-        }
         .btn-solid,
         .btn-outline {
           padding: 14px 22px;
           font-size: 13.5px;
         }
-        .topbar {
-          padding: 16px 20px;
-          font-size: 11.5px;
-        }
-        .brand-label {
-          display: none;
-        }
-        .brand-mark {
-          width: 26px;
-          height: 26px;
-          font-size: 15px;
-        }
-        .meta-sep {
-          display: none;
-        }
-        .topbar-meta {
-          gap: 10px;
-          font-size: 11.5px;
-        }
-        .footer {
-          flex-direction: column;
-          gap: 8px;
-          text-align: center;
-          font-size: 10.5px;
-          padding: 32px 20px;
-        }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
+        .stamp {
+          animation: none;
         }
       }
     </style>
@@ -1215,21 +887,21 @@
         <span class="brand-label">Для Вероники</span>
       </a>
       <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
-        <span class="meta-item"
-          ><span class="icon" id="timeIcon">☀️</span
-          ><span id="timeText">--:--</span></span
-        >
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
         <span class="meta-sep">·</span>
-        <span class="meta-item"
-          ><span class="icon" id="weatherIcon">🌤️</span
-          ><span id="weatherText">...</span></span
-        >
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
       </div>
     </header>
 
     <main>
       <section class="hero">
-        <span class="eyebrow">Документ · Особого образца</span>
+        <span class="eyebrow">27 · Документ особого образца</span>
         <h1>Паспорт <em>Вероники</em></h1>
         <p class="hero-sub">
           Официальный документ, удостоверяющий личность. Выдан бессрочно.
@@ -1252,7 +924,6 @@
 
         <div class="book">
           <div class="spread">
-            <!-- ЛЕВАЯ СТРАНИЦА: фото + данные + биометрия -->
             <div class="page page--left">
               <div class="page-top">
                 <span class="type">Тип · P</span>
@@ -1288,9 +959,9 @@
                   </div>
                   <div class="data-field">
                     <span class="k">Дата рождения</span>
-                    <span class="v"
-                      ><span class="mono">14 · 04 · 2007</span></span
-                    >
+                    <span class="v">
+                      <span class="mono">14 · 04 · 2007</span>
+                    </span>
                   </div>
                   <div class="data-field">
                     <span class="k">Место рождения</span>
@@ -1318,11 +989,11 @@
                 </div>
                 <div class="bio-cell">
                   <span class="bk">Цвет глаз</span>
-                  <span class="bv">Цвет влюблённого моря</span>
+                  <span class="bv">Цвет влюблённого горячего шоколада</span>
                 </div>
                 <div class="bio-cell">
                   <span class="bk">Особые отметки</span>
-                  <span class="bv">Родинка, улыбка, ямочки</span>
+                  <span class="bv">Родинки, улыбка, ямочки</span>
                 </div>
                 <div class="bio-cell">
                   <span class="bk">Группа крови</span>
@@ -1340,7 +1011,6 @@
               </div>
             </div>
 
-            <!-- ПРАВАЯ СТРАНИЦА: штампы и визы -->
             <div class="page page--right">
               <div class="page-top">
                 <span class="type">Визы · Отметки</span>
@@ -1362,12 +1032,12 @@
                     <span class="stamp-icon">❤️</span>
                     <span class="stamp-body">
                       <span class="stamp-title">ВЛЮБЛЕНА</span>
-                      <span class="stamp-sub"
-                        >Entry · 04 Oct 2025 · Forever</span
-                      >
-                      <span class="stamp-note"
-                        >Признано окончательно и бесповоротно.</span
-                      >
+                      <span class="stamp-sub">
+                        Entry · 04 Oct 2025 · Forever
+                      </span>
+                      <span class="stamp-note">
+                        Признано окончательно и бесповоротно.
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -1377,12 +1047,12 @@
                     <span class="stamp-icon">🏠</span>
                     <span class="stamp-body">
                       <span class="stamp-title">Прописка: моё сердце</span>
-                      <span class="stamp-sub"
-                        >Address · адрес постоянного проживания</span
-                      >
-                      <span class="stamp-note"
-                        >С правом на неограниченные объятия.</span
-                      >
+                      <span class="stamp-sub">
+                        Address · адрес постоянного проживания
+                      </span>
+                      <span class="stamp-note">
+                        С правом на неограниченные объятия.
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -1391,15 +1061,15 @@
                   <div class="stamp-inner">
                     <span class="stamp-icon">✈️</span>
                     <span class="stamp-body">
-                      <span class="stamp-title"
-                        >Безвизовый въезд в мои мысли</span
-                      >
-                      <span class="stamp-sub"
-                        >Visa-free · unlimited entries</span
-                      >
-                      <span class="stamp-note"
-                        >Разрешение бессрочное, продление автоматическое.</span
-                      >
+                      <span class="stamp-title">
+                        Безвизовый въезд в мои мысли
+                      </span>
+                      <span class="stamp-sub">
+                        Visa-free · unlimited entries
+                      </span>
+                      <span class="stamp-note">
+                        Разрешение бессрочное, продление автоматическое.
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -1410,9 +1080,9 @@
                     <span class="stamp-body">
                       <span class="stamp-title">Одобрено: «Быть вместе»</span>
                       <span class="stamp-sub">Approved · навсегда</span>
-                      <span class="stamp-note"
-                        >Все инстанции пройдены. Печатей больше не нужно.</span
-                      >
+                      <span class="stamp-note">
+                        Все инстанции пройдены. Печатей больше не нужно.
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -1422,22 +1092,24 @@
                     <span class="stamp-icon">💋</span>
                     <span class="stamp-body">
                       <span class="stamp-title">Разрешение на поцелуи</span>
-                      <span class="stamp-sub">Unlimited · без ограничений</span>
-                      <span class="stamp-note"
-                        >Действует 24/7. Возврату не подлежит.</span
-                      >
+                      <span class="stamp-sub">
+                        Unlimited · без ограничений
+                      </span>
+                      <span class="stamp-note">
+                        Действует 24/7. Возврату не подлежит.
+                      </span>
                     </span>
                   </div>
                 </div>
               </div>
 
               <div class="mrz">
-                <span class="mrz-line"
-                  >P&lt;RUSZHUKOVA&lt;&lt;VERONIKA&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span
-                >
-                <span class="mrz-line"
-                  >001ВЮ0407RUS0704144F2804142LOVEAETERNUM&lt;&lt;&lt;&lt;&lt;08</span
-                >
+                <span class="mrz-line">
+                  P&lt;RUSZHUKOVA&lt;&lt;VERONIKA&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+                </span>
+                <span class="mrz-line">
+                  001ВЮ0407RUS0704144F2804142LOVEAETERNUM&lt;&lt;&lt;&lt;&lt;08
+                </span>
               </div>
             </div>
           </div>
@@ -1463,24 +1135,8 @@
         </div>
       </section>
 
-      <div class="nav-wrap">
-        <a href="index.html" class="back-link">
-          <span class="arrow">←</span>
-          <span>На главную</span>
-        </a>
-        <a href="temple.html" class="nav-link-secondary">
-          <span class="icon">🏛</span>
-          <span>Храм любви</span>
-        </a>
-        <a href="slots.html" class="nav-link-secondary">
-          <span class="icon">🎰</span>
-          <span>Слот-машина</span>
-        </a>
-        <a href="auction.html" class="nav-link-secondary">
-          <span class="icon">🏷️</span>
-          <span>Аукцион</span>
-        </a>
-      </div>
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="auto-nav" data-nav="temple,slots,auction"></nav>
     </main>
 
     <footer class="footer">
@@ -1488,139 +1144,14 @@
       <span>Выдано сердцем · бессрочно</span>
     </footer>
 
-    <!-- Тост-уведомление -->
-    <div
-      id="toast"
-      style="
-        position: fixed;
-        left: 50%;
-        bottom: 32px;
-        transform: translateX(-50%) translateY(20px);
-        padding: 14px 22px;
-        background: var(--ink);
-        color: var(--paper);
-        font-size: 14px;
-        font-weight: 500;
-        border-radius: 999px;
-        box-shadow: 0 18px 40px rgba(30, 26, 22, 0.3);
-        opacity: 0;
-        pointer-events: none;
-        transition: all 0.4s var(--ease-spring);
-        z-index: 200;
-      "
-    ></div>
+    <!-- Единый движок: часы, погода, тосты, авто-навигация, SW -->
+    <script src="shared/widgets.js"></script>
 
+    <!-- Специфика страницы: QR и «продлить навсегда» -->
     <script>
-      /* ============ Топбар: время + погода ============ */
-      function updateTimeWidget() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        const t = document.getElementById("timeText");
-        if (t) t.textContent = `${hh}:${mm}`;
-        const h = now.getHours();
-        let icon = "🌙";
-        if (h >= 5 && h < 12) icon = "🌅";
-        else if (h >= 12 && h < 18) icon = "☀️";
-        else if (h >= 18 && h < 23) icon = "🌆";
-        const ti = document.getElementById("timeIcon");
-        if (ti) ti.textContent = icon;
-      }
-      updateTimeWidget();
-      setInterval(updateTimeWidget, 1000);
+      const showToast = window.toast;
 
-      const WEATHER_CITY = { name: "Улан-Удэ" };
-      function pickIconFromDesc(desc) {
-        desc = (desc || "").toLowerCase();
-        if (desc.includes("sun") || desc.includes("clear")) return "☀️";
-        if (desc.includes("partly") || desc.includes("mostly sun")) return "🌤️";
-        if (desc.includes("cloud") || desc.includes("overcast")) return "☁️";
-        if (desc.includes("rain") || desc.includes("drizzle")) return "🌧️";
-        if (desc.includes("snow") || desc.includes("sleet")) return "❄️";
-        if (desc.includes("thunder") || desc.includes("storm")) return "⛈️";
-        if (desc.includes("fog") || desc.includes("mist")) return "🌫️";
-        return "🌤️";
-      }
-      function seasonalWeather() {
-        const m = new Date().getMonth();
-        let icon, temp;
-        if (m === 11 || m === 0 || m === 1) {
-          icon = "❄️";
-          temp = -18;
-        } else if (m === 2 || m === 3) {
-          icon = "🌨️";
-          temp = -5;
-        } else if (m === 4) {
-          icon = "🌱";
-          temp = 8;
-        } else if (m >= 5 && m <= 7) {
-          icon = "☀️";
-          temp = 24;
-        } else if (m === 8) {
-          icon = "🍂";
-          temp = 12;
-        } else {
-          icon = "🌧️";
-          temp = 2;
-        }
-        return { icon, temp };
-      }
-      async function loadWeather() {
-        const iconEl = document.getElementById("weatherIcon");
-        const textEl = document.getElementById("weatherText");
-        if (!iconEl || !textEl) return;
-        iconEl.textContent = "⛅";
-        textEl.textContent = "...";
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 5000);
-          const res = await fetch(
-            `https://wttr.in/${encodeURIComponent(WEATHER_CITY.name)}?format=j1`,
-            { signal: ctrl.signal, cache: "no-store" },
-          );
-          clearTimeout(timer);
-          if (res.ok) {
-            const data = await res.json();
-            const cur = data.current_condition && data.current_condition[0];
-            if (cur && cur.temp_C !== undefined) {
-              const temp = parseInt(cur.temp_C, 10);
-              const desc =
-                cur.weatherDesc && cur.weatherDesc[0]
-                  ? cur.weatherDesc[0].value
-                  : "";
-              iconEl.textContent = pickIconFromDesc(desc);
-              textEl.textContent = `${temp > 0 ? "+" : ""}${temp}°C`;
-              return;
-            }
-          }
-        } catch (e) {}
-        const w = seasonalWeather();
-        iconEl.textContent = w.icon;
-        textEl.textContent = `${w.temp > 0 ? "+" : ""}${w.temp}°C`;
-      }
-      loadWeather();
-      setInterval(loadWeather, 30 * 60 * 1000);
-      const iw = document.getElementById("infoWidget");
-      if (iw) iw.addEventListener("click", loadWeather);
-
-      /* ============ Тост ============ */
-      const toastEl = document.getElementById("toast");
-      let toastT = null;
-      function toast(msg, ms = 2200) {
-        toastEl.textContent = msg;
-        toastEl.style.opacity = "1";
-        toastEl.style.transform = "translateX(-50%) translateY(0)";
-        clearTimeout(toastT);
-        toastT = setTimeout(() => {
-          toastEl.style.opacity = "0";
-          toastEl.style.transform = "translateX(-50%) translateY(20px)";
-        }, ms);
-      }
-
-      /* ============ QR-код (без внешних библиотек) ============ */
       function showQr() {
-        // Открываем простой модал с QR-кодом через публичный API
-        // (используется сервис QRServer — без ключей)
         const data = encodeURIComponent(
           "https://example.com/veronika — паспорт любви · серия ЛЮБОВЬ 001-ВЮ",
         );
@@ -1631,6 +1162,7 @@
           position: fixed; inset: 0; z-index: 500;
           background: rgba(30,26,22,.55);
           backdrop-filter: blur(14px) saturate(140%);
+          -webkit-backdrop-filter: blur(14px) saturate(140%);
           display: flex; align-items: center; justify-content: center;
           padding: 20px; opacity: 0; transition: opacity .35s ease;
         `;
@@ -1672,7 +1204,6 @@
         });
       }
 
-      /* ============ Продлить навсегда ============ */
       let prolongClicks = 0;
       const prolongMessages = [
         "Продлено до следующей пятницы. Шутка — навсегда. ✨",
@@ -1683,7 +1214,7 @@
       function prolong() {
         const msg = prolongMessages[prolongClicks % prolongMessages.length];
         prolongClicks++;
-        toast(msg, 2400);
+        showToast(msg, 2400);
       }
     </script>
   </body>

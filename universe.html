@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Карта вселенной · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Единый движок -->
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
+    <style>
+      /* ============================================================
+         КАРТА ВСЕЛЕННОЙ · только специфика страницы
+         ============================================================ */
+
+      .hero-sub {
+        max-width: 48ch;
+      }
+
+      /* ============================================================
+         UNIVERSE STAGE
+         ============================================================ */
+      .universe-stage {
+        position: relative;
+        margin-top: 40px;
+        padding: 24px;
+        background: linear-gradient(
+          160deg,
+          rgba(30, 26, 22, 0.02) 0%,
+          rgba(143, 100, 114, 0.06) 100%
+        );
+        border: 1px solid var(--line-2);
+        border-radius: 6px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.1);
+        overflow: hidden;
+      }
+
+      /* Тонкий угловой декор */
+      .universe-stage::before,
+      .universe-stage::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border: 1px solid var(--rose-deep);
+        opacity: 0.4;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .universe-stage::before {
+        top: 8px;
+        left: 8px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .universe-stage::after {
+        bottom: 8px;
+        right: 8px;
+        border-left: none;
+        border-top: none;
+      }
+
+      .universe-svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 88vh;
+        overflow: visible;
+      }
+
+      /* Планета */
+      .planet {
+        cursor: pointer;
+        outline: none;
+        transition: transform 0.4s var(--ease-spring);
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      .planet .planet-halo {
+        fill: var(--rose);
+        opacity: 0;
+        transition:
+          opacity 0.4s var(--ease),
+          r 0.4s var(--ease);
+      }
+      .planet .planet-bg {
+        transition: filter 0.3s var(--ease);
+      }
+      .planet .planet-icon {
+        fill: var(--paper);
+        font-size: 15px;
+        text-anchor: middle;
+        pointer-events: none;
+        user-select: none;
+      }
+      .planet .planet-label {
+        fill: var(--ink-2);
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 11px;
+        text-anchor: middle;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.35s var(--ease);
+      }
+
+      /* Hover / focus */
+      .planet:hover,
+      .planet:focus-visible {
+        transform: scale(1.15);
+      }
+      .planet:hover .planet-halo,
+      .planet:focus-visible .planet-halo {
+        opacity: 0.35;
+      }
+      .planet:hover .planet-bg,
+      .planet:focus-visible .planet-bg {
+        filter: brightness(1.06);
+      }
+      .planet:hover .planet-label,
+      .planet:focus-visible .planet-label {
+        opacity: 1;
+      }
+      .planet:focus-visible .planet-bg {
+        stroke: var(--rose-deep);
+        stroke-width: 2;
+      }
+
+      /* Дыхание (отключается по reduced-motion) */
+      .planet .planet-breathe {
+        animation: planetBreathe 5s ease-in-out infinite;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation-delay: var(--bd, 0s);
+      }
+      @keyframes planetBreathe {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      /* Орбита */
+      .orbit-ring {
+        fill: none;
+        stroke-width: 1;
+        stroke-dasharray: 2 6;
+        opacity: 0.55;
+      }
+
+      /* Солнце */
+      .sun-glow {
+        animation: sunGlow 8s ease-in-out infinite;
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      @keyframes sunGlow {
+        0%,
+        100% {
+          opacity: 0.25;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.55;
+          transform: scale(1.08);
+        }
+      }
+
+      /* Тултип */
+      .universe-tooltip {
+        position: absolute;
+        z-index: 5;
+        pointer-events: none;
+        padding: 10px 14px 11px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 3px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 18px 40px rgba(30, 26, 22, 0.18);
+        font-size: 12px;
+        color: var(--ink);
+        line-height: 1.35;
+        max-width: 220px;
+        opacity: 0;
+        transform: translate(-50%, -100%) translateY(6px);
+        transition:
+          opacity 0.25s var(--ease),
+          transform 0.3s var(--ease);
+        white-space: nowrap;
+      }
+      .universe-tooltip.show {
+        opacity: 1;
+        transform: translate(-50%, -100%) translateY(-4px);
+      }
+      .universe-tooltip .tt-icon {
+        margin-right: 6px;
+      }
+      .universe-tooltip .tt-name {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 13px;
+      }
+      .universe-tooltip .tt-hint {
+        display: block;
+        margin-top: 4px;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      /* ============================================================
+         LEGEND
+         ============================================================ */
+      .universe-legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px 22px;
+        margin-top: 32px;
+      }
+      .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      /* ============================================================
+         FALLBACK LIST (mobile / no-JS)
+         ============================================================ */
+      .universe-list {
+        display: none;
+        margin-top: 40px;
+      }
+      .universe-list-group {
+        margin-bottom: 32px;
+      }
+      .universe-list-title {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin: 0 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .universe-list-title .legend-dot {
+        width: 7px;
+        height: 7px;
+      }
+      .universe-list-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 8px;
+      }
+      .universe-list-items a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 10px;
+        font-size: 13.5px;
+        color: var(--ink);
+        transition: all 0.3s var(--ease);
+        min-height: 48px;
+      }
+      .universe-list-items a:hover,
+      .universe-list-items a:focus-visible {
+        background: var(--surface-2);
+        border-color: var(--rose-deep);
+        transform: translateY(-2px);
+        outline: none;
+      }
+      .universe-list-items .l-icon {
+        font-size: 16px;
+        filter: saturate(0.8);
+      }
+      .universe-list-items .l-name {
+        font-family: var(--font-serif);
+        font-style: italic;
+      }
+
+      /* ============================================================
+         RESPONSIVE
+         ============================================================ */
+      @media (max-width: 700px) {
+        .universe-svg {
+          display: none;
+        }
+        .universe-stage {
+          padding: 0;
+          background: none;
+          border: none;
+          box-shadow: none;
+          margin-top: 0;
+        }
+        .universe-stage::before,
+        .universe-stage::after {
+          display: none;
+        }
+        .universe-list {
+          display: block;
+          margin-top: 32px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .planet .planet-breathe,
+        .sun-glow {
+          animation: none;
+        }
+        .planet {
+          transition: none;
+        }
+      }
+
+      /* Screen-reader only */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="eyebrow">32 · Атлас</span>
+        <h1>Карта <em>всей вселенной</em></h1>
+        <p class="hero-sub">
+          Каждая страница — своя планета на орбите. Наведи и кликни, чтобы
+          отправиться. Всё, что я тебе сделал, — здесь, на одной карте.
+        </p>
+      </section>
+
+      <!-- UNIVERSE STAGE -->
+      <section class="universe-stage" id="stage">
+        <svg
+          class="universe-svg"
+          id="universeSvg"
+          viewBox="-460 -460 920 920"
+          role="img"
+          aria-label="Карта всех страниц сайта"
+        ></svg>
+
+        <div
+          class="universe-tooltip"
+          id="tooltip"
+          role="status"
+          aria-live="polite"
+        >
+          <span class="tt-icon"></span>
+          <span class="tt-name"></span>
+          <span class="tt-hint">Клик — открыть</span>
+        </div>
+      </section>
+
+      <!-- LEGEND -->
+      <div class="universe-legend" id="legend"></div>
+
+      <!-- FALLBACK LIST (mobile) -->
+      <section class="universe-list" id="listFallback"></section>
+
+      <!-- Hidden list for screen readers -->
+      <ul class="sr-only" id="srList"></ul>
+
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="auto-nav" data-nav="stars,sky,heartmap"></nav>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <!-- Единый движок: часы, погода, тосты, авто-навигация, SW -->
+    <script src="shared/widgets.js"></script>
+
+    <!-- Логика карты вселенной (специфика страницы) -->
+    <script>
+      (function () {
+        "use strict";
+
+        // ============================================================
+        // РЕЕСТР БЛОКОВ
+        // ============================================================
+        const PAGE_GROUPS = [
+          {
+            id: "story",
+            name: "История",
+            color: "var(--rose)",
+            pages: [
+              { href: "timer.html", icon: "⏳", name: "История в цифрах" },
+              { href: "song.html", icon: "🎵", name: "Наша песня" },
+              { href: "reasons.html", icon: "💗", name: "100 причин" },
+              { href: "love.html", icon: "💌", name: "Что я в тебе люблю" },
+            ],
+          },
+          {
+            id: "surprise",
+            name: "Сюрпризы",
+            color: "var(--gold)",
+            pages: [
+              { href: "surprise.html", icon: "🎁", name: "Открой меня" },
+              { href: "draw.html", icon: "🎨", name: "Нарисуй мне" },
+              { href: "puzzle.html", icon: "🧩", name: "Собери моё сердце" },
+            ],
+          },
+          {
+            id: "worlds",
+            name: "Миры",
+            color: "var(--sand)",
+            pages: [
+              { href: "map.html", icon: "📍", name: "Карта наших мест" },
+              { href: "heartmap.html", icon: "🗺", name: "Карта моего сердца" },
+              { href: "stars.html", icon: "✨", name: "Созвездие Вероники" },
+              { href: "sky.html", icon: "🌌", name: "Небо сегодня" },
+            ],
+          },
+          {
+            id: "docs",
+            name: "Документы",
+            color: "var(--ink-2)",
+            pages: [
+              { href: "passport.html", icon: "📋", name: "Паспорт Вероники" },
+              { href: "wiki.html", icon: "📚", name: "Энциклопедия" },
+              { href: "medcard.html", icon: "🩺", name: "История болезни" },
+              { href: "manual.html", icon: "📖", name: "Инструкция" },
+              { href: "boarding.html", icon: "✈️", name: "Билет в будущее" },
+            ],
+          },
+          {
+            id: "games",
+            name: "Игры",
+            color: "var(--rose-deep)",
+            pages: [
+              { href: "slots.html", icon: "🎰", name: "Слот-машина" },
+              { href: "court.html", icon: "⚖️", name: "Суд над сердцем" },
+              { href: "auction.html", icon: "🏷️", name: "Аукцион · Лот №1" },
+            ],
+          },
+          {
+            id: "mood",
+            name: "Настроение",
+            color: "var(--gold-deep)",
+            pages: [
+              { href: "countdown.html", icon: "📅", name: "Наши даты" },
+              { href: "movie.html", icon: "🎬", name: "Наш фильм" },
+              { href: "credits.html", icon: "🎞️", name: "Титры нашей жизни" },
+              { href: "capsule.html", icon: "⏳", name: "Капсула времени" },
+              { href: "horoscope.html", icon: "🌟", name: "Гороскоп на нас" },
+            ],
+          },
+          {
+            id: "places",
+            name: "Места",
+            color: "var(--rose-soft)",
+            pages: [
+              { href: "temple.html", icon: "🏛", name: "Храм любви" },
+              { href: "menu.html", icon: "🍽️", name: "Ресторан «Анатолий»" },
+              { href: "clock.html", icon: "🕰", name: "Часы нашей любви" },
+              { href: "playlist.html", icon: "🎧", name: "Плейлист" },
+              { href: "wanted.html", icon: "📰", name: "Wanted" },
+              { href: "album.html", icon: "📸", name: "Наш фотоальбом" },
+              { href: "call.html", icon: "📞", name: "Звонок от меня" },
+            ],
+          },
+        ];
+
+        // ============================================================
+        // DOM
+        // ============================================================
+        const svg = document.getElementById("universeSvg");
+        const tooltip = document.getElementById("tooltip");
+        const stage = document.getElementById("stage");
+        const legend = document.getElementById("legend");
+        const fallback = document.getElementById("listFallback");
+        const srList = document.getElementById("srList");
+
+        const SVG_NS = "http://www.w3.org/2000/svg";
+
+        // Радиусы: первая орбита — 90, последняя — 420
+        const MIN_R = 90;
+        const MAX_R = 420;
+        const N = PAGE_GROUPS.length;
+
+        function radiusFor(index) {
+          if (N === 1) return MIN_R;
+          return MIN_R + (index * (MAX_R - MIN_R)) / (N - 1);
+        }
+
+        // Размер планеты зависит от количества в группе
+        function planetSize(count) {
+          if (count <= 3) return 15;
+          if (count <= 5) return 13;
+          return 12;
+        }
+
+        // ============================================================
+        // STARS PATTERN
+        // ============================================================
+        function buildStarsPattern() {
+          const defs = document.createElementNS(SVG_NS, "defs");
+
+          // Паттерн звёздного неба
+          const pattern = document.createElementNS(SVG_NS, "pattern");
+          pattern.setAttribute("id", "starfield");
+          pattern.setAttribute("width", "180");
+          pattern.setAttribute("height", "180");
+          pattern.setAttribute("patternUnits", "userSpaceOnUse");
+
+          // Псевдослучайные звёзды (детерминированные — не хочу мерцания при resize)
+          let seed = 1;
+          const rnd = () => {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+          };
+
+          for (let i = 0; i < 22; i++) {
+            const c = document.createElementNS(SVG_NS, "circle");
+            c.setAttribute("cx", (rnd() * 180).toFixed(1));
+            c.setAttribute("cy", (rnd() * 180).toFixed(1));
+            c.setAttribute("r", (rnd() * 1.2 + 0.3).toFixed(2));
+            c.setAttribute("fill", "rgba(30, 26, 22, 0.28)");
+            pattern.appendChild(c);
+          }
+          defs.appendChild(pattern);
+
+          // Свечение солнца
+          const radial = document.createElementNS(SVG_NS, "radialGradient");
+          radial.setAttribute("id", "sunGrad");
+          const s1 = document.createElementNS(SVG_NS, "stop");
+          s1.setAttribute("offset", "0%");
+          s1.setAttribute("stop-color", "var(--rose)");
+          s1.setAttribute("stop-opacity", "0.55");
+          const s2 = document.createElementNS(SVG_NS, "stop");
+          s2.setAttribute("offset", "100%");
+          s2.setAttribute("stop-color", "var(--rose)");
+          s2.setAttribute("stop-opacity", "0");
+          radial.appendChild(s1);
+          radial.appendChild(s2);
+          defs.appendChild(radial);
+
+          svg.appendChild(defs);
+        }
+
+        // ============================================================
+        // BACKGROUND STARFIELD
+        // ============================================================
+        function buildBackground() {
+          const bg = document.createElementNS(SVG_NS, "rect");
+          bg.setAttribute("x", "-460");
+          bg.setAttribute("y", "-460");
+          bg.setAttribute("width", "920");
+          bg.setAttribute("height", "920");
+          bg.setAttribute("fill", "url(#starfield)");
+          svg.appendChild(bg);
+        }
+
+        // ============================================================
+        // CENTER SUN
+        // ============================================================
+        function buildSun() {
+          const g = document.createElementNS(SVG_NS, "g");
+          g.setAttribute("class", "sun-glow");
+
+          const halo = document.createElementNS(SVG_NS, "circle");
+          halo.setAttribute("cx", "0");
+          halo.setAttribute("cy", "0");
+          halo.setAttribute("r", "70");
+          halo.setAttribute("fill", "url(#sunGrad)");
+          halo.setAttribute("class", "sun-glow");
+          g.appendChild(halo);
+
+          const core = document.createElementNS(SVG_NS, "circle");
+          core.setAttribute("cx", "0");
+          core.setAttribute("cy", "0");
+          core.setAttribute("r", "26");
+          core.setAttribute("fill", "var(--ink)");
+          core.setAttribute("stroke", "var(--rose-deep)");
+          core.setAttribute("stroke-width", "1");
+          g.appendChild(core);
+
+          const text = document.createElementNS(SVG_NS, "text");
+          text.setAttribute("x", "0");
+          text.setAttribute("y", "8");
+          text.setAttribute("text-anchor", "middle");
+          text.setAttribute("font-family", "var(--font-serif)");
+          text.setAttribute("font-style", "italic");
+          text.setAttribute("font-size", "26");
+          text.setAttribute("fill", "var(--paper)");
+          text.textContent = "V";
+          g.appendChild(text);
+
+          svg.appendChild(g);
+        }
+
+        // ============================================================
+        // ORBITS + PLANETS
+        // ============================================================
+        function buildOrbits() {
+          let planetIndex = 0;
+
+          PAGE_GROUPS.forEach((group, gi) => {
+            const radius = radiusFor(gi);
+
+            // ---- орбита ----
+            const ring = document.createElementNS(SVG_NS, "circle");
+            ring.setAttribute("cx", "0");
+            ring.setAttribute("cy", "0");
+            ring.setAttribute("r", String(radius));
+            ring.setAttribute("class", "orbit-ring");
+            ring.setAttribute("stroke", group.color);
+            svg.appendChild(ring);
+
+            // ---- планеты ----
+            const count = group.pages.length;
+            const step = 360 / count;
+            // Наклон каждой орбиты — чтобы планеты не выстраивались в столбик
+            const start = -90 + gi * 14;
+            const size = planetSize(count);
+
+            group.pages.forEach((page, pi) => {
+              const angle = ((start + pi * step) * Math.PI) / 180;
+              const x = Math.cos(angle) * radius;
+              const y = Math.sin(angle) * radius;
+
+              const a = document.createElementNS(SVG_NS, "a");
+              a.setAttribute("href", page.href);
+              a.setAttribute("class", "planet");
+              a.setAttribute("aria-label", page.name);
+              a.setAttribute("data-name", page.name);
+              a.setAttribute("data-icon", page.icon);
+              a.setAttribute("data-color", group.color);
+
+              // Halo
+              const halo = document.createElementNS(SVG_NS, "circle");
+              halo.setAttribute("cx", String(x));
+              halo.setAttribute("cy", String(y));
+              halo.setAttribute("r", String(size + 6));
+              halo.setAttribute("class", "planet-halo");
+              halo.setAttribute("fill", group.color);
+              a.appendChild(halo);
+
+              // Breathe group
+              const breathe = document.createElementNS(SVG_NS, "g");
+              breathe.setAttribute("class", "planet-breathe");
+              breathe.style.setProperty(
+                "--bd",
+                (planetIndex * 0.4).toFixed(1) + "s",
+              );
+
+              // Planet body
+              const bg = document.createElementNS(SVG_NS, "circle");
+              bg.setAttribute("cx", String(x));
+              bg.setAttribute("cy", String(y));
+              bg.setAttribute("r", String(size));
+              bg.setAttribute("class", "planet-bg");
+              bg.setAttribute("fill", group.color);
+              breathe.appendChild(bg);
+
+              // Icon
+              const icon = document.createElementNS(SVG_NS, "text");
+              icon.setAttribute("x", String(x));
+              icon.setAttribute("y", String(y + size * 0.35));
+              icon.setAttribute("class", "planet-icon");
+              icon.setAttribute("font-size", String(size * 1.1));
+              icon.textContent = page.icon;
+              breathe.appendChild(icon);
+
+              a.appendChild(breathe);
+              svg.appendChild(a);
+
+              planetIndex++;
+            });
+          });
+        }
+
+        // ============================================================
+        // TOOLTIP
+        // ============================================================
+        function bindTooltip() {
+          const ttIcon = tooltip.querySelector(".tt-icon");
+          const ttName = tooltip.querySelector(".tt-name");
+
+          svg.querySelectorAll(".planet").forEach((planet) => {
+            const show = () => {
+              ttIcon.textContent = planet.dataset.icon || "";
+              ttName.textContent = planet.dataset.name || "";
+              tooltip.classList.add("show");
+            };
+            const hide = () => tooltip.classList.remove("show");
+
+            const move = (e) => {
+              const stageRect = stage.getBoundingClientRect();
+              let cx, cy;
+              if (e.touches && e.touches[0]) {
+                cx = e.touches[0].clientX;
+                cy = e.touches[0].clientY;
+              } else {
+                cx = e.clientX;
+                cy = e.clientY;
+              }
+              tooltip.style.left = cx - stageRect.left + "px";
+              tooltip.style.top = cy - stageRect.top + "px";
+            };
+
+            planet.addEventListener("mouseenter", (e) => {
+              show();
+              move(e);
+            });
+            planet.addEventListener("mousemove", move);
+            planet.addEventListener("mouseleave", hide);
+
+            planet.addEventListener("focus", () => {
+              // Позиционируем тултип над планетой
+              const rect = planet.getBoundingClientRect();
+              const stageRect = stage.getBoundingClientRect();
+              tooltip.style.left =
+                rect.left - stageRect.left + rect.width / 2 + "px";
+              tooltip.style.top = rect.top - stageRect.top + "px";
+              show();
+            });
+            planet.addEventListener("blur", hide);
+          });
+        }
+
+        // ============================================================
+        // LEGEND
+        // ============================================================
+        function buildLegend() {
+          PAGE_GROUPS.forEach((g) => {
+            const item = document.createElement("span");
+            item.className = "legend-item";
+            const dot = document.createElement("span");
+            dot.className = "legend-dot";
+            dot.style.background = g.color;
+            item.appendChild(dot);
+            const label = document.createElement("span");
+            label.textContent = g.name;
+            item.appendChild(label);
+            legend.appendChild(item);
+          });
+        }
+
+        // ============================================================
+        // FALLBACK LIST (mobile + screen reader)
+        // ============================================================
+        function buildFallbackList() {
+          PAGE_GROUPS.forEach((g) => {
+            const group = document.createElement("div");
+            group.className = "universe-list-group";
+
+            const title = document.createElement("h3");
+            title.className = "universe-list-title";
+            const dot = document.createElement("span");
+            dot.className = "legend-dot";
+            dot.style.background = g.color;
+            title.appendChild(dot);
+            const nameEl = document.createElement("span");
+            nameEl.textContent = g.name;
+            title.appendChild(nameEl);
+            group.appendChild(title);
+
+            const items = document.createElement("div");
+            items.className = "universe-list-items";
+            g.pages.forEach((p) => {
+              const a = document.createElement("a");
+              a.href = p.href;
+              const ic = document.createElement("span");
+              ic.className = "l-icon";
+              ic.textContent = p.icon;
+              a.appendChild(ic);
+              const nm = document.createElement("span");
+              nm.className = "l-name";
+              nm.textContent = p.name;
+              a.appendChild(nm);
+              items.appendChild(a);
+            });
+            group.appendChild(items);
+            fallback.appendChild(group);
+          });
+        }
+
+        function buildSrList() {
+          PAGE_GROUPS.forEach((g) => {
+            g.pages.forEach((p) => {
+              const li = document.createElement("li");
+              const a = document.createElement("a");
+              a.href = p.href;
+              a.textContent = p.name;
+              li.appendChild(a);
+              srList.appendChild(li);
+            });
+          });
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        buildStarsPattern();
+        buildBackground();
+        buildSun();
+        buildOrbits();
+        bindTooltip();
+        buildLegend();
+        buildFallbackList();
+        buildSrList();
+      })();
+    </script>
+  </body>
+</html>
