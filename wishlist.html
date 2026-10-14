@@ -1,0 +1,3144 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Мои желания · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"
+      defer
+    ></script>
+
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
+    <style>
+      /* ============================================================
+         МОИ ЖЕЛАНИЯ · только специфика страницы
+         ============================================================ */
+
+      main {
+        max-width: 1200px;
+      }
+
+      .hero-sub {
+        max-width: 46ch;
+      }
+
+      /* ============================================================
+         ACTIONS BAR
+         ============================================================ */
+      .actions-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-top: 48px;
+        margin-bottom: 32px;
+      }
+
+      .actions-left,
+      .actions-right {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .btn-add {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 30px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #b58794 0%, #8f6472 100%);
+        color: #fdfaf6;
+        font-family: var(--font-sans);
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        border: none;
+        cursor: pointer;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.2) inset,
+          0 12px 28px rgba(143, 100, 114, 0.28);
+        transition:
+          transform 0.35s var(--ease),
+          box-shadow 0.35s var(--ease);
+      }
+
+      .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.2) inset,
+          0 18px 38px rgba(143, 100, 114, 0.4);
+      }
+
+      .btn-add:active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      .btn-add .plus {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(253, 250, 246, 0.24);
+        font-size: 16px;
+        line-height: 1;
+        padding-bottom: 2px;
+      }
+
+      .btn-add--hinting {
+        animation: addHint 1.6s var(--ease) 3;
+      }
+
+      @keyframes addHint {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+          box-shadow:
+            0 1px 0 rgba(255, 255, 255, 0.2) inset,
+            0 12px 28px rgba(143, 100, 114, 0.28);
+        }
+        50% {
+          transform: translateY(-2px) scale(1.05);
+          box-shadow:
+            0 1px 0 rgba(255, 255, 255, 0.2) inset,
+            0 18px 42px rgba(143, 100, 114, 0.55),
+            0 0 0 6px rgba(181, 135, 148, 0.15);
+        }
+      }
+
+      .btn-ghost-sm {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        text-decoration: none;
+        position: relative;
+      }
+
+      .btn-ghost-sm:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+        transform: translateY(-1px);
+      }
+
+      .btn-ghost-sm .icon {
+        font-size: 14px;
+        filter: saturate(0.75);
+      }
+
+      /* ★ Кнопка облака */
+      .btn-cloud {
+        background: linear-gradient(135deg, #f7f0e6 0%, #e8d4d8 100%);
+        border-color: rgba(143, 100, 114, 0.3);
+      }
+
+      .btn-cloud:hover {
+        background: linear-gradient(135deg, #f2e4e7 0%, #dcc5ca 100%);
+      }
+
+      .btn-cloud.connected {
+        background: linear-gradient(135deg, #e8f5ec 0%, #d1e8d8 100%);
+        border-color: rgba(60, 140, 90, 0.4);
+        color: #2a5a3a;
+      }
+
+      .btn-cloud.connected:hover {
+        background: linear-gradient(135deg, #ddf0e4 0%, #c5e0cf 100%);
+      }
+
+      .btn-cloud.syncing {
+        pointer-events: none;
+        opacity: 0.7;
+      }
+
+      .btn-cloud .cloud-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(30, 26, 22, 0.25);
+        margin-left: 2px;
+        flex-shrink: 0;
+      }
+
+      .btn-cloud.connected .cloud-dot {
+        background: #2a9d55;
+        box-shadow: 0 0 0 3px rgba(42, 157, 85, 0.15);
+      }
+
+      .btn-cloud.syncing .cloud-dot {
+        background: #d4a017;
+        animation: cloudPulse 1s ease infinite;
+      }
+
+      @keyframes cloudPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.15);
+        }
+        50% {
+          box-shadow: 0 0 0 6px rgba(212, 160, 23, 0.05);
+        }
+      }
+
+      .btn-cloud.error .cloud-dot {
+        background: #c42b21;
+        box-shadow: 0 0 0 3px rgba(196, 43, 33, 0.2);
+      }
+
+      /* ============================================================
+         FILTERS + COUNTER
+         ============================================================ */
+      .filters-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding-bottom: 20px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .filters {
+        display: inline-flex;
+        gap: 4px;
+        padding: 4px;
+        background: var(--surface-2);
+        border-radius: 999px;
+      }
+
+      .filter-btn {
+        padding: 10px 20px;
+        border-radius: 999px;
+        border: none;
+        background: transparent;
+        color: var(--ink-3);
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+      }
+
+      .filter-btn:hover {
+        color: var(--ink);
+      }
+
+      .filter-btn.active {
+        background: var(--ink);
+        color: var(--paper);
+        box-shadow: 0 6px 14px rgba(30, 26, 22, 0.16);
+      }
+
+      .counter {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      .counter b {
+        color: var(--rose-deep);
+        font-weight: 500;
+      }
+
+      /* ============================================================
+         CARDS GRID
+         ============================================================ */
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 48px;
+      }
+
+      .wish-card {
+        position: relative;
+        padding: 26px 24px 24px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 12px 28px rgba(30, 26, 22, 0.08),
+          0 3px 8px rgba(30, 26, 22, 0.04);
+        cursor: pointer;
+        transition:
+          transform 0.45s var(--ease),
+          box-shadow 0.45s var(--ease),
+          border-color 0.35s;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-height: 200px;
+        opacity: 0;
+        transform: translateY(12px);
+        animation: cardIn 0.5s var(--ease) forwards;
+        -webkit-tap-highlight-color: transparent;
+        text-align: left;
+        font-family: inherit;
+        color: inherit;
+      }
+
+      @keyframes cardIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .wish-card:hover {
+        transform: translateY(-6px);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 24px 52px rgba(30, 26, 22, 0.16),
+          0 8px 20px rgba(30, 26, 22, 0.08);
+        border-color: rgba(143, 100, 114, 0.35);
+      }
+
+      .wish-card:focus-visible {
+        outline: none;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 24px 52px rgba(30, 26, 22, 0.16),
+          0 0 0 3px rgba(143, 100, 114, 0.4);
+      }
+
+      .wish-card--p2 {
+        background: linear-gradient(160deg, #fdfaf6 0%, #f9ecf0 100%);
+      }
+      .wish-card--p3 {
+        background: linear-gradient(160deg, #fdfaf6 0%, #fbf1d8 100%);
+        border-color: rgba(184, 153, 104, 0.35);
+      }
+
+      .wish-card__head {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+      }
+
+      .wish-card__emoji {
+        flex-shrink: 0;
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: linear-gradient(160deg, #f7f0e6 0%, #e8d4d8 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        line-height: 1;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 4px 12px rgba(30, 26, 22, 0.06);
+      }
+
+      .wish-card--p2 .wish-card__emoji {
+        background: linear-gradient(160deg, #f2e4e7 0%, #e8d4d8 100%);
+      }
+      .wish-card--p3 .wish-card__emoji {
+        background: linear-gradient(160deg, #fbf1d8 0%, #ecd39a 100%);
+      }
+
+      .wish-card__title-block {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .wish-card__title {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-size: 21px;
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0;
+        word-break: break-word;
+      }
+
+      .wish-card__priority {
+        display: inline-flex;
+        gap: 3px;
+        margin-top: 6px;
+        font-size: 12px;
+        letter-spacing: 1px;
+        filter: saturate(0.85);
+      }
+
+      .wish-card__priority span {
+        opacity: 0.25;
+      }
+
+      .wish-card__priority span.on {
+        opacity: 1;
+      }
+
+      .wish-card__note {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 14.5px;
+        line-height: 1.6;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+        margin: 0;
+        word-break: break-word;
+        flex: 1;
+      }
+
+      .wish-card__why {
+        font-family: var(--font-hand);
+        font-size: 15px;
+        line-height: 1.35;
+        color: var(--rose-deep);
+        margin: 0;
+        padding: 8px 12px;
+        background: rgba(232, 212, 216, 0.35);
+        border-radius: 8px;
+        border-left: 2px solid var(--rose-deep);
+        word-break: break-word;
+      }
+
+      .wish-card__foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .wish-card__date {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        color: var(--ink-4);
+        text-transform: uppercase;
+      }
+
+      .wish-card__delete {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+        color: var(--ink-4);
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s var(--ease);
+        padding: 0;
+        line-height: 1;
+      }
+
+      .wish-card__delete:hover {
+        background: #c42b21;
+        color: #fff;
+        transform: rotate(90deg);
+      }
+
+      /* ============================================================
+         EMPTY STATE
+         ============================================================ */
+      .empty-state {
+        text-align: center;
+        padding: 72px 32px;
+        background: var(--surface);
+        border: 1px dashed var(--line-2);
+        border-radius: 4px;
+        margin-bottom: 48px;
+      }
+
+      .empty-state__emoji {
+        display: block;
+        font-size: 56px;
+        line-height: 1;
+        margin-bottom: 20px;
+        filter: saturate(0.8);
+      }
+
+      .empty-state__title {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 400;
+        font-size: 26px;
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0 0 12px;
+        padding-bottom: 3px;
+      }
+
+      .empty-state__text {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 16px;
+        line-height: 1.55;
+        color: var(--ink-3);
+        margin: 0 auto 28px;
+        max-width: 44ch;
+      }
+
+      /* ============================================================
+         SUMMARY
+         ============================================================ */
+      .summary {
+        padding: 32px 36px;
+        background: linear-gradient(160deg, #faf6ee 0%, #f2e4e7 100%);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        margin-top: 48px;
+        text-align: center;
+      }
+
+      .summary__stats {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+
+      .summary__stat {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 100px;
+      }
+
+      .summary__stat-value {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 400;
+        font-size: 32px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .summary__stat-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      .summary__note {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 15px;
+        line-height: 1.55;
+        color: var(--ink-2);
+        margin: 0;
+        max-width: 46ch;
+        margin-inline: auto;
+      }
+
+      /* ============================================================
+         MODALS (общие)
+         ============================================================ */
+      .wl-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(30, 26, 22, 0.5);
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        opacity: 0;
+        transition: opacity 0.35s var(--ease);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+
+      .wl-overlay.active {
+        display: flex;
+        opacity: 1;
+      }
+
+      .wl-modal {
+        position: relative;
+        width: 100%;
+        max-width: 520px;
+        margin: auto;
+        padding: 40px 40px 32px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 6px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 60px 120px rgba(30, 26, 22, 0.32),
+          0 20px 40px rgba(30, 26, 22, 0.16);
+        transform: translateY(30px) scale(0.95);
+        transition: transform 0.5s var(--ease-spring);
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+      }
+
+      .wl-overlay.active .wl-modal {
+        transform: translateY(0) scale(1);
+      }
+
+      .wl-modal__close {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--ink-3);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        padding: 0;
+        line-height: 1;
+      }
+
+      .wl-modal__close:hover {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        transform: rotate(90deg);
+      }
+
+      .wl-modal__head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 16px;
+        margin-bottom: 26px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .wl-modal__eyebrow {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+      }
+
+      .wl-modal__index {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 14px;
+        color: var(--ink-3);
+        letter-spacing: 0.02em;
+      }
+
+      .wl-modal__title {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-size: clamp(26px, 3.4vw, 34px);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 28px;
+      }
+
+      .wl-modal__title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      /* Field */
+      .wl-field {
+        margin-bottom: 20px;
+      }
+
+      .wl-field__label {
+        display: block;
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 10px;
+        padding-left: 0.2em;
+      }
+
+      .wl-field__hint {
+        font-family: var(--font-sans);
+        font-size: 10px;
+        font-weight: 400;
+        letter-spacing: 0.04em;
+        text-transform: none;
+        color: var(--ink-4);
+        margin-left: 6px;
+      }
+
+      .wl-input,
+      .wl-textarea {
+        width: 100%;
+        padding: 14px 16px;
+        font-family: var(--font-serif);
+        font-size: 16px;
+        line-height: 1.5;
+        color: var(--ink);
+        background: var(--surface-2);
+        border: 1px solid var(--line-2);
+        border-radius: 12px;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s,
+          background 0.2s;
+        -webkit-appearance: none;
+        appearance: none;
+        box-sizing: border-box;
+      }
+
+      .wl-textarea {
+        resize: vertical;
+        min-height: 72px;
+        font-style: italic;
+      }
+
+      .wl-input:focus,
+      .wl-textarea:focus {
+        outline: none;
+        border-color: var(--rose-deep);
+        background: var(--surface);
+        box-shadow: 0 0 0 4px rgba(143, 100, 114, 0.1);
+      }
+
+      /* Emoji palette */
+      .wl-emoji-palette {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 14px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+
+      .wl-emoji-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        cursor: pointer;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s var(--ease);
+        padding: 0;
+        line-height: 1;
+      }
+
+      .wl-emoji-btn:hover {
+        transform: translateY(-2px) scale(1.06);
+        border-color: var(--rose-deep);
+        background: var(--surface-2);
+      }
+
+      .wl-emoji-btn.selected {
+        background: var(--ink);
+        border-color: var(--ink);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 6px 14px rgba(30, 26, 22, 0.22);
+        transform: scale(1.08);
+      }
+
+      /* Priority */
+      .wl-priority {
+        display: flex;
+        gap: 8px;
+      }
+
+      .wl-priority__btn {
+        flex: 1;
+        padding: 12px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--line-2);
+        background: var(--surface-2);
+        color: var(--ink-3);
+        font-family: var(--font-sans);
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .wl-priority__btn .stars {
+        font-size: 13px;
+        letter-spacing: 1px;
+      }
+
+      .wl-priority__btn:hover {
+        border-color: var(--rose);
+        color: var(--ink);
+      }
+
+      .wl-priority__btn.selected {
+        background: linear-gradient(160deg, #f2e4e7 0%, #e8d4d8 100%);
+        border-color: var(--rose-deep);
+        color: var(--ink);
+        box-shadow: 0 6px 14px rgba(143, 100, 114, 0.15);
+      }
+
+      .wl-priority__btn.selected[data-p="3"] {
+        background: linear-gradient(160deg, #fbf1d8 0%, #ecd39a 100%);
+        border-color: #8a6f4d;
+      }
+
+      /* Why field */
+      .wl-why-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: transparent;
+        border: 1px dashed var(--line-2);
+        color: var(--ink-3);
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        margin-bottom: 12px;
+      }
+
+      .wl-why-toggle:hover {
+        border-color: var(--rose-deep);
+        color: var(--rose-deep);
+        background: rgba(232, 212, 216, 0.25);
+      }
+
+      .wl-why-wrap {
+        display: none;
+      }
+
+      .wl-why-wrap.visible {
+        display: block;
+        animation: wlSlide 0.3s var(--ease);
+      }
+
+      @keyframes wlSlide {
+        from {
+          opacity: 0;
+          transform: translateY(-6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .wl-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+        padding-top: 22px;
+        border-top: 1px solid var(--line);
+      }
+
+      .wl-actions__btn {
+        flex: 1;
+        padding: 15px 24px;
+        border-radius: 999px;
+        border: none;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: all 0.35s var(--ease);
+      }
+
+      .wl-actions__btn--cancel {
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+      }
+
+      .wl-actions__btn--cancel:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+      }
+
+      .wl-actions__btn--save {
+        background: var(--ink);
+        color: var(--paper);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 8px 20px rgba(30, 26, 22, 0.2);
+      }
+
+      .wl-actions__btn--save:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 14px 32px rgba(30, 26, 22, 0.28);
+      }
+
+      .wl-actions__btn--save:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* ★ Cloud modal styles */
+      .cloud-instructions {
+        padding: 16px 18px;
+        background: linear-gradient(135deg, #fbf1d8 0%, #f7f0e6 100%);
+        border: 1px solid rgba(184, 153, 104, 0.3);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-family: var(--font-sans);
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--ink-2);
+      }
+
+      .cloud-instructions b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      .cloud-instructions code {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        padding: 1px 5px;
+        background: rgba(30, 26, 22, 0.06);
+        border-radius: 4px;
+        color: var(--rose-deep);
+      }
+
+      .cloud-instructions ol {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+
+      .cloud-instructions li {
+        margin-bottom: 4px;
+      }
+
+      .cloud-warning {
+        padding: 12px 16px;
+        background: rgba(196, 43, 33, 0.08);
+        border: 1px solid rgba(196, 43, 33, 0.25);
+        border-left: 3px solid #c42b21;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-family: var(--font-sans);
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: #7a1e18;
+      }
+
+      .cloud-status {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        margin-bottom: 18px;
+        font-family: var(--font-sans);
+        font-size: 12.5px;
+        color: var(--ink-2);
+      }
+
+      .cloud-status__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(30, 26, 22, 0.25);
+        flex-shrink: 0;
+      }
+
+      .cloud-status__dot.ok {
+        background: #2a9d55;
+        box-shadow: 0 0 0 3px rgba(42, 157, 85, 0.15);
+      }
+      .cloud-status__dot.err {
+        background: #c42b21;
+        box-shadow: 0 0 0 3px rgba(196, 43, 33, 0.15);
+      }
+
+      .cloud-actions-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .cloud-action-btn {
+        padding: 13px 18px;
+        border-radius: 12px;
+        border: 1px solid var(--line-2);
+        background: var(--surface-2);
+        color: var(--ink-2);
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .cloud-action-btn:hover {
+        background: var(--surface);
+        border-color: var(--ink-3);
+        color: var(--ink);
+        transform: translateY(-1px);
+      }
+
+      .cloud-action-btn--primary {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+      }
+
+      .cloud-action-btn--primary:hover {
+        background: #000;
+        border-color: #000;
+        color: var(--paper);
+      }
+
+      .cloud-action-btn--danger {
+        color: #c42b21;
+        border-color: rgba(196, 43, 33, 0.25);
+      }
+
+      .cloud-action-btn--danger:hover {
+        background: rgba(196, 43, 33, 0.08);
+        border-color: #c42b21;
+        color: #a01b22;
+      }
+
+      /* ============================================================
+         CONFIRM MODAL
+         ============================================================ */
+      .confirm-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 5100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(30, 26, 22, 0.5);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        opacity: 0;
+        transition: opacity 0.3s var(--ease);
+      }
+
+      .confirm-overlay.active {
+        display: flex;
+        opacity: 1;
+      }
+
+      .confirm-box {
+        width: 100%;
+        max-width: 380px;
+        padding: 32px 28px 24px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 16px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 40px 80px rgba(30, 26, 22, 0.32);
+        text-align: center;
+        transform: scale(0.94);
+        transition: transform 0.4s var(--ease-spring);
+      }
+
+      .confirm-overlay.active .confirm-box {
+        transform: scale(1);
+      }
+
+      .confirm-box__emoji {
+        font-size: 40px;
+        margin-bottom: 12px;
+        display: block;
+        filter: saturate(0.8);
+      }
+
+      .confirm-box__title {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-size: 22px;
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0 0 10px;
+      }
+
+      .confirm-box__text {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 14px;
+        line-height: 1.55;
+        color: var(--ink-3);
+        margin: 0 0 22px;
+      }
+
+      .confirm-box__actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .confirm-box__btn {
+        flex: 1;
+        padding: 13px 20px;
+        border-radius: 999px;
+        border: none;
+        font-family: var(--font-sans);
+        font-size: 13.5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+      }
+
+      .confirm-box__btn--no {
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+      }
+
+      .confirm-box__btn--no:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+      }
+
+      .confirm-box__btn--yes {
+        background: #c42b21;
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(196, 43, 33, 0.28);
+      }
+
+      .confirm-box__btn--yes:hover {
+        background: #a01b22;
+        transform: translateY(-1px);
+        box-shadow: 0 12px 26px rgba(196, 43, 33, 0.4);
+      }
+
+      /* ============================================================
+         SHARE BANNER
+         ============================================================ */
+      .share-banner {
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%) translateY(140%);
+        z-index: 4000;
+        max-width: calc(100vw - 32px);
+        padding: 16px 20px;
+        background: var(--ink);
+        color: var(--paper);
+        border-radius: 14px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 24px 48px rgba(30, 26, 22, 0.32);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: transform 0.5s var(--ease-spring);
+        font-size: 13.5px;
+        line-height: 1.4;
+      }
+
+      .share-banner.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .share-banner__text {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .share-banner__btn {
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: var(--rose);
+        color: #fff;
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .share-banner__btn:hover {
+        background: #a87b88;
+        transform: scale(1.04);
+      }
+
+      /* ============================================================
+         RESPONSIVE
+         ============================================================ */
+      @media (max-width: 640px) {
+        .actions-bar {
+          margin-top: 32px;
+          margin-bottom: 24px;
+          gap: 10px;
+        }
+        .actions-left,
+        .actions-right {
+          width: 100%;
+        }
+        .btn-add {
+          padding: 14px 22px;
+          font-size: 14px;
+          flex: 1;
+          justify-content: center;
+        }
+        .btn-ghost-sm {
+          padding: 10px 14px;
+          font-size: 12px;
+          flex: 1;
+          justify-content: center;
+        }
+        .filters-bar {
+          padding-bottom: 16px;
+          margin-bottom: 22px;
+        }
+        .filter-btn {
+          padding: 8px 14px;
+          font-size: 12px;
+        }
+        .cards-grid {
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+        .wish-card {
+          padding: 20px 18px 18px;
+        }
+        .wish-card__emoji {
+          width: 44px;
+          height: 44px;
+          font-size: 22px;
+        }
+        .wish-card__title {
+          font-size: 18px;
+        }
+        .wish-card__note {
+          font-size: 13.5px;
+        }
+        .summary {
+          padding: 24px 20px;
+        }
+        .summary__stats {
+          gap: 20px;
+        }
+        .summary__stat-value {
+          font-size: 26px;
+        }
+        .wl-modal {
+          padding: 32px 22px 24px;
+        }
+        .wl-modal__title {
+          font-size: 22px;
+        }
+        .wl-emoji-btn {
+          width: 34px;
+          height: 34px;
+          font-size: 18px;
+        }
+        .wl-priority__btn {
+          padding: 10px 8px;
+          font-size: 11.5px;
+        }
+        .share-banner {
+          flex-direction: column;
+          align-items: stretch;
+          text-align: center;
+        }
+        .share-banner__btn {
+          width: 100%;
+        }
+        .cloud-actions-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .wish-card {
+          animation: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+        }
+        .btn-add--hinting {
+          animation: none !important;
+        }
+        .btn-cloud.syncing .cloud-dot {
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="eyebrow">32 · Список желаний твой, личный</span>
+        <h1>Мои <em>желания</em></h1>
+        <p class="hero-sub">
+          Пиши сюда всё, что хочешь в подарок. Хранится в браузере — и в облаке.
+          С любого устройства — с тем же списком.
+        </p>
+      </section>
+
+      <div class="actions-bar">
+        <div class="actions-left">
+          <button class="btn-add" id="btnAdd">
+            <span class="plus">+</span>
+            <span>Добавить желание</span>
+          </button>
+        </div>
+        <div class="actions-right">
+          <button
+            class="btn-ghost-sm btn-cloud"
+            id="btnCloud"
+            title="Настроить синхронизацию"
+          >
+            <span class="icon">☁️</span>
+            <span id="cloudLabel">Облако</span>
+            <span class="cloud-dot"></span>
+          </button>
+          <button
+            class="btn-ghost-sm"
+            id="btnShare"
+            title="Скопировать ссылку со списком"
+          >
+            <span class="icon">🔗</span>
+            <span>Поделиться</span>
+          </button>
+          <button class="btn-ghost-sm" id="btnExport" title="Скачать файл">
+            <span class="icon">📤</span>
+            <span>Экспорт</span>
+          </button>
+          <button class="btn-ghost-sm" id="btnImport" title="Загрузить файл">
+            <span class="icon">📥</span>
+            <span>Импорт</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">Все</button>
+          <button class="filter-btn" data-filter="dreams">Мечты</button>
+        </div>
+        <span class="counter" id="counterLine"> Всего: <b>0</b> </span>
+      </div>
+
+      <div id="cardsContainer"></div>
+
+      <div class="summary" id="summary" style="display: none">
+        <div class="summary__stats">
+          <div class="summary__stat">
+            <span class="summary__stat-value" id="statTotal">0</span>
+            <span class="summary__stat-label">желаний</span>
+          </div>
+          <div class="summary__stat">
+            <span class="summary__stat-value" id="statDreams">0</span>
+            <span class="summary__stat-label">мечт</span>
+          </div>
+          <div class="summary__stat">
+            <span class="summary__stat-value" id="statP3">0</span>
+            <span class="summary__stat-label">очень срочных</span>
+          </div>
+        </div>
+        <p class="summary__note">
+          Твой список — только твой. Хранится и у тебя в браузере, и в облаке.
+        </p>
+      </div>
+
+      <nav class="auto-nav" data-nav="surprise,album,home"></nav>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Список хранится в облаке</span>
+    </footer>
+
+    <!-- ============================================================
+         MODAL: добавление / редактирование
+         ============================================================ -->
+    <div class="wl-overlay" id="wlOverlay">
+      <div class="wl-modal">
+        <button class="wl-modal__close" id="wlClose" aria-label="Закрыть">
+          ✕
+        </button>
+
+        <div class="wl-modal__head">
+          <span class="wl-modal__eyebrow" id="wlEyebrow">Новое желание</span>
+          <span class="wl-modal__index" id="wlIndex">№ —</span>
+        </div>
+
+        <h2 class="wl-modal__title" id="wlTitle">Что бы ты <em>хотела</em>?</h2>
+
+        <div class="wl-field">
+          <label class="wl-field__label">Эмодзи</label>
+          <div class="wl-emoji-palette" id="emojiPalette"></div>
+        </div>
+
+        <div class="wl-field">
+          <label class="wl-field__label" for="wishTitleInput">
+            Название <span class="wl-field__hint">до 100 символов</span>
+          </label>
+          <input
+            type="text"
+            class="wl-input"
+            id="wishTitleInput"
+            maxlength="100"
+            placeholder="Например: Большой плюшевый кот"
+          />
+        </div>
+
+        <div class="wl-field">
+          <label class="wl-field__label" for="wishNoteInput">
+            Заметка <span class="wl-field__hint">до 500 символов</span>
+          </label>
+          <textarea
+            class="wl-textarea"
+            id="wishNoteInput"
+            maxlength="500"
+            placeholder="Цвет, размер, где видела — всё, что важно"
+          ></textarea>
+        </div>
+
+        <div class="wl-field">
+          <label class="wl-field__label">Как сильно хочешь?</label>
+          <div class="wl-priority" id="priorityGroup">
+            <button type="button" class="wl-priority__btn selected" data-p="1">
+              <span class="stars">🤍</span>
+              <span>Просто хочу</span>
+            </button>
+            <button type="button" class="wl-priority__btn" data-p="2">
+              <span class="stars">💗💗</span>
+              <span>Очень хочу</span>
+            </button>
+            <button type="button" class="wl-priority__btn" data-p="3">
+              <span class="stars">✨✨✨</span>
+              <span>Мечта!</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="wl-field">
+          <button type="button" class="wl-why-toggle" id="whyToggle">
+            <span>＋</span>
+            <span>Добавить «почему»</span>
+          </button>
+          <div class="wl-why-wrap" id="whyWrap">
+            <label class="wl-field__label" for="wishWhyInput">
+              Почему хочу <span class="wl-field__hint">до 200 символов</span>
+            </label>
+            <input
+              type="text"
+              class="wl-input"
+              id="wishWhyInput"
+              maxlength="200"
+              placeholder="Маленькая история об этом желании"
+            />
+          </div>
+        </div>
+
+        <div class="wl-actions">
+          <button class="wl-actions__btn wl-actions__btn--cancel" id="wlCancel">
+            Отмена
+          </button>
+          <button
+            class="wl-actions__btn wl-actions__btn--save"
+            id="wlSave"
+            disabled
+          >
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL: Cloud Setup
+         ============================================================ -->
+    <div class="wl-overlay" id="cloudOverlay">
+      <div class="wl-modal">
+        <button class="wl-modal__close" id="cloudClose" aria-label="Закрыть">
+          ✕
+        </button>
+
+        <div class="wl-modal__head">
+          <span class="wl-modal__eyebrow">Синхронизация</span>
+          <span class="wl-modal__index" id="cloudStatusIndicator">☁️</span>
+        </div>
+
+        <h2 class="wl-modal__title">Облако <em>через GitHub Gist</em></h2>
+
+        <!-- Инструкция при первом подключении -->
+        <div id="cloudSetupBlock">
+          <div class="cloud-instructions">
+            <b>Как подключить (один раз, 2 минуты):</b>
+            <ol>
+              <li>
+                Открой
+                <a
+                  href="https://github.com/settings/tokens/new?scopes=gist&description=Wishlist%20for%20Veronika"
+                  target="_blank"
+                  rel="noopener"
+                  style="color: var(--rose-deep); text-decoration: underline"
+                  >github.com/settings/tokens/new</a
+                >
+              </li>
+              <li>Название — любое. Поставь галочку <code>gist</code>.</li>
+              <li>Нажми <b>Generate token</b> (внизу страницы).</li>
+              <li>Скопируй токен — он показывается один раз.</li>
+              <li>Вставь его сюда ↓ и нажми «Подключить».</li>
+            </ol>
+          </div>
+
+          <div class="cloud-warning">
+            ⚠️ Токен хранится только в этом браузере. Если сомневаешься —
+            создавай <b>fine-grained token</b> с доступом только к Gists.
+            Отозвать можно в любой момент в настройках GitHub.
+          </div>
+
+          <div class="wl-field">
+            <label class="wl-field__label" for="cloudTokenInput">
+              GitHub токен
+              <span class="wl-field__hint"
+                >начинается на ghp_ или github_pat_</span
+              >
+            </label>
+            <input
+              type="password"
+              class="wl-input"
+              id="cloudTokenInput"
+              placeholder="ghp_..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+
+          <div class="wl-actions">
+            <button
+              class="wl-actions__btn wl-actions__btn--cancel"
+              id="cloudCancel"
+            >
+              Отмена
+            </button>
+            <button
+              class="wl-actions__btn wl-actions__btn--save"
+              id="cloudConnect"
+            >
+              Подключить
+            </button>
+          </div>
+        </div>
+
+        <!-- Управление, когда подключено -->
+        <div id="cloudManageBlock" style="display: none">
+          <div class="cloud-status" id="cloudStatus">
+            <span class="cloud-status__dot" id="cloudStatusDot"></span>
+            <span id="cloudStatusText">Проверяю подключение…</span>
+          </div>
+
+          <div class="cloud-actions-row">
+            <button
+              class="cloud-action-btn cloud-action-btn--primary"
+              id="cloudSync"
+            >
+              <span>🔄</span>
+              <span>Синхронизировать</span>
+            </button>
+            <button class="cloud-action-btn" id="cloudPush">
+              <span>⬆️</span>
+              <span>Загрузить в облако</span>
+            </button>
+            <button class="cloud-action-btn" id="cloudPull">
+              <span>⬇️</span>
+              <span>Скачать из облака</span>
+            </button>
+            <button class="cloud-action-btn" id="cloudTest">
+              <span>🧪</span>
+              <span>Проверить связь</span>
+            </button>
+          </div>
+
+          <div class="wl-field" style="margin-top: 20px">
+            <label class="wl-field__label">
+              Gist ID
+              <span class="wl-field__hint"
+                >на случай, если нужно ввести вручную на другом устройстве</span
+              >
+            </label>
+            <input
+              type="text"
+              class="wl-input"
+              id="cloudGistId"
+              placeholder="abc123def456..."
+              readonly
+              spellcheck="false"
+              style="font-family: var(--font-mono); font-size: 13px"
+            />
+          </div>
+
+          <button
+            class="cloud-action-btn cloud-action-btn--danger"
+            id="cloudDisconnect"
+            style="width: 100%; margin-top: 8px"
+          >
+            <span>🚪</span>
+            <span>Отключить облако</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         CONFIRM: удаление
+         ============================================================ -->
+    <div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-box">
+        <span class="confirm-box__emoji">🗑️</span>
+        <h3 class="confirm-box__title">Удалить желание?</h3>
+        <p class="confirm-box__text" id="confirmText">
+          Это действие нельзя отменить.
+        </p>
+        <div class="confirm-box__actions">
+          <button class="confirm-box__btn confirm-box__btn--no" id="confirmNo">
+            Оставить
+          </button>
+          <button
+            class="confirm-box__btn confirm-box__btn--yes"
+            id="confirmYes"
+          >
+            Удалить
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHARE BANNER -->
+    <div class="share-banner" id="shareBanner">
+      <span class="share-banner__text" id="shareBannerText">
+        Ссылка скопирована. Отправляй только тому, кому доверяешь.
+      </span>
+      <button class="share-banner__btn" id="shareBannerOk">Понятно</button>
+    </div>
+
+    <input
+      type="file"
+      id="fileInput"
+      accept=".json,application/json"
+      style="display: none"
+    />
+
+    <script src="shared/widgets.js" defer></script>
+
+    <script>
+      /* ============================================================
+         МОИ ЖЕЛАНИЯ · логика страницы
+         Хранение: localStorage + GitHub Gist
+         ============================================================ */
+      (function () {
+        "use strict";
+
+        /* ---------- КОНСТАНТЫ ---------- */
+        const STORAGE_KEY = "wishlist_v1";
+        const BACKUP_KEY_PREFIX = "wishlist_backup_";
+        const BACKUP_SLOTS = 5;
+        const AUTO_SAVE_MS = 30000;
+
+        const CLOUD_CONFIG_KEY = "wishlist_cloud_v1";
+        const GIST_FILENAME = "wishlist.json";
+        const GIST_DESCRIPTION = "Wishlist for Veronika";
+        const GIST_API = "https://api.github.com/gists";
+
+        const EMOJI_LIST = [
+          "🎁",
+          "🎀",
+          "💍",
+          "🌸",
+          "✈️",
+          "📱",
+          "💄",
+          "👗",
+          "🍰",
+          "📚",
+          "🎮",
+          "💐",
+          "🕯️",
+          "🪞",
+          "🧸",
+          "🍫",
+          "🎧",
+          "💻",
+          "🌷",
+          "💎",
+          "🎨",
+          "🚗",
+          "🏠",
+          "🐱",
+          "🥂",
+          "💖",
+          "✨",
+          "🌟",
+          "🍕",
+          "🎡",
+        ];
+
+        /* ---------- УТИЛИТЫ ---------- */
+        function uid() {
+          return (
+            Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
+          );
+        }
+
+        function safeGet(key, fallback) {
+          try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return fallback;
+            return JSON.parse(raw);
+          } catch (e) {
+            return fallback;
+          }
+        }
+
+        function safeSet(key, value) {
+          try {
+            localStorage.setItem(key, JSON.stringify(value));
+            return true;
+          } catch (e) {
+            return false;
+          }
+        }
+
+        function escapeHtml(s) {
+          return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+
+        function decl(n, one, few, many) {
+          const m10 = n % 10;
+          const m100 = n % 100;
+          if (m10 === 1 && m100 !== 11) return one;
+          if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+          return many;
+        }
+
+        /* ---------- СОСТОЯНИЕ ---------- */
+        let wishes = [];
+        let editingId = null;
+        let pendingDeleteId = null;
+        let currentFilter = "all";
+        let selectedEmoji = EMOJI_LIST[0];
+        let selectedPriority = 1;
+
+        /* ---------- DOM ---------- */
+        const cardsContainer = document.getElementById("cardsContainer");
+        const counterLine = document.getElementById("counterLine");
+        const summary = document.getElementById("summary");
+        const statTotal = document.getElementById("statTotal");
+        const statDreams = document.getElementById("statDreams");
+        const statP3 = document.getElementById("statP3");
+
+        const btnAdd = document.getElementById("btnAdd");
+        const btnCloud = document.getElementById("btnCloud");
+        const btnShare = document.getElementById("btnShare");
+        const btnExport = document.getElementById("btnExport");
+        const btnImport = document.getElementById("btnImport");
+        const fileInput = document.getElementById("fileInput");
+        const cloudLabel = document.getElementById("cloudLabel");
+
+        const wlOverlay = document.getElementById("wlOverlay");
+        const wlClose = document.getElementById("wlClose");
+        const wlCancel = document.getElementById("wlCancel");
+        const wlSave = document.getElementById("wlSave");
+        const wlEyebrow = document.getElementById("wlEyebrow");
+        const wlIndex = document.getElementById("wlIndex");
+        const wlTitle = document.getElementById("wlTitle");
+        const emojiPalette = document.getElementById("emojiPalette");
+        const wishTitleInput = document.getElementById("wishTitleInput");
+        const wishNoteInput = document.getElementById("wishNoteInput");
+        const wishWhyInput = document.getElementById("wishWhyInput");
+        const priorityGroup = document.getElementById("priorityGroup");
+        const whyToggle = document.getElementById("whyToggle");
+        const whyWrap = document.getElementById("whyWrap");
+
+        const cloudOverlay = document.getElementById("cloudOverlay");
+        const cloudClose = document.getElementById("cloudClose");
+        const cloudCancel = document.getElementById("cloudCancel");
+        const cloudConnect = document.getElementById("cloudConnect");
+        const cloudTokenInput = document.getElementById("cloudTokenInput");
+        const cloudSetupBlock = document.getElementById("cloudSetupBlock");
+        const cloudManageBlock = document.getElementById("cloudManageBlock");
+        const cloudStatusIndicator = document.getElementById(
+          "cloudStatusIndicator",
+        );
+        const cloudStatus = document.getElementById("cloudStatus");
+        const cloudStatusDot = document.getElementById("cloudStatusDot");
+        const cloudStatusText = document.getElementById("cloudStatusText");
+        const cloudSync = document.getElementById("cloudSync");
+        const cloudPush = document.getElementById("cloudPush");
+        const cloudPull = document.getElementById("cloudPull");
+        const cloudTest = document.getElementById("cloudTest");
+        const cloudDisconnect = document.getElementById("cloudDisconnect");
+        const cloudGistId = document.getElementById("cloudGistId");
+
+        const confirmOverlay = document.getElementById("confirmOverlay");
+        const confirmText = document.getElementById("confirmText");
+        const confirmNo = document.getElementById("confirmNo");
+        const confirmYes = document.getElementById("confirmYes");
+
+        const shareBanner = document.getElementById("shareBanner");
+        const shareBannerText = document.getElementById("shareBannerText");
+        const shareBannerOk = document.getElementById("shareBannerOk");
+
+        /* ============================================================
+           ХРАНИЛИЩЕ (localStorage)
+           ============================================================ */
+        function loadWishes() {
+          const data = safeGet(STORAGE_KEY, []);
+          if (!Array.isArray(data)) return [];
+          return data.filter(
+            (w) => w && typeof w.id === "string" && typeof w.title === "string",
+          );
+        }
+
+        function saveWishes(silent) {
+          const ok = safeSet(STORAGE_KEY, wishes);
+          if (!ok && !silent && window.toast) {
+            window.toast(
+              "😔 Не хватило места в браузере — экспортируй список",
+              3500,
+            );
+          }
+          return ok;
+        }
+
+        let backupTick = 0;
+        function makeBackup() {
+          try {
+            const key = BACKUP_KEY_PREFIX + (backupTick % BACKUP_SLOTS);
+            backupTick++;
+            localStorage.setItem(
+              key,
+              JSON.stringify({ ts: Date.now(), data: wishes }),
+            );
+          } catch (e) {}
+        }
+
+        /* ============================================================
+           CLOUD SYNC через GitHub Gist
+           ============================================================ */
+        const cloud = {
+          config: safeGet(CLOUD_CONFIG_KEY, null) || null,
+          syncing: false,
+
+          isConfigured() {
+            return !!(this.config && this.config.token);
+          },
+
+          save() {
+            if (this.config) {
+              safeSet(CLOUD_CONFIG_KEY, this.config);
+            } else {
+              try {
+                localStorage.removeItem(CLOUD_CONFIG_KEY);
+              } catch (e) {}
+            }
+          },
+
+          headers() {
+            return {
+              Accept: "application/vnd.github+json",
+              Authorization: "Bearer " + this.config.token,
+              "X-GitHub-Api-Version": "2022-11-28",
+              "Content-Type": "application/json",
+            };
+          },
+
+          payload() {
+            return {
+              version: 1,
+              updatedAt: new Date().toISOString(),
+              wishes: wishes.map((w) => ({
+                id: w.id,
+                emoji: w.emoji,
+                title: w.title,
+                note: w.note || "",
+                why: w.why || "",
+                priority: w.priority || 1,
+                createdAt: w.createdAt || Date.now(),
+                updatedAt: w.updatedAt || w.createdAt || Date.now(),
+                version: w.version || 1,
+              })),
+            };
+          },
+
+          /* Создать новый Gist */
+          async createGist() {
+            const res = await fetch(GIST_API, {
+              method: "POST",
+              headers: this.headers(),
+              body: JSON.stringify({
+                description: GIST_DESCRIPTION,
+                public: false,
+                files: {
+                  [GIST_FILENAME]: {
+                    content: JSON.stringify(this.payload(), null, 2),
+                  },
+                },
+              }),
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.message || "HTTP " + res.status);
+            }
+            const data = await res.json();
+            this.config.gistId = data.id;
+            this.config.lastSync = Date.now();
+            this.save();
+            return data;
+          },
+
+          /* Обновить существующий Gist */
+          async push() {
+            if (!this.config.gistId) {
+              return this.createGist();
+            }
+            const res = await fetch(GIST_API + "/" + this.config.gistId, {
+              method: "PATCH",
+              headers: this.headers(),
+              body: JSON.stringify({
+                files: {
+                  [GIST_FILENAME]: {
+                    content: JSON.stringify(this.payload(), null, 2),
+                  },
+                },
+              }),
+            });
+            if (res.status === 404) {
+              // Gist удалён — создаём новый
+              this.config.gistId = null;
+              this.save();
+              return this.createGist();
+            }
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.message || "HTTP " + res.status);
+            }
+            const data = await res.json();
+            this.config.lastSync = Date.now();
+            this.save();
+            return data;
+          },
+
+          /* Скачать Gist */
+          async pull() {
+            if (!this.config.gistId) return null;
+            const res = await fetch(GIST_API + "/" + this.config.gistId, {
+              method: "GET",
+              headers: this.headers(),
+            });
+            if (res.status === 404) {
+              throw new Error("Gist не найден (удалён?)");
+            }
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.message || "HTTP " + res.status);
+            }
+            const data = await res.json();
+            const file = data.files && data.files[GIST_FILENAME];
+            if (!file || !file.content) return null;
+            try {
+              return JSON.parse(file.content);
+            } catch (e) {
+              throw new Error("Повреждённое содержимое Gist");
+            }
+          },
+
+          /* Проверка соединения */
+          async test() {
+            const res = await fetch("https://api.github.com/user", {
+              method: "GET",
+              headers: this.headers(),
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.message || "HTTP " + res.status);
+            }
+            return await res.json();
+          },
+
+          /* Умный sync: merge local + remote по ID */
+          async sync() {
+            if (this.syncing)
+              return { ok: false, reason: "уже синхронизируется" };
+            this.syncing = true;
+            setCloudUI("syncing", "Синхронизация…");
+
+            try {
+              let remote = null;
+              if (this.config.gistId) {
+                remote = await this.pull();
+              }
+
+              if (!remote || !Array.isArray(remote.wishes)) {
+                // Нет облачных данных — заливаем локальные
+                await this.push();
+                setCloudUI(
+                  "ok",
+                  "Облако подключено · " +
+                    wishes.length +
+                    " " +
+                    decl(wishes.length, "желание", "желания", "желаний"),
+                );
+                return { ok: true, pushed: wishes.length };
+              }
+
+              // Merge: по ID, где updatedAt новее — тот и победил
+              const byId = new Map();
+              (remote.wishes || []).forEach((w) => {
+                if (w && w.id) byId.set(w.id, w);
+              });
+              let added = 0,
+                updated = 0;
+              wishes.forEach((localW) => {
+                const remoteW = byId.get(localW.id);
+                if (!remoteW) {
+                  byId.set(localW.id, {
+                    id: localW.id,
+                    emoji: localW.emoji,
+                    title: localW.title,
+                    note: localW.note || "",
+                    why: localW.why || "",
+                    priority: localW.priority || 1,
+                    createdAt: localW.createdAt || Date.now(),
+                    updatedAt: localW.updatedAt || Date.now(),
+                    version: 1,
+                  });
+                  added++;
+                } else {
+                  const lT = localW.updatedAt || localW.createdAt || 0;
+                  const rT = remoteW.updatedAt || remoteW.createdAt || 0;
+                  if (lT > rT) {
+                    byId.set(localW.id, {
+                      ...remoteW,
+                      emoji: localW.emoji,
+                      title: localW.title,
+                      note: localW.note || "",
+                      why: localW.why || "",
+                      priority: localW.priority || 1,
+                      updatedAt: lT,
+                    });
+                    updated++;
+                  }
+                }
+              });
+
+              // Восстанавливаем объект
+              const merged = Array.from(byId.values())
+                .map((w) => ({
+                  id: w.id,
+                  emoji: w.emoji || "🎁",
+                  title: w.title || "",
+                  note: w.note || "",
+                  why: w.why || "",
+                  priority: Math.max(1, Math.min(3, w.priority || 1)),
+                  createdAt: w.createdAt || Date.now(),
+                  updatedAt: w.updatedAt || Date.now(),
+                  version: w.version || 1,
+                }))
+                .filter((w) => w.title);
+
+              const hadChanges =
+                merged.length !== wishes.length || added > 0 || updated > 0;
+              if (hadChanges) {
+                wishes = merged;
+                saveWishes();
+                makeBackup();
+                render();
+              }
+
+              await this.push();
+              this.config.lastSync = Date.now();
+              this.save();
+
+              setCloudUI(
+                "ok",
+                "Синхронизировано · " +
+                  wishes.length +
+                  " " +
+                  decl(wishes.length, "желание", "желания", "желаний"),
+              );
+              if (window.toast) {
+                const bits = [];
+                if (added) bits.push("+" + added);
+                if (updated) bits.push("~" + updated);
+                const msg = bits.length
+                  ? "🔄 " + bits.join(" ")
+                  : "✅ Уже синхронизировано";
+                window.toast(msg, 2200);
+              }
+              return { ok: true, added, updated, total: wishes.length };
+            } catch (e) {
+              setCloudUI("error", "Ошибка: " + e.message);
+              if (window.toast) window.toast("☁️ " + e.message, 3500);
+              return { ok: false, error: e.message };
+            } finally {
+              this.syncing = false;
+            }
+          },
+
+          /* Принудительно залить */
+          async pushForce() {
+            if (!this.isConfigured()) return;
+            setCloudUI("syncing", "Загрузка в облако…");
+            try {
+              await this.push();
+              setCloudUI(
+                "ok",
+                "Загружено в облако · " +
+                  new Date().toLocaleTimeString("ru-RU", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+              );
+              if (window.toast) window.toast("☁️ Загружено в облако", 2200);
+            } catch (e) {
+              setCloudUI("error", "Ошибка: " + e.message);
+              if (window.toast) window.toast("☁️ " + e.message, 3500);
+            }
+          },
+
+          /* Принудительно скачать (с заменой) */
+          async pullForce() {
+            if (!this.isConfigured() || !this.config.gistId) {
+              if (window.toast) window.toast("Сначала подключи облако", 2000);
+              return;
+            }
+            setCloudUI("syncing", "Скачивание из облака…");
+            try {
+              const remote = await this.pull();
+              if (!remote || !Array.isArray(remote.wishes)) {
+                throw new Error("В облаке нет данных");
+              }
+              const cleaned = remote.wishes
+                .filter((w) => w && w.title)
+                .map((w) => ({
+                  id: w.id || uid(),
+                  emoji: w.emoji || "🎁",
+                  title: String(w.title).slice(0, 100),
+                  note: String(w.note || "").slice(0, 500),
+                  why: String(w.why || "").slice(0, 200),
+                  priority: Math.max(1, Math.min(3, w.priority || 1)),
+                  createdAt: w.createdAt || Date.now(),
+                  updatedAt: w.updatedAt || Date.now(),
+                  version: w.version || 1,
+                }));
+
+              if (cleaned.length === 0) {
+                setCloudUI("ok", "Облако пустое");
+                return;
+              }
+
+              if (wishes.length > 0) {
+                const ok = window.confirm(
+                  `В облаке ${cleaned.length} ${decl(cleaned.length, "желание", "желания", "желаний")}. Заменить текущий список?`,
+                );
+                if (!ok) {
+                  setCloudUI("ok", "Отменено");
+                  return;
+                }
+              }
+              wishes = cleaned;
+              saveWishes();
+              makeBackup();
+              render();
+              setCloudUI("ok", "Скачано · " + wishes.length);
+              if (window.toast) window.toast("⬇️ Скачано из облака", 2200);
+            } catch (e) {
+              setCloudUI("error", "Ошибка: " + e.message);
+              if (window.toast) window.toast("☁️ " + e.message, 3500);
+            }
+          },
+
+          disconnect() {
+            this.config = null;
+            this.save();
+            setCloudUI("disconnected", "Не подключено");
+          },
+        };
+
+        function setCloudUI(state, text) {
+          // Кнопка в actions-bar
+          btnCloud.classList.remove("connected", "syncing", "error");
+          if (state === "ok") btnCloud.classList.add("connected");
+          else if (state === "syncing") btnCloud.classList.add("syncing");
+          else if (state === "error") btnCloud.classList.add("error");
+
+          cloudLabel.textContent =
+            state === "ok"
+              ? "Облако · вкл"
+              : state === "syncing"
+                ? "Синхронизация"
+                : state === "error"
+                  ? "Облако · ошибка"
+                  : "Облако";
+
+          // Статус-блок в модалке (если открыт)
+          if (cloudStatusDot && cloudStatusText) {
+            cloudStatusDot.classList.remove("ok", "err");
+            if (state === "ok") cloudStatusDot.classList.add("ok");
+            if (state === "error") cloudStatusDot.classList.add("err");
+            cloudStatusText.textContent = text || "—";
+          }
+
+          cloudStatusIndicator.textContent =
+            state === "ok"
+              ? "🟢"
+              : state === "error"
+                ? "🔴"
+                : state === "syncing"
+                  ? "🟡"
+                  : "☁️";
+        }
+
+        function openCloudModal() {
+          if (cloud.isConfigured()) {
+            cloudSetupBlock.style.display = "none";
+            cloudManageBlock.style.display = "block";
+            cloudGistId.value =
+              cloud.config.gistId ||
+              "(не задан — создастся при первой синхронизации)";
+            setCloudUI(
+              "ok",
+              "Подключено · " +
+                new Date(cloud.config.lastSync || Date.now()).toLocaleString(
+                  "ru-RU",
+                ),
+            );
+            // Проверка в фоне
+            cloud
+              .test()
+              .then((u) => {
+                setCloudUI("ok", "@" + (u.login || "user") + " · подключено");
+              })
+              .catch((e) => {
+                setCloudUI("error", "Токен не работает: " + e.message);
+              });
+          } else {
+            cloudSetupBlock.style.display = "block";
+            cloudManageBlock.style.display = "none";
+            cloudTokenInput.value = "";
+          }
+          cloudOverlay.classList.add("active");
+          document.body.style.overflow = "hidden";
+          if (!cloud.isConfigured()) {
+            setTimeout(() => cloudTokenInput.focus(), 300);
+          }
+        }
+
+        function closeCloudModal() {
+          cloudOverlay.classList.remove("active");
+          document.body.style.overflow = "";
+        }
+
+        async function doConnect() {
+          const token = cloudTokenInput.value.trim();
+          if (!token || token.length < 20) {
+            if (window.toast) window.toast("Вставь токен GitHub", 2200);
+            cloudTokenInput.focus();
+            return;
+          }
+          cloud.config = { token, gistId: null, lastSync: null };
+          cloud.save();
+          cloudConnect.disabled = true;
+          cloudConnect.textContent = "Проверяю…";
+
+          try {
+            const user = await cloud.test();
+            setCloudUI("ok", "@" + (user.login || "user"));
+            if (window.toast)
+              window.toast("☁️ Токен работает, подключаю…", 2000);
+
+            // Первая синхронизация: если у нас есть данные — создаём Gist
+            if (wishes.length > 0) {
+              await cloud.push();
+              if (window.toast)
+                window.toast("☁️ Облако подключено! Список загружен.", 2500);
+            } else {
+              if (window.toast)
+                window.toast(
+                  "☁️ Облако подключено. Добавь первое желание.",
+                  2500,
+                );
+            }
+            setCloudUI(
+              "ok",
+              "Подключено · " +
+                wishes.length +
+                " " +
+                decl(wishes.length, "желание", "желания", "желаний"),
+            );
+
+            // Обновляем UI модалки
+            cloudSetupBlock.style.display = "none";
+            cloudManageBlock.style.display = "block";
+            cloudGistId.value =
+              cloud.config.gistId || "(создастся при первой синхронизации)";
+          } catch (e) {
+            setCloudUI("error", "Ошибка: " + e.message);
+            if (window.toast) window.toast("☁️ " + e.message, 3500);
+            // Сброс токена
+            cloud.config = null;
+            cloud.save();
+          } finally {
+            cloudConnect.disabled = false;
+            cloudConnect.textContent = "Подключить";
+          }
+        }
+
+        /* ============================================================
+           РЕНДЕР
+           ============================================================ */
+        function getVisibleWishes() {
+          let list = wishes.slice();
+          if (currentFilter === "dreams") {
+            list = list.filter((w) => (w.priority || 1) >= 2);
+          }
+          list.sort((a, b) => {
+            const pa = a.priority || 1;
+            const pb = b.priority || 1;
+            if (pa !== pb) return pb - pa;
+            return (b.createdAt || 0) - (a.createdAt || 0);
+          });
+          return list;
+        }
+
+        function renderCard(w, idx) {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "wish-card";
+          if ((w.priority || 1) === 2) card.classList.add("wish-card--p2");
+          if ((w.priority || 1) === 3) card.classList.add("wish-card--p3");
+          card.style.animationDelay = Math.min(idx * 40, 500) + "ms";
+          card.dataset.id = w.id;
+          card.setAttribute("aria-label", "Редактировать: " + w.title);
+
+          const priority = w.priority || 1;
+          const stars = ["🤍", "💗", "✨"]
+            .map((emoji, i) => {
+              const on = i < priority ? " on" : "";
+              return `<span class="${on.trim()}">${emoji}</span>`;
+            })
+            .join("");
+
+          const dateStr = w.createdAt
+            ? new Date(w.createdAt).toLocaleDateString("ru-RU", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })
+            : "";
+
+          card.innerHTML = `
+            <div class="wish-card__head">
+              <span class="wish-card__emoji">${escapeHtml(w.emoji || "🎁")}</span>
+              <div class="wish-card__title-block">
+                <h3 class="wish-card__title">${escapeHtml(w.title)}</h3>
+                <div class="wish-card__priority" aria-hidden="true">${stars}</div>
+              </div>
+            </div>
+            ${w.note ? `<p class="wish-card__note">${escapeHtml(w.note)}</p>` : ""}
+            ${w.why ? `<p class="wish-card__why">« ${escapeHtml(w.why)} »</p>` : ""}
+            <div class="wish-card__foot">
+              <span class="wish-card__date">${escapeHtml(dateStr)}</span>
+              <span
+                class="wish-card__delete"
+                role="button"
+                tabindex="0"
+                aria-label="Удалить"
+                title="Удалить"
+                data-delete="${w.id}"
+              >🗑</span>
+            </div>
+          `;
+
+          card.addEventListener("click", (e) => {
+            if (e.target.closest("[data-delete]")) return;
+            openEdit(w.id);
+          });
+
+          const delBtn = card.querySelector("[data-delete]");
+          delBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            askDelete(w.id);
+          });
+          delBtn.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              askDelete(w.id);
+            }
+          });
+
+          return card;
+        }
+
+        function render() {
+          const list = getVisibleWishes();
+          cardsContainer.innerHTML = "";
+
+          if (list.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "empty-state";
+            const isFiltered = currentFilter !== "all" && wishes.length > 0;
+            if (isFiltered) {
+              empty.innerHTML = `
+                <span class="empty-state__emoji">🔍</span>
+                <h3 class="empty-state__title">Здесь пока пусто</h3>
+                <p class="empty-state__text">
+                  В этой категории желаний нет. Переключи фильтр «Все» — там всё.
+                </p>
+              `;
+            } else {
+              empty.innerHTML = `
+                <span class="empty-state__emoji">💫</span>
+                <h3 class="empty-state__title">Пока пусто</h3>
+                <p class="empty-state__text">
+                  Начни с одного желания. Маленького или большого. Любого — я
+                  приму всё.
+                </p>
+                <button class="btn-add" onclick="document.getElementById('btnAdd').click()">
+                  <span class="plus">+</span>
+                  <span>Добавить первое желание</span>
+                </button>
+              `;
+            }
+            cardsContainer.appendChild(empty);
+          } else {
+            const grid = document.createElement("div");
+            grid.className = "cards-grid";
+            list.forEach((w, i) => grid.appendChild(renderCard(w, i)));
+            cardsContainer.appendChild(grid);
+          }
+
+          counterLine.innerHTML = `Всего: <b>${wishes.length}</b>`;
+          if (wishes.length > 0) {
+            summary.style.display = "block";
+            statTotal.textContent = String(wishes.length);
+            statDreams.textContent = String(
+              wishes.filter((w) => (w.priority || 1) >= 2).length,
+            );
+            statP3.textContent = String(
+              wishes.filter((w) => (w.priority || 1) === 3).length,
+            );
+          } else {
+            summary.style.display = "none";
+          }
+        }
+
+        /* ============================================================
+           РЕДАКТОР
+           ============================================================ */
+        function buildEmojiPalette() {
+          emojiPalette.innerHTML = "";
+          EMOJI_LIST.forEach((em) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "wl-emoji-btn";
+            btn.dataset.emoji = em;
+            btn.textContent = em;
+            btn.setAttribute("aria-label", "Выбрать эмодзи " + em);
+            btn.addEventListener("click", () => {
+              emojiPalette
+                .querySelectorAll(".wl-emoji-btn")
+                .forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              selectedEmoji = em;
+            });
+            emojiPalette.appendChild(btn);
+          });
+        }
+
+        function setSelectedEmoji(em) {
+          selectedEmoji = em || EMOJI_LIST[0];
+          emojiPalette
+            .querySelectorAll(".wl-emoji-btn")
+            .forEach((b) =>
+              b.classList.toggle("selected", b.dataset.emoji === selectedEmoji),
+            );
+          if (!emojiPalette.querySelector(".wl-emoji-btn.selected")) {
+            emojiPalette
+              .querySelector(".wl-emoji-btn")
+              ?.classList.add("selected");
+          }
+        }
+
+        function setSelectedPriority(p) {
+          selectedPriority = Math.max(1, Math.min(3, parseInt(p, 10) || 1));
+          priorityGroup.querySelectorAll(".wl-priority__btn").forEach((b) => {
+            const bp = parseInt(b.dataset.p, 10);
+            b.classList.toggle("selected", bp === selectedPriority);
+          });
+        }
+
+        function openAdd() {
+          editingId = null;
+          wlEyebrow.textContent = "Новое желание";
+          wlIndex.textContent =
+            "№ " + String(wishes.length + 1).padStart(2, "0");
+          wlTitle.innerHTML = "Что бы ты <em>хотела</em>?";
+          wishTitleInput.value = "";
+          wishNoteInput.value = "";
+          wishWhyInput.value = "";
+          setSelectedEmoji(EMOJI_LIST[0]);
+          setSelectedPriority(1);
+          whyWrap.classList.remove("visible");
+          whyToggle.querySelector("span:first-child").textContent = "＋";
+          whyToggle.querySelector("span:last-child").textContent =
+            "Добавить «почему»";
+          validateSave();
+          wlOverlay.classList.add("active");
+          document.body.style.overflow = "hidden";
+          setTimeout(() => wishTitleInput.focus(), 300);
+        }
+
+        function openEdit(id) {
+          const w = wishes.find((x) => x.id === id);
+          if (!w) return;
+          editingId = id;
+          wlEyebrow.textContent = "Редактирование";
+          const idx = wishes.findIndex((x) => x.id === id);
+          wlIndex.textContent = "№ " + String(idx + 1).padStart(2, "0");
+          wlTitle.innerHTML = "Измени <em>желание</em>";
+          wishTitleInput.value = w.title || "";
+          wishNoteInput.value = w.note || "";
+          wishWhyInput.value = w.why || "";
+          setSelectedEmoji(w.emoji || EMOJI_LIST[0]);
+          setSelectedPriority(w.priority || 1);
+          if (w.why) {
+            whyWrap.classList.add("visible");
+            whyToggle.querySelector("span:first-child").textContent = "—";
+            whyToggle.querySelector("span:last-child").textContent =
+              "Убрать «почему»";
+          } else {
+            whyWrap.classList.remove("visible");
+            whyToggle.querySelector("span:first-child").textContent = "＋";
+            whyToggle.querySelector("span:last-child").textContent =
+              "Добавить «почему»";
+          }
+          validateSave();
+          wlOverlay.classList.add("active");
+          document.body.style.overflow = "hidden";
+          setTimeout(() => wishTitleInput.focus(), 300);
+        }
+
+        function closeModal() {
+          wlOverlay.classList.remove("active");
+          document.body.style.overflow = "";
+          editingId = null;
+        }
+
+        function validateSave() {
+          const v = wishTitleInput.value.trim();
+          wlSave.disabled = v.length < 1;
+        }
+
+        function saveFromModal() {
+          const title = wishTitleInput.value.trim();
+          if (!title) return;
+          const note = wishNoteInput.value.trim().slice(0, 500);
+          const why = wishWhyInput.value.trim().slice(0, 200);
+          const now = Date.now();
+
+          if (editingId) {
+            const w = wishes.find((x) => x.id === editingId);
+            if (w) {
+              w.title = title;
+              w.note = note;
+              w.why = why;
+              w.emoji = selectedEmoji;
+              w.priority = selectedPriority;
+              w.updatedAt = now;
+            }
+          } else {
+            wishes.push({
+              id: uid(),
+              emoji: selectedEmoji,
+              title,
+              note,
+              why,
+              priority: selectedPriority,
+              createdAt: now,
+              updatedAt: now,
+              version: 1,
+            });
+          }
+
+          if (!saveWishes()) return;
+          makeBackup();
+          render();
+          closeModal();
+          if (window.toast) {
+            window.toast(
+              editingId ? "✨ Изменения сохранены" : "💫 Добавлено!",
+              1800,
+            );
+          }
+
+          // Автосинк с облаком (если включено)
+          if (cloud.isConfigured()) {
+            setTimeout(() => {
+              cloud.push().catch(() => {});
+            }, 500);
+          }
+        }
+
+        /* ============================================================
+           УДАЛЕНИЕ
+           ============================================================ */
+        function askDelete(id) {
+          const w = wishes.find((x) => x.id === id);
+          if (!w) return;
+          pendingDeleteId = id;
+          confirmText.textContent = `«${w.title}» — это действие нельзя отменить.`;
+          confirmOverlay.classList.add("active");
+        }
+
+        function doDelete() {
+          if (!pendingDeleteId) return;
+          wishes = wishes.filter((x) => x.id !== pendingDeleteId);
+          pendingDeleteId = null;
+          confirmOverlay.classList.remove("active");
+          saveWishes();
+          makeBackup();
+          render();
+          if (window.toast) window.toast("🗑 Желание удалено", 1800);
+
+          if (cloud.isConfigured()) {
+            setTimeout(() => {
+              cloud.push().catch(() => {});
+            }, 500);
+          }
+        }
+
+        /* ============================================================
+           SHARE / EXPORT / IMPORT (локальные способы)
+           ============================================================ */
+        function showShareBanner(text, actionLabel, actionFn) {
+          shareBannerText.textContent = text;
+          shareBannerOk.textContent = actionLabel || "Понятно";
+          shareBannerOk.onclick = () => {
+            if (actionFn) actionFn();
+            shareBanner.classList.remove("show");
+          };
+          shareBanner.classList.add("show");
+          clearTimeout(showShareBanner._t);
+          showShareBanner._t = setTimeout(() => {
+            shareBanner.classList.remove("show");
+          }, 6000);
+        }
+
+        function encodeWishesToHash() {
+          const payload = wishes.map((w) => ({
+            e: w.emoji,
+            t: w.title,
+            n: w.note || "",
+            y: w.why || "",
+            p: w.priority || 1,
+            c: w.createdAt || 0,
+          }));
+          const json = JSON.stringify({ v: 1, w: payload });
+
+          if (typeof window.pako !== "undefined" && window.pako.deflate) {
+            try {
+              const bytes = new TextEncoder().encode(json);
+              const compressed = window.pako.deflate(bytes, { level: 9 });
+              let binary = "";
+              for (let i = 0; i < compressed.length; i++) {
+                binary += String.fromCharCode(compressed[i]);
+              }
+              const b64 = btoa(binary)
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .replace(/=+$/, "");
+              return "z:" + b64;
+            } catch (e) {}
+          }
+
+          try {
+            return "u:" + encodeURIComponent(json);
+          } catch (e) {
+            return "";
+          }
+        }
+
+        function decodeWishesFromHash(hash) {
+          if (!hash) return null;
+          const raw = hash.replace(/^#?w=/, "");
+          if (!raw) return null;
+          try {
+            if (raw.startsWith("z:")) {
+              const b64 = raw.slice(2).replace(/-/g, "+").replace(/_/g, "/");
+              const padded = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
+              const binary = atob(padded);
+              const bytes = new Uint8Array(binary.length);
+              for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+              }
+              if (typeof window.pako === "undefined") return null;
+              const decompressed = window.pako.inflate(bytes);
+              const json = new TextDecoder().decode(decompressed);
+              return JSON.parse(json);
+            }
+            if (raw.startsWith("u:")) {
+              const json = decodeURIComponent(raw.slice(2));
+              return JSON.parse(json);
+            }
+          } catch (e) {
+            return null;
+          }
+          return null;
+        }
+
+        function decodeToWishes(decoded) {
+          if (!decoded || !Array.isArray(decoded.w)) return [];
+          const now = Date.now();
+          return decoded.w
+            .map((item) => ({
+              id: uid(),
+              emoji: item.e || "🎁",
+              title: item.t || "",
+              note: item.n || "",
+              why: item.y || "",
+              priority: Math.max(1, Math.min(3, item.p || 1)),
+              createdAt: item.c || now,
+              updatedAt: now,
+              version: 1,
+            }))
+            .filter((w) => w.title);
+        }
+
+        function shareLink() {
+          if (wishes.length === 0) {
+            if (window.toast)
+              window.toast("Список пуст — нечего отправлять", 2000);
+            return;
+          }
+          const hash = encodeWishesToHash();
+          if (!hash) {
+            if (window.toast) window.toast("Не удалось создать ссылку", 2000);
+            return;
+          }
+          const url =
+            window.location.origin + window.location.pathname + "#w=" + hash;
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+              .writeText(url)
+              .then(() => {
+                showShareBanner(
+                  "⚠️ Ссылка содержит весь список. Отправляй только тому, кому доверяешь.",
+                  "Понятно",
+                );
+              })
+              .catch(() => {
+                window.prompt("Скопируй ссылку вручную:", url);
+              });
+          } else {
+            window.prompt("Скопируй ссылку вручную:", url);
+          }
+        }
+
+        function exportFile() {
+          if (wishes.length === 0) {
+            if (window.toast)
+              window.toast("Список пуст — нечего экспортировать", 2000);
+            return;
+          }
+          const data = {
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            wishes,
+          };
+          const blob = new Blob([JSON.stringify(data, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          const d = new Date();
+          const stamp = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+          a.href = url;
+          a.download = `wishlist-${stamp}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          if (window.toast) window.toast("📤 Файл сохранён", 2000);
+        }
+
+        function importFile(file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const data = JSON.parse(reader.result);
+              const list = Array.isArray(data.wishes)
+                ? data.wishes
+                : Array.isArray(data)
+                  ? data
+                  : [];
+              const now = Date.now();
+              const cleaned = list
+                .filter(
+                  (w) => w && typeof w.title === "string" && w.title.trim(),
+                )
+                .map((w) => ({
+                  id: uid(),
+                  emoji: w.emoji || "🎁",
+                  title: String(w.title).slice(0, 100),
+                  note: String(w.note || "").slice(0, 500),
+                  why: String(w.why || "").slice(0, 200),
+                  priority: Math.max(1, Math.min(3, w.priority || 1)),
+                  createdAt: w.createdAt || now,
+                  updatedAt: now,
+                  version: 1,
+                }));
+
+              if (cleaned.length === 0) {
+                if (window.toast) window.toast("В файле нет желаний", 2500);
+                return;
+              }
+
+              const merge = window.confirm(
+                `В файле ${cleaned.length} ${decl(cleaned.length, "желание", "желания", "желаний")}. Заменить текущий список?`,
+              );
+              if (merge) {
+                wishes = cleaned;
+              } else {
+                wishes = wishes.concat(cleaned);
+              }
+              saveWishes();
+              makeBackup();
+              render();
+              if (window.toast)
+                window.toast(`📥 Загружено: ${cleaned.length}`, 2200);
+            } catch (e) {
+              if (window.toast)
+                window.toast("Не получилось прочитать файл", 2500);
+            }
+          };
+          reader.readAsText(file);
+        }
+
+        /* ============================================================
+           ВОССТАНОВЛЕНИЕ ИЗ ССЫЛКИ
+           ============================================================ */
+        function checkShareHash() {
+          const hash = window.location.hash;
+          if (!hash || !hash.includes("w=")) return;
+          const decoded = decodeWishesFromHash(hash);
+          const incoming = decodeToWishes(decoded);
+          if (incoming.length === 0) return;
+
+          if (wishes.length > 0) {
+            showShareBanner(
+              `🔗 Найдено ${incoming.length} ${decl(incoming.length, "желание", "желания", "желаний")} в ссылке.`,
+              "Добавить",
+              () => {
+                wishes = wishes.concat(incoming);
+                saveWishes();
+                makeBackup();
+                render();
+                if (window.toast)
+                  window.toast(`📥 Добавлено: ${incoming.length}`, 2200);
+                cleanHash();
+              },
+            );
+          } else {
+            wishes = incoming;
+            saveWishes();
+            makeBackup();
+            render();
+            if (window.toast)
+              window.toast(`📥 Загружено: ${incoming.length}`, 2200);
+            cleanHash();
+          }
+        }
+
+        function cleanHash() {
+          try {
+            history.replaceState(null, "", window.location.pathname);
+          } catch (e) {}
+        }
+
+        /* ============================================================
+           ИНИЦИАЛИЗАЦИЯ
+           ============================================================ */
+        function init() {
+          buildEmojiPalette();
+          wishes = loadWishes();
+          render();
+
+          // Начальное состояние кнопки облака
+          if (cloud.isConfigured()) {
+            setCloudUI("ok", "Облако подключено");
+          } else {
+            setCloudUI("disconnected", "Не подключено");
+          }
+
+          // Онбординг-подсказка
+          try {
+            if (
+              wishes.length === 0 &&
+              !sessionStorage.getItem("wishlist_hint_v1")
+            ) {
+              sessionStorage.setItem("wishlist_hint_v1", "1");
+              btnAdd.classList.add("btn-add--hinting");
+              setTimeout(
+                () => btnAdd.classList.remove("btn-add--hinting"),
+                5200,
+              );
+            }
+          } catch (e) {}
+
+          // Автосинк при загрузке
+          if (cloud.isConfigured() && cloud.config.gistId) {
+            setTimeout(() => {
+              cloud.sync().catch(() => {});
+            }, 800);
+          }
+
+          setTimeout(checkShareHash, 600);
+
+          // Автосохранение
+          const flush = () => {
+            saveWishes(true);
+            makeBackup();
+          };
+          window.addEventListener("beforeunload", flush);
+          window.addEventListener("pagehide", flush);
+          document.addEventListener("visibilitychange", () => {
+            if (document.hidden) flush();
+          });
+          setInterval(flush, AUTO_SAVE_MS);
+
+          window.addEventListener("hashchange", checkShareHash);
+        }
+
+        /* ============================================================
+           СОБЫТИЯ
+           ============================================================ */
+        btnAdd.addEventListener("click", openAdd);
+        btnCloud.addEventListener("click", openCloudModal);
+        btnShare.addEventListener("click", shareLink);
+        btnExport.addEventListener("click", exportFile);
+        btnImport.addEventListener("click", () => fileInput.click());
+
+        fileInput.addEventListener("change", (e) => {
+          const f = e.target.files && e.target.files[0];
+          if (f) importFile(f);
+          fileInput.value = "";
+        });
+
+        // Cloud modal
+        cloudClose.addEventListener("click", closeCloudModal);
+        cloudCancel.addEventListener("click", closeCloudModal);
+        cloudOverlay.addEventListener("click", (e) => {
+          if (e.target === cloudOverlay) closeCloudModal();
+        });
+        cloudConnect.addEventListener("click", doConnect);
+        cloudTokenInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") doConnect();
+        });
+        cloudSync.addEventListener("click", () => cloud.sync());
+        cloudPush.addEventListener("click", () => cloud.pushForce());
+        cloudPull.addEventListener("click", () => cloud.pullForce());
+        cloudTest.addEventListener("click", async () => {
+          setCloudUI("syncing", "Проверяю…");
+          try {
+            const u = await cloud.test();
+            setCloudUI("ok", "@" + (u.login || "user") + " · связь есть");
+            if (window.toast) window.toast("✅ Связь есть", 1800);
+          } catch (e) {
+            setCloudUI("error", "Ошибка: " + e.message);
+            if (window.toast) window.toast("☁️ " + e.message, 3000);
+          }
+        });
+        cloudDisconnect.addEventListener("click", () => {
+          if (
+            window.confirm(
+              "Отключить облако? Данные в Gist останутся — можно подключиться заново.",
+            )
+          ) {
+            cloud.disconnect();
+            closeCloudModal();
+            if (window.toast) window.toast("Облако отключено", 2000);
+          }
+        });
+
+        // Wish modal
+        wlClose.addEventListener("click", closeModal);
+        wlCancel.addEventListener("click", closeModal);
+        wlOverlay.addEventListener("click", (e) => {
+          if (e.target === wlOverlay) closeModal();
+        });
+        wishTitleInput.addEventListener("input", validateSave);
+        wlSave.addEventListener("click", saveFromModal);
+
+        priorityGroup.addEventListener("click", (e) => {
+          const btn = e.target.closest(".wl-priority__btn");
+          if (!btn) return;
+          setSelectedPriority(btn.dataset.p);
+        });
+
+        whyToggle.addEventListener("click", () => {
+          const visible = whyWrap.classList.toggle("visible");
+          whyToggle.querySelector("span:first-child").textContent = visible
+            ? "—"
+            : "＋";
+          whyToggle.querySelector("span:last-child").textContent = visible
+            ? "Убрать «почему»"
+            : "Добавить «почему»";
+          if (visible) setTimeout(() => wishWhyInput.focus(), 100);
+        });
+
+        // Confirm
+        confirmNo.addEventListener("click", () => {
+          confirmOverlay.classList.remove("active");
+          pendingDeleteId = null;
+        });
+        confirmYes.addEventListener("click", doDelete);
+        confirmOverlay.addEventListener("click", (e) => {
+          if (e.target === confirmOverlay) {
+            confirmOverlay.classList.remove("active");
+            pendingDeleteId = null;
+          }
+        });
+
+        // Фильтры
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll(".filter-btn").forEach((b) => {
+              b.classList.toggle("active", b === btn);
+            });
+            currentFilter = btn.dataset.filter || "all";
+            render();
+          });
+        });
+
+        // Escape
+        document.addEventListener("keydown", (e) => {
+          if (e.key !== "Escape") return;
+          if (confirmOverlay.classList.contains("active")) {
+            confirmOverlay.classList.remove("active");
+            pendingDeleteId = null;
+          } else if (cloudOverlay.classList.contains("active")) {
+            closeCloudModal();
+          } else if (wlOverlay.classList.contains("active")) {
+            closeModal();
+          }
+        });
+
+        // Запуск
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", init);
+        } else {
+          init();
+        }
+      })();
+    </script>
+  </body>
+</html>

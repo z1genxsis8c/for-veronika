@@ -23,12 +23,21 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- ★ Preload LCP-изображения (главное фото на главной) -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+      rel="preload"
+      as="image"
+      href="photos/photo1.jpg"
+      fetchpriority="high"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Caveat:wght@400;600&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Единый движок: часы, погода, тосты, SW -->
+    <!-- ★ Единый движок: defer, чтобы не блокировать парсинг HTML -->
     <script src="shared/widgets.js" defer></script>
 
     <style>
@@ -386,7 +395,9 @@
         background: var(--rose);
       }
 
-      /* POLAROID STACK */
+      /* ============================================================
+         POLAROID STACK
+         ============================================================ */
       .photo-stack {
         position: relative;
         width: 100%;
@@ -394,6 +405,21 @@
         aspect-ratio: 1 / 1;
         margin: 0 auto;
         justify-self: center;
+      }
+
+      .photo-stack-label {
+        position: absolute;
+        top: -44px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 17px;
+        color: var(--ink-3);
+        letter-spacing: -0.005em;
+        pointer-events: none;
+        transition: color 0.4s;
       }
 
       .polaroid {
@@ -405,7 +431,21 @@
           0 1px 0 rgba(255, 255, 255, 0.9) inset,
           0 30px 60px rgba(30, 26, 22, 0.14),
           0 6px 16px rgba(30, 26, 22, 0.06);
-        transition: transform 0.6s var(--ease);
+        transition:
+          transform 0.6s var(--ease),
+          box-shadow 0.5s var(--ease);
+        cursor: zoom-in;
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+        border: none;
+        text-align: left;
+      }
+
+      .polaroid:focus-visible {
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 30px 60px rgba(30, 26, 22, 0.14),
+          0 0 0 3px rgba(143, 100, 114, 0.5);
       }
 
       .polaroid .frame {
@@ -444,6 +484,8 @@
         height: 100%;
         object-fit: cover;
         z-index: 1;
+        -webkit-user-drag: none;
+        user-select: none;
       }
 
       .polaroid figcaption {
@@ -459,6 +501,73 @@
         letter-spacing: 0.01em;
       }
 
+      /* ★ Иконка "⊕" — намёк на кликабельность */
+      .polaroid__plus {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(253, 250, 246, 0.94);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(30, 26, 22, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink-2);
+        font-size: 15px;
+        font-weight: 300;
+        line-height: 1;
+        padding-bottom: 2px;
+        box-shadow: 0 4px 10px rgba(30, 26, 22, 0.12);
+        opacity: 0;
+        transform: scale(0.8);
+        transition:
+          opacity 0.35s var(--ease),
+          transform 0.4s var(--ease-spring),
+          background 0.3s;
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      .polaroid:hover .polaroid__plus,
+      .polaroid:focus-visible .polaroid__plus {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* ★ Пульс ⊕ при первом заходе (один раз за сессию) */
+      .polaroid--hinting .polaroid__plus {
+        animation: plusPulse 1.8s var(--ease) 1;
+      }
+
+      @keyframes plusPulse {
+        0% {
+          opacity: 0;
+          transform: scale(0.6);
+        }
+        20% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+        45% {
+          transform: scale(1);
+        }
+        65% {
+          transform: scale(1.15);
+        }
+        85% {
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+      }
+
+      /* ★ Позиции полароидов — десктоп (веер как было) */
       .polaroid--back {
         width: 58%;
         top: 0;
@@ -489,9 +598,79 @@
       }
       .photo-stack:hover .polaroid--front {
         transform: rotate(-1deg) translateY(-8px);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 42px 80px rgba(30, 26, 22, 0.18),
+          0 12px 28px rgba(30, 26, 22, 0.1);
       }
 
-      /* INDEX */
+      /* ★ Планшеты 641–960 — тот же веер, но поджатый */
+      @media (max-width: 960px) and (min-width: 641px) {
+        .polaroid--back {
+          width: 56%;
+          top: 3%;
+          left: 1%;
+        }
+        .polaroid--mid {
+          width: 56%;
+          top: 3%;
+          right: 1%;
+        }
+        .polaroid--front {
+          width: 64%;
+          left: 18%;
+        }
+      }
+
+      /* ★ Мобильные ≤640 — три фото видны, наложение минимальное */
+      @media (max-width: 640px) {
+        .photo-stack {
+          max-width: 340px;
+        }
+        .photo-stack-label {
+          font-size: 15px;
+          top: -36px;
+        }
+        .polaroid {
+          padding: 8px 8px 28px 8px;
+        }
+        .polaroid figcaption {
+          font-size: 11.5px;
+          bottom: 7px;
+        }
+        .polaroid .frame::before {
+          font-size: 48px;
+        }
+        .polaroid--back {
+          width: 50%;
+          top: 6%;
+          left: 2%;
+          transform: rotate(-7deg);
+        }
+        .polaroid--mid {
+          width: 50%;
+          top: 6%;
+          right: 2%;
+          transform: rotate(6deg);
+        }
+        .polaroid--front {
+          width: 62%;
+          left: 19%;
+          transform: rotate(-1.5deg);
+        }
+        /* ★ На мобильных ⊕ всегда видна — некуда hover'ить */
+        .polaroid__plus {
+          opacity: 0.9;
+          transform: scale(1);
+          width: 26px;
+          height: 26px;
+          font-size: 13px;
+        }
+      }
+
+      /* ============================================================
+         INDEX SECTION
+         ============================================================ */
       .index-section {
         padding: 120px 0 40px;
         border-top: 1px solid var(--line);
@@ -545,9 +724,6 @@
         flex-direction: column;
       }
 
-      /* ============================================================
-         ЕДИНЫЙ СТИЛЬ СТРОКИ (все строки = как «Наш фильм»)
-         ============================================================ */
       .index-row {
         display: grid;
         grid-template-columns: 60px 1fr auto auto;
@@ -571,7 +747,6 @@
         padding-right: 20px;
       }
 
-      /* Номер */
       .index-num {
         font-family: "Instrument Serif", Georgia, serif;
         font-style: italic;
@@ -585,7 +760,6 @@
         opacity: 1;
       }
 
-      /* Название — italic serif в розовом */
       .index-name {
         font-family: "Instrument Serif", Georgia, serif;
         font-style: italic;
@@ -600,7 +774,6 @@
         color: var(--rose);
       }
 
-      /* Описание справа */
       .index-desc {
         font-size: 13px;
         color: var(--ink-3);
@@ -608,7 +781,6 @@
         white-space: nowrap;
       }
 
-      /* Круглая стрелка */
       .index-arrow {
         width: 40px;
         height: 40px;
@@ -1408,6 +1580,278 @@
         min-height: 18px;
       }
 
+      /* ============================================================
+         ★ LIGHTBOX — просмотр фотографий
+         ============================================================ */
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(15, 12, 10, 0.94);
+        backdrop-filter: blur(20px) saturate(120%);
+        -webkit-backdrop-filter: blur(20px) saturate(120%);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s var(--ease);
+        overscroll-behavior: contain;
+      }
+
+      .lightbox.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .lightbox__close {
+        position: absolute;
+        top: max(20px, env(safe-area-inset-top, 20px));
+        right: max(20px, env(safe-area-inset-right, 20px));
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(253, 250, 246, 0.12);
+        border: 1px solid rgba(253, 250, 246, 0.2);
+        color: #f3ede4;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        transition: all 0.3s var(--ease);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding-bottom: 2px;
+      }
+
+      .lightbox__close:hover {
+        background: rgba(253, 250, 246, 0.24);
+        transform: rotate(90deg) scale(1.05);
+      }
+
+      .lightbox__counter {
+        position: absolute;
+        top: max(28px, calc(env(safe-area-inset-top, 20px) + 8px));
+        left: max(24px, env(safe-area-inset-left, 24px));
+        font-family: "JetBrains Mono", monospace, "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        color: rgba(243, 237, 228, 0.72);
+        z-index: 10;
+      }
+
+      .lightbox__stage {
+        position: relative;
+        width: 100%;
+        max-width: 780px;
+        aspect-ratio: 4 / 5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 1400px;
+      }
+
+      .lightbox__card {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: scale(0.94) rotate(-2deg);
+        transition:
+          opacity 0.35s var(--ease),
+          transform 0.55s var(--ease-spring);
+        pointer-events: none;
+      }
+
+      .lightbox__card.active {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+        pointer-events: auto;
+      }
+
+      .lightbox__card.prev {
+        opacity: 0;
+        transform: scale(0.94) rotate(-4deg);
+      }
+
+      .lightbox__card.next {
+        opacity: 0;
+        transform: scale(0.94) rotate(4deg);
+      }
+
+      .lightbox__polaroid {
+        position: relative;
+        width: 100%;
+        max-width: 520px;
+        padding: 16px 16px 74px 16px;
+        background: var(--surface);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 60px 120px rgba(0, 0, 0, 0.5),
+          0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .lightbox__frame {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        background: linear-gradient(
+          135deg,
+          #ecd8dc 0%,
+          #ddc5ca 55%,
+          #cbb0b6 100%
+        );
+      }
+
+      .lightbox__frame img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .lightbox__caption {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 20px;
+        text-align: center;
+        padding: 0 24px;
+      }
+
+      .lightbox__title {
+        font-family: "Caveat", "Instrument Serif", cursive;
+        font-size: 26px;
+        line-height: 1.15;
+        color: var(--ink);
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .lightbox__subtitle {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-style: italic;
+        font-size: 13.5px;
+        color: var(--ink-3);
+        margin: 4px 0 0;
+      }
+
+      .lightbox__nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(253, 250, 246, 0.14);
+        border: 1px solid rgba(253, 250, 246, 0.24);
+        color: #f3ede4;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 8;
+        transition: all 0.3s var(--ease);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding-bottom: 2px;
+      }
+
+      .lightbox__nav:hover {
+        background: rgba(253, 250, 246, 0.28);
+        transform: translateY(-50%) scale(1.06);
+      }
+
+      .lightbox__nav--prev {
+        left: max(20px, env(safe-area-inset-left, 20px));
+      }
+      .lightbox__nav--next {
+        right: max(20px, env(safe-area-inset-right, 20px));
+      }
+
+      .lightbox__dots {
+        position: absolute;
+        bottom: max(28px, env(safe-area-inset-bottom, 28px));
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 8;
+      }
+
+      .lightbox__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(253, 250, 246, 0.24);
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: all 0.35s var(--ease);
+      }
+
+      .lightbox__dot:hover {
+        background: rgba(253, 250, 246, 0.5);
+      }
+
+      .lightbox__dot.active {
+        background: #f3ede4;
+        transform: scale(1.4);
+      }
+
+      /* ★ Мобильная адаптация lightbox */
+      @media (max-width: 640px) {
+        .lightbox {
+          padding: 12px;
+        }
+        .lightbox__polaroid {
+          padding: 10px 10px 56px 10px;
+        }
+        .lightbox__title {
+          font-size: 22px;
+        }
+        .lightbox__subtitle {
+          font-size: 12px;
+        }
+        .lightbox__nav {
+          width: 38px;
+          height: 38px;
+          font-size: 15px;
+        }
+        .lightbox__nav--prev {
+          left: 10px;
+        }
+        .lightbox__nav--next {
+          right: 10px;
+        }
+        .lightbox__close {
+          width: 40px;
+          height: 40px;
+          font-size: 16px;
+        }
+      }
+
+      /* ★ Уважение к reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* RESPONSIVE — базовый */
       @media (max-width: 960px) {
         .hero {
           grid-template-columns: 1fr;
@@ -1568,16 +2012,6 @@
           font-size: 11.5px;
         }
       }
-
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
     </style>
   </head>
 
@@ -1638,8 +2072,16 @@
           </div>
         </div>
 
-        <div class="photo-stack">
-          <figure class="polaroid polaroid--back">
+        <div class="photo-stack" id="photoStack">
+          <div class="photo-stack-label">Три кадра, которые я храню</div>
+
+          <button
+            type="button"
+            class="polaroid polaroid--back"
+            data-photo="1"
+            aria-label="Фото 1 из 3. Открыть галерею"
+          >
+            <span class="polaroid__plus" aria-hidden="true">⊕</span>
             <div class="frame">
               <img
                 src="photos/photo2.jpg"
@@ -1647,12 +2089,19 @@
                 onerror="this.remove()"
                 loading="lazy"
                 decoding="async"
+                draggable="false"
               />
             </div>
             <figcaption>мгновение</figcaption>
-          </figure>
+          </button>
 
-          <figure class="polaroid polaroid--mid">
+          <button
+            type="button"
+            class="polaroid polaroid--mid"
+            data-photo="2"
+            aria-label="Фото 2 из 3. Открыть галерею"
+          >
+            <span class="polaroid__plus" aria-hidden="true">⊕</span>
             <div class="frame">
               <img
                 src="photos/photo3.jpg"
@@ -1660,12 +2109,19 @@
                 onerror="this.remove()"
                 loading="lazy"
                 decoding="async"
+                draggable="false"
               />
             </div>
             <figcaption>твой смех</figcaption>
-          </figure>
+          </button>
 
-          <figure class="polaroid polaroid--front">
+          <button
+            type="button"
+            class="polaroid polaroid--front"
+            data-photo="0"
+            aria-label="Фото 3 из 3. Открыть галерею"
+          >
+            <span class="polaroid__plus" aria-hidden="true">⊕</span>
             <div class="frame">
               <img
                 src="photos/photo1.jpg"
@@ -1673,10 +2129,12 @@
                 onerror="this.remove()"
                 loading="eager"
                 decoding="async"
+                draggable="false"
+                fetchpriority="high"
               />
             </div>
             <figcaption>мы</figcaption>
-          </figure>
+          </button>
         </div>
       </section>
 
@@ -1910,6 +2368,13 @@
             <span class="index-num">31</span>
             <span class="index-name">Наш фотоальбом</span>
             <span class="index-desc">Кадры с историей · можно добавлять</span>
+            <span class="index-arrow">→</span>
+          </a>
+
+          <a href="wishlist.html" class="index-row">
+            <span class="index-num">32</span>
+            <span class="index-name">Мои желания</span>
+            <span class="index-desc">Список подарков · что хочешь</span>
             <span class="index-arrow">→</span>
           </a>
         </div>
@@ -2295,6 +2760,44 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- ★ LIGHTBOX -->
+    <div
+      class="lightbox"
+      id="lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Просмотр фотографий"
+    >
+      <span class="lightbox__counter" id="lightboxCounter">1 / 3</span>
+      <button
+        class="lightbox__close"
+        id="lightboxClose"
+        aria-label="Закрыть галерею"
+      >
+        ✕
+      </button>
+
+      <button
+        class="lightbox__nav lightbox__nav--prev"
+        id="lightboxPrev"
+        aria-label="Предыдущее фото"
+      >
+        ‹
+      </button>
+
+      <div class="lightbox__stage" id="lightboxStage"></div>
+
+      <button
+        class="lightbox__nav lightbox__nav--next"
+        id="lightboxNext"
+        aria-label="Следующее фото"
+      >
+        ›
+      </button>
+
+      <div class="lightbox__dots" id="lightboxDots"></div>
     </div>
 
     <script>
@@ -2833,6 +3336,210 @@
         if (e.key === "Escape" && modalOverlay.classList.contains("active"))
           closeModal();
       });
+
+      /* ============================================================
+         ★ LIGHTBOX — галерея фотографий
+         ============================================================ */
+      (function initLightbox() {
+        "use strict";
+
+        const PHOTOS = [
+          {
+            src: "photos/photo1.jpg",
+            title: "Мы",
+            subtitle: "Кадр, который ты поставила на заставку",
+          },
+          {
+            src: "photos/photo2.jpg",
+            title: "Мгновение",
+            subtitle: "Снято в тот вечер, когда мы оба всё поняли",
+          },
+          {
+            src: "photos/photo3.jpg",
+            title: "Твой смех",
+            subtitle: "Твой смех. И всё.",
+          },
+        ];
+
+        const box = document.getElementById("lightbox");
+        const stage = document.getElementById("lightboxStage");
+        const closeBtn = document.getElementById("lightboxClose");
+        const prevBtn = document.getElementById("lightboxPrev");
+        const nextBtn = document.getElementById("lightboxNext");
+        const counter = document.getElementById("lightboxCounter");
+        const dotsWrap = document.getElementById("lightboxDots");
+        const polaroids = document.querySelectorAll(".polaroid[data-photo]");
+
+        if (!box || !stage || !polaroids.length) return;
+
+        let currentIndex = 0;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchActive = false;
+
+        // ★ Собираем DOM карточек
+        PHOTOS.forEach((p, i) => {
+          const card = document.createElement("div");
+          card.className = "lightbox__card";
+          card.dataset.index = i;
+          card.innerHTML = `
+            <div class="lightbox__polaroid">
+              <div class="lightbox__frame">
+                <img src="${p.src}" alt="" draggable="false" loading="eager" decoding="async" onerror="this.remove()">
+              </div>
+              <div class="lightbox__caption">
+                <p class="lightbox__title">${p.title}</p>
+                <p class="lightbox__subtitle">${p.subtitle}</p>
+              </div>
+            </div>
+          `;
+          stage.appendChild(card);
+
+          const dot = document.createElement("button");
+          dot.className = "lightbox__dot" + (i === 0 ? " active" : "");
+          dot.type = "button";
+          dot.setAttribute("aria-label", `Показать фото ${i + 1}`);
+          dot.addEventListener("click", (e) => {
+            e.stopPropagation();
+            goTo(i);
+          });
+          dotsWrap.appendChild(dot);
+        });
+
+        function updateView() {
+          const cards = stage.querySelectorAll(".lightbox__card");
+          cards.forEach((c, i) => {
+            c.classList.remove("active", "prev", "next");
+            if (i === currentIndex) c.classList.add("active");
+            else if (i < currentIndex) c.classList.add("prev");
+            else c.classList.add("next");
+          });
+          const dots = dotsWrap.querySelectorAll(".lightbox__dot");
+          dots.forEach((d, i) =>
+            d.classList.toggle("active", i === currentIndex),
+          );
+          counter.textContent = `${currentIndex + 1} / ${PHOTOS.length}`;
+        }
+
+        function goTo(i) {
+          currentIndex = (i + PHOTOS.length) % PHOTOS.length;
+          updateView();
+        }
+
+        function open(startIndex) {
+          currentIndex = typeof startIndex === "number" ? startIndex : 0;
+          updateView();
+          box.classList.add("active");
+          document.body.style.overflow = "hidden";
+          // Фокус на кнопку закрытия — для доступности
+          setTimeout(() => closeBtn.focus({ preventScroll: true }), 60);
+        }
+
+        function close() {
+          box.classList.remove("active");
+          document.body.style.overflow = "";
+        }
+
+        // Клик по любому полароиду — открыть
+        polaroids.forEach((p) => {
+          p.addEventListener("click", () => {
+            const idx = parseInt(p.dataset.photo, 10);
+            open(isNaN(idx) ? 0 : idx);
+          });
+        });
+
+        closeBtn.addEventListener("click", close);
+        prevBtn.addEventListener("click", () => goTo(currentIndex - 1));
+        nextBtn.addEventListener("click", () => goTo(currentIndex + 1));
+
+        // Клик по фону — закрыть (но не по карточке)
+        box.addEventListener("click", (e) => {
+          if (e.target === box || e.target === stage) close();
+        });
+
+        // Клик по активной карточке — перелистнуть вперёд
+        stage.addEventListener("click", (e) => {
+          const card = e.target.closest(".lightbox__card");
+          if (card && card.classList.contains("active")) {
+            // Если кликнули по img — листаем
+            if (e.target.tagName === "IMG") goTo(currentIndex + 1);
+          }
+        });
+
+        // Клавиатура
+        document.addEventListener("keydown", (e) => {
+          if (!box.classList.contains("active")) return;
+          if (e.key === "Escape") {
+            e.preventDefault();
+            close();
+          } else if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            goTo(currentIndex - 1);
+          } else if (e.key === "ArrowRight") {
+            e.preventDefault();
+            goTo(currentIndex + 1);
+          }
+        });
+
+        // Свайп
+        box.addEventListener(
+          "touchstart",
+          (e) => {
+            if (!e.touches || !e.touches[0]) return;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchActive = true;
+          },
+          { passive: true },
+        );
+        box.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!touchActive) return;
+            const t = e.touches[0];
+            if (!t) return;
+            const dx = t.clientX - touchStartX;
+            const dy = t.clientY - touchStartY;
+            // Вертикальный свайп вниз — закрыть
+            if (Math.abs(dy) > 100 && Math.abs(dy) > Math.abs(dx) * 1.5) {
+              close();
+              touchActive = false;
+            }
+          },
+          { passive: true },
+        );
+        box.addEventListener(
+          "touchend",
+          (e) => {
+            if (!touchActive) return;
+            touchActive = false;
+            const t = (e.changedTouches && e.changedTouches[0]) || null;
+            if (!t) return;
+            const dx = t.clientX - touchStartX;
+            const dy = t.clientY - touchStartY;
+            if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+              if (dx < 0) goTo(currentIndex + 1);
+              else goTo(currentIndex - 1);
+            }
+          },
+          { passive: true },
+        );
+
+        /* ★ Онбординг-подсказка ⊕ — один раз за сессию */
+        try {
+          if (!sessionStorage.getItem("photo_hint_v1")) {
+            sessionStorage.setItem("photo_hint_v1", "1");
+            document
+              .querySelectorAll(".polaroid")
+              .forEach((p) => p.classList.add("polaroid--hinting"));
+            setTimeout(() => {
+              document
+                .querySelectorAll(".polaroid")
+                .forEach((p) => p.classList.remove("polaroid--hinting"));
+            }, 2200);
+          }
+        } catch (e) {}
+      })();
     </script>
   </body>
 </html>
