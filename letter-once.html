@@ -1,0 +1,1252 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Письмо · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Caveat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
+    <style>
+      /* ============================================================
+         ПИСЬМО ОДИН РАЗ · только специфика страницы
+         ============================================================ */
+
+      main {
+        max-width: 780px;
+      }
+
+      .hero-sub {
+        max-width: 46ch;
+      }
+
+      /* ============================================================
+         STAGE
+         ============================================================ */
+      .stage {
+        display: none;
+        margin-top: 56px;
+        min-height: 60vh;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.8s var(--ease);
+      }
+
+      .stage.active {
+        display: flex;
+        opacity: 1;
+      }
+
+      /* ============================================================
+         1. SEALED — конверт запечатан
+         ============================================================ */
+      .sealed-hint {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 28px;
+        padding-left: 0.28em;
+      }
+
+      .envelope-stage {
+        position: relative;
+        width: 340px;
+        height: 240px;
+        cursor: pointer;
+        perspective: 1800px;
+        transition: transform 0.6s var(--ease);
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+      }
+
+      .envelope-stage:hover {
+        transform: scale(1.02) translateY(-4px);
+      }
+
+      .envelope-stage:focus-visible {
+        outline: 2px solid var(--rose-deep);
+        outline-offset: 16px;
+        border-radius: 8px;
+      }
+
+      .envelope-stage.opening {
+        pointer-events: none;
+      }
+
+      .envelope-stage.fading {
+        opacity: 0;
+        transform: scale(0.9) translateY(-30px);
+        transition:
+          opacity 0.7s var(--ease),
+          transform 0.7s var(--ease);
+      }
+
+      .envelope {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 30px 40px rgba(30, 26, 22, 0.18))
+          drop-shadow(0 8px 14px rgba(30, 26, 22, 0.1));
+      }
+
+      .envelope-body {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(160deg, #eee2d1 0%, #e0cfb9 100%);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .envelope-body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-top: 120px solid #d9c6ad;
+        border-right: 170px solid transparent;
+        border-left: 170px solid transparent;
+      }
+
+      .envelope-body::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-bottom: 130px solid #cbb499;
+        border-left: 170px solid transparent;
+        border-right: 170px solid transparent;
+      }
+
+      /* Flap */
+      .envelope-flap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-top: 130px solid #e3d2bb;
+        border-right: 170px solid transparent;
+        border-left: 170px solid transparent;
+        transform-origin: top center;
+        transition: transform 1.1s cubic-bezier(0.34, 1.2, 0.64, 1);
+        z-index: 5;
+        filter: drop-shadow(0 6px 10px rgba(30, 26, 22, 0.14));
+      }
+
+      .envelope-stage.opening .envelope-flap {
+        transform: rotateX(180deg);
+        z-index: 1;
+      }
+
+      /* Wax seal */
+      .envelope-seal {
+        position: absolute;
+        top: 52%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 35% 30%,
+          #b56a7d 0%,
+          #8f6472 45%,
+          #5f3f4e 100%
+        );
+        z-index: 7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          inset 0 -3px 8px rgba(0, 0, 0, 0.25),
+          inset 0 2px 4px rgba(255, 255, 255, 0.15),
+          0 6px 16px rgba(30, 26, 22, 0.28);
+        transition: all 0.7s var(--ease);
+      }
+
+      .envelope-seal::before {
+        content: "";
+        position: absolute;
+        inset: 6px;
+        border-radius: 50%;
+        border: 1px dashed rgba(255, 255, 255, 0.25);
+      }
+
+      .envelope-seal::after {
+        content: "V";
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 32px;
+        color: rgba(253, 250, 246, 0.92);
+        line-height: 1;
+        padding-bottom: 4px;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+      }
+
+      .envelope-stage.opening .envelope-seal {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.4) rotate(140deg);
+      }
+
+      /* Address label */
+      .envelope-address {
+        position: absolute;
+        top: 22px;
+        right: 26px;
+        z-index: 6;
+        text-align: right;
+        line-height: 1.3;
+      }
+
+      .envelope-address .to {
+        display: block;
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 4px;
+      }
+
+      .envelope-address .name {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 19px;
+        color: var(--ink);
+        letter-spacing: -0.01em;
+        padding-bottom: 6px;
+        border-bottom: 1px solid rgba(30, 26, 22, 0.18);
+      }
+
+      /* Warning */
+      .sealed-warning {
+        margin-top: 44px;
+        max-width: 40ch;
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--ink-3);
+        letter-spacing: -0.005em;
+      }
+
+      .sealed-warning strong {
+        color: var(--rose-deep);
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      /* ============================================================
+         2. READING — само письмо
+         ============================================================ */
+      .letter-wrap {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 20px 0 40px;
+      }
+
+      .letter {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        padding: 72px 64px 56px;
+        background:
+          radial-gradient(
+            ellipse 100% 100% at 50% 0%,
+            rgba(255, 250, 240, 0.6) 0%,
+            transparent 70%
+          ),
+          linear-gradient(160deg, #faf4e6 0%, #f3ead5 55%, #ece0c4 100%);
+        border: 1px solid rgba(74, 47, 28, 0.15);
+        border-radius: 3px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 60px 120px rgba(30, 26, 22, 0.22),
+          0 20px 40px rgba(30, 26, 22, 0.12);
+        transform-origin: top center;
+        animation: letterUnroll 1.2s var(--ease) both;
+        text-align: left;
+      }
+
+      @keyframes letterUnroll {
+        0% {
+          opacity: 0;
+          transform: perspective(1000px) rotateX(-90deg);
+        }
+        60% {
+          opacity: 1;
+          transform: perspective(1000px) rotateX(8deg);
+        }
+        100% {
+          opacity: 1;
+          transform: perspective(1000px) rotateX(0deg);
+        }
+      }
+
+      /* Бумажный оттенок — лёгкие пятна */
+      .letter::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            circle at 12% 18%,
+            rgba(74, 47, 28, 0.05) 0 3px,
+            transparent 4px
+          ),
+          radial-gradient(
+            circle at 88% 82%,
+            rgba(74, 47, 28, 0.04) 0 2px,
+            transparent 3px
+          ),
+          radial-gradient(
+            ellipse 80% 90% at 100% 0%,
+            rgba(143, 100, 114, 0.06),
+            transparent 60%
+          );
+        mix-blend-mode: multiply;
+        border-radius: 3px;
+      }
+
+      /* Внутренняя рамка */
+      .letter::after {
+        content: "";
+        position: absolute;
+        inset: 18px;
+        border: 1px solid rgba(74, 47, 28, 0.08);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      .letter-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 22px;
+        margin-bottom: 40px;
+        border-bottom: 1px solid rgba(74, 47, 28, 0.12);
+        position: relative;
+        z-index: 1;
+      }
+
+      .letter-head .date {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 14px;
+        color: rgba(74, 47, 28, 0.7);
+        letter-spacing: 0.02em;
+      }
+
+      .letter-head .num {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(74, 47, 28, 0.55);
+      }
+
+      .letter-body {
+        position: relative;
+        z-index: 1;
+      }
+
+      .letter-salutation {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-style: italic;
+        font-size: clamp(28px, 3.4vw, 36px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: #3d2916;
+        margin: 0 0 28px;
+        padding-bottom: 4px;
+      }
+
+      .letter-text {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 1.75;
+        letter-spacing: -0.005em;
+        color: #4a3520;
+        margin: 0 0 22px;
+        text-wrap: pretty;
+      }
+
+      .letter-text em {
+        font-style: italic;
+        color: #6b4529;
+      }
+
+      .letter-text.lead::first-letter {
+        font-family: var(--font-serif);
+        font-style: italic;
+        float: left;
+        font-size: 72px;
+        line-height: 0.82;
+        padding: 8px 14px 0 0;
+        color: #8b3524;
+      }
+
+      .letter-signature {
+        margin-top: 48px;
+        padding-top: 28px;
+        border-top: 1px solid rgba(74, 47, 28, 0.12);
+        text-align: right;
+        position: relative;
+        z-index: 1;
+      }
+
+      .letter-signature .from {
+        display: block;
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(74, 47, 28, 0.55);
+        margin-bottom: 8px;
+      }
+
+      .letter-signature .name {
+        font-family: var(--font-hand);
+        font-size: 38px;
+        line-height: 1;
+        letter-spacing: -0.01em;
+        color: #3d2916;
+        padding-bottom: 4px;
+        display: inline-block;
+        transform: rotate(-2deg);
+      }
+
+      /* Прощальная кнопка */
+      .letter-actions {
+        margin-top: 48px;
+        display: flex;
+        justify-content: center;
+        padding: 0 20px;
+      }
+
+      .btn-finish {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 36px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: var(--font-sans);
+        font-size: 14.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        border: none;
+        cursor: pointer;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 12px 28px rgba(30, 26, 22, 0.22);
+        transition: all 0.35s var(--ease);
+      }
+
+      .btn-finish:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 18px 38px rgba(30, 26, 22, 0.3);
+      }
+
+      .btn-finish:active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      /* ============================================================
+         3. AFTER — уже открыто
+         ============================================================ */
+      .after-icon {
+        font-size: 68px;
+        line-height: 1;
+        margin-bottom: 32px;
+        filter: saturate(0.7);
+        opacity: 0.7;
+      }
+
+      .after-label {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 24px;
+        padding-left: 0.28em;
+      }
+
+      .after-title {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-style: italic;
+        font-size: clamp(28px, 3.6vw, 40px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 28px;
+        max-width: 20ch;
+        padding-bottom: 4px;
+      }
+
+      .after-text {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 1.7;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+        margin: 0 auto 32px;
+        max-width: 44ch;
+      }
+
+      .after-text em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .after-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        border-radius: 999px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      .after-date .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--rose);
+      }
+
+      /* Скрытый сброс — только для автора */
+      .author-reset {
+        margin-top: 48px;
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 8px 16px;
+        border-radius: 999px;
+        transition: all 0.3s var(--ease);
+        opacity: 0.35;
+      }
+
+      .author-reset:hover {
+        opacity: 1;
+        background: var(--surface-2);
+        color: var(--ink-3);
+      }
+
+      /* ============================================================
+         CONFIRM MODAL — финальное подтверждение
+         ============================================================ */
+      .confirm-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 6000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(15, 12, 10, 0.72);
+        backdrop-filter: blur(20px) saturate(140%);
+        -webkit-backdrop-filter: blur(20px) saturate(140%);
+        opacity: 0;
+        transition: opacity 0.4s var(--ease);
+      }
+
+      .confirm-overlay.active {
+        display: flex;
+        opacity: 1;
+      }
+
+      .confirm-box {
+        position: relative;
+        width: 100%;
+        max-width: 460px;
+        padding: 48px 40px 36px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 6px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 60px 120px rgba(30, 26, 22, 0.4),
+          0 20px 40px rgba(30, 26, 22, 0.2);
+        text-align: center;
+        transform: scale(0.94);
+        transition: transform 0.5s var(--ease-spring);
+      }
+
+      .confirm-overlay.active .confirm-box {
+        transform: scale(1);
+      }
+
+      .confirm-emoji {
+        display: block;
+        font-size: 48px;
+        line-height: 1;
+        margin-bottom: 20px;
+        filter: saturate(0.75);
+      }
+
+      .confirm-title {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-style: italic;
+        font-size: 26px;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 16px;
+        padding-bottom: 4px;
+      }
+
+      .confirm-text {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 1.65;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+        margin: 0 0 32px;
+      }
+
+      .confirm-text em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .confirm-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .confirm-btn {
+        flex: 1;
+        padding: 16px 24px;
+        border-radius: 999px;
+        border: none;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: all 0.35s var(--ease);
+      }
+
+      .confirm-btn--no {
+        background: transparent;
+        color: var(--ink-2);
+        border: 1px solid var(--line-2);
+      }
+
+      .confirm-btn--no:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+        border-color: var(--ink-3);
+      }
+
+      .confirm-btn--yes {
+        background: var(--ink);
+        color: var(--paper);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 8px 20px rgba(30, 26, 22, 0.2);
+      }
+
+      .confirm-btn--yes:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 14px 32px rgba(30, 26, 22, 0.3);
+      }
+
+      /* ============================================================
+         RESPONSIVE
+         ============================================================ */
+      @media (max-width: 640px) {
+        .stage {
+          margin-top: 32px;
+        }
+
+        .envelope-stage {
+          width: 290px;
+          height: 205px;
+        }
+
+        .envelope-flap {
+          border-top-width: 110px;
+          border-right-width: 145px;
+          border-left-width: 145px;
+        }
+
+        .envelope-body::before {
+          border-top-width: 100px;
+          border-right-width: 145px;
+          border-left-width: 145px;
+        }
+
+        .envelope-body::after {
+          border-bottom-width: 110px;
+          border-left-width: 145px;
+          border-right-width: 145px;
+        }
+
+        .envelope-seal {
+          width: 58px;
+          height: 58px;
+        }
+
+        .envelope-seal::after {
+          font-size: 26px;
+        }
+
+        .envelope-address .name {
+          font-size: 16px;
+        }
+
+        .sealed-warning {
+          margin-top: 32px;
+          font-size: 13.5px;
+        }
+
+        .letter {
+          padding: 48px 28px 40px;
+        }
+
+        .letter::after {
+          inset: 12px;
+        }
+
+        .letter-head {
+          padding-bottom: 16px;
+          margin-bottom: 28px;
+        }
+
+        .letter-salutation {
+          font-size: 24px;
+          margin-bottom: 22px;
+        }
+
+        .letter-text {
+          font-size: 16px;
+          line-height: 1.7;
+          margin-bottom: 18px;
+        }
+
+        .letter-text.lead::first-letter {
+          font-size: 58px;
+          padding: 6px 12px 0 0;
+        }
+
+        .letter-signature {
+          margin-top: 36px;
+          padding-top: 22px;
+        }
+
+        .letter-signature .name {
+          font-size: 32px;
+        }
+
+        .letter-actions {
+          margin-top: 36px;
+        }
+
+        .btn-finish {
+          padding: 16px 28px;
+          font-size: 13.5px;
+        }
+
+        .after-icon {
+          font-size: 56px;
+        }
+
+        .after-title {
+          font-size: 26px;
+        }
+
+        .after-text {
+          font-size: 16px;
+        }
+
+        .confirm-box {
+          padding: 36px 26px 28px;
+        }
+
+        .confirm-emoji {
+          font-size: 40px;
+        }
+
+        .confirm-title {
+          font-size: 22px;
+        }
+
+        .confirm-text {
+          font-size: 15px;
+        }
+
+        .confirm-btn {
+          padding: 14px 18px;
+          font-size: 13.5px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .letter {
+          animation: none;
+        }
+        .envelope-flap,
+        .envelope-seal,
+        .envelope-stage {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero" id="heroSection">
+        <span class="eyebrow">Письмо · один раз</span>
+        <h1>Письмо, которое <em>нельзя перечитать</em></h1>
+        <p class="hero-sub">
+          Оно откроется только один раз. Читай внимательно. Оно останется только
+          в твоей памяти.
+        </p>
+      </section>
+
+      <!-- ============================================================
+           STAGE 1: SEALED
+           ============================================================ -->
+      <section class="stage" id="sealedStage">
+        <div class="sealed-hint">Нажми на конверт</div>
+
+        <div
+          class="envelope-stage"
+          id="envelopeStage"
+          tabindex="0"
+          role="button"
+          aria-label="Открыть письмо"
+        >
+          <div class="envelope" id="envelope">
+            <div class="envelope-body"></div>
+            <div class="envelope-flap"></div>
+            <div class="envelope-address">
+              <span class="to">Кому</span>
+              <span class="name">Веронике</span>
+            </div>
+            <div class="envelope-seal"></div>
+          </div>
+        </div>
+
+        <p class="sealed-warning">
+          Открывается <strong>только один раз</strong>. После закрытия — не
+          вернётся.
+        </p>
+      </section>
+
+      <!-- ============================================================
+           STAGE 2: LETTER
+           ============================================================ -->
+      <section class="stage" id="letterStage">
+        <div class="letter-wrap">
+          <article class="letter" id="letter">
+            <header class="letter-head">
+              <span class="date" id="letterDate">— сегодня —</span>
+              <span class="num">№ 1 · от сердца</span>
+            </header>
+
+            <div class="letter-body">
+              <h2 class="letter-salutation">Моей любимой Веронике,</h2>
+
+              <!-- ⚠️⚠️⚠️ ЗАМЕНИ ЭТО ПИСЬМО НА СВОЁ ⚠️⚠️⚠️ -->
+              <!--
+                Пиши свободно, но помни: она прочитает это ТОЛЬКО ОДИН РАЗ.
+                Не торопись. Одно-два сильных абзаца работают лучше десяти.
+                Говори то, что по-настоящему важно.
+              -->
+
+              <p class="letter-text lead">
+                я долго думал, каким должно быть это письмо. Ты знаешь, что я не
+                умею говорить красиво, когда дело касается главного. Поэтому я
+                просто напишу то, что чувствую.
+              </p>
+
+              <p class="letter-text">
+                Ты появилась в моей жизни как-то незаметно, а потом вдруг стала
+                её центром. Я не могу вспомнить точного дня, когда это
+                произошло, — только знаю, что теперь <em>всё</em> как-то связано
+                с тобой. Утро начинается с мысли о тебе. День заканчивается той
+                же мыслью.
+              </p>
+
+              <p class="letter-text">
+                Спасибо, что ты рядом. Спасибо за каждый день, за каждую мелочь,
+                за то, что ты умеешь быть рядом так, как никто. Я обещаю ценить
+                это. Каждый день.
+              </p>
+
+              <p class="letter-text">
+                Ты прочитаешь это один раз — и я хочу, чтобы ты знала:
+                <em>я буду любить тебя всю жизнь</em>. Даже когда меня не будет
+                рядом. Даже когда мы будем ссориться. Даже когда всё будет
+                сложно. Всё равно. Всегда.
+              </p>
+
+              <!-- ⚠️ ЗАМЕНИ "твой Анатолий" НА СВОЮ ПОДПИСЬ, ЕСЛИ ХОЧЕШЬ -->
+              <div class="letter-signature">
+                <span class="from">Навсегда твой,</span>
+                <span class="name">Анатолий</span>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="letter-actions">
+          <button class="btn-finish" id="btnFinish">
+            <span>Я прочитала. Закрыть навсегда</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           STAGE 3: AFTER
+           ============================================================ -->
+      <section class="stage" id="afterStage">
+        <span class="after-icon">🕊️</span>
+        <span class="after-label">Письмо · открыто</span>
+        <h2 class="after-title">Ты уже открывала это</h2>
+        <p class="after-text">
+          Оно не вернётся. Но и не исчезло — оно <em>всегда с тобой</em>. В том,
+          как ты теперь улыбаешься. В том, что ты знаешь.
+        </p>
+        <span class="after-date" id="afterDate">
+          <span class="dot"></span>
+          <span>Открыто —</span>
+        </span>
+
+        <!-- Скрытая кнопка сброса — для автора. Не для неё. -->
+        <button
+          class="author-reset"
+          id="btnReset"
+          title="Сбросить (только для автора)"
+        >
+          ↻ Сбросить для теста
+        </button>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Письмо, которое было один раз</span>
+    </footer>
+
+    <!-- CONFIRM MODAL -->
+    <div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-box">
+        <span class="confirm-emoji">🕊️</span>
+        <h3 class="confirm-title">Ты точно прочитала?</h3>
+        <p class="confirm-text">
+          Это письмо нельзя будет открыть дважды. После закрытия оно останется
+          <em>только в твоей памяти</em>. Перечитать — не получится.
+        </p>
+        <div class="confirm-actions">
+          <button class="confirm-btn confirm-btn--no" id="confirmNo">
+            Ещё раз
+          </button>
+          <button class="confirm-btn confirm-btn--yes" id="confirmYes">
+            Да, я прочитала
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="shared/widgets.js" defer></script>
+
+    <script>
+      /* ============================================================
+         ПИСЬМО ОДИН РАЗ · логика
+         ============================================================ */
+      (function () {
+        "use strict";
+
+        const STORAGE_KEY = "letter_once_opened_v1";
+        const STORAGE_DATE_KEY = "letter_once_date_v1";
+
+        const heroSection = document.getElementById("heroSection");
+        const sealedStage = document.getElementById("sealedStage");
+        const letterStage = document.getElementById("letterStage");
+        const afterStage = document.getElementById("afterStage");
+
+        const envelopeStage = document.getElementById("envelopeStage");
+        const btnFinish = document.getElementById("btnFinish");
+        const btnReset = document.getElementById("btnReset");
+        const afterDate = document.getElementById("afterDate");
+        const letterDate = document.getElementById("letterDate");
+
+        const confirmOverlay = document.getElementById("confirmOverlay");
+        const confirmNo = document.getElementById("confirmNo");
+        const confirmYes = document.getElementById("confirmYes");
+
+        /* ---------- Хранилище (безопасное) ---------- */
+        function safeGet(key) {
+          try {
+            return localStorage.getItem(key);
+          } catch (e) {
+            return null;
+          }
+        }
+        function safeSet(key, val) {
+          try {
+            localStorage.setItem(key, val);
+            return true;
+          } catch (e) {
+            return false;
+          }
+        }
+        function safeRemove(key) {
+          try {
+            localStorage.removeItem(key);
+          } catch (e) {}
+        }
+
+        function isAlreadyOpened() {
+          return safeGet(STORAGE_KEY) === "1";
+        }
+
+        /* ---------- Показ сцены ---------- */
+        function showStage(id) {
+          [sealedStage, letterStage, afterStage].forEach((el) => {
+            el.classList.remove("active");
+          });
+          const el = document.getElementById(id);
+          if (el) el.classList.add("active");
+        }
+
+        /* ---------- Форматирование даты ---------- */
+        function fmtRuDate(date) {
+          const months = [
+            "января",
+            "февраля",
+            "марта",
+            "апреля",
+            "мая",
+            "июня",
+            "июля",
+            "августа",
+            "сентября",
+            "октября",
+            "ноября",
+            "декабря",
+          ];
+          const d = date instanceof Date ? date : new Date(date);
+          if (isNaN(d)) return "—";
+          return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        /* ---------- Дата в письме ---------- */
+        letterDate.textContent = fmtRuDate(new Date());
+
+        /* ---------- Состояние: AFTER ---------- */
+        function renderAfter() {
+          // Скрываем hero — там уже нечего делать
+          if (heroSection) heroSection.style.display = "none";
+
+          // Показать дату открытия
+          const dateStr = safeGet(STORAGE_DATE_KEY);
+          if (dateStr) {
+            afterDate.innerHTML = `
+              <span class="dot"></span>
+              <span>Открыто — ${fmtRuDate(dateStr)}</span>
+            `;
+          }
+
+          showStage("afterStage");
+        }
+
+        /* ---------- Состояние: SEALED ---------- */
+        function renderSealed() {
+          showStage("sealedStage");
+        }
+
+        /* ---------- Открытие конверта ---------- */
+        function openEnvelope() {
+          envelopeStage.classList.add("opening");
+
+          // Плавно убираем hero (чтобы не мешал)
+          if (heroSection) {
+            heroSection.style.transition = "opacity 0.5s ease";
+            heroSection.style.opacity = "0.25";
+          }
+
+          // Через 1.2с — конверт улетает, письмо появляется
+          setTimeout(() => {
+            sealedStage.classList.remove("active");
+
+            // Небольшая задержка для плавности
+            setTimeout(() => {
+              showStage("letterStage");
+
+              // Прокрутка вверх — чтобы письмо было во весь экран
+              setTimeout(() => {
+                window.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
+              }, 100);
+            }, 200);
+          }, 1200);
+        }
+
+        /* ---------- Финал: подтверждение ---------- */
+        function askFinish() {
+          confirmOverlay.classList.add("active");
+          document.body.style.overflow = "hidden";
+        }
+
+        function closeConfirm() {
+          confirmOverlay.classList.remove("active");
+          document.body.style.overflow = "";
+        }
+
+        function finishLetter() {
+          // Ставим флаг — письмо закрыто навсегда
+          safeSet(STORAGE_KEY, "1");
+          safeSet(STORAGE_DATE_KEY, new Date().toISOString());
+
+          closeConfirm();
+
+          // Плавный переход к AFTER
+          letterStage.classList.remove("active");
+          if (heroSection) heroSection.style.display = "none";
+
+          setTimeout(() => {
+            renderAfter();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }, 400);
+        }
+
+        /* ---------- Сброс (для автора) ---------- */
+        function resetAll() {
+          if (!confirm("Сбросить? Письмо снова станет доступным для открытия."))
+            return;
+          safeRemove(STORAGE_KEY);
+          safeRemove(STORAGE_DATE_KEY);
+          location.reload();
+        }
+
+        /* ---------- Init ---------- */
+        function init() {
+          if (isAlreadyOpened()) {
+            renderAfter();
+          } else {
+            renderSealed();
+          }
+        }
+
+        /* ---------- Обработчики ---------- */
+        envelopeStage.addEventListener("click", openEnvelope);
+        envelopeStage.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openEnvelope();
+          }
+        });
+
+        btnFinish.addEventListener("click", askFinish);
+
+        confirmNo.addEventListener("click", closeConfirm);
+        confirmYes.addEventListener("click", finishLetter);
+
+        confirmOverlay.addEventListener("click", (e) => {
+          if (e.target === confirmOverlay) closeConfirm();
+        });
+
+        document.addEventListener("keydown", (e) => {
+          if (
+            e.key === "Escape" &&
+            confirmOverlay.classList.contains("active")
+          ) {
+            closeConfirm();
+          }
+        });
+
+        btnReset.addEventListener("click", resetAll);
+
+        init();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Что ты сделала со мной · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
+    <style>
+      /* ============================================================
+         ЧТО ТЫ СДЕЛАЛА СО МНОЙ · только специфика страницы
+         ============================================================ */
+
+      main {
+        max-width: 780px;
+      }
+
+      .hero-sub {
+        max-width: 48ch;
+      }
+
+      /* ============================================================
+         INTRO
+         ============================================================ */
+      .intro {
+        position: relative;
+        margin-top: 40px;
+        padding: 32px 36px;
+        background: linear-gradient(
+          160deg,
+          var(--rose-tint) 0%,
+          var(--surface-2) 100%
+        );
+        border: 1px solid rgba(143, 100, 114, 0.18);
+        border-left: 3px solid var(--rose-deep);
+        border-radius: 4px;
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1.65;
+        letter-spacing: -0.005em;
+        color: var(--ink);
+        text-align: center;
+      }
+
+      .intro em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .intro strong {
+        font-weight: 400;
+        font-style: normal;
+        color: var(--ink);
+      }
+
+      /* ============================================================
+         LIST
+         ============================================================ */
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 40px;
+        margin-bottom: 24px;
+      }
+
+      /* ============================================================
+         CHANGE CARD
+         ============================================================ */
+      .change {
+        position: relative;
+        padding: 40px 44px 36px;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 12px 32px rgba(30, 26, 22, 0.06),
+          0 3px 10px rgba(30, 26, 22, 0.03);
+        opacity: 0;
+        transform: translateY(28px);
+        transition:
+          opacity 0.9s var(--ease),
+          transform 0.9s var(--ease),
+          box-shadow 0.5s var(--ease);
+      }
+
+      .change.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .change:hover {
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 20px 48px rgba(30, 26, 22, 0.1),
+          0 6px 16px rgba(30, 26, 22, 0.05);
+      }
+
+      /* Corner ticks */
+      .change::before,
+      .change::after {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-color: var(--rose-deep);
+        opacity: 0.35;
+        pointer-events: none;
+        transition: opacity 0.4s var(--ease);
+      }
+
+      .change.visible::before,
+      .change.visible::after {
+        opacity: 0.5;
+      }
+
+      .change:hover::before,
+      .change:hover::after {
+        opacity: 0.9;
+      }
+
+      .change::before {
+        top: 10px;
+        left: 10px;
+        border-top: 1px solid;
+        border-left: 1px solid;
+      }
+
+      .change::after {
+        bottom: 10px;
+        right: 10px;
+        border-bottom: 1px solid;
+        border-right: 1px solid;
+      }
+
+      /* Number */
+      .change-num {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 24px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+      }
+
+      .change-num::before {
+        content: "";
+        width: 20px;
+        height: 1px;
+        background: var(--rose-deep);
+        opacity: 0.6;
+      }
+
+      /* ============================================================
+         BEFORE
+         ============================================================ */
+      .change-before {
+        margin-bottom: 28px;
+      }
+
+      .change-label {
+        display: block;
+        margin-bottom: 10px;
+        font-family: var(--font-sans);
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+        padding-left: 0.28em;
+      }
+
+      .change-before .change-text {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 400;
+        font-size: 17px;
+        line-height: 1.55;
+        letter-spacing: -0.005em;
+        color: var(--ink-3);
+        margin: 0;
+      }
+
+      /* ============================================================
+         DIVIDER
+         ============================================================ */
+      .change-divider {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 28px 0;
+      }
+
+      .change-divider::before,
+      .change-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--line-2),
+          transparent
+        );
+      }
+
+      .change-divider-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--rose-deep);
+        box-shadow: 0 0 0 4px rgba(143, 100, 114, 0.1);
+        flex-shrink: 0;
+      }
+
+      /* ============================================================
+         AFTER
+         ============================================================ */
+      .change-after .change-label {
+        color: var(--rose-deep);
+      }
+
+      .change-after .change-text {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-size: clamp(19px, 2.2vw, 22px);
+        line-height: 1.5;
+        letter-spacing: -0.012em;
+        color: var(--ink);
+        margin: 0;
+        text-wrap: pretty;
+      }
+
+      .change-after .change-text em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .change-after .change-text strong {
+        font-weight: 400;
+        font-style: italic;
+        color: var(--ink);
+      }
+
+      /* ============================================================
+         FINAL
+         ============================================================ */
+      .final {
+        position: relative;
+        margin-top: 56px;
+        padding: 56px 40px 48px;
+        text-align: center;
+        background: linear-gradient(
+          160deg,
+          #faf6ee 0%,
+          var(--surface-2) 55%,
+          var(--rose-tint) 100%
+        );
+        border: 1px solid rgba(143, 100, 114, 0.22);
+        border-radius: 4px;
+        opacity: 0;
+        transform: translateY(28px);
+        transition:
+          opacity 0.9s var(--ease),
+          transform 0.9s var(--ease);
+      }
+
+      .final.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .final-mark {
+        display: block;
+        font-size: 44px;
+        line-height: 1;
+        margin-bottom: 24px;
+        filter: saturate(0.75);
+        animation: finalPulse 3s ease-in-out infinite;
+      }
+
+      @keyframes finalPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.85;
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 1;
+        }
+      }
+
+      .final-text {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-style: italic;
+        font-size: clamp(22px, 2.8vw, 28px);
+        line-height: 1.4;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0 auto;
+        max-width: 26ch;
+        text-wrap: pretty;
+      }
+
+      .final-text em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .final-sign {
+        margin-top: 32px;
+        padding-top: 28px;
+        border-top: 1px solid rgba(143, 100, 114, 0.16);
+        display: inline-block;
+        min-width: 240px;
+      }
+
+      .final-sign .from {
+        display: block;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 8px;
+        padding-left: 0.28em;
+      }
+
+      .final-sign .name {
+        display: block;
+        font-family: var(--font-hand);
+        font-size: 34px;
+        line-height: 1;
+        color: var(--ink);
+        padding-bottom: 4px;
+        transform: rotate(-2deg);
+      }
+
+      /* ============================================================
+         RESPONSIVE
+         ============================================================ */
+      @media (max-width: 640px) {
+        .intro {
+          margin-top: 28px;
+          padding: 24px 22px;
+          font-size: 15.5px;
+          text-align: left;
+        }
+
+        .list {
+          gap: 14px;
+          margin-top: 28px;
+        }
+
+        .change {
+          padding: 32px 24px 28px;
+        }
+
+        .change::before,
+        .change::after {
+          width: 10px;
+          height: 10px;
+        }
+
+        .change-num {
+          font-size: 9.5px;
+          margin-bottom: 20px;
+        }
+
+        .change-before .change-text {
+          font-size: 15.5px;
+        }
+
+        .change-after .change-text {
+          font-size: 19px;
+        }
+
+        .change-divider {
+          margin: 22px 0;
+        }
+
+        .change-label {
+          font-size: 9px;
+          letter-spacing: 0.24em;
+        }
+
+        .final {
+          margin-top: 40px;
+          padding: 44px 26px 36px;
+        }
+
+        .final-mark {
+          font-size: 38px;
+          margin-bottom: 20px;
+        }
+
+        .final-text {
+          font-size: 20px;
+        }
+
+        .final-sign {
+          margin-top: 26px;
+          padding-top: 22px;
+          min-width: 0;
+        }
+
+        .final-sign .name {
+          font-size: 30px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .change,
+        .final {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+
+        .final-mark {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <span class="eyebrow">Что ты сделала со мной</span>
+        <h1>Это всё — <em>из-за тебя</em></h1>
+        <p class="hero-sub">
+          25 изменений. Каждое — не про «ты сделала меня счастливым». Про
+          конкретные вещи. То, что я замечаю в себе. То, что стало другим.
+        </p>
+      </section>
+
+      <!-- INTRO -->
+      <div class="intro">
+        Я не всегда был таким. Что-то во мне <em>сдвинулось</em>, когда
+        появилась ты. Я собрал самое заметное. <strong>Читай медленно.</strong>
+      </div>
+
+      <!-- LIST (заполняется из JS) -->
+      <div class="list" id="list"></div>
+
+      <!-- FINAL -->
+      <div class="final" id="final">
+        <span class="final-mark">💗</span>
+        <p class="final-text">
+          И это — не всё. Это только то, что я <em>успел заметить</em>.
+          Остальное — ещё в пути.
+        </p>
+        <div class="final-sign">
+          <span class="from">Навсегда твой</span>
+          <span class="name">Анатолий</span>
+        </div>
+      </div>
+
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="nav-wrap auto-nav" data-nav="letter-once,reasons,love"></nav>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <script src="shared/widgets.js" defer></script>
+
+    <script>
+      /* ============================================================
+         ЧТО ТЫ СДЕЛАЛА СО МНОЙ · логика
+         ============================================================
+         ✏️ РЕДАКТИРУЙ ЗДЕСЬ.
+         Каждый элемент массива — {before, after}.
+         - before: что было раньше (одна короткая фраза)
+         - after: что стало (с конкретикой — почему, когда, как)
+
+         Можешь:
+         - менять текст
+         - добавлять/удалять элементы (хоть 15, хоть 50)
+         - использовать <em>...</em> для курсива
+         - использовать <strong>...</strong> для акцента
+         ============================================================ */
+      const CHANGES = [
+        {
+          before: "Раньше я не любил утро.",
+          after: "Теперь — люблю. Потому что ты пишешь «доброе утро».",
+        },
+        {
+          before: "Раньше я не замечал небо.",
+          after:
+            "Теперь — смотрю. Потому что ты однажды сказала, что оно похоже на мои глаза.",
+        },
+        {
+          before: "Раньше я не знал, что такое скучать.",
+          after: "Теперь знаю. <em>По тебе.</em>",
+        },
+        {
+          before: "Раньше я не понимал, зачем люди фотографируют еду.",
+          after: "Теперь — понимаю. Каждый раз, когда ты фотографируешь еду.",
+        },
+        {
+          before: "Раньше я любил дождь.",
+          after:
+            "Теперь — люблю его сильнее. Потому что в дождь ты становишься мягче.",
+        },
+        {
+          before: "Раньше я думал, что «дом» — это место.",
+          after: "Теперь знаю: это человек. <em>Ты.</em>",
+        },
+        {
+          before: "Раньше я не умел ждать.",
+          after: "Теперь умею. Но только тебя.",
+        },
+        {
+          before: "Раньше я засыпал с мыслями о учёбе/работе.",
+          after: "Теперь — о тебе. И это, оказывается, в разы лучше.",
+        },
+        {
+          before: "Раньше я не любил свой голос.",
+          after:
+            "Теперь он мне нравится. Потому что он говорит с тобой. Каждый день.",
+        },
+        {
+          before: "Раньше я не понимал, что значит «свой человек».",
+          after: "Теперь понимаю. <em>Каждый день.</em>",
+        },
+        {
+          before: "Раньше я не знал, зачем просыпаться в 7 утра.",
+          after: "Теперь знаю. Ради одного сообщения от тебя.",
+        },
+        {
+          before: "Раньше я думал, что влюблённость — это бабочки в животе.",
+          after: "Теперь знаю: это ещё и тепло в груди. И спокойствие. И дом.",
+        },
+        {
+          before: "Раньше я не любил планировать будущее.",
+          after: "Теперь — планирую. И всё в нём — с тобой.",
+        },
+        {
+          before: "Раньше я не замечал мелочей.",
+          after: "Теперь — замечаю. Все. Потому что они о тебе.",
+        },
+        {
+          before: "Раньше я не знал, что можно улыбаться без причины.",
+          after: "Теперь улыбаюсь. Причина есть. <em>Ты.</em>",
+        },
+        {
+          before: "Раньше я думал, что «люблю» — это громкое слово.",
+          after: "Теперь знаю: оно тихое. Каждый день, шёпотом, про себя.",
+        },
+        {
+          before: "Раньше я не понимал, что «навсегда» — это реально.",
+          after:
+            "Теперь понимаю. Потому что тебя не хочется отпускать. Никогда.",
+        },
+        {
+          before: "Раньше я не любил запах кофе.",
+          after: "Теперь — люблю. Пахнет утром, в которое ты рядом.",
+        },
+        {
+          before: "Раньше я думал, что счастье — это когда всё хорошо.",
+          after: "Теперь знаю: это когда ты рядом. Даже если всё плохо.",
+        },
+        {
+          before: "Раньше я не знал, как звучит тишина счастья.",
+          after: "Теперь знаю. Это твоё дыхание рядом.",
+        },
+        {
+          before: "Раньше я думал, что «моя» — это про вещи.",
+          after: "Теперь знаю: это про человека. <em>Ты моя.</em>",
+        },
+        {
+          before: "Раньше я не понимал, что можно соскучиться за час.",
+          after: "Теперь понимаю. Каждый раз, когда тебя нет рядом.",
+        },
+        {
+          before: "Раньше я не любил своё отражение.",
+          after: "Теперь — люблю. Потому что рядом с тобой я себе нравлюсь.",
+        },
+        {
+          before: "Раньше я думал, что жизнь — это череда дней.",
+          after: "Теперь знаю: это череда моментов с тобой.",
+        },
+        {
+          before: "Раньше я не знал, за что благодарить вселенную.",
+          after: "Теперь знаю. <strong>За тебя.</strong>",
+        },
+      ];
+
+      /* ---------- РЕНДЕР ---------- */
+      (function () {
+        "use strict";
+
+        const list = document.getElementById("list");
+        const finalEl = document.getElementById("final");
+
+        function pad2(n) {
+          return String(n + 1).padStart(2, "0");
+        }
+
+        function renderCard(item, index) {
+          const card = document.createElement("article");
+          card.className = "change";
+          card.innerHTML = `
+            <span class="change-num">№ ${pad2(index)}</span>
+            <div class="change-before">
+              <span class="change-label">Было</span>
+              <p class="change-text">${item.before}</p>
+            </div>
+            <div class="change-divider" aria-hidden="true">
+              <span class="change-divider-dot"></span>
+            </div>
+            <div class="change-after">
+              <span class="change-label">Стало</span>
+              <p class="change-text">${item.after}</p>
+            </div>
+          `;
+          return card;
+        }
+
+        function render() {
+          list.innerHTML = "";
+          CHANGES.forEach((item, i) => {
+            list.appendChild(renderCard(item, i));
+          });
+        }
+
+        function setupReveal() {
+          const targets = document.querySelectorAll(".change, .final");
+
+          if (!("IntersectionObserver" in window)) {
+            targets.forEach((el) => el.classList.add("visible"));
+            return;
+          }
+
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add("visible");
+                  io.unobserve(entry.target);
+                }
+              });
+            },
+            {
+              threshold: 0.12,
+              rootMargin: "0px 0px -60px 0px",
+            },
+          );
+
+          targets.forEach((el) => io.observe(el));
+        }
+
+        render();
+        setupReveal();
+      })();
+    </script>
+  </body>
+</html>

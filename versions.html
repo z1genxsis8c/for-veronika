@@ -1,0 +1,1126 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Все версии тебя · Для Вероники</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f3ede4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Вероника" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <link rel="apple-touch-icon" href="photos/icon-192.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+
+    <style>
+      /* ============================================================
+         ВСЕ ВЕРСИИ ТЕБЯ · только специфика страницы
+         ============================================================ */
+
+      main {
+        max-width: 1080px;
+      }
+
+      .hero-sub {
+        max-width: 48ch;
+      }
+
+      /* ============================================================
+         COUNTER (над галереей)
+         ============================================================ */
+      .versions-counter {
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        gap: 14px;
+        margin-top: 56px;
+        margin-bottom: 40px;
+        font-family: var(--font-serif);
+        font-style: italic;
+        color: var(--ink-3);
+        font-size: 15px;
+        letter-spacing: 0.02em;
+      }
+
+      .versions-counter .current {
+        font-size: 40px;
+        font-style: normal;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        display: inline-block;
+        min-width: 56px;
+        text-align: right;
+        transition: color 0.4s;
+      }
+
+      .versions-counter .sep {
+        color: var(--ink-4);
+        font-size: 20px;
+      }
+
+      .versions-counter .total {
+        font-size: 20px;
+        font-style: normal;
+        color: var(--ink-3);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ============================================================
+         STAGE
+         ============================================================ */
+      .stage {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        min-height: 520px;
+        perspective: 1600px;
+      }
+
+      .card-slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: translateX(6%) scale(0.96);
+        transition:
+          transform 0.85s var(--ease),
+          opacity 0.6s var(--ease);
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+
+      .card-slide.active {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        pointer-events: auto;
+      }
+
+      .card-slide.prev {
+        opacity: 0;
+        transform: translateX(-6%) scale(0.96);
+      }
+
+      .card-slide.next {
+        opacity: 0;
+        transform: translateX(6%) scale(0.96);
+      }
+
+      /* ============================================================
+         VERSION CARD
+         ============================================================ */
+      .version-card {
+        position: relative;
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--line-2);
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 40px 80px rgba(30, 26, 22, 0.14),
+          0 12px 32px rgba(30, 26, 22, 0.06);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 520px;
+        isolation: isolate;
+      }
+
+      /* Corner ornament */
+      .version-card::after {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: 1px solid rgba(30, 26, 22, 0.05);
+        border-radius: 3px;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      /* ============================================================
+         PHOTO SIDE
+         ============================================================ */
+      .version-photo {
+        position: relative;
+        background: linear-gradient(
+          135deg,
+          var(--rose-tint) 0%,
+          var(--rose-soft) 55%,
+          #cbb0b6 100%
+        );
+        overflow: hidden;
+        min-height: 100%;
+      }
+
+      /* Фолбэк — большой эмодзи, если фото нет */
+      .version-photo-fallback {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(96px, 16vw, 180px);
+        line-height: 1;
+        filter: saturate(0.7);
+        z-index: 0;
+        animation: fallbackBob 5s ease-in-out infinite;
+      }
+
+      @keyframes fallbackBob {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-3deg);
+        }
+        50% {
+          transform: translateY(-8px) rotate(3deg);
+        }
+      }
+
+      .version-photo img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        filter: saturate(0.95);
+      }
+
+      /* Тонкий градиент поверх фото для контраста */
+      .version-photo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(30, 26, 22, 0.02) 0%,
+          transparent 30%,
+          transparent 70%,
+          rgba(30, 26, 22, 0.08) 100%
+        );
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      /* Бейдж "версия #N" на фото */
+      .version-photo-badge {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 8px 14px;
+        background: rgba(253, 250, 246, 0.92);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(30, 26, 22, 0.1);
+        border-radius: 999px;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+        z-index: 3;
+      }
+
+      /* ============================================================
+         TEXT SIDE
+         ============================================================ */
+      .version-body {
+        position: relative;
+        padding: 56px 48px 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        z-index: 1;
+      }
+
+      .version-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--rose-deep);
+        margin-bottom: 14px;
+        padding-left: 0.28em;
+      }
+
+      .version-title {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-size: clamp(28px, 3.4vw, 40px);
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 20px;
+        text-wrap: pretty;
+      }
+
+      .version-title em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .version-text {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1.65;
+        letter-spacing: -0.005em;
+        color: var(--ink-2);
+        margin: 0 0 20px;
+        text-wrap: pretty;
+      }
+
+      .version-text em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      .version-text strong {
+        font-weight: 400;
+        font-style: normal;
+        color: var(--ink);
+      }
+
+      /* Декоративный разделитель + подпись */
+      .version-foot {
+        margin-top: auto;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .version-foot::before {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rose-deep);
+        opacity: 0.5;
+        flex-shrink: 0;
+      }
+
+      .version-mood {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 14px;
+        color: var(--ink-3);
+        letter-spacing: -0.005em;
+      }
+
+      /* ============================================================
+         NAVIGATION
+         ============================================================ */
+      .controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        margin-top: 48px;
+        padding: 0 20px;
+      }
+
+      .arrow-btn {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: transparent;
+        border: 1px solid var(--line-2);
+        color: var(--ink-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+        flex-shrink: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .arrow-btn svg {
+        width: 18px;
+        height: 18px;
+        transition: transform 0.3s var(--ease);
+      }
+
+      .arrow-btn:hover:not(:disabled) {
+        background: var(--ink);
+        border-color: var(--ink);
+        color: var(--paper);
+        transform: scale(1.06);
+      }
+
+      .arrow-btn:hover:not(:disabled) svg {
+        transform: scale(1.08);
+      }
+
+      .arrow-btn:active:not(:disabled) {
+        transform: scale(0.96);
+      }
+
+      .arrow-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .controls-meta {
+        flex: 1;
+        text-align: center;
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 14px;
+        color: var(--ink-3);
+        letter-spacing: 0.02em;
+        user-select: none;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ============================================================
+         DOTS
+         ============================================================ */
+      .dots {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 32px;
+        flex-wrap: wrap;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        border: none;
+        background: var(--line-2);
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.35s var(--ease);
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .dot:hover {
+        background: var(--rose);
+        transform: scale(1.2);
+      }
+
+      .dot.active {
+        background: var(--rose-deep);
+        transform: scale(1.5);
+        box-shadow: 0 0 0 3px rgba(143, 100, 114, 0.15);
+      }
+
+      .dot.visited {
+        background: var(--rose-soft);
+      }
+
+      /* ============================================================
+         PROGRESS LINE
+         ============================================================ */
+      .progress {
+        width: 100%;
+        max-width: 900px;
+        height: 1px;
+        margin: 32px auto 0;
+        background: var(--line);
+        border-radius: 1px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: var(--rose-deep);
+        width: 0%;
+        transition: width 0.5s var(--ease);
+      }
+
+      /* ============================================================
+         FINAL MESSAGE (когда все пролистаны)
+         ============================================================ */
+      .all-seen {
+        margin-top: 40px;
+        padding: 32px 28px;
+        text-align: center;
+        background: linear-gradient(
+          160deg,
+          var(--rose-tint) 0%,
+          var(--surface-2) 100%
+        );
+        border: 1px solid rgba(143, 100, 114, 0.22);
+        border-radius: 4px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.8s var(--ease),
+          transform 0.8s var(--ease);
+        pointer-events: none;
+      }
+
+      .all-seen.show {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .all-seen-mark {
+        display: block;
+        font-size: 36px;
+        line-height: 1;
+        margin-bottom: 16px;
+        filter: saturate(0.8);
+      }
+
+      .all-seen-text {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-style: italic;
+        font-size: 20px;
+        line-height: 1.4;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+        margin: 0 auto;
+        max-width: 32ch;
+        text-wrap: pretty;
+      }
+
+      .all-seen-text em {
+        font-style: italic;
+        color: var(--rose-deep);
+      }
+
+      /* ============================================================
+         SWIPE HINT
+         ============================================================ */
+      .swipe-hint {
+        position: fixed;
+        left: 50%;
+        bottom: 32px;
+        transform: translateX(-50%) translateY(20px);
+        padding: 14px 22px;
+        background: var(--ink);
+        color: var(--paper);
+        border-radius: var(--radius-pill);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        box-shadow: 0 20px 40px rgba(30, 26, 22, 0.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.6s var(--ease);
+        z-index: 200;
+        white-space: nowrap;
+      }
+
+      .swipe-hint.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* ============================================================
+         RESPONSIVE
+         ============================================================ */
+      @media (max-width: 900px) {
+        .version-card {
+          grid-template-columns: 1fr;
+          min-height: auto;
+        }
+
+        .version-photo {
+          aspect-ratio: 4 / 3;
+          min-height: 280px;
+        }
+
+        .version-photo-fallback {
+          font-size: clamp(80px, 20vw, 120px);
+        }
+
+        .version-body {
+          padding: 40px 36px 36px;
+        }
+
+        .stage {
+          min-height: 0;
+        }
+
+        .card-slide {
+          position: relative;
+          inset: auto;
+          display: none;
+        }
+
+        .card-slide.active {
+          display: flex;
+        }
+
+        .card-slide.prev,
+        .card-slide.next {
+          display: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .versions-counter {
+          margin-top: 40px;
+          margin-bottom: 28px;
+        }
+
+        .versions-counter .current {
+          font-size: 32px;
+          min-width: 44px;
+        }
+
+        .versions-counter .sep {
+          font-size: 16px;
+        }
+
+        .versions-counter .total {
+          font-size: 16px;
+        }
+
+        .version-photo {
+          aspect-ratio: 1 / 1;
+          min-height: 240px;
+        }
+
+        .version-photo-badge {
+          top: 14px;
+          left: 14px;
+          font-size: 9.5px;
+          padding: 6px 11px;
+        }
+
+        .version-body {
+          padding: 32px 24px 28px;
+        }
+
+        .version-label {
+          font-size: 9px;
+          margin-bottom: 10px;
+        }
+
+        .version-title {
+          font-size: 26px;
+          margin-bottom: 16px;
+        }
+
+        .version-text {
+          font-size: 15.5px;
+          line-height: 1.6;
+          margin-bottom: 16px;
+        }
+
+        .version-foot {
+          padding-top: 18px;
+        }
+
+        .version-mood {
+          font-size: 12.5px;
+        }
+
+        .controls {
+          gap: 14px;
+          margin-top: 32px;
+          padding: 0 8px;
+        }
+
+        .arrow-btn {
+          width: 48px;
+          height: 48px;
+        }
+
+        .arrow-btn svg {
+          width: 16px;
+          height: 16px;
+        }
+
+        .controls-meta {
+          font-size: 12px;
+        }
+
+        .dots {
+          margin-top: 24px;
+          gap: 8px;
+        }
+
+        .dot {
+          width: 7px;
+          height: 7px;
+        }
+
+        .progress {
+          margin-top: 24px;
+        }
+
+        .all-seen {
+          margin-top: 32px;
+          padding: 24px 22px;
+        }
+
+        .all-seen-mark {
+          font-size: 30px;
+        }
+
+        .all-seen-text {
+          font-size: 17px;
+        }
+
+        .swipe-hint {
+          bottom: 20px;
+          font-size: 12px;
+          padding: 12px 18px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .card-slide {
+          transition: none;
+        }
+        .version-photo-fallback {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grain"></div>
+
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-label">Для Вероники</span>
+      </a>
+      <div class="topbar-meta" id="infoWidget" title="Нажми, чтобы обновить">
+        <span class="meta-item">
+          <span class="icon" id="timeIcon">☀️</span>
+          <span id="timeText">--:--</span>
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <span class="icon" id="weatherIcon">🌤️</span>
+          <span id="weatherText">...</span>
+        </span>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <span class="eyebrow">Все версии тебя</span>
+        <h1>Ты — <em>не одна</em></h1>
+        <p class="hero-sub">
+          Я вижу тебя разной. Сонной, задумчивой, смеющейся, серьёзной. Здесь —
+          все версии. Каждая — моя любимая.
+        </p>
+      </section>
+
+      <!-- COUNTER -->
+      <div class="versions-counter">
+        <span class="current" id="counterCurrent">01</span>
+        <span class="sep">/</span>
+        <span class="total" id="counterTotal">10</span>
+      </div>
+
+      <!-- STAGE -->
+      <div class="stage" id="stage"></div>
+
+      <!-- CONTROLS -->
+      <div class="controls">
+        <button class="arrow-btn" id="prevBtn" aria-label="Предыдущая версия">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M19 12H5" />
+            <path d="M12 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <span class="controls-meta" id="controlsMeta">Листай в стороны</span>
+        <button class="arrow-btn" id="nextBtn" aria-label="Следующая версия">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14" />
+            <path d="M12 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- DOTS -->
+      <div class="dots" id="dots"></div>
+
+      <!-- PROGRESS -->
+      <div class="progress">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <!-- ALL SEEN -->
+      <div class="all-seen" id="allSeen">
+        <span class="all-seen-mark">✨</span>
+        <p class="all-seen-text">
+          Ты увидела все версии. Каждая — <em>та самая</em>. И каждая — для меня
+          одна-единственная.
+        </p>
+      </div>
+
+      <!-- АВТО-НАВИГАЦИЯ -->
+      <nav class="auto-nav" data-nav="changes,letter-once,reasons"></nav>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 · Вселенная для Вероники</span>
+      <span>Сделано с любовью</span>
+    </footer>
+
+    <!-- SWIPE HINT -->
+    <div class="swipe-hint" id="swipeHint">Листай стрелками или свайпом</div>
+
+    <script src="shared/widgets.js" defer></script>
+
+    <script>
+      /* ============================================================
+         ВСЕ ВЕРСИИ ТЕБЯ · логика
+         ============================================================
+         ✏️ РЕДАКТИРУЙ ЗДЕСЬ.
+         Каждая версия — объект:
+           emoji   — крупный эмодзи (показывается, если нет фото)
+           title   — название версии (можно с <em>...</em> для курсива)
+           text    — эссе на 2-4 предложения (можно с <em>...</em> и <strong>...</strong>)
+           mood    — короткая фраза-подпись (1-4 слова)
+           photo   — путь к фото, например "photos/versions/sleepy.jpg"
+                     если фото нет — оставь пустую строку ""
+                     тогда покажется большой эмодзи
+         ============================================================ */
+      const VERSIONS = [
+        {
+          emoji: "😴",
+          title: "Вероника <em>сонная</em>",
+          text: "7:30 утра. Волосы дыбом. Глаза прищурены. Ничего не понимает, никого не хочет, но всё равно тянется обнять. <em>Самое честное время суток</em> — когда все маски ещё спят.",
+          mood: "Мой любимый вид",
+          photo: "",
+        },
+        {
+          emoji: "🪟",
+          title: "Вероника <em>задумчивая</em>",
+          text: "Смотрит в окно. Морщит нос. Молчит. И в этом молчании — целая вселенная. Я в такие минуты просто рядом, не мешаю. <em>Это её время</em> — когда она думает о чём-то важном.",
+          mood: "Тихая и глубокая",
+          photo: "",
+        },
+        {
+          emoji: "😂",
+          title: "Вероника <em>смеющаяся</em>",
+          text: "Над моей глупой шуткой. Или над своей. Или просто так — потому что день хороший. Её смех — это <em>звук, ради которого стоит жить</em>. Я серьёзно. Я проверял.",
+          mood: "Мой личный саундтрек",
+          photo: "",
+        },
+        {
+          emoji: "😤",
+          title: "Вероника <em>рассерженная</em>",
+          text: "«Я не обиделась». (Обиделась.) Смотрит в сторону. Отвечает односложно. <strong>Я обожаю эту версию</strong>, потому что знаю: через час она сама придёт обниматься, и всё забудется. А пока — я аккуратно рядом.",
+          mood: "«Всё нормально»",
+          photo: "",
+        },
+        {
+          emoji: "🤝",
+          title: "Вероника <em>нежная</em>",
+          text: "Когда держит меня за руку — и не отпускает. Поглаживает пальцы. Молча. Просто чтобы я знал, что она здесь. <em>Это её способ говорить «я с тобой»</em> без слов. Самый громкий способ.",
+          mood: "Тихое «я здесь»",
+          photo: "",
+        },
+        {
+          emoji: "🌙",
+          title: "Вероника <em>во сне</em>",
+          text: "Я смотрю на неё ночью — и не могу уснуть. Думаю: это правда моя жизнь? Это правда я, вот этот человек, лежит рядом с ней? Она во сне такая беззащитная, что <em>охранять её хочется всю жизнь</em>.",
+          mood: "3 часа ночи, я не сплю",
+          photo: "",
+        },
+        {
+          emoji: "🤐",
+          title: "Вероника, которой я <em>боюсь</em>",
+          text: "Когда она молчит дольше часа — я начинаю чувствовать лёгкую тревогу. Не потому что что-то плохое. А потому что <strong>тишина от неё — это для меня самое громкое</strong>. Любая ссора лучше, чем молчание. Наверное, поэтому мы никогда долго не молчим.",
+          mood: "Мои 47 минут паники",
+          photo: "",
+        },
+        {
+          emoji: "🌸",
+          title: "Вероника <em>счастливая</em>",
+          text: "Не потому что подарок. И не потому что событие. А просто так — потому что утро, потому что чай, потому что я рядом. <em>Это её лучшая версия</em>. Не потому что она улыбается. А потому что я вижу: она по-настоящему счастлива. И я это сделал. Или помог. Или не мешал — неважно, главное, она такая.",
+          mood: "Моё главное доказательство",
+          photo: "",
+        },
+        {
+          emoji: "😢",
+          title: "Вероника <em>уставшая</em>",
+          text: "Приходит домой — и падает. Ничего не хочет. Просто чтобы я обнял и не задавал вопросов. Я обнимаю. Не задаю. <strong>Это то, зачем я здесь</strong> — быть тем, к кому можно прийти уставшей и просто молчать.",
+          mood: "Я держу",
+          photo: "",
+        },
+        {
+          emoji: "👵",
+          title: "Вероника, которую я вижу <em>в будущем</em>",
+          text: "Седая. С той же улыбкой. На той же кухне. Всё так же морщит нос, когда смеётся. Всё так же говорит «мяу», когда не хочет отвечать. <em>Я уже люблю её такой</em>. Потому что она — это она. В любой версии. В любом возрасте. Навсегда.",
+          mood: "2066, я думаю",
+          photo: "",
+        },
+      ];
+
+      /* ============================================================
+         ЛОГИКА
+         ============================================================ */
+      (function () {
+        "use strict";
+
+        const stage = document.getElementById("stage");
+        const counterCurrent = document.getElementById("counterCurrent");
+        const counterTotal = document.getElementById("counterTotal");
+        const controlsMeta = document.getElementById("controlsMeta");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const dots = document.getElementById("dots");
+        const progressFill = document.getElementById("progressFill");
+        const allSeen = document.getElementById("allSeen");
+        const swipeHint = document.getElementById("swipeHint");
+
+        const total = VERSIONS.length;
+        let currentIndex = 0;
+        const visited = new Set();
+
+        function pad2(n) {
+          return String(n + 1).padStart(2, "0");
+        }
+
+        function escapeHtml(s) {
+          return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+
+        /* ---------- Построение DOM ---------- */
+        function buildSlides() {
+          stage.innerHTML = "";
+          VERSIONS.forEach((v, i) => {
+            const slide = document.createElement("div");
+            slide.className = "card-slide";
+            slide.dataset.index = i;
+
+            const hasPhoto = v.photo && v.photo.trim() !== "";
+            const photoInner = hasPhoto
+              ? `<img src="${escapeHtml(v.photo)}" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'" />`
+              : "";
+
+            slide.innerHTML = `
+              <article class="version-card">
+                <div class="version-photo">
+                  <span class="version-photo-badge">№ ${pad2(i)}</span>
+                  <span class="version-photo-fallback" aria-hidden="true">${escapeHtml(v.emoji || "💗")}</span>
+                  ${photoInner}
+                </div>
+                <div class="version-body">
+                  <span class="version-label">Версия · ${pad2(i)}</span>
+                  <h2 class="version-title">${v.title || ""}</h2>
+                  <p class="version-text">${v.text || ""}</p>
+                  <div class="version-foot">
+                    <span class="version-mood">${escapeHtml(v.mood || "")}</span>
+                  </div>
+                </div>
+              </article>
+            `;
+
+            stage.appendChild(slide);
+          });
+        }
+
+        function buildDots() {
+          dots.innerHTML = "";
+          VERSIONS.forEach((_, i) => {
+            const d = document.createElement("button");
+            d.className = "dot" + (i === 0 ? " active" : "");
+            d.type = "button";
+            d.setAttribute("aria-label", `Версия ${i + 1}`);
+            d.addEventListener("click", () => goTo(i));
+            dots.appendChild(d);
+          });
+        }
+
+        /* ---------- Обновление вида ---------- */
+        function updateView() {
+          const slides = stage.querySelectorAll(".card-slide");
+          slides.forEach((s, i) => {
+            s.classList.remove("active", "prev", "next");
+            if (i === currentIndex) s.classList.add("active");
+            else if (i < currentIndex) s.classList.add("prev");
+            else s.classList.add("next");
+          });
+
+          counterCurrent.textContent = pad2(currentIndex);
+
+          const dotEls = dots.querySelectorAll(".dot");
+          dotEls.forEach((d, i) => {
+            d.classList.toggle("active", i === currentIndex);
+            d.classList.toggle("visited", visited.has(i) && i !== currentIndex);
+          });
+
+          prevBtn.disabled = currentIndex === 0;
+          nextBtn.disabled = currentIndex === total - 1;
+
+          if (currentIndex === 0) controlsMeta.textContent = "Начало";
+          else if (currentIndex === total - 1)
+            controlsMeta.textContent = "Последняя версия";
+          else
+            controlsMeta.textContent = `${pad2(currentIndex)} из ${pad2(total - 1)}`;
+
+          progressFill.style.width = ((currentIndex + 1) / total) * 100 + "%";
+
+          visited.add(currentIndex);
+
+          if (visited.size === total) {
+            setTimeout(() => allSeen.classList.add("show"), 400);
+          }
+        }
+
+        /* ---------- Навигация ---------- */
+        function goTo(i) {
+          const idx = Math.max(0, Math.min(total - 1, i));
+          if (idx === currentIndex) return;
+          currentIndex = idx;
+          updateView();
+          // Плавный скролл к началу галереи, если она уехала
+          if (window.scrollY > 200) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        }
+
+        function next() {
+          if (currentIndex < total - 1) goTo(currentIndex + 1);
+        }
+
+        function prev() {
+          if (currentIndex > 0) goTo(currentIndex - 1);
+        }
+
+        /* ---------- Слушатели ---------- */
+        prevBtn.addEventListener("click", prev);
+        nextBtn.addEventListener("click", next);
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+            e.preventDefault();
+            next();
+          } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+            e.preventDefault();
+            prev();
+          }
+        });
+
+        /* ---------- Свайп ---------- */
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchActive = false;
+
+        stage.addEventListener(
+          "touchstart",
+          (e) => {
+            if (!e.touches[0]) return;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchActive = true;
+          },
+          { passive: true },
+        );
+
+        stage.addEventListener(
+          "touchend",
+          (e) => {
+            if (!touchActive) return;
+            touchActive = false;
+            const t = e.changedTouches && e.changedTouches[0];
+            if (!t) return;
+            const dx = t.clientX - touchStartX;
+            const dy = t.clientY - touchStartY;
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 45) {
+              if (dx < 0) next();
+              else prev();
+            }
+          },
+          { passive: true },
+        );
+
+        /* ---------- Мышью (drag) ---------- */
+        let mouseStartX = 0;
+        let mouseDown = false;
+
+        stage.addEventListener("mousedown", (e) => {
+          mouseStartX = e.clientX;
+          mouseDown = true;
+          stage.style.cursor = "grabbing";
+        });
+
+        window.addEventListener("mouseup", (e) => {
+          if (!mouseDown) return;
+          mouseDown = false;
+          stage.style.cursor = "";
+          const dx = e.clientX - mouseStartX;
+          if (dx < -70) next();
+          else if (dx > 70) prev();
+        });
+
+        /* ---------- Инициализация ---------- */
+        buildSlides();
+        buildDots();
+        counterTotal.textContent = String(total);
+        updateView();
+
+        /* ---------- Подсказка свайпа — один раз за сессию ---------- */
+        const HINT_KEY = "versions_hint_v1";
+        try {
+          if (!sessionStorage.getItem(HINT_KEY)) {
+            sessionStorage.setItem(HINT_KEY, "1");
+            setTimeout(() => {
+              swipeHint.classList.add("show");
+              setTimeout(() => swipeHint.classList.remove("show"), 3400);
+            }, 1200);
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </body>
+</html>
