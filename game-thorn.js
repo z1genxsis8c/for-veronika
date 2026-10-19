@@ -229,7 +229,7 @@ const _hudCache = {
 let _autoUpgradeTimeout = null,
   _upgradeTickId = null,
   _upgradeDeadline = 0;
-let currentChoices = []; // ★ объявлена явно
+let currentChoices = [];
 let _inventoryPrevState = null;
 
 try {
@@ -854,7 +854,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- ОСОБЫЕ (были мёртвыми механиками) -------- */
+  /* -------- ОСОБЫЕ -------- */
   {
     id: "retaliation1",
     name: "Возмездие",
@@ -1031,7 +1031,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- БЕСКОНЕЧНЫЕ (появляются с 15-й волны) -------- */
+  /* -------- БЕСКОНЕЧНЫЕ -------- */
   {
     id: "inf_dmg",
     name: "Точилка когтей",
@@ -1780,7 +1780,6 @@ function bossForWave(n) {
   return BOSS_ORDER[idx];
 }
 
-/* ★ FIX: усиление повторных боссов на 160+ */
 function bossHpBoost(n) {
   if (n <= 150) return 1;
   return 1 + (n - 150) * 0.08;
@@ -1803,7 +1802,6 @@ function spawnEnemy(type) {
   const base = ENEMY_TYPES[type];
   if (!base) return;
   const w = G.wave;
-  /* ★ FIX: смягчённый dmgScale */
   const hpScale = 1 + (w - 1) * 0.22 + Math.pow(w / 10, 1.5);
   const dmgScale = 1 + (w - 1) * 0.03;
   const spScale = 1 + Math.min(w - 1, 60) * 0.006;
@@ -2061,6 +2059,7 @@ function showMenu() {
     </p>
     ${G.bestScore > 0 ? `<p class="tiny">🏆 Твой рекорд: <b style="color:#ffb3dd;">${G.bestScore.toLocaleString("ru-RU")}</b> очков</p>` : ""}
     <button class="btn" id="startBtn">Играть 💗</button>
+    <button class="btn gold" id="cheatBtn" style="font-size:14px;padding:10px 24px;">🧪 Чит: к волне…</button>
     <a class="btn ghost" href="index.html">← На главную</a>
     <p class="tiny">
       <b>WASD</b> / <b>стрелки</b> / палец по экрану — движение<br>
@@ -2070,6 +2069,13 @@ function showMenu() {
   `;
   showOverlay(p);
   p.querySelector("#startBtn").onclick = () => startGame();
+  p.querySelector("#cheatBtn").onclick = () => {
+    const ans = prompt("До какой волны перейти? (1–200)", "189");
+    if (!ans) return;
+    const n = parseInt(ans, 10);
+    if (!isFinite(n) || n < 1 || n > CONFIG.maxWave) return;
+    cheatToWave(n);
+  };
 }
 
 /* =========================================================
@@ -2653,7 +2659,6 @@ function shoot(p, target) {
   let mult = 1;
   if (p.berserk > 0 && p.hp < p.maxHp * 0.4) mult += 0.2 * p.berserk;
   if (p.swordsman > 0 && !p.moving) mult += 0.1 * p.swordsman;
-  /* ★ FIX: Math.max(0, ...) защита от отрицательного урона */
   if (p.windBonus > 0) mult += p.windBonus * Math.max(0, p.speed / 228 - 1);
   const dmg = p.dmg * mult;
 
@@ -3442,7 +3447,6 @@ function drawEnemies() {
       ctx.fill();
     }
 
-    // spikes (dynamic — вращаются)
     ctx.fillStyle = flash ? "#ffffff" : e.color;
     ctx.beginPath();
     const n = e.spikes;
@@ -3457,11 +3461,9 @@ function drawEnemies() {
     ctx.fill();
     ctx.globalAlpha = alpha;
 
-    // body (спрайт из кэша)
     const bodySpr = getEnemyBodySprite(e.r, e.color, flash);
     ctx.drawImage(bodySpr, -bodySpr.width / 2, -bodySpr.height / 2);
 
-    // eyes
     const eyeY = -e.r * 0.08,
       eyeX = e.r * 0.34;
     ctx.fillStyle = "rgba(15,4,25,.92)";
@@ -3783,6 +3785,99 @@ function render(dt) {
 }
 
 /* =========================================================
+   ЧИТ-ФУНКЦИИ
+   ========================================================= */
+function cheatToWave(targetLevel, applyAll = false) {
+  targetLevel = clamp(Math.round(targetLevel), 1, CONFIG.maxWave);
+  startGame();
+  G.wave = Math.max(14, targetLevel - 1);
+  G.player.level = 1;
+  G.pendingLevels = 0;
+  G.pendingChest = false;
+  G.breather = 0;
+  G.waveActive = false;
+
+  const targetUpgrades = applyAll ? Infinity : targetLevel - 1;
+  let applied = 0;
+
+  const applyOne = (u) => {
+    if (!isUpgradeAvailable(u, G.upgradesTaken)) return false;
+    u.apply(G.player);
+    G.upgradesTaken[u.id] = (G.upgradesTaken[u.id] || 0) + 1;
+    applied++;
+    return true;
+  };
+
+  const ordered = [
+    ...UPGRADES.filter((x) => x.tier === 1 && !x.synergy),
+    ...UPGRADES.filter((x) => (x.tier === 2 || x.tier === 3) && !x.synergy),
+    ...UPGRADES.filter((x) => x.synergy),
+    ...UPGRADES.filter((x) => x.tree === "special"),
+    ...UPGRADES.filter((x) => x.infinite),
+  ];
+
+  for (const u of ordered) {
+    if (applied >= targetUpgrades) break;
+    while ((G.upgradesTaken[u.id] || 0) < u.max && applied < targetUpgrades) {
+      if (!applyOne(u)) break;
+    }
+  }
+
+  while (applied < targetUpgrades && applied < targetLevel - 1) {
+    const h = makeHealCard(applied);
+    h.apply(G.player);
+    applied++;
+  }
+
+  G.player.hp = G.player.maxHp;
+  G.player.level = targetLevel;
+  G.wave = targetLevel - 1;
+  G.pendingLevels = 0;
+  G.pendingChest = false;
+  G.breather = 0.05;
+  G.waveActive = false;
+
+  updateHUD(true);
+  console.log(`[cheat] Волна ${targetLevel}, применено ${applied} апгрейдов`);
+  console.table(
+    Object.entries(G.upgradesTaken)
+      .sort((a, b) => b[1] - a[1])
+      .map(([id, count]) => {
+        const u = UPGRADES.find((x) => x.id === id);
+        return { id, name: u ? u.name : "?", count };
+      }),
+  );
+}
+
+function cheatApplyAll() {
+  G.wave = Math.max(G.wave, 14);
+  let applied = 0;
+  const ordered = [
+    ...UPGRADES.filter((x) => x.tier === 1 && !x.synergy),
+    ...UPGRADES.filter((x) => (x.tier === 2 || x.tier === 3) && !x.synergy),
+    ...UPGRADES.filter((x) => x.synergy),
+    ...UPGRADES.filter((x) => x.tree === "special"),
+    ...UPGRADES.filter((x) => x.infinite),
+  ];
+  for (const u of ordered) {
+    while (
+      isUpgradeAvailable(u, G.upgradesTaken) &&
+      (G.upgradesTaken[u.id] || 0) < u.max
+    ) {
+      u.apply(G.player);
+      G.upgradesTaken[u.id] = (G.upgradesTaken[u.id] || 0) + 1;
+      applied++;
+    }
+  }
+  G.player.hp = G.player.maxHp;
+  updateHUD(true);
+  console.log(`[cheat] Применено ${applied} апгрейдов`);
+}
+
+window.cheatToWave = cheatToWave;
+window.cheatApplyAll = cheatApplyAll;
+
+/* =========================================================
    MAIN LOOP
    ========================================================= */
 let lastT = performance.now();
@@ -3801,7 +3896,6 @@ function loop(now) {
         document.getElementById("centerMsg").classList.remove("show");
     }
   }
-  // upgrade/chest/inventory/paused — msgTimer и время заморожены
 
   render(dt);
   if (G.state === "playing") updateHUD(false);
