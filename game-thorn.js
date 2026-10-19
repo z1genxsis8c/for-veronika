@@ -7,12 +7,13 @@ const CONFIG = {
   finalMessage:
     "Ты — моё самое тёплое место на свете.<br>Спасибо, что ты рядом. 💗",
   maxWave: 200,
+  wavesPerLevel: 2, // ★ 2 волны = 1 уровень
   coinPer1000: 100,
   unlockWaveAch: 5,
   unlockScoreAch: 50000,
   upgradeAutoSec: 12,
   upgradeChoices: 4,
-  infiniteUnlockWave: 15,
+  infiniteUnlockLevel: 10, // ★ бесконечные карты открываются с 10 уровня
 };
 
 /* =========================================================
@@ -35,7 +36,6 @@ function shuffle(a) {
   }
   return a;
 }
-
 const _lightenCache = new Map();
 function lighten(hex) {
   let v = _lightenCache.get(hex);
@@ -47,6 +47,9 @@ function lighten(hex) {
   v = `rgb(${r},${g},${b})`;
   _lightenCache.set(hex, v);
   return v;
+}
+function levelForWave(w) {
+  return Math.min(100, Math.ceil(w / CONFIG.wavesPerLevel));
 }
 
 /* =========================================================
@@ -133,17 +136,16 @@ function getEnemyBodySprite(r, color, flash) {
   const key = color + "|" + Math.round(r) + (flash ? "|f" : "");
   let c = _enemyBodySprites.get(key);
   if (c) return c;
-  const pad = 6;
-  const size = Math.ceil(r * 2 + pad * 2);
+  const pad = 6,
+    size = Math.ceil(r * 2 + pad * 2);
   c = document.createElement("canvas");
   c.width = size;
   c.height = size;
-  const cx = c.getContext("2d");
-  const ox = size / 2,
+  const cx = c.getContext("2d"),
+    ox = size / 2,
     oy = size / 2;
-  if (flash) {
-    cx.fillStyle = "#fff";
-  } else {
+  if (flash) cx.fillStyle = "#fff";
+  else {
     const grad = cx.createRadialGradient(
       ox - r * 0.3,
       oy - r * 0.3,
@@ -162,7 +164,6 @@ function getEnemyBodySprite(r, color, flash) {
   _enemyBodySprites.set(key, c);
   return c;
 }
-
 const _bulletSprites = new Map();
 function getBulletSprite(color, fill) {
   const key = color + "|" + fill;
@@ -215,8 +216,8 @@ const G = {
   pendingChest: false,
   pendingWaveMsg: null,
   tomesTaken: {},
+  synergyTaken: {}, // ★ учёт взятых синергий для инвентаря
 };
-
 const _hudCache = {
   hp: "",
   shield: "",
@@ -231,7 +232,6 @@ let _autoUpgradeTimeout = null,
   _upgradeDeadline = 0;
 let currentChoices = [];
 let _inventoryPrevState = null;
-
 try {
   G.bestScore =
     parseInt(localStorage.getItem("thornBestScore") || "0", 10) || 0;
@@ -301,10 +301,10 @@ function makePlayer() {
 }
 
 /* =========================================================
-   АПГРЕЙДЫ
+   АПГРЕЙДЫ (18 веток, 8 синергий, 11 томов)
    ========================================================= */
 const UPGRADES = [
-  /* -------- УРОН -------- */
+  /* УРОН */
   {
     id: "dmg1",
     name: "Сильный удар",
@@ -359,7 +359,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- СКОРОСТРЕЛЬНОСТЬ -------- */
+  /* СКОРОСТРЕЛЬНОСТЬ */
   {
     id: "rate1",
     name: "Быстрая лапка",
@@ -414,7 +414,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- СНАРЯДЫ -------- */
+  /* СНАРЯДЫ */
   {
     id: "multi1",
     name: "Двойной пуф",
@@ -470,7 +470,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- ПРОБИТИЕ -------- */
+  /* ПРОБИТИЕ */
   {
     id: "pierce1",
     name: "Пробивающий взгляд",
@@ -511,7 +511,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- КРИТЫ -------- */
+  /* КРИТЫ */
   {
     id: "crit1",
     name: "Меткий котик",
@@ -566,7 +566,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- СТИХИИ -------- */
+  /* СТИХИИ */
   {
     id: "firestarter",
     name: "Искра",
@@ -630,7 +630,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- HP / ЗАЩИТА -------- */
+  /* HP / ЗАЩИТА */
   {
     id: "hp1",
     name: "Мягкая шубка",
@@ -710,7 +710,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- ВОССТАНОВЛЕНИЕ -------- */
+  /* ВОССТАНОВЛЕНИЕ */
   {
     id: "regen1",
     name: "Тёплое местечко",
@@ -761,7 +761,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- АУРА -------- */
+  /* АУРА */
   {
     id: "aura1",
     name: "Мурчание",
@@ -803,7 +803,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- УТИЛИТА -------- */
+  /* УТИЛИТА */
   {
     id: "speed1",
     name: "Лёгкий шаг",
@@ -854,7 +854,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- ОСОБЫЕ -------- */
+  /* ОСОБЫЕ */
   {
     id: "retaliation1",
     name: "Возмездие",
@@ -928,7 +928,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- СИНЕРГИИ -------- */
+  /* СИНЕРГИИ */
   {
     id: "syn_firestorm",
     name: "Огненный шторм",
@@ -1031,7 +1031,7 @@ const UPGRADES = [
     },
   },
 
-  /* -------- БЕСКОНЕЧНЫЕ -------- */
+  /* БЕСКОНЕЧНЫЕ (с 10 уровня) */
   {
     id: "inf_dmg",
     name: "Точилка когтей",
@@ -1264,10 +1264,10 @@ const TOMES = [
 
 function isUpgradeAvailable(u, taken) {
   if ((taken[u.id] || 0) >= u.max) return false;
-  if (u.required) {
+  if (u.required)
     for (const req of u.required) if (!(taken[req] > 0)) return false;
-  }
-  if (u.infinite && G.wave < CONFIG.infiniteUnlockWave) return false;
+  if (u.infinite && G.player && G.player.level < CONFIG.infiniteUnlockLevel)
+    return false;
   return true;
 }
 
@@ -1316,23 +1316,20 @@ function pickUpgrades(n) {
     for (let i = 0; i < n; i++) out.push(makeHealCard(i));
     return out;
   }
-
-  function weight(u) {
+  // ★ Оптимизация: предвычисляем "начатые ветки" ОДИН раз
+  const startedTrees = new Set();
+  for (const id in G.upgradesTaken) {
+    const uu = UPGRADES.find((x) => x.id === id);
+    if (uu && uu.tree) startedTrees.add(uu.tree);
+  }
+  const pool = available.slice();
+  const wpool = pool.map((u) => {
     let w = 1;
     if (u.synergy) w *= 12;
     if (u.infinite) w *= 0.4;
-    if (u.tree) {
-      const started = Object.keys(G.upgradesTaken).some((id) => {
-        const uu = UPGRADES.find((x) => x.id === id);
-        return uu && uu.tree === u.tree;
-      });
-      if (started) w *= 2;
-    }
+    if (u.tree && startedTrees.has(u.tree)) w *= 2;
     return w;
-  }
-
-  const pool = available.slice();
-  const wpool = pool.map(weight);
+  });
   const picked = [];
   while (picked.length < n && pool.length) {
     let total = 0;
@@ -1358,19 +1355,18 @@ function pickUpgrades(n) {
 
 function pickBestAuto(choices) {
   if (!choices.length) return null;
+  const startedTrees = new Set();
+  for (const id in G.upgradesTaken) {
+    const uu = UPGRADES.find((x) => x.id === id);
+    if (uu && uu.tree) startedTrees.add(uu.tree);
+  }
   let best = choices[0],
     bestScore = -Infinity;
   for (const u of choices) {
     let score = 0;
     if (u.synergy) score += 100;
     if (u.id && u.id.startsWith("heal")) score -= 50;
-    if (u.tree) {
-      const started = Object.keys(G.upgradesTaken).some((id) => {
-        const uu = UPGRADES.find((x) => x.id === id);
-        return uu && uu.tree === u.tree;
-      });
-      if (started) score += 20;
-    }
+    if (u.tree && startedTrees.has(u.tree)) score += 20;
     if (u.tier === 3) score += 15;
     else if (u.tier === 2) score += 10;
     else if (u.tier === 1) score += 5;
@@ -1384,7 +1380,7 @@ function pickBestAuto(choices) {
 }
 
 /* =========================================================
-   ТИПЫ ВРАГОВ
+   ВРАГИ
    ========================================================= */
 const ENEMY_TYPES = {
   thorn: {
@@ -1544,7 +1540,6 @@ const ENEMY_TYPES = {
     spikes: 9,
     summons: "thorn",
   },
-
   boss_king: {
     hp: 300,
     speed: 40,
@@ -1771,7 +1766,6 @@ const BOSS_ORDER = [
   "boss_nightmare",
   "boss_heart",
 ];
-
 function bossForWave(n) {
   const idx = Math.min(
     Math.max(0, Math.floor(n / 10) - 1),
@@ -1780,9 +1774,16 @@ function bossForWave(n) {
   return BOSS_ORDER[idx];
 }
 
+/* ★ Баланс: HP и урон врагов мягче, боссы 100+ получают буст */
+function hpScaleForWave(w) {
+  return 1 + (w - 1) * 0.15 + Math.pow(w / 10, 1.5);
+}
+function dmgScaleForWave(w) {
+  return 1 + (w - 1) * 0.02;
+}
 function bossHpBoost(n) {
-  if (n <= 150) return 1;
-  return 1 + (n - 150) * 0.08;
+  if (n <= 100) return 1;
+  return 1 + (n - 100) * 0.01;
 }
 
 function buildWave(n) {
@@ -1802,11 +1803,10 @@ function spawnEnemy(type) {
   const base = ENEMY_TYPES[type];
   if (!base) return;
   const w = G.wave;
-  const hpScale = 1 + (w - 1) * 0.22 + Math.pow(w / 10, 1.5);
-  const dmgScale = 1 + (w - 1) * 0.03;
+  const hpScale = hpScaleForWave(w);
+  const dmgScale = dmgScaleForWave(w);
   const spScale = 1 + Math.min(w - 1, 60) * 0.006;
   const bossBoost = base.boss ? bossHpBoost(w) : 1;
-
   const pad = base.boss ? 90 : 42;
   const side = rndi(0, 3);
   let x, y;
@@ -1823,7 +1823,6 @@ function spawnEnemy(type) {
     x = pad;
     y = rnd(pad, H - pad);
   }
-
   const hp = base.hp * hpScale * bossBoost;
   const e = {
     type,
@@ -1872,7 +1871,6 @@ function spawnEnemy(type) {
     burnDmg: 0,
   };
   G.enemies.push(e);
-
   if (base.boss) {
     G.boss = e;
     G.shake = Math.max(G.shake, 16);
@@ -1883,9 +1881,6 @@ function spawnEnemy(type) {
   }
 }
 
-/* =========================================================
-   ЧАСТИЦЫ / ТЕКСТ
-   ========================================================= */
 function addParticles(x, y, n, color, opts = {}) {
   if (G.parts.length > 400) n = Math.min(n, 3);
   for (let i = 0; i < n; i++) {
@@ -1915,7 +1910,6 @@ function showCenterMsg(str, dur = 1.6) {
   el.classList.add("show");
   G.msgTimer = dur;
 }
-
 function showWaveMessage(n) {
   if (n % 10 === 0) {
     const bossType = bossForWave(n);
@@ -1926,7 +1920,6 @@ function showWaveMessage(n) {
     showCenterMsg("Волна " + n, 1.0);
   }
 }
-
 function resolveWaveMsg() {
   if (G.pendingWaveMsg == null) return;
   const n = G.pendingWaveMsg;
@@ -1974,7 +1967,6 @@ function saveBestScore(score) {
   }
   return false;
 }
-
 function clearUpgradeTimers() {
   if (_autoUpgradeTimeout) {
     clearTimeout(_autoUpgradeTimeout);
@@ -1987,7 +1979,7 @@ function clearUpgradeTimers() {
 }
 
 /* =========================================================
-   СТАРТ ИГРЫ
+   СТАРТ
    ========================================================= */
 function startGame() {
   clearUpgradeTimers();
@@ -2015,14 +2007,11 @@ function startGame() {
   G.pendingChest = false;
   G.pendingWaveMsg = null;
   G.tomesTaken = {};
+  G.synergyTaken = {};
   G.player = makePlayer();
-  _hudCache.hp = "";
-  _hudCache.shield = "";
-  _hudCache.level = -1;
-  _hudCache.wave = "";
-  _hudCache.score = "";
-  _hudCache.kills = "";
-  _hudCache.bossHint = "";
+  Object.keys(_hudCache).forEach((k) => {
+    _hudCache[k] = k === "level" ? -1 : "";
+  });
   hideOverlay();
   document.getElementById("hud").classList.add("show");
   document.getElementById("bossBar").classList.remove("show");
@@ -2040,6 +2029,9 @@ function hideOverlay() {
   overlay.innerHTML = "";
 }
 
+/* =========================================================
+   МЕНЮ
+   ========================================================= */
 function showMenu() {
   G.state = "menu";
   document.getElementById("hud").classList.remove("show");
@@ -2052,7 +2044,7 @@ function showMenu() {
     <p class="sub">
       Котик против колючих тварей.<br>
       Двигайся — <b>сердечки сами летят во врага</b>.<br>
-      <b>200 волн</b> = <b>200 уровней</b>. Выбор из <b>4 карт</b>.
+      <b>200 волн</b> = <b>100 уровней</b>. 2 волны = 1 апгрейд. Выбор из <b>4 карт</b>.
     </p>
     <p class="sub" style="color:#ffd166;">
       🪙 <b>За каждые 1000 очков — 100 монет</b> для Домика Котика
@@ -2089,9 +2081,14 @@ function openUpgrade() {
   const isBossWave = G.wave > 0 && G.wave % 10 === 0;
   const bossType = isBossWave ? bossForWave(G.wave) : null;
   const bossName = bossType ? ENEMY_TYPES[bossType]?.name : null;
-  p.innerHTML = `<h2>✨ Уровень ${G.player.level} ✨</h2>
-    <p class="sub">Новая сила для ${CONFIG.playerName}</p>
-    ${isBossWave ? `<p class="sub" style="color:#ff6b8a;">⚠ Впереди: <b>${bossName}</b> ⚠</p>` : ""}`;
+  const nextBossIn = 10 - (G.wave % 10 || 10);
+  p.innerHTML = `<h2>✨ Уровень ${G.player.level} / 100 ✨</h2>
+    <p class="sub">Волна ${G.wave} · ${G.kills} побед</p>
+    ${
+      isBossWave
+        ? `<p class="sub" style="color:#ff6b8a;">⚠ Следующая волна: <b>${bossName}</b> ⚠</p>`
+        : `<p class="sub" style="color:#a8d5ff;">До босса: ${nextBossIn} волн(ы)</p>`
+    }`;
   const row = document.createElement("div");
   row.className = "cards";
   currentChoices.forEach((u, i) => {
@@ -2116,17 +2113,14 @@ function openUpgrade() {
     row.appendChild(c);
   });
   p.appendChild(row);
-
   const hint = document.createElement("p");
   hint.className = "auto-hint";
   hint.id = "upgradeTimerHint";
   hint.innerHTML = `Space = лучшая карта · авто-выбор через <b>${CONFIG.upgradeAutoSec}</b>с`;
   p.appendChild(hint);
-
   showOverlay(p);
   beep(660, 0.12, "sine", 0.06, 990);
   setTimeout(() => beep(990, 0.16, "sine", 0.05, 1320), 90);
-
   clearUpgradeTimers();
   _upgradeDeadline = Date.now() + CONFIG.upgradeAutoSec * 1000;
   _autoUpgradeTimeout = setTimeout(() => {
@@ -2152,6 +2146,7 @@ function takeUpgrade(u) {
   clearUpgradeTimers();
   u.apply(G.player);
   G.upgradesTaken[u.id] = (G.upgradesTaken[u.id] || 0) + 1;
+  if (u.synergy) G.synergyTaken[u.id] = (G.synergyTaken[u.id] || 0) + 1;
   G.pendingLevels--;
   beep(880, 0.1, "triangle", 0.055, 1180);
   hideOverlay();
@@ -2165,16 +2160,15 @@ function takeUpgrade(u) {
 }
 
 /* =========================================================
-   СУНДУК С БОССА
+   СУНДУК
    ========================================================= */
 function openChest() {
   G.state = "chest";
   const available = TOMES.filter((t) => !G.tomesTaken[t.id]);
   const pool = available.slice();
   const choices = [];
-  while (choices.length < 3 && pool.length) {
+  while (choices.length < 3 && pool.length)
     choices.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
-  }
   if (!choices.length) {
     G.pendingChest = false;
     if (G.pendingLevels > 0) openUpgrade();
@@ -2219,37 +2213,39 @@ function takeTome(t) {
 }
 
 /* =========================================================
-   ИНВЕНТАРЬ (Tab)
+   ИНВЕНТАРЬ
    ========================================================= */
 function showInventory() {
   _inventoryPrevState = G.state;
   G.state = "inventory";
   const p = G.player;
   const treeNames = {
-    dmg: "Урон",
-    rate: "Скорострельность",
-    multi: "Снаряды",
-    pierce: "Пробитие",
-    crit: "Криты",
-    elem: "Стихии",
-    hp: "Здоровье",
-    def: "Броня",
-    dodge: "Уклонение",
-    shield: "Щит",
-    regen: "Регенерация",
-    steal: "Вампиризм",
-    killheal: "Лечение за килл",
-    aura: "Аура",
-    speed: "Скорость",
-    util: "Утилита",
-    special: "Особые",
-    infinite: "Бесконечные",
+    dmg: "🐾 Урон",
+    rate: "⚡ Скорострельность",
+    multi: "✨ Снаряды",
+    pierce: "🎯 Пробитие",
+    crit: "🍀 Криты",
+    elem: "🔥 Стихии",
+    hp: "💗 Здоровье",
+    def: "🛡️ Броня",
+    dodge: "🌀 Уклонение",
+    shield: "🔰 Щит",
+    regen: "🌿 Регенерация",
+    steal: "💞 Вампиризм",
+    killheal: "🍯 Лечение за килл",
+    aura: "🎵 Аура",
+    speed: "👟 Скорость",
+    util: "🧭 Утилита",
+    special: "💢 Особые",
+    infinite: "∞ Бесконечные",
   };
   const groups = {};
   for (const id in G.upgradesTaken) {
     const u = UPGRADES.find((x) => x.id === id);
     if (!u) continue;
-    const tree = u.tree || (u.infinite ? "infinite" : "other");
+    const tree = u.synergy
+      ? "synergy"
+      : u.tree || (u.infinite ? "infinite" : "other");
     if (!groups[tree]) groups[tree] = [];
     groups[tree].push({ u, count: G.upgradesTaken[id] });
   }
@@ -2259,12 +2255,13 @@ function showInventory() {
 
   let html = `
     <h2>📋 Инвентарь</h2>
+    <p class="sub" style="margin-bottom:6px;">Волна <b>${G.wave}/200</b> · Уровень <b>${p.level}/100</b> · ${G.kills} убийств</p>
     <div class="inventory-stats">
       <div class="stat-row"><span class="stat-label">HP</span><span class="stat-value">${Math.ceil(p.hp)} / ${Math.round(p.maxHp)}</span></div>
       ${p.maxShield > 0 ? `<div class="stat-row"><span class="stat-label">Щит</span><span class="stat-value">${Math.ceil(p.shield)} / ${Math.round(p.maxShield)}</span></div>` : ""}
-      <div class="stat-row"><span class="stat-label">Урон</span><span class="stat-value">${p.dmg.toFixed(1)}</span></div>
+      <div class="stat-row"><span class="stat-label">Урон / выстрел</span><span class="stat-value">${p.dmg.toFixed(1)}</span></div>
       <div class="stat-row"><span class="stat-label">Скорострельность</span><span class="stat-value">${p.fireRate.toFixed(2)}/сек</span></div>
-      <div class="stat-row"><span class="stat-label">Снаряды</span><span class="stat-value">${p.multishot}</span></div>
+      <div class="stat-row"><span class="stat-label">Снарядов за выстрел</span><span class="stat-value">${p.multishot}</span></div>
       <div class="stat-row"><span class="stat-label">Пробитие</span><span class="stat-value">${p.pierce}</span></div>
       <div class="stat-row"><span class="stat-label">Крит</span><span class="stat-value">${(p.crit * 100).toFixed(0)}% × ${p.critMult.toFixed(1)}</span></div>
       <div class="stat-row"><span class="stat-label">Скорость</span><span class="stat-value">${Math.round(p.speed)}</span></div>
@@ -2273,20 +2270,50 @@ function showInventory() {
       <div class="stat-row"><span class="stat-label">Вампиризм</span><span class="stat-value">${(p.lifesteal * 100).toFixed(1)}%</span></div>
       <div class="stat-row"><span class="stat-label">Реген</span><span class="stat-value">${p.regen.toFixed(1)}/сек</span></div>
       ${p.auraR > 0 ? `<div class="stat-row"><span class="stat-label">Аура</span><span class="stat-value">r=${Math.round(p.auraR)}, dmg=${Math.round(p.thorns)}</span></div>` : ""}
+      ${p.killHeal > 0 ? `<div class="stat-row"><span class="stat-label">Лечение/килл</span><span class="stat-value">+${p.killHeal} HP</span></div>` : ""}
     </div>
     <h3 style="color:#ffd166;margin-top:8px;">Апгрейды</h3>
     <div class="upgrade-list">`;
 
-  for (const tree in groups) {
-    const items = groups[tree];
-    if (!items.length) continue;
-    html += `<div class="tree-title">${treeNames[tree] || tree}</div>`;
-    for (const { u, count } of items) {
+  for (const tree of [
+    "dmg",
+    "rate",
+    "multi",
+    "pierce",
+    "crit",
+    "elem",
+    "hp",
+    "def",
+    "dodge",
+    "shield",
+    "regen",
+    "steal",
+    "killheal",
+    "aura",
+    "speed",
+    "util",
+    "special",
+  ]) {
+    if (!groups[tree]) continue;
+    html += `<div class="tree-title">${treeNames[tree]}</div>`;
+    for (const { u, count } of groups[tree]) {
+      html += `<div class="upgrade-item"><span>${u.icon} ${u.name}</span><span class="count">×${count}</span></div>`;
+    }
+  }
+  if (groups.synergy) {
+    html += `<div class="tree-title" style="color:#ffd166;">🌟 Синергии</div>`;
+    for (const { u } of groups.synergy) {
+      html += `<div class="upgrade-item synergy"><span>${u.icon} ${u.name}</span></div>`;
+    }
+  }
+  if (groups.infinite) {
+    html += `<div class="tree-title" style="color:#a8d5ff;">∞ Бесконечные</div>`;
+    for (const { u, count } of groups.infinite) {
       html += `<div class="upgrade-item"><span>${u.icon} ${u.name}</span><span class="count">×${count}</span></div>`;
     }
   }
   if (tomes.length) {
-    html += `<div class="tree-title" style="color:#ff6666;">Томы</div>`;
+    html += `<div class="tree-title" style="color:#ff6666;">📕 Томы</div>`;
     for (const t of tomes) {
       html += `<div class="upgrade-item tome"><span>${t.icon} ${t.name}</span></div>`;
     }
@@ -2316,11 +2343,18 @@ function showPause() {
   p.className = "panel";
   p.innerHTML = `<div style="font-size:52px;filter:drop-shadow(0 0 20px rgba(255,110,190,.6))">⏸</div>
     <h1>ПАУЗА</h1>
-    <p class="sub">Волна ${G.wave} · уровень ${G.player.level} · ${G.kills} побед</p>
-    <button class="btn" id="resumeBtn">Продолжить ▶</button>
-    <p class="tiny">Escape — тоже возобновить · Tab — инвентарь</p>`;
+    <p class="sub">Волна ${G.wave}/200 · уровень ${G.player.level}/100 · ${G.kills} побед</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+      <button class="btn" id="resumeBtn">Продолжить ▶</button>
+      <button class="btn ghost" id="menuBtn">🏠 В меню</button>
+    </div>
+    <p class="tiny">Escape — возобновить · Tab — инвентарь</p>`;
   showOverlay(p);
   p.querySelector("#resumeBtn").onclick = resumeGame;
+  p.querySelector("#menuBtn").onclick = () => {
+    saveBestScore(G.score);
+    showMenu();
+  };
 }
 function resumeGame() {
   G.state = "playing";
@@ -2367,13 +2401,11 @@ function endScreen(isWin) {
   `;
   showOverlay(p);
   p.querySelector("#againBtn").onclick = () => startGame();
-  if (isWin) {
+  if (isWin)
     [0, 150, 300, 480].forEach((d, i) =>
       setTimeout(() => beep(660 + i * 220, 0.25, "sine", 0.06), d),
     );
-  } else {
-    beep(300, 0.5, "sawtooth", 0.08, 90);
-  }
+  else beep(300, 0.5, "sawtooth", 0.08, 90);
 }
 
 /* =========================================================
@@ -2383,7 +2415,6 @@ const keys = {};
 window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
   keys[k] = true;
-
   if (k === "escape") {
     if (G.state === "playing") {
       e.preventDefault();
@@ -2397,13 +2428,11 @@ window.addEventListener("keydown", (e) => {
     }
     return;
   }
-
   if (k === "tab" && G.state === "playing") {
     e.preventDefault();
     showInventory();
     return;
   }
-
   if (G.state === "upgrade") {
     if (k === " " || k === "spacebar") {
       e.preventDefault();
@@ -2426,6 +2455,10 @@ window.addEventListener("keydown", (e) => {
 });
 window.addEventListener("keyup", (e) => {
   keys[e.key.toLowerCase()] = false;
+});
+
+document.getElementById("pauseBtn").addEventListener("click", () => {
+  if (G.state === "playing") showPause();
 });
 
 let touchId = null,
@@ -2480,7 +2513,6 @@ function update(dt) {
   G.t += dt;
   const p = G.player;
   p.t += dt;
-
   if (G.shake > 0) G.shake = Math.max(0, G.shake - dt * 40);
   if (G.bossFlash > 0) G.bossFlash = Math.max(0, G.bossFlash - dt);
   if (G.msgTimer > 0) {
@@ -2488,7 +2520,6 @@ function update(dt) {
     if (G.msgTimer <= 0)
       document.getElementById("centerMsg").classList.remove("show");
   }
-
   let mx = 0,
     my = 0;
   if (keys["w"] || keys["arrowup"] || keys["ц"]) my--;
@@ -2516,7 +2547,6 @@ function update(dt) {
 
   if (p.iframe > 0) p.iframe -= dt;
   if (p.hurtFlash > 0) p.hurtFlash -= dt;
-
   if (p.regen > 0) {
     const lowHP = p.hp < p.maxHp * 0.4;
     const mult = lowHP && p.endurance > 0 ? 1 + 0.5 * p.endurance : 1;
@@ -2549,7 +2579,6 @@ function update(dt) {
       }
     }
   }
-
   p.cool -= dt;
   if (p.cool <= 0) {
     const tgt = nearestEnemy(p.x, p.y, 1100);
@@ -2558,7 +2587,6 @@ function update(dt) {
       p.cool = 1 / p.fireRate;
     }
   }
-
   if (G.breather > 0) {
     G.breather -= dt;
     if (G.breather <= 0 && !G.waveActive) startWave(G.wave + 1);
@@ -2594,14 +2622,12 @@ function update(dt) {
       }
     }
   }
-
   updateEnemies(dt);
   updateBullets(dt);
   updateEBullets(dt);
   updateParticles(dt);
   updateTexts(dt);
   updateBossBar();
-
   if (p.hp <= 0) endScreen(false);
 }
 
@@ -2611,14 +2637,15 @@ function startWave(n) {
   G.spawnQueue = buildWave(n);
   G.spawnTimer = 0.35;
   G.waveStuckTimer = 0;
-  if (G.player.level < n) {
-    const gained = n - G.player.level;
-    G.player.level = n;
+  // ★ 2 волны = 1 уровень
+  const targetLevel = levelForWave(n);
+  if (G.player.level < targetLevel) {
+    const gained = targetLevel - G.player.level;
+    G.player.level = targetLevel;
     G.pendingLevels += gained;
   }
   updateHUD(true);
   G.pendingWaveMsg = n;
-
   if (G.pendingChest) {
     openChest();
     return;
@@ -2661,7 +2688,6 @@ function shoot(p, target) {
   if (p.swordsman > 0 && !p.moving) mult += 0.1 * p.swordsman;
   if (p.windBonus > 0) mult += p.windBonus * Math.max(0, p.speed / 228 - 1);
   const dmg = p.dmg * mult;
-
   p.shotsFired++;
   if (p.electro && p.shotsFired % 8 === 0) {
     const t = nearestEnemy(p.x, p.y, 600);
@@ -2671,7 +2697,6 @@ function shoot(p, target) {
       beep(1200, 0.1, "sawtooth", 0.04, 1800);
     }
   }
-
   for (let i = 0; i < n; i++) {
     const a =
       base +
@@ -2716,7 +2741,6 @@ function updateEnemies(dt) {
     if (e.hitCd > 0) e.hitCd -= dt;
     if (e.slowT > 0) e.slowT -= dt;
     if (e.shieldRegenDelay > 0) e.shieldRegenDelay -= dt;
-
     if (e.burnT > 0) {
       e.burnT -= dt;
       e.hp -= ((e.burnDmg || 0) * dt) / 3;
@@ -2737,7 +2761,6 @@ function updateEnemies(dt) {
       e.shieldRegenDelay <= 0
     )
       e.shield = Math.min(e.maxShield, e.shield + e.shieldRegen * dt);
-
     const dx = p.x - e.x,
       dy = p.y - e.y;
     const d = Math.hypot(dx, dy) || 1;
@@ -2745,7 +2768,6 @@ function updateEnemies(dt) {
       uy = dy / d;
     let sp = e.speed;
     if (e.slowT > 0) sp *= 0.45;
-
     if (e.ranged) {
       const range = e.longRange ? 420 : 260;
       if (d < range * 0.75) sp = -sp * 0.7;
@@ -2832,7 +2854,6 @@ function updateEnemies(dt) {
         addParticles(e.x, e.y, 10, "#a78bfa", { min: 60, max: 160 });
       }
     }
-
     e.x += ux * sp * dt;
     e.y += uy * sp * dt;
     for (let j = i - 1; j >= 0; j--) {
@@ -2842,8 +2863,8 @@ function updateEnemies(dt) {
       const rr = e.r + o.r;
       const dd = Math.hypot(ddx, ddy) || 1;
       if (dd < rr) {
-        const push = (rr - dd) * 0.5;
-        const px = (ddx / dd) * push,
+        const push = (rr - dd) * 0.5,
+          px = (ddx / dd) * push,
           py = (ddy / dd) * push;
         e.x -= px;
         e.y -= py;
@@ -2862,8 +2883,8 @@ function updateEnemies(dt) {
 }
 
 function enemyShoot(e, ux, uy) {
-  const speed = e.longRange ? 320 : 210;
-  const n = e.boss ? 5 : 1;
+  const speed = e.longRange ? 320 : 210,
+    n = e.boss ? 5 : 1;
   const base = Math.atan2(uy, ux);
   for (let i = 0; i < n; i++) {
     const a = base + (n > 1 ? (i - (n - 1) / 2) * 0.28 : 0);
@@ -2912,7 +2933,6 @@ function killEnemy(e, source = "player") {
     G.boss = null;
     if (G.wave % 10 === 0 && G.wave < CONFIG.maxWave) G.pendingChest = true;
   }
-
   addParticles(e.x, e.y, e.boss ? 40 : 10, e.color, {
     min: 60,
     max: e.boss ? 340 : 200,
@@ -2923,7 +2943,6 @@ function killEnemy(e, source = "player") {
     max: 260,
     heart: true,
   });
-
   if (e.explodes) {
     G.shake = Math.max(G.shake, 8);
     const R = 90,
@@ -2934,14 +2953,12 @@ function killEnemy(e, source = "player") {
     addParticles(e.x, e.y, 22, "#fb923c", { min: 100, max: 320 });
     beep(120, 0.25, "sawtooth", 0.06, 60);
   }
-
   if (e.splitInto && G.enemies.length < 60) {
-    const count = e.splitIntoCount || 2;
-    const scale = e.splitIntoScale ?? 1;
+    const count = e.splitIntoCount || 2,
+      scale = e.splitIntoScale ?? 1;
     const base = ENEMY_TYPES[e.splitInto];
     if (base) {
-      const hpScale =
-        (1 + (G.wave - 1) * 0.22 + Math.pow(G.wave / 10, 1.5)) * scale;
+      const hpScale = hpScaleForWave(G.wave) * scale;
       for (let k = 0; k < count; k++) {
         if (G.enemies.length >= 60) break;
         const a = (k / count) * TAU + rnd(0, 0.5);
@@ -2997,7 +3014,6 @@ function killEnemy(e, source = "player") {
       }
     }
   }
-
   if (e.boss) {
     G.shake = 22;
     beep(110, 0.5, "triangle", 0.09, 60);
@@ -3051,10 +3067,9 @@ function hurtPlayer(dmg) {
   G.shake = Math.max(G.shake, 9);
   addParticles(p.x, p.y, 8, "#ff5c8a", { min: 60, max: 200, heart: true });
   beep(150, 0.16, "sawtooth", 0.05, 70);
-
   if (p.retaliation > 0) {
-    const R = 80 + p.retaliation * 15;
-    const dmgAoE = 30 + p.retaliation * 15;
+    const R = 80 + p.retaliation * 15,
+      dmgAoE = 30 + p.retaliation * 15;
     const R2 = R * R;
     for (const en of [...G.enemies]) {
       if (en.hp <= 0) continue;
@@ -3085,7 +3100,6 @@ function updateBullets(dt) {
     }
     b.x += b.vx * dt;
     b.y += b.vy * dt;
-
     let bounced = false;
     if (b.ricochet > 0) {
       if (b.x < b.r && b.vx < 0) {
@@ -3120,7 +3134,6 @@ function updateBullets(dt) {
       G.bullets.splice(i, 1);
       continue;
     }
-
     let dead = false;
     for (const e of [...G.enemies]) {
       if (e.hp <= 0) continue;
@@ -3259,14 +3272,12 @@ const bossNameEl = document.getElementById("bossName");
 function updateHUD(force) {
   const p = G.player;
   if (!p || !hpFill) return;
-
   const hpStr = Math.max(0, Math.ceil(p.hp)) + " / " + Math.round(p.maxHp);
   if (force || hpStr !== _hudCache.hp) {
     hpFill.style.width = clamp(p.hp / p.maxHp, 0, 1) * 100 + "%";
     hpText.textContent = hpStr;
     _hudCache.hp = hpStr;
   }
-
   const shieldStr =
     p.maxShield > 0 && p.shield > 0
       ? "🔰 " + Math.ceil(p.shield) + " / " + Math.round(p.maxShield)
@@ -3275,23 +3286,18 @@ function updateHUD(force) {
     if (shieldStr) {
       shieldRow.style.display = "block";
       shieldRow.textContent = shieldStr;
-    } else {
-      shieldRow.style.display = "none";
-    }
+    } else shieldRow.style.display = "none";
     _hudCache.shield = shieldStr;
   }
-
   if (force || p.level !== _hudCache.level) {
     levelNum.textContent = String(p.level);
     _hudCache.level = p.level;
   }
-
   const waveStr = Math.max(1, G.wave) + "/" + CONFIG.maxWave;
   if (force || waveStr !== _hudCache.wave) {
     waveNum.textContent = waveStr;
     _hudCache.wave = waveStr;
   }
-
   if (bossHintEl) {
     const rem = G.wave % 10;
     const toBoss = rem === 0 ? 0 : 10 - rem;
@@ -3303,28 +3309,23 @@ function updateHUD(force) {
       _hudCache.bossHint = hintStr;
     }
   }
-
   const scoreStr = G.score.toLocaleString("ru-RU");
   if (force || scoreStr !== _hudCache.score) {
     scoreVal.textContent = scoreStr;
     _hudCache.score = scoreStr;
   }
-
   const killsStr = "💀 " + G.kills;
   if (force || killsStr !== _hudCache.kills) {
     killCount.textContent = killsStr;
     _hudCache.kills = killsStr;
   }
 }
-
 function updateBossBar() {
   if (G.boss && G.boss.hp > 0) {
     bossBarEl.classList.add("show");
     bossNameEl.textContent = G.boss.bossName || "BOSS";
     bossFillEl.style.width = clamp(G.boss.hp / G.boss.maxHp, 0, 1) * 100 + "%";
-  } else {
-    bossBarEl.classList.remove("show");
-  }
+  } else bossBarEl.classList.remove("show");
 }
 
 /* =========================================================
@@ -3341,7 +3342,6 @@ for (let i = 0; i < 18; i++) {
     ph: rnd(0, TAU),
   });
 }
-
 function heartPath(c, x, y, s) {
   c.beginPath();
   c.moveTo(x, y + s * 0.72);
@@ -3363,11 +3363,9 @@ function heartPath(c, x, y, s) {
   );
   c.closePath();
 }
-
 function drawBackground(dt) {
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, W, H);
-
   ctx.strokeStyle = "rgba(255,180,230,.042)";
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -3381,7 +3379,6 @@ function drawBackground(dt) {
     ctx.lineTo(W, y);
   }
   ctx.stroke();
-
   for (const h of bgHearts) {
     h.y -= h.sp * dt;
     if (h.y < -0.06) {
@@ -3397,7 +3394,6 @@ function drawBackground(dt) {
   }
   ctx.globalAlpha = 1;
 }
-
 function drawAura() {
   const p = G.player;
   if (!p || p.auraR <= 0) return;
@@ -3417,16 +3413,13 @@ function drawAura() {
   ctx.arc(p.x, p.y, R, 0, TAU);
   ctx.stroke();
 }
-
 function drawEnemies() {
   for (const e of G.enemies) {
     ctx.save();
     ctx.translate(e.x, e.y);
-
-    const flash = e.flash > 0;
-    const alpha = e.ghost ? 0.55 : 1;
+    const flash = e.flash > 0,
+      alpha = e.ghost ? 0.55 : 1;
     ctx.globalAlpha = alpha;
-
     if (e.shield > 0) {
       ctx.strokeStyle = "rgba(96,165,250,.85)";
       ctx.lineWidth = 3;
@@ -3439,14 +3432,12 @@ function drawEnemies() {
       ctx.arc(0, 0, e.r * 1.55, 0, TAU);
       ctx.stroke();
     }
-
     if (e.burnT > 0) {
       ctx.fillStyle = "rgba(249,115,22,.25)";
       ctx.beginPath();
       ctx.arc(0, 0, e.r * 1.2, 0, TAU);
       ctx.fill();
     }
-
     ctx.fillStyle = flash ? "#ffffff" : e.color;
     ctx.beginPath();
     const n = e.spikes;
@@ -3460,10 +3451,8 @@ function drawEnemies() {
     ctx.globalAlpha = alpha * 0.85;
     ctx.fill();
     ctx.globalAlpha = alpha;
-
     const bodySpr = getEnemyBodySprite(e.r, e.color, flash);
     ctx.drawImage(bodySpr, -bodySpr.width / 2, -bodySpr.height / 2);
-
     const eyeY = -e.r * 0.08,
       eyeX = e.r * 0.34;
     ctx.fillStyle = "rgba(15,4,25,.92)";
@@ -3480,7 +3469,6 @@ function drawEnemies() {
     ctx.beginPath();
     ctx.arc(eyeX + e.r * 0.05, eyeY - e.r * 0.06, e.r * 0.05, 0, TAU);
     ctx.fill();
-
     if (e.boss) {
       ctx.fillStyle = "#ffd166";
       ctx.strokeStyle = "#b8860b";
@@ -3499,13 +3487,11 @@ function drawEnemies() {
       ctx.fill();
       ctx.stroke();
     }
-
     ctx.globalAlpha = 1;
-
     if (!e.boss && e.hp < e.maxHp) {
       const bw = e.r * 2.1,
-        bh = 4;
-      const bx = -bw / 2,
+        bh = 4,
+        bx = -bw / 2,
         by = -e.r * 1.55;
       ctx.fillStyle = "rgba(0,0,0,.5)";
       ctx.fillRect(bx, by, bw, bh);
@@ -3516,7 +3502,6 @@ function drawEnemies() {
         ctx.fillRect(bx, by - 3, bw * clamp(e.shield / e.maxShield, 0, 1), 2);
       }
     }
-
     if (e.slowT > 0) {
       ctx.strokeStyle = "rgba(147,197,253,.7)";
       ctx.lineWidth = 1.5;
@@ -3524,11 +3509,9 @@ function drawEnemies() {
       ctx.arc(0, 0, e.r * 1.3, 0, TAU);
       ctx.stroke();
     }
-
     ctx.restore();
   }
 }
-
 function drawBullets() {
   for (const b of G.bullets) {
     const color = b.explosive > 0 ? "#ff9ecb" : "#ff6fb5";
@@ -3542,7 +3525,6 @@ function drawBullets() {
     ctx.restore();
   }
 }
-
 function drawEBullets() {
   for (const b of G.ebullets) {
     ctx.save();
@@ -3564,19 +3546,15 @@ function drawEBullets() {
   }
   ctx.shadowBlur = 0;
 }
-
 function drawPlayer() {
   const p = G.player;
   if (!p) return;
   if (p.iframe > 0 && Math.floor(p.iframe * 22) % 2 === 0) return;
-
   const s = p.r;
   const bob = Math.sin(p.t * 9) * (p.moving ? 2 : 0.8);
-
   ctx.save();
   ctx.translate(p.x, p.y + bob);
   ctx.scale(p.blink, 1);
-
   if (p.maxShield > 0 && p.shield > 0) {
     const shieldPct = p.shield / p.maxShield;
     ctx.save();
@@ -3588,7 +3566,6 @@ function drawPlayer() {
     ctx.stroke();
     ctx.restore();
   }
-
   ctx.save();
   ctx.scale(1 / p.blink, 1);
   ctx.fillStyle = "rgba(0,0,0,.28)";
@@ -3596,7 +3573,6 @@ function drawPlayer() {
   ctx.ellipse(0, s * 1.25 - bob, s * 0.95, s * 0.32, 0, 0, TAU);
   ctx.fill();
   ctx.restore();
-
   const tw = Math.sin(p.t * 5) * 7;
   ctx.strokeStyle = "#f7a8d0";
   ctx.lineWidth = 6;
@@ -3605,7 +3581,6 @@ function drawPlayer() {
   ctx.moveTo(-s * 0.7, s * 0.45);
   ctx.quadraticCurveTo(-s * 2.1, s * 0.3 + tw, -s * 1.75, -s * 0.75 + tw);
   ctx.stroke();
-
   ctx.fillStyle = "#fff3f9";
   ctx.strokeStyle = "#f7a8d0";
   ctx.lineWidth = 2;
@@ -3623,7 +3598,6 @@ function drawPlayer() {
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
-
   ctx.fillStyle = "#ffb8d9";
   ctx.beginPath();
   ctx.moveTo(-s * 0.66, -s * 0.72);
@@ -3637,7 +3611,6 @@ function drawPlayer() {
   ctx.lineTo(s * 0.3, -s * 0.86);
   ctx.closePath();
   ctx.fill();
-
   const g = ctx.createRadialGradient(
     -s * 0.3,
     -s * 0.35,
@@ -3655,7 +3628,6 @@ function drawPlayer() {
   ctx.arc(0, 0, s, 0, TAU);
   ctx.fill();
   ctx.stroke();
-
   ctx.fillStyle = "rgba(255,150,190,.42)";
   ctx.beginPath();
   ctx.ellipse(-s * 0.58, s * 0.22, s * 0.24, s * 0.16, 0, 0, TAU);
@@ -3663,7 +3635,6 @@ function drawPlayer() {
   ctx.beginPath();
   ctx.ellipse(s * 0.58, s * 0.22, s * 0.24, s * 0.16, 0, 0, TAU);
   ctx.fill();
-
   const blink = Math.sin(p.t * 1.7) > 0.985 ? 0.12 : 1;
   ctx.fillStyle = "#3a1d33";
   ctx.beginPath();
@@ -3681,7 +3652,6 @@ function drawPlayer() {
     ctx.arc(s * 0.37, -s * 0.16, s * 0.05, 0, TAU);
     ctx.fill();
   }
-
   ctx.fillStyle = "#ff7ab0";
   ctx.beginPath();
   ctx.moveTo(0, s * 0.14);
@@ -3689,14 +3659,12 @@ function drawPlayer() {
   ctx.lineTo(s * 0.11, s * 0.03);
   ctx.closePath();
   ctx.fill();
-
   ctx.strokeStyle = "#c96b96";
   ctx.lineWidth = 1.6;
   ctx.beginPath();
   ctx.arc(-s * 0.1, s * 0.2, s * 0.13, 0, Math.PI);
   ctx.arc(s * 0.1, s * 0.2, s * 0.13, 0, Math.PI);
   ctx.stroke();
-
   ctx.strokeStyle = "rgba(190,120,160,.65)";
   ctx.lineWidth = 1.2;
   for (let i = -1; i <= 1; i++) {
@@ -3709,13 +3677,10 @@ function drawPlayer() {
     ctx.lineTo(s * 1.25, s * 0.04 + i * s * 0.24);
     ctx.stroke();
   }
-
   ctx.fillStyle = "rgba(255,120,180,.55)";
   heartPath(ctx, 0, s * 0.62, s * 0.22);
   ctx.fill();
-
   ctx.restore();
-
   if (p.hurtFlash > 0) {
     ctx.fillStyle = `rgba(255,60,120,${p.hurtFlash * 0.6})`;
     ctx.beginPath();
@@ -3723,7 +3688,6 @@ function drawPlayer() {
     ctx.fill();
   }
 }
-
 function drawParticles() {
   for (const q of G.parts) {
     const a = clamp(q.life / q.max, 0, 1);
@@ -3745,7 +3709,6 @@ function drawParticles() {
   }
   ctx.globalAlpha = 1;
 }
-
 function drawTexts() {
   ctx.textAlign = "center";
   for (const t of G.texts) {
@@ -3761,12 +3724,10 @@ function drawTexts() {
   ctx.globalAlpha = 1;
   ctx.textAlign = "left";
 }
-
 function render(dt) {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  if (G.shake > 0.4) {
+  if (G.shake > 0.4)
     ctx.translate(rnd(-G.shake, G.shake) * 0.35, rnd(-G.shake, G.shake) * 0.35);
-  }
   drawBackground(dt);
   drawAura();
   drawEnemies();
@@ -3787,27 +3748,16 @@ function render(dt) {
 /* =========================================================
    ЧИТ-ФУНКЦИИ
    ========================================================= */
-function cheatToWave(targetLevel, applyAll = false) {
-  targetLevel = clamp(Math.round(targetLevel), 1, CONFIG.maxWave);
+function cheatToWave(targetWave, applyAll = false) {
+  targetWave = clamp(Math.round(targetWave), 1, CONFIG.maxWave);
   startGame();
-  G.wave = Math.max(14, targetLevel - 1);
-  G.player.level = 1;
-  G.pendingLevels = 0;
-  G.pendingChest = false;
-  G.breather = 0;
-  G.waveActive = false;
+  const targetLevel = levelForWave(targetWave);
+  const upgradesToApply = applyAll ? 999 : targetLevel - 1;
 
-  const targetUpgrades = applyAll ? Infinity : targetLevel - 1;
+  G.wave = 14;
+  G.player.level = 999; // temp для разблокировки infinite
+
   let applied = 0;
-
-  const applyOne = (u) => {
-    if (!isUpgradeAvailable(u, G.upgradesTaken)) return false;
-    u.apply(G.player);
-    G.upgradesTaken[u.id] = (G.upgradesTaken[u.id] || 0) + 1;
-    applied++;
-    return true;
-  };
-
   const ordered = [
     ...UPGRADES.filter((x) => x.tier === 1 && !x.synergy),
     ...UPGRADES.filter((x) => (x.tier === 2 || x.tier === 3) && !x.synergy),
@@ -3815,42 +3765,36 @@ function cheatToWave(targetLevel, applyAll = false) {
     ...UPGRADES.filter((x) => x.tree === "special"),
     ...UPGRADES.filter((x) => x.infinite),
   ];
-
   for (const u of ordered) {
-    if (applied >= targetUpgrades) break;
-    while ((G.upgradesTaken[u.id] || 0) < u.max && applied < targetUpgrades) {
-      if (!applyOne(u)) break;
+    if (applied >= upgradesToApply) break;
+    while ((G.upgradesTaken[u.id] || 0) < u.max && applied < upgradesToApply) {
+      if (!isUpgradeAvailable(u, G.upgradesTaken)) break;
+      u.apply(G.player);
+      G.upgradesTaken[u.id] = (G.upgradesTaken[u.id] || 0) + 1;
+      if (u.synergy) G.synergyTaken[u.id] = (G.synergyTaken[u.id] || 0) + 1;
+      applied++;
     }
   }
-
-  while (applied < targetUpgrades && applied < targetLevel - 1) {
+  while (applied < upgradesToApply) {
     const h = makeHealCard(applied);
     h.apply(G.player);
     applied++;
   }
-
   G.player.hp = G.player.maxHp;
   G.player.level = targetLevel;
-  G.wave = targetLevel - 1;
+  G.wave = targetWave - 1;
   G.pendingLevels = 0;
   G.pendingChest = false;
   G.breather = 0.05;
   G.waveActive = false;
-
   updateHUD(true);
-  console.log(`[cheat] Волна ${targetLevel}, применено ${applied} апгрейдов`);
-  console.table(
-    Object.entries(G.upgradesTaken)
-      .sort((a, b) => b[1] - a[1])
-      .map(([id, count]) => {
-        const u = UPGRADES.find((x) => x.id === id);
-        return { id, name: u ? u.name : "?", count };
-      }),
+  console.log(
+    `[cheat] Wave ${targetWave} = Level ${targetLevel}, ${applied} upgrades`,
   );
 }
-
 function cheatApplyAll() {
-  G.wave = Math.max(G.wave, 14);
+  G.wave = 14;
+  G.player.level = 999;
   let applied = 0;
   const ordered = [
     ...UPGRADES.filter((x) => x.tier === 1 && !x.synergy),
@@ -3866,14 +3810,14 @@ function cheatApplyAll() {
     ) {
       u.apply(G.player);
       G.upgradesTaken[u.id] = (G.upgradesTaken[u.id] || 0) + 1;
+      if (u.synergy) G.synergyTaken[u.id] = (G.synergyTaken[u.id] || 0) + 1;
       applied++;
     }
   }
   G.player.hp = G.player.maxHp;
   updateHUD(true);
-  console.log(`[cheat] Применено ${applied} апгрейдов`);
+  console.log(`[cheat] Applied ${applied} upgrades`);
 }
-
 window.cheatToWave = cheatToWave;
 window.cheatApplyAll = cheatApplyAll;
 
@@ -3885,7 +3829,6 @@ function loop(now) {
   let dt = (now - lastT) / 1000;
   lastT = now;
   dt = Math.min(dt, 0.05);
-
   if (G.state === "playing") {
     update(dt);
   } else if (G.state === "menu" || G.state === "over" || G.state === "win") {
@@ -3896,10 +3839,8 @@ function loop(now) {
         document.getElementById("centerMsg").classList.remove("show");
     }
   }
-
   render(dt);
   if (G.state === "playing") updateHUD(false);
-
   requestAnimationFrame(loop);
 }
 
